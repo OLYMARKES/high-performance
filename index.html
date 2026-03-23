@@ -606,6 +606,87 @@ h1, h2, h3 {
   color: var(--light-gray);
 }
 
+.lead-form {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 28px;
+  border-radius: 28px;
+  background: rgba(255, 253, 249, 0.86);
+  border: 1px solid var(--sand);
+  box-shadow: 0 24px 60px rgba(122, 116, 109, 0.08);
+  text-align: left;
+}
+
+.lead-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.lead-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lead-field-full {
+  grid-column: 1 / -1;
+}
+
+.lead-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+}
+
+.lead-input,
+.lead-textarea {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--sand-dark);
+  background: var(--warm-white);
+  color: var(--charcoal);
+  font: inherit;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.lead-input:focus,
+.lead-textarea:focus {
+  outline: none;
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 4px rgba(196, 112, 75, 0.12);
+}
+
+.lead-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.lead-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.lead-status {
+  min-height: 24px;
+  font-size: 14px;
+  color: var(--warm-gray);
+}
+
+.lead-status.is-error {
+  color: #a2472c;
+}
+
+.lead-status.is-success {
+  color: var(--olive);
+}
+
 /* ── Body deep-dive section ── */
 .body-deep {
   background:
@@ -717,6 +798,8 @@ h1, h2, h3 {
 @media (max-width: 768px) {
   .body-process { grid-template-columns: 40px 1fr; gap: 0 16px; }
   .body-highlight { padding: 24px; }
+  .lead-form-grid { grid-template-columns: 1fr; }
+  .lead-form { padding: 24px 20px; }
 }
 
 /* ── Attention / daily tools ── */
@@ -1231,12 +1314,38 @@ h1, h2, h3 {
   <div class="container reveal">
     <div class="section-label">Апрель 2026</div>
     <h2>Хочу попробовать</h2>
-    <p class="cta-sub">Если соберётся интересная группа — я запущу этот проект. Оставь заявку в Telegram: расскажи немного о себе и о том, где ты сейчас, — даже если мы знакомы. Я хочу лично прочитать каждую заявку.</p>
+    <p class="cta-sub">Если соберётся интересная группа — я запущу этот проект. Оставь заявку здесь: команда получит твой контакт и свяжется с тобой в Telegram или по телефону.</p>
     <p style="font-family:var(--font-display);font-size:clamp(28px,4vw,40px);font-weight:500;color:var(--charcoal);margin-bottom:8px;">$1100 <span style="font-size:18px;color:var(--warm-gray);font-weight:400;">/ месяц</span></p>
     <p style="color:var(--warm-gray);font-size:15px;max-width:420px;margin:0 auto 36px;">Сопровождение по питанию и тренировкам, личный кабинет, команда кураторов и весь месяц в группе поддержки.</p>
-    <!-- TODO: Замени CHAT_ID на ID твоего Telegram-чата для заявок -->
-    <a href="https://t.me/olymarkes" target="_blank" class="cta-btn" style="margin-bottom:16px;">Оставить заявку в Telegram</a>
-    <p class="cta-note">Нажми кнопку — откроется чат, где можно написать заявку</p>
+    <form class="lead-form" id="lead-form">
+      <div class="lead-form-grid">
+        <div class="lead-field">
+          <label class="lead-label" for="lead-name">Имя</label>
+          <input class="lead-input" id="lead-name" name="name" type="text" autocomplete="name" required placeholder="Как тебя зовут">
+        </div>
+        <div class="lead-field">
+          <label class="lead-label" for="lead-telegram">Telegram</label>
+          <input class="lead-input" id="lead-telegram" name="telegram" type="text" autocomplete="off" required placeholder="@username или номер">
+        </div>
+        <div class="lead-field">
+          <label class="lead-label" for="lead-phone">Телефон</label>
+          <input class="lead-input" id="lead-phone" name="phone" type="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
+        </div>
+        <div class="lead-field">
+          <label class="lead-label" for="lead-city">Город</label>
+          <input class="lead-input" id="lead-city" name="city" type="text" autocomplete="address-level2" placeholder="Москва, Бали, Дубай...">
+        </div>
+        <div class="lead-field lead-field-full">
+          <label class="lead-label" for="lead-about">Коротко о себе</label>
+          <textarea class="lead-textarea" id="lead-about" name="about" required placeholder="Чем ты сейчас живёшь, какой у тебя запрос и почему хочешь в High Performance"></textarea>
+        </div>
+      </div>
+      <div class="lead-actions">
+        <button type="submit" class="cta-btn">Отправить заявку</button>
+        <div class="lead-status" id="lead-status" aria-live="polite"></div>
+      </div>
+    </form>
+    <p class="cta-note">Если Telegram не откроется автоматически, текст заявки всё равно скопируется и его можно будет отправить вручную.</p>
   </div>
 </section>
 
@@ -1248,6 +1357,9 @@ h1, h2, h3 {
 </footer>
 
 <script>
+const FORM_ENDPOINT = '';
+const TELEGRAM_FALLBACK_URL = 'https://t.me/olymarkes';
+
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -1257,6 +1369,78 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const leadForm = document.querySelector('#lead-form');
+const leadStatus = document.querySelector('#lead-status');
+
+if (leadForm && leadStatus) {
+  const buildLeadMessage = (payload) => (
+    [
+      'Новая заявка High Performance',
+      '',
+      `Имя: ${payload.name || '-'}`,
+      `Telegram: ${payload.telegram || '-'}`,
+      `Телефон: ${payload.phone || '-'}`,
+      `Город: ${payload.city || '-'}`,
+      '',
+      'О себе:',
+      payload.about || '-'
+    ].join('\n')
+  );
+
+  leadForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    leadStatus.className = 'lead-status';
+    const submitButton = leadForm.querySelector('button[type="submit"]');
+    const formData = new FormData(leadForm);
+    const payload = Object.fromEntries(formData.entries());
+
+    if (!FORM_ENDPOINT) {
+      const fallbackMessage = buildLeadMessage(payload);
+
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(fallbackMessage);
+        }
+      } catch (error) {
+        // Clipboard access can be blocked by the browser; opening Telegram still helps.
+      }
+
+      window.open(TELEGRAM_FALLBACK_URL, '_blank', 'noopener');
+      leadStatus.textContent = 'Текст заявки скопирован. Сейчас откроется Telegram, чтобы её можно было отправить.';
+      leadStatus.classList.add('is-success');
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Отправляем...';
+    leadStatus.textContent = '';
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('request_failed');
+      }
+
+      leadForm.reset();
+      leadStatus.textContent = 'Спасибо. Заявка отправлена, команда скоро свяжется с тобой.';
+      leadStatus.classList.add('is-success');
+    } catch (error) {
+      leadStatus.textContent = 'Не удалось отправить заявку. Попробуй ещё раз или напиши в Telegram.';
+      leadStatus.classList.add('is-error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Отправить заявку';
+    }
+  });
+}
 </script>
 </body>
 </html>
