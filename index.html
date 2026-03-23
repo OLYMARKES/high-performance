@@ -617,6 +617,33 @@ h1, h2, h3 {
   text-align: left;
 }
 
+.lead-form-shell {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.lead-toggle {
+  width: 100%;
+}
+
+.lead-form-wrap {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: max-height 0.45s ease, opacity 0.3s ease, transform 0.3s ease, margin-top 0.3s ease;
+  pointer-events: none;
+  margin-top: 0;
+}
+
+.lead-form-wrap.is-open {
+  max-height: 720px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  margin-top: 18px;
+}
+
 .lead-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1314,37 +1341,34 @@ h1, h2, h3 {
   <div class="container reveal">
     <div class="section-label">Апрель 2026</div>
     <h2>Хочу попробовать</h2>
-    <p class="cta-sub">Если соберётся интересная группа — я запущу этот проект. Оставь заявку здесь: команда получит твой контакт и свяжется с тобой в Telegram или по телефону.</p>
+    <p class="cta-sub">Если соберётся интересная группа — я запущу этот проект. Оставь короткую заявку: имя, контакт для связи и пару слов о себе и своей мотивации.</p>
     <p style="font-family:var(--font-display);font-size:clamp(28px,4vw,40px);font-weight:500;color:var(--charcoal);margin-bottom:8px;">$1100 <span style="font-size:18px;color:var(--warm-gray);font-weight:400;">/ месяц</span></p>
     <p style="color:var(--warm-gray);font-size:15px;max-width:420px;margin:0 auto 36px;">Сопровождение по питанию и тренировкам, личный кабинет, команда кураторов и весь месяц в группе поддержки.</p>
-    <form class="lead-form" id="lead-form">
-      <div class="lead-form-grid">
-        <div class="lead-field">
-          <label class="lead-label" for="lead-name">Имя</label>
-          <input class="lead-input" id="lead-name" name="name" type="text" autocomplete="name" required placeholder="Как тебя зовут">
-        </div>
-        <div class="lead-field">
-          <label class="lead-label" for="lead-telegram">Telegram</label>
-          <input class="lead-input" id="lead-telegram" name="telegram" type="text" autocomplete="off" required placeholder="@username или номер">
-        </div>
-        <div class="lead-field">
-          <label class="lead-label" for="lead-phone">Телефон</label>
-          <input class="lead-input" id="lead-phone" name="phone" type="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
-        </div>
-        <div class="lead-field">
-          <label class="lead-label" for="lead-city">Город</label>
-          <input class="lead-input" id="lead-city" name="city" type="text" autocomplete="address-level2" placeholder="Москва, Бали, Дубай...">
-        </div>
-        <div class="lead-field lead-field-full">
-          <label class="lead-label" for="lead-about">Коротко о себе</label>
-          <textarea class="lead-textarea" id="lead-about" name="about" required placeholder="Чем ты сейчас живёшь, какой у тебя запрос и почему хочешь в High Performance"></textarea>
-        </div>
+    <div class="lead-form-shell">
+      <button type="button" class="cta-btn lead-toggle" id="lead-toggle" aria-expanded="false" aria-controls="lead-form-wrap">Оставить заявку</button>
+      <div class="lead-form-wrap" id="lead-form-wrap">
+        <form class="lead-form" id="lead-form">
+          <div class="lead-form-grid">
+            <div class="lead-field">
+              <label class="lead-label" for="lead-name">Имя</label>
+              <input class="lead-input" id="lead-name" name="name" type="text" autocomplete="name" required placeholder="Как тебя зовут">
+            </div>
+            <div class="lead-field">
+              <label class="lead-label" for="lead-contact">Контакт для связи</label>
+              <input class="lead-input" id="lead-contact" name="contact" type="text" autocomplete="off" required placeholder="@telegram или WhatsApp">
+            </div>
+            <div class="lead-field lead-field-full">
+              <label class="lead-label" for="lead-about">О себе и мотивации</label>
+              <textarea class="lead-textarea" id="lead-about" name="about" required placeholder="Расскажи немного о себе и какая у тебя главная мотивация быть в этой группе"></textarea>
+            </div>
+          </div>
+          <div class="lead-actions">
+            <button type="submit" class="cta-btn">Отправить заявку</button>
+            <div class="lead-status" id="lead-status" aria-live="polite"></div>
+          </div>
+        </form>
       </div>
-      <div class="lead-actions">
-        <button type="submit" class="cta-btn">Отправить заявку</button>
-        <div class="lead-status" id="lead-status" aria-live="polite"></div>
-      </div>
-    </form>
+    </div>
     <p class="cta-note">После отправки команда свяжется с тобой и подберёт удобный формат дальнейшего контакта.</p>
   </div>
 </section>
@@ -1372,6 +1396,21 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 const leadForm = document.querySelector('#lead-form');
 const leadStatus = document.querySelector('#lead-status');
+const leadToggle = document.querySelector('#lead-toggle');
+const leadFormWrap = document.querySelector('#lead-form-wrap');
+
+if (leadToggle && leadFormWrap) {
+  leadToggle.addEventListener('click', () => {
+    const isOpen = leadFormWrap.classList.toggle('is-open');
+    leadToggle.setAttribute('aria-expanded', String(isOpen));
+    leadToggle.textContent = isOpen ? 'Скрыть форму' : 'Оставить заявку';
+
+    if (isOpen) {
+      const firstField = leadFormWrap.querySelector('input, textarea');
+      firstField?.focus();
+    }
+  });
+}
 
 if (leadForm && leadStatus) {
   const buildLeadMessage = (payload) => (
@@ -1379,11 +1418,9 @@ if (leadForm && leadStatus) {
       'Новая заявка High Performance',
       '',
       `Имя: ${payload.name || '-'}`,
-      `Telegram: ${payload.telegram || '-'}`,
-      `Телефон: ${payload.phone || '-'}`,
-      `Город: ${payload.city || '-'}`,
+      `Контакт: ${payload.contact || payload.telegram || '-'}`,
       '',
-      'О себе:',
+      'О себе и мотивации:',
       payload.about || '-'
     ].join('\n')
   );
@@ -1435,6 +1472,11 @@ if (leadForm && leadStatus) {
       }
 
       leadForm.reset();
+      leadFormWrap?.classList.remove('is-open');
+      leadToggle?.setAttribute('aria-expanded', 'false');
+      if (leadToggle) {
+        leadToggle.textContent = 'Оставить заявку';
+      }
       leadStatus.textContent = 'Спасибо. Заявка отправлена, команда скоро свяжется с тобой.';
       leadStatus.classList.add('is-success');
     } catch (error) {

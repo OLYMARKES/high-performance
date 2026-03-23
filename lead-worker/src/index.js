@@ -51,11 +51,9 @@ const buildIssueBody = (lead, request) => {
     '',
     '## Contact',
     `- Name: ${escapeMd(lead.name)}`,
-    `- Telegram: ${escapeMd(lead.telegram)}`,
-    `- Phone: ${escapeMd(lead.phone) || '-'}`,
-    `- City: ${escapeMd(lead.city) || '-'}`,
+    `- Contact: ${escapeMd(lead.contact)}`,
     '',
-    '## About',
+    '## Motivation',
     escapeMd(lead.about),
     '',
     '## Metadata',
@@ -144,16 +142,14 @@ export default {
 
     const lead = {
       name: normalize(payload.name),
-      telegram: normalize(payload.telegram),
-      phone: normalize(payload.phone),
-      city: normalize(payload.city),
+      contact: normalize(payload.contact || payload.telegram),
       about: normalize(payload.about),
       pageUrl: normalize(payload.pageUrl),
       submittedAt: normalize(payload.submittedAt),
       source: normalize(payload.source)
     };
 
-    if (!lead.name || !lead.telegram || !lead.about) {
+    if (!lead.name || !lead.contact || !lead.about) {
       return jsonResponse({ ok: false, error: 'missing_required_fields' }, 400, origin);
     }
 
