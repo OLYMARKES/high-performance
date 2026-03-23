@@ -1393,7 +1393,12 @@ if (leadForm && leadStatus) {
     leadStatus.className = 'lead-status';
     const submitButton = leadForm.querySelector('button[type="submit"]');
     const formData = new FormData(leadForm);
-    const payload = Object.fromEntries(formData.entries());
+    const payload = {
+      ...Object.fromEntries(formData.entries()),
+      pageUrl: window.location.href,
+      submittedAt: new Date().toISOString(),
+      source: 'high-performance-site'
+    };
 
     if (!FORM_ENDPOINT) {
       const fallbackMessage = buildLeadMessage(payload);

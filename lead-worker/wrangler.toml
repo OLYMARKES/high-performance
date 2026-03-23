@@ -1,0 +1,9 @@
+name = "high-performance-leads"
+main = "src/index.js"
+compatibility_date = "2026-03-23"
+
+[vars]
+ALLOWED_ORIGIN = "https://olymarkes.github.io"
+GITHUB_OWNER = "OLYMARKES"
+GITHUB_REPO = "high-performance-leads"
+ISSUE_LABELS = "lead"
