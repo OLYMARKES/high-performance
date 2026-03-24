@@ -1379,15 +1379,19 @@ h1, h2, h3 {
           <div class="lead-form-grid">
             <div class="lead-field">
               <label class="lead-label" for="lead-name">Имя</label>
-              <input class="lead-input" id="lead-name" name="name" type="text" autocomplete="name" required placeholder="Как тебя зовут">
+              <input class="lead-input" id="lead-name" name="name" type="text" autocomplete="name" maxlength="80" required placeholder="Как тебя зовут">
             </div>
             <div class="lead-field">
               <label class="lead-label" for="lead-contact">Контакт для связи</label>
-              <input class="lead-input" id="lead-contact" name="contact" type="text" autocomplete="off" required placeholder="@telegram или WhatsApp">
+              <input class="lead-input" id="lead-contact" name="contact" type="text" autocomplete="off" maxlength="120" required placeholder="@telegram или WhatsApp">
+            </div>
+            <div class="lead-field">
+              <label class="lead-label" for="lead-email">Email</label>
+              <input class="lead-input" id="lead-email" name="email" type="email" autocomplete="email" maxlength="160" placeholder="you@example.com">
             </div>
             <div class="lead-field lead-field-full">
               <label class="lead-label" for="lead-about">О себе и мотивации</label>
-              <textarea class="lead-textarea" id="lead-about" name="about" required placeholder="Расскажи немного о себе и какая у тебя главная мотивация быть в этой группе"></textarea>
+              <textarea class="lead-textarea" id="lead-about" name="about" maxlength="1200" required placeholder="Расскажи немного о себе и какая у тебя главная мотивация быть в этой группе"></textarea>
             </div>
           </div>
           <div class="lead-actions">
@@ -1415,6 +1419,14 @@ h1, h2, h3 {
 <script>
 const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
 const TELEGRAM_FALLBACK_URL = 'https://t.me/olymarkes';
+const LEAD_LIMITS = Object.freeze({
+  name: 80,
+  contact: 120,
+  email: 160,
+  about: 1200
+});
+const CONTROL_CHARS_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -1445,12 +1457,42 @@ if (leadToggle && leadFormWrap) {
 }
 
 if (leadForm && leadStatus) {
+  const sanitizeLeadField = (value, { multiline = false, limit = 100 } = {}) => {
+    const cleaned = String(value || '')
+      .replace(/\r\n?/g, '\n')
+      .replace(CONTROL_CHARS_RE, '')
+      .replace(BIDI_CONTROL_RE, '')
+      .trim();
+
+    const normalized = multiline
+      ? cleaned
+          .split('\n')
+          .map(line => line.trimEnd())
+          .join('\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim()
+      : cleaned.replace(/\s+/g, ' ').trim();
+
+    return normalized.slice(0, limit);
+  };
+
+  const sanitizeLeadPayload = (formData) => ({
+    name: sanitizeLeadField(formData.get('name'), { limit: LEAD_LIMITS.name }),
+    contact: sanitizeLeadField(formData.get('contact'), { limit: LEAD_LIMITS.contact }),
+    email: sanitizeLeadField(formData.get('email'), { limit: LEAD_LIMITS.email }),
+    about: sanitizeLeadField(formData.get('about'), { multiline: true, limit: LEAD_LIMITS.about }),
+    pageUrl: window.location.href,
+    submittedAt: new Date().toISOString(),
+    source: 'high-performance-site'
+  });
+
   const buildLeadMessage = (payload) => (
     [
       'Новая заявка High Performance',
       '',
       `Имя: ${payload.name || '-'}`,
       `Контакт: ${payload.contact || payload.telegram || '-'}`,
+      `Email: ${payload.email || '-'}`,
       '',
       'О себе и мотивации:',
       payload.about || '-'
@@ -1462,12 +1504,13 @@ if (leadForm && leadStatus) {
     leadStatus.className = 'lead-status';
     const submitButton = leadForm.querySelector('button[type="submit"]');
     const formData = new FormData(leadForm);
-    const payload = {
-      ...Object.fromEntries(formData.entries()),
-      pageUrl: window.location.href,
-      submittedAt: new Date().toISOString(),
-      source: 'high-performance-site'
-    };
+    const payload = sanitizeLeadPayload(formData);
+
+    if (!payload.name || !payload.contact || !payload.about) {
+      leadStatus.textContent = 'Заполни, пожалуйста, все три поля.';
+      leadStatus.classList.add('is-error');
+      return;
+    }
 
     if (!FORM_ENDPOINT) {
       const fallbackMessage = buildLeadMessage(payload);
