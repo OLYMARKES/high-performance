@@ -27,7 +27,6 @@ PARTICIPANTS = [
     {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10},
     {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8},
     {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6},
-    {"name": "нина", "contact": "@1028305", "issue": 4},
 ]
 
 
@@ -78,7 +77,7 @@ def personalize_html(template: str, name: str, contact: str, slug: str, issue: i
     title = f"Трекер дня 1–7 апреля 2026 — {name}"
     hero_tag = f"1–7 апреля 2026 • {name}"
     hero_copy = (
-        f"Персональный трекер недели для {name} ({contact}). "
+        f"Персональный трекер недели для {name}. "
         "Отмечай ежедневные ритуалы, вписывай свои задачи и держи фокус "
         "на том, что реально двигает тебя вперёд."
     )
@@ -122,7 +121,7 @@ def personalize_html(template: str, name: str, contact: str, slug: str, issue: i
     )
 
     source_comment = (
-        f"<!-- Generated for {name} ({contact}) from GitHub issue #{issue}: "
+        f"<!-- Generated for {name} from GitHub issue #{issue}: "
         f"https://github.com/OLYMARKES/high-performance-leads/issues/{issue} -->\n"
     )
     return source_comment + html
@@ -135,8 +134,7 @@ def build_index(entries: list[dict[str, str]]) -> str:
           f"""
           <a class="card" href="{entry['filename']}">
             <span class="card-name">{entry['name']}</span>
-            <span class="card-meta">{entry['contact']}</span>
-            <span class="card-meta">issue #{entry['issue']}</span>
+            <span class="card-meta">персональный трекер</span>
           </a>"""
       )
 
@@ -297,13 +295,16 @@ def build_index(entries: list[dict[str, str]]) -> str:
 def build_links_text(entries: list[dict[str, str]]) -> str:
     lines = ["High Performance trackers", ""]
     for entry in entries:
-        lines.append(f"{entry['name']} ({entry['contact']}): {PUBLIC_BASE_URL}/{entry['filename']}")
+        lines.append(f"{entry['name']}: {PUBLIC_BASE_URL}/{entry['filename']}")
     return "\n".join(lines) + "\n"
 
 
 def main() -> None:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    for old_file in OUTPUT_DIR.glob("tracker_*_april_2026_v1.html"):
+        old_file.unlink()
 
     entries = []
     used_slugs = set()
