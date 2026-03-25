@@ -11,6 +11,7 @@ PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2
 
 
 PARTICIPANTS = [
+    {"name": "Лера", "contact": "@lerakurepina", "issue": 26},
     {"name": "Аня", "contact": "@beregukukuhu", "issue": 25},
     {"name": "Viktoria", "contact": "@vpasko", "issue": 23},
     {"name": "Вера", "contact": "@verushkavera", "issue": 22},
@@ -19,7 +20,6 @@ PARTICIPANTS = [
     {"name": "Надежда", "contact": "@moroznb", "issue": 18},
     {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17},
     {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16},
-    {"name": "Саша", "contact": "@s_dorodenko", "issue": 15},
     {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14},
     {"name": "Жанар", "contact": "@zhantik87", "issue": 13},
     {"name": "Анна", "contact": "@Jayms17", "issue": 12},

@@ -1,5 +1,12 @@
-High Performance trackers
+High Performance, я собрала персональные трекеры на 1–7 апреля.
 
+Что это:
+это ваш индивидуальный 7-дневный day tracker с базовыми ритуалами на неделю. Внутри уже есть кликабельные галочки для медитации, тренировки, чтения, плана дня, джорналинга, хардстопа работы в 19:00, отказа от экрана после 20:00 и сна вовремя. Плюс можно вписывать свои задачи. Все отметки сохраняются прямо в браузере.
+
+Общий список:
+https://olymarkes.github.io/high-performance/trackers_april_2026/
+
+Личные ссылки:
 Лера: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_lera_april_2026_v1.html
 Аня: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_anya_april_2026_v1.html
 Viktoria: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_viktoria_april_2026_v1.html
