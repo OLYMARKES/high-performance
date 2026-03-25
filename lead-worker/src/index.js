@@ -3,6 +3,11 @@ const FIELD_LIMITS = Object.freeze({
   contact: 120,
   email: 160,
   about: 1200,
+  participantName: 80,
+  participantSlug: 120,
+  loadLevel: 80,
+  courseChoice: 240,
+  profileNotes: 4000,
   pageUrl: 500,
   source: 80
 });
@@ -83,18 +88,26 @@ const ensureAllowedOrigin = (request, env) => {
   return requestOrigin === env.ALLOWED_ORIGIN;
 };
 
-const buildIssueBody = (lead, request) => {
+const buildSubmissionContext = (submission, request) => {
   const requestId = crypto.randomUUID();
   const forwardedFor = request.headers.get('CF-Connecting-IP') || '';
   const userAgent = request.headers.get('User-Agent') || '';
-  const metadata = {
+
+  return {
     requestId,
-    source: lead.source || 'high-performance-site',
-    pageUrl: lead.pageUrl || '',
-    submittedAt: lead.submittedAt || new Date().toISOString(),
-    ip: forwardedFor,
-    userAgent
+    metadata: {
+      requestId,
+      source: submission.source || 'high-performance-site',
+      pageUrl: submission.pageUrl || '',
+      submittedAt: submission.submittedAt || new Date().toISOString(),
+      ip: forwardedFor,
+      userAgent
+    }
   };
+};
+
+const buildLeadIssuePayload = (lead, request) => {
+  const { requestId, metadata } = buildSubmissionContext(lead, request);
   const leadRecord = {
     version: 1,
     kind: 'high-performance-lead',
@@ -109,29 +122,87 @@ const buildIssueBody = (lead, request) => {
   };
   const encodedLeadRecord = encodeBase64(JSON.stringify(leadRecord));
 
-  return [
-    '<!-- lead-record -->',
-    `<!-- ${JSON.stringify(metadata)} -->`,
-    `<!-- lead-data:v1:${encodedLeadRecord} -->`,
-    '# New Lead',
-    '',
-    '## Contact',
-    `- Name: ${escapeMd(lead.name)}`,
-    `- Contact: ${escapeMd(lead.contact)}`,
-    `- Email: ${escapeMd(lead.email || '-')}`,
-    '',
-    '## Motivation',
-    quoteMd(lead.about),
-    '',
-    '## Metadata',
-    `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
-    `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
-    `- Source: ${escapeMd(metadata.source)}`,
-    `- Request ID: ${requestId}`
-  ].join('\n');
+  return {
+    title: `[lead] ${lead.name} - ${metadata.submittedAt.slice(0, 10)}`,
+    body: [
+      '<!-- lead-record -->',
+      `<!-- ${JSON.stringify(metadata)} -->`,
+      `<!-- lead-data:v1:${encodedLeadRecord} -->`,
+      '# New Lead',
+      '',
+      '## Contact',
+      `- Name: ${escapeMd(lead.name)}`,
+      `- Contact: ${escapeMd(lead.contact)}`,
+      `- Email: ${escapeMd(lead.email || '-')}`,
+      '',
+      '## Motivation',
+      quoteMd(lead.about),
+      '',
+      '## Metadata',
+      `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
+      `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
+      `- Source: ${escapeMd(metadata.source)}`,
+      `- Request ID: ${requestId}`
+    ].join('\n')
+  };
 };
 
-const createGitHubIssue = async (lead, request, env) => {
+const buildParticipantProfileIssuePayload = (submission, request) => {
+  const { requestId, metadata } = buildSubmissionContext(submission, request);
+  const profileRecord = {
+    version: 1,
+    kind: 'high-performance-participant-profile',
+    participantName: submission.participantName,
+    participantSlug: submission.participantSlug,
+    loadLevel: submission.loadLevel,
+    simplePath: submission.simplePath,
+    courseChoice: submission.courseChoice,
+    profileNotes: submission.profileNotes,
+    source: metadata.source,
+    pageUrl: metadata.pageUrl,
+    submittedAt: metadata.submittedAt,
+    requestId
+  };
+  const encodedProfileRecord = encodeBase64(JSON.stringify(profileRecord));
+  const notesBlock = submission.profileNotes ? quoteMd(submission.profileNotes) : '> Без подробностей';
+
+  return {
+    // Preserve the [lead] prefix so existing OpenClaw watchers still notice new submissions.
+    title: `[lead] Participant Profile - ${submission.participantName} - ${metadata.submittedAt.slice(0, 10)}`,
+    body: [
+      '<!-- lead-record -->',
+      `<!-- ${JSON.stringify(metadata)} -->`,
+      `<!-- lead-data:v1:${encodedProfileRecord} -->`,
+      '# Participant Profile',
+      '',
+      '## Participant',
+      `- Name: ${escapeMd(submission.participantName)}`,
+      `- Load level: ${escapeMd(submission.loadLevel || '-')}`,
+      `- Simple path: ${submission.simplePath ? 'yes' : 'no'}`,
+      `- Parallel course: ${escapeMd(submission.courseChoice || '-')}`,
+      '',
+      '## Notes',
+      notesBlock,
+      '',
+      '## Metadata',
+      `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
+      `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
+      `- Source: ${escapeMd(metadata.source)}`,
+      `- Participant slug: ${escapeMd(submission.participantSlug || '-')}`,
+      `- Request ID: ${requestId}`
+    ].join('\n')
+  };
+};
+
+const buildIssuePayload = (submission, request) => {
+  if (submission.kind === 'participant-profile') {
+    return buildParticipantProfileIssuePayload(submission, request);
+  }
+
+  return buildLeadIssuePayload(submission, request);
+};
+
+const createGitHubIssue = async (submission, request, env) => {
   const owner = normalize(env.GITHUB_OWNER);
   const repo = normalize(env.GITHUB_REPO);
   const token = normalize(env.GITHUB_TOKEN);
@@ -140,9 +211,7 @@ const createGitHubIssue = async (lead, request, env) => {
     throw new Error('missing_github_config');
   }
 
-  const submittedDate = new Date(lead.submittedAt || Date.now()).toISOString().slice(0, 10);
-  const title = `[lead] ${lead.name} - ${submittedDate}`;
-  const body = buildIssueBody(lead, request);
+  const { title, body } = buildIssuePayload(submission, request);
   const labels = normalize(env.ISSUE_LABELS)
     .split(',')
     .map((value) => value.trim())
@@ -171,26 +240,70 @@ const createGitHubIssue = async (lead, request, env) => {
   return response.json();
 };
 
-const sanitizeLead = (payload) => ({
-  name: truncate(normalize(payload.name), FIELD_LIMITS.name),
-  contact: truncate(normalize(payload.contact || payload.telegram), FIELD_LIMITS.contact),
-  email: truncate(normalize(payload.email), FIELD_LIMITS.email),
-  about: truncate(normalize(payload.about, { multiline: true }), FIELD_LIMITS.about),
-  pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
-  submittedAt: normalize(payload.submittedAt),
-  source: truncate(normalize(payload.source), FIELD_LIMITS.source)
-});
+const sanitizeSubmission = (payload) => {
+  const kind = normalize(payload.kind);
 
-const validateLead = (lead) => {
-  if (!lead.name || !lead.contact || !lead.about) {
+  if (kind === 'participant-profile') {
+    return {
+      kind: 'participant-profile',
+      participantName: truncate(normalize(payload.participantName || payload.name), FIELD_LIMITS.participantName),
+      participantSlug: truncate(normalize(payload.participantSlug), FIELD_LIMITS.participantSlug),
+      loadLevel: truncate(normalize(payload.loadLevel), FIELD_LIMITS.loadLevel),
+      simplePath: Boolean(payload.simplePath),
+      courseChoice: truncate(normalize(payload.courseChoice), FIELD_LIMITS.courseChoice),
+      profileNotes: truncate(normalize(payload.profileNotes, { multiline: true }), FIELD_LIMITS.profileNotes),
+      pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
+      submittedAt: normalize(payload.submittedAt),
+      source: truncate(normalize(payload.source), FIELD_LIMITS.source)
+    };
+  }
+
+  return {
+    kind: 'lead',
+    name: truncate(normalize(payload.name), FIELD_LIMITS.name),
+    contact: truncate(normalize(payload.contact || payload.telegram), FIELD_LIMITS.contact),
+    email: truncate(normalize(payload.email), FIELD_LIMITS.email),
+    about: truncate(normalize(payload.about, { multiline: true }), FIELD_LIMITS.about),
+    pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
+    submittedAt: normalize(payload.submittedAt),
+    source: truncate(normalize(payload.source), FIELD_LIMITS.source)
+  };
+};
+
+const validateSubmission = (submission) => {
+  if (submission.kind === 'participant-profile') {
+    if (!submission.participantName) {
+      return 'missing_required_fields';
+    }
+
+    if (!submission.loadLevel && !submission.simplePath && !submission.courseChoice && !submission.profileNotes) {
+      return 'missing_required_fields';
+    }
+
+    if (
+      SUSPICIOUS_CONTENT_RE.test(
+        `${submission.participantName}\n${submission.loadLevel}\n${submission.courseChoice}\n${submission.profileNotes}`
+      )
+    ) {
+      return 'suspicious_content';
+    }
+
+    return null;
+  }
+
+  if (!submission.name || !submission.contact || !submission.about) {
     return 'missing_required_fields';
   }
 
-  if (lead.email && !EMAIL_RE.test(lead.email)) {
+  if (submission.email && !EMAIL_RE.test(submission.email)) {
     return 'invalid_email';
   }
 
-  if (SUSPICIOUS_CONTENT_RE.test(`${lead.name}\n${lead.contact}\n${lead.email}\n${lead.about}`)) {
+  if (
+    SUSPICIOUS_CONTENT_RE.test(
+      `${submission.name}\n${submission.contact}\n${submission.email}\n${submission.about}`
+    )
+  ) {
     return 'suspicious_content';
   }
 
@@ -210,7 +323,8 @@ export default {
         {
           ok: true,
           service: 'high-performance-lead-worker',
-          githubConfigured: Boolean(env.GITHUB_OWNER && env.GITHUB_REPO && env.GITHUB_TOKEN)
+          githubConfigured: Boolean(env.GITHUB_OWNER && env.GITHUB_REPO && env.GITHUB_TOKEN),
+          supportedKinds: ['lead', 'participant-profile']
         },
         200,
         origin
@@ -233,15 +347,15 @@ export default {
       return jsonResponse({ ok: false, error: 'invalid_json' }, 400, origin);
     }
 
-    const lead = sanitizeLead(payload);
-    const validationError = validateLead(lead);
+    const submission = sanitizeSubmission(payload);
+    const validationError = validateSubmission(submission);
 
     if (validationError) {
       return jsonResponse({ ok: false, error: validationError }, 400, origin);
     }
 
     try {
-      const issue = await createGitHubIssue(lead, request, env);
+      const issue = await createGitHubIssue(submission, request, env);
       return jsonResponse(
         {
           ok: true,
