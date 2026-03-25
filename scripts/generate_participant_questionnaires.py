@@ -13,26 +13,28 @@ PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 
 
 PARTICIPANTS = [
-    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual"},
-    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual"},
-    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual"},
-    {"name": "Лера", "contact": "@lerakurepina", "issue": 26},
-    {"name": "Аня", "contact": "@beregukukuhu", "issue": 25},
-    {"name": "Viktoria", "contact": "@vpasko", "issue": 23},
-    {"name": "Вера", "contact": "@verushkavera", "issue": 22},
-    {"name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21},
-    {"name": "Olesya Dauptain", "contact": "@aramba_annecy", "issue": 20},
-    {"name": "Надежда", "contact": "@moroznb", "issue": 18},
-    {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17},
-    {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16},
-    {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14},
-    {"name": "Жанар", "contact": "@zhantik87", "issue": 13},
-    {"name": "Анна", "contact": "@Jayms17", "issue": 12},
-    {"name": "Вика", "contact": "@vikaevdokimova", "issue": 11},
-    {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10},
-    {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8},
-    {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6},
+    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual", "token": "q7k2m9b4v8x3"},
+    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual", "token": "n4r8t2y6p1c5"},
+    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual", "token": "h8m3q5z7k2w9"},
+    {"name": "Лера", "contact": "@lerakurepina", "issue": 26, "token": "d6v9n3k7t2m8"},
+    {"name": "Аня", "contact": "@beregukukuhu", "issue": 25, "token": "a7c2r9m4x6p3"},
+    {"name": "Viktoria", "contact": "@vpasko", "issue": 23, "token": "p3t8m6k1z9w4"},
+    {"name": "Вера", "contact": "@verushkavera", "issue": 22, "token": "u5n2c8r4x7p1"},
+    {"name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3"},
+    {"name": "Olesya Dauptain", "contact": "@aramba_annecy", "issue": 20, "token": "y7p3n8k5c2m6"},
+    {"name": "Надежда", "contact": "@moroznb", "issue": 18, "token": "b9t4m7q2x5k8"},
+    {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17, "token": "r6k2v9p4m8c1"},
+    {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16, "token": "s8m3x7q1k5v9"},
+    {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14, "token": "e4p7t2m9c6k3"},
+    {"name": "Жанар", "contact": "@zhantik87", "issue": 13, "token": "w9k5m2r8x3p6"},
+    {"name": "Анна", "contact": "@Jayms17", "issue": 12, "token": "f2v8m4q7k1t5"},
+    {"name": "Вика", "contact": "@vikaevdokimova", "issue": 11, "token": "g7m1p6x9c3k4"},
+    {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10, "token": "l5q9t3m7v2k8"},
+    {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
+    {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
 ]
+
+TEAM_PAGE_TOKEN = "team-vault-7m4k9p2x6c8q"
 
 
 TRANSLIT = {
@@ -89,6 +91,11 @@ def load_template() -> str:
 def add_personalization(template: str, name: str) -> str:
     html = template
     html = html.replace("<title>HIGH PERFORMANCE — Анкета</title>", f"<title>HIGH PERFORMANCE — Анкета для {name}</title>", 1)
+    html = html.replace(
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="robots" content="noindex, nofollow, noarchive">',
+        1,
+    )
     html = html.replace("<div class=\"hero-greeting\">Привет, <em>{Имя}</em></div>", f"<div class=\"hero-greeting\">Привет, <em>{name}</em></div>", 1)
     html = html.replace(
         'select, textarea, input[type="text"] {',
@@ -640,7 +647,80 @@ def build_participant_page(template: str, participant: dict[str, str]) -> str:
     return source_comment + html
 
 
-def build_index_page(entries: list[dict[str, str]]) -> str:
+def build_index_page() -> str:
+    return """<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>HIGH PERFORMANCE — Private Questionnaires</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --accent: #c9a96e;
+      --radius: 14px;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      width: min(680px, 100%);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(36px, 7vw, 64px);
+      font-weight: 400;
+      line-height: 1.06;
+      margin-bottom: 18px;
+    }
+    p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="label">High Performance</div>
+    <h1>Private <em>Questionnaires</em></h1>
+    <p>Эта директория не публикует список анкет. Открыть анкету можно только по персональной или командной ссылке.</p>
+  </div>
+</body>
+</html>
+"""
+
+
+def build_team_page(entries: list[dict[str, str]]) -> str:
     cards_html = "\n".join(
         f"""
           <a class="card" href="{entry['filename']}">
@@ -655,7 +735,8 @@ def build_index_page(entries: list[dict[str, str]]) -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HIGH PERFORMANCE — Анкеты участниц</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>HIGH PERFORMANCE — Team Access</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -765,8 +846,8 @@ def build_index_page(entries: list[dict[str, str]]) -> str:
   <div class="container">
     <div class="hero">
       <div class="hero-label">High Performance</div>
-      <h1>Персональные <em>анкеты</em></h1>
-      <p class="hero-sub">Это и есть рабочая админ-страница команды: отсюда можно открыть анкету любой участницы и увидеть её актуальную сохранённую версию прямо внутри самой формы.</p>
+      <h1>Team <em>Access</em></h1>
+      <p class="hero-sub">Командная страница со всеми персональными анкетами. Эту ссылку не пересылаем участницам.</p>
     </div>
 
     <div class="panel">
@@ -1273,22 +1354,20 @@ def build_admin_page() -> str:
 """
 
 
-def build_links_text(entries: list[dict[str, str]]) -> str:
-    lines = ["High Performance participant questionnaires", ""]
-    for entry in entries:
-        lines.append(f"{entry['name']}: {PUBLIC_BASE_URL}/{entry['filename']}")
-    return "\n".join(lines) + "\n"
-
-
 def main() -> None:
     template = load_template()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for old_file in OUTPUT_DIR.glob("participant_*_april_2026_v1.html"):
         old_file.unlink()
-    stale_admin = OUTPUT_DIR / "admin.html"
-    if stale_admin.exists():
-        stale_admin.unlink()
+    for old_file in OUTPUT_DIR.glob("q_*.html"):
+        old_file.unlink()
+    for stale_name in ("admin.html", "links.txt", "telegram_message.txt"):
+        stale_file = OUTPUT_DIR / stale_name
+        if stale_file.exists():
+            stale_file.unlink()
+    for old_team_page in OUTPUT_DIR.glob("team-*.html"):
+        old_team_page.unlink()
 
     entries = []
     used_slugs = set()
@@ -1300,13 +1379,13 @@ def main() -> None:
         used_slugs.add(slug)
 
         participant_with_slug = {**participant, "slug": slug}
-        filename = f"participant_{slug}_april_2026_v1.html"
+        filename = f"q_{participant['token']}.html"
         page_html = build_participant_page(template, participant_with_slug)
         (OUTPUT_DIR / filename).write_text(page_html, encoding="utf-8")
         entries.append({"name": participant["name"], "filename": filename})
 
-    (OUTPUT_DIR / "index.html").write_text(build_index_page(entries), encoding="utf-8")
-    (OUTPUT_DIR / "links.txt").write_text(build_links_text(entries), encoding="utf-8")
+    (OUTPUT_DIR / "index.html").write_text(build_index_page(), encoding="utf-8")
+    (OUTPUT_DIR / f"{TEAM_PAGE_TOKEN}.html").write_text(build_team_page(entries), encoding="utf-8")
     print(f"Generated {len(entries)} participant questionnaires in {OUTPUT_DIR}")
 
 
