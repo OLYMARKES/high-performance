@@ -102,7 +102,7 @@ def add_personalization(template: str, name: str) -> str:
     )
     html = html.replace(
         ".success-overlay p {\n    color: var(--text-secondary);\n    font-size: 16px;\n    font-weight: 300;\n  }",
-        """.success-overlay p {\n    color: var(--text-secondary);\n    font-size: 16px;\n    font-weight: 300;\n    max-width: 520px;\n  }\n\n  .success-actions {\n    display: flex;\n    gap: 12px;\n    flex-wrap: wrap;\n    justify-content: center;\n    margin-top: 8px;\n  }\n\n  .success-secondary-btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 10px;\n    background: transparent;\n    color: var(--text);\n    border: 1px solid var(--border-hover);\n    border-radius: 60px;\n    padding: 18px 28px;\n    font-family: 'Inter', sans-serif;\n    font-size: 12px;\n    font-weight: 600;\n    letter-spacing: 1.8px;\n    text-transform: uppercase;\n    cursor: pointer;\n    transition: all 0.3s ease;\n  }\n\n  .success-secondary-btn:hover {\n    border-color: var(--accent);\n    color: var(--accent);\n    background: var(--accent-glow);\n  }""",
+        """.success-overlay p {\n    color: var(--text-secondary);\n    font-size: 16px;\n    font-weight: 300;\n    max-width: 520px;\n  }\n\n  .success-actions {\n    display: flex;\n    gap: 12px;\n    flex-wrap: wrap;\n    justify-content: center;\n    margin-top: 8px;\n  }\n\n  .save-note {\n    margin-top: 16px;\n    color: var(--text-muted);\n    font-size: 13px;\n    font-weight: 300;\n    line-height: 1.7;\n  }\n\n  .success-secondary-btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 10px;\n    background: transparent;\n    color: var(--text);\n    border: 1px solid var(--border-hover);\n    border-radius: 60px;\n    padding: 18px 28px;\n    font-family: 'Inter', sans-serif;\n    font-size: 12px;\n    font-weight: 600;\n    letter-spacing: 1.8px;\n    text-transform: uppercase;\n    cursor: pointer;\n    transition: all 0.3s ease;\n  }\n\n  .success-secondary-btn:hover {\n    border-color: var(--accent);\n    color: var(--accent);\n    background: var(--accent-glow);\n  }""",
         1,
     )
     html = html.replace(
@@ -138,7 +138,12 @@ def add_personalization(template: str, name: str) -> str:
     )
     html = html.replace(
         '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p>Я всё получила и скоро вернусь с рекомендациями.</p>\n</div>',
-        '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями. Если захочется дополнить ответ, это можно сделать сразу ниже.</p>\n  <div class="success-actions">\n    <button class="submit-btn" id="submit-more-details" type="button">Дополнить ответы</button>\n    <button class="success-secondary-btn" id="success-close" type="button">Оставить как есть</button>\n  </div>\n</div>',
+        '<div class="success-overlay" id="success">\n  <h2>Сохранено</h2>\n  <p id="success-message">Анкета сохранена. По этой же ссылке можно в любой момент вернуться и продолжить редактирование.</p>\n  <div class="success-actions">\n    <button class="submit-btn" id="continue-editing" type="button">Продолжить редактировать</button>\n    <button class="success-secondary-btn" id="success-close" type="button">Закрыть</button>\n  </div>\n</div>',
+        1,
+    )
+    html = html.replace(
+        '<button class="submit-btn" onclick="handleSubmit()">\n      Отправить <span>→</span>\n    </button>',
+        '<button class="submit-btn" id="save-questionnaire" onclick="handleSubmit()">\n      Сохранить и редактировать <span>→</span>\n    </button>\n    <div class="save-note" id="save-note">По этой ссылке всегда будет открываться актуальная сохранённая версия анкеты.</div>',
         1,
     )
     return html
@@ -150,7 +155,9 @@ def build_runtime_script(name: str, slug: str) -> str:
   const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
   const PARTICIPANT_NAME = {quote_js(name)};
   const PARTICIPANT_SLUG = {quote_js(slug)};
+  const LOAD_ENDPOINT = `${{FORM_ENDPOINT}}/participant-questionnaire?slug=${{encodeURIComponent(PARTICIPANT_SLUG)}}`;
   const DRAFT_KEY = `hp-participant-questionnaire-${{PARTICIPANT_SLUG}}-v1`;
+  const LAST_SAVED_KEY = `${{DRAFT_KEY}}:last-saved-at`;
   const CONTROL_CHARS_RE = /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/g;
   const BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g;
 
@@ -180,6 +187,38 @@ def build_runtime_script(name: str, slug: str) -> str:
     }});
   }}
 
+  function formatDate(value) {{
+    if (!value) {{
+      return '';
+    }}
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {{
+      return '';
+    }}
+
+    return date.toLocaleString('ru-RU', {{
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }});
+  }}
+
+  function autoResizeTextarea(textarea) {{
+    if (!textarea) {{
+      return;
+    }}
+
+    textarea.style.height = 'auto';
+    textarea.style.height = `${{Math.max(textarea.scrollHeight, 80)}}px`;
+  }}
+
+  function autoResizeAllTextareas() {{
+    document.querySelectorAll('textarea').forEach((textarea) => autoResizeTextarea(textarea));
+  }}
+
   function textFromBlock(title) {{
     const block = getVipBlockByTitle(title);
     const textarea = block?.querySelector('textarea');
@@ -206,17 +245,160 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}).filter(Boolean);
   }}
 
-  function collectDraftState() {{
-    const allFields = [...document.querySelectorAll('select, textarea, input')];
-    return allFields.map((field) => {{
-      if (field.type === 'checkbox' || field.type === 'radio') {{
-        return Boolean(field.checked);
-      }}
-      return field.value || '';
+  function setTextInBlock(title, value) {{
+    const block = getVipBlockByTitle(title);
+    const textarea = block?.querySelector('textarea');
+    if (textarea) {{
+      textarea.value = value || '';
+      autoResizeTextarea(textarea);
+    }}
+  }}
+
+  function setInputInBlock(title, placeholderStartsWith, value) {{
+    const block = getVipBlockByTitle(title);
+    const inputs = [...(block?.querySelectorAll('input') || [])];
+    const target = inputs.find((input) => (input.getAttribute('placeholder') || '').startsWith(placeholderStartsWith));
+    if (target) {{
+      target.value = value || '';
+    }}
+  }}
+
+  function setCheckedLabelsInBlock(title, labels) {{
+    const normalized = new Set((labels || []).map((label) => normalizeValue(label)));
+    const block = getVipBlockByTitle(title);
+    if (!block) {{
+      return;
+    }}
+
+    [...block.querySelectorAll('input[type="checkbox"]')].forEach((input) => {{
+      const label = input.closest('label');
+      const textNode = label?.querySelector('.checkbox-label');
+      const value = normalizeValue(textNode?.textContent || '');
+      input.checked = normalized.has(value);
     }});
   }}
 
-  function restoreDraftState(values) {{
+  function applySavedRecord(record) {{
+    const responseData = record?.responseData || {{}};
+    const vip = responseData.vip || {{}};
+    const participantEmail = record?.email || responseData.participantEmail || '';
+    const selectedPath = record?.selectedPath || responseData.selectedPath || '';
+    const courseChoice = record?.courseChoice || responseData.courseChoice || '';
+    const personalContext = record?.personalContext || responseData.personalContext || '';
+
+    const emailField = document.getElementById('participant-email');
+    if (emailField) {{
+      emailField.value = participantEmail;
+    }}
+
+    const visionField = document.getElementById('vision-future');
+    if (visionField) {{
+      visionField.value = responseData.visionFuture || '';
+      autoResizeTextarea(visionField);
+    }}
+
+    const courseSelect = document.getElementById('course-select');
+    if (courseSelect) {{
+      courseSelect.value = courseChoice;
+    }}
+
+    const personalContextField = document.getElementById('personal-context');
+    if (personalContextField) {{
+      personalContextField.value = personalContext;
+      autoResizeTextarea(personalContextField);
+    }}
+
+    setTextInBlock('Я здесь, чтобы...', vip.purpose);
+    setInputInBlock('Возраст / Рост / Вес', 'Возраст', vip.age);
+    setInputInBlock('Возраст / Рост / Вес', 'Рост', vip.height);
+    setInputInBlock('Возраст / Рост / Вес', 'Вес', vip.weight);
+    setTextInBlock('Здоровье и ограничения', vip.healthRestrictions);
+    setInputInBlock('Диастаз', 'Например', vip.diastasis);
+    setCheckedLabelsInBlock('Отметь, если актуально', vip.pelvicFloorFlags);
+    setCheckedLabelsInBlock('Отношение к питанию', vip.nutritionFlags);
+    setTextInBlock('Твой обычный день', vip.typicalDay);
+    setTextInBlock('Питание и привычки', vip.foodHabits);
+    setTextInBlock('Препараты', vip.medications);
+    setTextInBlock('Сообщение для куратора', vip.curatorMessage);
+
+    const childrenValue = normalizeValue(vip.childrenStatus || '');
+    if (childrenValue) {{
+      const radio = document.querySelector(`input[name="children"][value="${{childrenValue}}"]`);
+      if (radio) {{
+        radio.checked = true;
+      }}
+    }}
+
+    const childrenDetail = document.querySelector('#children-detail input');
+    if (childrenDetail) {{
+      childrenDetail.value = vip.childrenDetail || '';
+    }}
+
+    const pregnantDetail = document.querySelector('#pregnant-detail input');
+    if (pregnantDetail) {{
+      pregnantDetail.value = vip.pregnantDetail || '';
+    }}
+
+    syncConditionalState(selectedPath);
+  }}
+
+  function getSelectedPath() {{
+    if (document.getElementById('path1')?.classList.contains('active')) {{
+      return 'short';
+    }}
+    if (document.getElementById('path2')?.classList.contains('active')) {{
+      return 'personal';
+    }}
+    return '';
+  }}
+
+  function syncConditionalState(explicitPath = '') {{
+    const inferredPath =
+      normalizeValue(document.getElementById('course-select')?.value || '') ? 'short' :
+      normalizeValue(document.getElementById('personal-context')?.value || '', true) ? 'personal' :
+      getSelectedPath();
+    const selectedPath = explicitPath || inferredPath;
+    const path1Active = selectedPath === 'short';
+    const path2Active = selectedPath === 'personal';
+    const path1 = document.getElementById('path1');
+    const path2 = document.getElementById('path2');
+    const path1Fields = document.getElementById('path1-fields');
+    const path2Fields = document.getElementById('path2-fields');
+
+    path1?.classList.toggle('active', path1Active);
+    path2?.classList.toggle('active', path2Active);
+    path1Fields?.classList.toggle('visible', path1Active);
+    path2Fields?.classList.toggle('visible', path2Active);
+
+    const selectedChildren = document.querySelector('input[name="children"]:checked');
+    const childrenDetail = document.getElementById('children-detail');
+    const pregnantDetail = document.getElementById('pregnant-detail');
+    if (childrenDetail) {{
+      childrenDetail.style.display = selectedChildren?.value === 'yes' ? 'block' : 'none';
+    }}
+    if (pregnantDetail) {{
+      pregnantDetail.style.display = selectedChildren?.value === 'pregnant' ? 'block' : 'none';
+    }}
+
+    autoResizeAllTextareas();
+  }}
+
+  function collectDraftState() {{
+    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    return {{
+      selectedPath: getSelectedPath(),
+      fields: allFields.map((field) => {{
+        if (field.type === 'checkbox' || field.type === 'radio') {{
+          return Boolean(field.checked);
+        }}
+        return field.value || '';
+      }})
+    }};
+  }}
+
+  function restoreDraftState(state) {{
+    const values = Array.isArray(state) ? state : state?.fields || [];
+    const selectedPath = !Array.isArray(state) ? normalizeValue(state?.selectedPath || '') : '';
     const allFields = [...document.querySelectorAll('select, textarea, input')];
     allFields.forEach((field, index) => {{
       const saved = values[index];
@@ -231,37 +413,75 @@ def build_runtime_script(name: str, slug: str) -> str:
       }}
     }});
 
-    if (document.getElementById('path1-fields').querySelector('select').value) {{
-      document.getElementById('path1').classList.add('active');
-      document.getElementById('path1-fields').classList.add('visible');
-    }}
-
-    if (normalizeValue(document.getElementById('personal-context').value, true)) {{
-      document.getElementById('path2').classList.add('active');
-      document.getElementById('path2-fields').classList.add('visible');
-    }}
-
-    const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
-    if (selectedChildren) {{
-      document.getElementById('children-detail').style.display = selectedChildren.value === 'yes' ? 'block' : 'none';
-      document.getElementById('pregnant-detail').style.display = selectedChildren.value === 'pregnant' ? 'block' : 'none';
-    }}
+    syncConditionalState(selectedPath);
   }}
 
   function saveDraft() {{
     localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
   }}
 
+  function setSaveNote(message) {{
+    const saveNote = document.getElementById('save-note');
+    if (saveNote) {{
+      saveNote.textContent = message;
+    }}
+  }}
+
+  async function loadSavedVersion() {{
+    setSaveNote('Загружаю сохранённую версию анкеты...');
+
+    try {{
+      const response = await fetch(LOAD_ENDPOINT);
+      if (!response.ok) {{
+        throw new Error('load_failed');
+      }}
+
+      const result = await response.json();
+      if (!result.ok || !result.found || !result.record) {{
+        setSaveNote('Пока нет сохранённой версии. Можно заполнить анкету и сохранить её по этой же ссылке.');
+        return false;
+      }}
+
+      if (result.record.draftState?.fields?.length || Array.isArray(result.record.draftState)) {{
+        restoreDraftState(result.record.draftState);
+      }} else {{
+        applySavedRecord(result.record);
+      }}
+      const savedAt = formatDate(result.record.submittedAt || result.updatedAt);
+      setSaveNote(savedAt ? `Открыта сохранённая версия от ${{savedAt}}.` : 'Открыта последняя сохранённая версия анкеты.');
+      localStorage.setItem(LAST_SAVED_KEY, result.record.submittedAt || result.updatedAt || '');
+      return true;
+    }} catch (error) {{
+      setSaveNote('Не удалось загрузить сохранённую версию. Можно продолжить с локальным черновиком и сохранить позже.');
+      return false;
+    }}
+  }}
+
+  function restoreLocalDraft() {{
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (!savedDraft) {{
+      return false;
+    }}
+
+    try {{
+      restoreDraftState(JSON.parse(savedDraft));
+      setSaveNote('Восстановлен локальный черновик из этого браузера.');
+      return true;
+    }} catch (error) {{
+      localStorage.removeItem(DRAFT_KEY);
+      return false;
+    }}
+  }}
+
   function buildPayload() {{
-    const path1Active = document.getElementById('path1').classList.contains('active');
-    const path2Active = document.getElementById('path2').classList.contains('active');
+    const selectedPath = getSelectedPath();
     const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
     const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
 
     const responseData = {{
       participantEmail,
       visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
-      selectedPath: path1Active ? 'short' : path2Active ? 'personal' : '',
+      selectedPath,
       courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
       personalContext: normalizeValue(document.getElementById('personal-context')?.value || '', true),
       vip: {{
@@ -288,6 +508,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       participantName: PARTICIPANT_NAME,
       participantSlug: PARTICIPANT_SLUG,
       email: participantEmail,
+      draftState: collectDraftState(),
       selectedPath: responseData.selectedPath,
       courseChoice: responseData.courseChoice,
       personalContext: responseData.personalContext,
@@ -312,7 +533,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     const payload = buildPayload();
     const successOverlay = document.getElementById('success');
     const successMessage = document.getElementById('success-message');
-    const submitButton = document.querySelector('.submit-btn');
+    const submitButton = document.getElementById('save-questionnaire');
     const emailValue = payload.email || '';
 
     if (!emailValue) {{
@@ -332,6 +553,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       return;
     }}
 
+    setSaveNote('Сохраняю анкету...');
     submitButton.disabled = true;
     submitButton.style.opacity = '0.7';
 
@@ -348,44 +570,55 @@ def build_runtime_script(name: str, slug: str) -> str:
         throw new Error('request_failed');
       }}
 
-      localStorage.setItem(`${{DRAFT_KEY}}:last-submitted`, JSON.stringify(payload));
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
-      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями. Если хочешь, можешь сейчас дополнить анкету и отправить более подробную версию.';
+      const result = await response.json();
+      const savedAt = formatDate(payload.submittedAt);
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(payload.draftState));
+      localStorage.setItem(LAST_SAVED_KEY, payload.submittedAt);
+      successMessage.textContent =
+        result.mode === 'updated'
+          ? 'Анкета сохранена заново. По этой же ссылке всегда откроется её актуальная версия.'
+          : 'Анкета сохранена. По этой же ссылке можно в любой момент вернуться и продолжить редактирование.';
+      setSaveNote(savedAt ? `Сохранено ${{savedAt}}.` : 'Анкета сохранена.');
       successOverlay.classList.add('visible');
       window.scrollTo({{ top: 0, behavior: 'smooth' }});
     }} catch (error) {{
-      alert('Не удалось отправить анкету. Попробуй ещё раз чуть позже.');
+      setSaveNote('Не удалось сохранить анкету. Локальный черновик остался в браузере.');
+      alert('Не удалось сохранить анкету. Попробуй ещё раз чуть позже.');
     }} finally {{
       submitButton.disabled = false;
       submitButton.style.opacity = '1';
     }}
   }}
 
-  const savedDraft = localStorage.getItem(DRAFT_KEY);
-  if (savedDraft) {{
-    try {{
-      restoreDraftState(JSON.parse(savedDraft));
-    }} catch (error) {{
-      localStorage.removeItem(DRAFT_KEY);
-    }}
-  }}
-
   document.querySelectorAll('select, textarea, input').forEach((field) => {{
-    field.addEventListener('input', saveDraft);
-    field.addEventListener('change', saveDraft);
+    field.addEventListener('input', () => {{
+      if (field.tagName === 'TEXTAREA') {{
+        autoResizeTextarea(field);
+      }}
+      syncConditionalState();
+      saveDraft();
+    }});
+    field.addEventListener('change', () => {{
+      syncConditionalState();
+      saveDraft();
+    }});
   }});
 
-  document.getElementById('submit-more-details')?.addEventListener('click', () => {{
-    const successOverlay = document.getElementById('success');
-    saveDraft();
-    successOverlay.classList.remove('visible');
+  document.getElementById('continue-editing')?.addEventListener('click', () => {{
+    document.getElementById('success')?.classList.remove('visible');
     document.getElementById('personal-context')?.focus();
-    window.scrollTo({{ top: document.querySelector('.section')?.offsetTop || 0, behavior: 'smooth' }});
   }});
 
   document.getElementById('success-close')?.addEventListener('click', () => {{
     document.getElementById('success')?.classList.remove('visible');
   }});
+
+  (async () => {{
+    autoResizeAllTextareas();
+    await loadSavedVersion();
+    restoreLocalDraft();
+    syncConditionalState();
+  }})();
 </script>
 """
 
@@ -519,11 +752,6 @@ def build_index_page(entries: list[dict[str, str]]) -> str:
       font-size: 13px;
       margin-top: 8px;
     }}
-    .admin-note {{
-      margin-top: 24px;
-      color: #6e6e6e;
-      font-size: 13px;
-    }}
     @media (max-width: 900px) {{
       .grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
     }}
@@ -538,14 +766,13 @@ def build_index_page(entries: list[dict[str, str]]) -> str:
     <div class="hero">
       <div class="hero-label">High Performance</div>
       <h1>Персональные <em>анкеты</em></h1>
-      <p class="hero-sub">Отсюда можно открыть личную страницу каждой участницы. Админка с результатами вынесена отдельно.</p>
+      <p class="hero-sub">Это и есть рабочая админ-страница команды: отсюда можно открыть анкету любой участницы и увидеть её актуальную сохранённую версию прямо внутри самой формы.</p>
     </div>
 
     <div class="panel">
       <div class="grid">
 {cards_html}
       </div>
-      <div class="admin-note">Отдельная админка не привязана к этому публичному индексу и должна открываться только командой.</div>
     </div>
   </div>
 </body>
@@ -1059,6 +1286,9 @@ def main() -> None:
 
     for old_file in OUTPUT_DIR.glob("participant_*_april_2026_v1.html"):
         old_file.unlink()
+    stale_admin = OUTPUT_DIR / "admin.html"
+    if stale_admin.exists():
+        stale_admin.unlink()
 
     entries = []
     used_slugs = set()
@@ -1076,7 +1306,6 @@ def main() -> None:
         entries.append({"name": participant["name"], "filename": filename})
 
     (OUTPUT_DIR / "index.html").write_text(build_index_page(entries), encoding="utf-8")
-    (OUTPUT_DIR / "admin.html").write_text(build_admin_page(), encoding="utf-8")
     (OUTPUT_DIR / "links.txt").write_text(build_links_text(entries), encoding="utf-8")
     print(f"Generated {len(entries)} participant questionnaires in {OUTPUT_DIR}")
 

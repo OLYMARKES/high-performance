@@ -27,7 +27,7 @@ const jsonResponse = (body, status = 200, origin = '*') =>
     status,
     headers: {
       'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Content-Type': 'application/json; charset=utf-8'
     }
@@ -73,6 +73,12 @@ const encodeBase64 = (value) => {
   });
 
   return btoa(binary);
+};
+
+const decodeBase64 = (value) => {
+  const binary = atob(value);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 };
 
 const getAllowedOrigin = (request, env) => {
@@ -276,6 +282,7 @@ const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
     selectedPath: submission.selectedPath,
     courseChoice: submission.courseChoice,
     personalContext: submission.personalContext,
+    draftState: submission.draftState,
     responseData: submission.responseData,
     source: metadata.source,
     pageUrl: metadata.pageUrl,
@@ -329,7 +336,20 @@ const buildIssuePayload = (submission, request) => {
   return buildLeadIssuePayload(submission, request);
 };
 
-const createGitHubIssue = async (submission, request, env) => {
+const parseRecordFromIssueBody = (body) => {
+  const match = String(body || '').match(/<!-- lead-data:v1:([^>]+) -->/);
+  if (!match) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(decodeBase64(match[1]));
+  } catch {
+    return null;
+  }
+};
+
+const githubRequest = async (env, path, options = {}) => {
   const owner = normalize(env.GITHUB_OWNER);
   const repo = normalize(env.GITHUB_REPO);
   const token = normalize(env.GITHUB_TOKEN);
@@ -338,20 +358,58 @@ const createGitHubIssue = async (submission, request, env) => {
     throw new Error('missing_github_config');
   }
 
+  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}${path}`, {
+    ...options,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'high-performance-leads-worker',
+      ...(options.headers || {})
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`github_request_failed:${response.status}:${errorText}`);
+  }
+
+  return response;
+};
+
+const listGitHubIssues = async (env) => {
+  const response = await githubRequest(env, '/issues?state=all&per_page=100');
+  return response.json();
+};
+
+const findParticipantQuestionnaireIssue = async (participantSlug, env) => {
+  const slug = normalize(participantSlug);
+  if (!slug) {
+    return null;
+  }
+
+  const issues = await listGitHubIssues(env);
+  const matches = issues
+    .map((issue) => ({ issue, record: parseRecordFromIssueBody(issue.body) }))
+    .filter(({ record }) => record?.kind === 'high-performance-participant-questionnaire' && record.participantSlug === slug)
+    .sort((left, right) => {
+      const leftDate = left.record?.submittedAt || left.issue.updated_at || '';
+      const rightDate = right.record?.submittedAt || right.issue.updated_at || '';
+      return rightDate.localeCompare(leftDate);
+    });
+
+  return matches[0] || null;
+};
+
+const createGitHubIssue = async (submission, request, env) => {
   const { title, body } = buildIssuePayload(submission, request);
   const labels = normalize(env.ISSUE_LABELS)
     .split(',')
     .map((value) => value.trim())
     .filter(Boolean);
 
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
+  const response = await githubRequest(env, '/issues', {
     method: 'POST',
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'high-performance-leads-worker'
-    },
     body: JSON.stringify({
       title,
       body,
@@ -359,12 +417,31 @@ const createGitHubIssue = async (submission, request, env) => {
     })
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`github_issue_failed:${response.status}:${errorText}`);
-  }
+  return response.json();
+};
+
+const updateGitHubIssue = async (issueNumber, submission, request, env) => {
+  const { title, body } = buildIssuePayload(submission, request);
+  const response = await githubRequest(env, `/issues/${issueNumber}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      title,
+      body
+    })
+  });
 
   return response.json();
+};
+
+const upsertParticipantQuestionnaireIssue = async (submission, request, env) => {
+  const existing = await findParticipantQuestionnaireIssue(submission.participantSlug, env);
+  if (!existing) {
+    const issue = await createGitHubIssue(submission, request, env);
+    return { issue, mode: 'created' };
+  }
+
+  const issue = await updateGitHubIssue(existing.issue.number, submission, request, env);
+  return { issue, mode: 'updated' };
 };
 
 const sanitizeSubmission = (payload) => {
@@ -394,6 +471,7 @@ const sanitizeSubmission = (payload) => {
       selectedPath: truncate(normalize(payload.selectedPath), FIELD_LIMITS.selectedPath),
       courseChoice: truncate(normalize(payload.courseChoice), FIELD_LIMITS.courseChoice),
       personalContext: truncate(normalize(payload.personalContext, { multiline: true }), FIELD_LIMITS.personalContext),
+      draftState: sanitizeStructuredValue(payload.draftState || []),
       responseData: sanitizeStructuredValue(payload.responseData || {}),
       pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
       submittedAt: normalize(payload.submittedAt),
@@ -435,7 +513,7 @@ const validateSubmission = (submission) => {
   }
 
   if (submission.kind === 'participant-questionnaire') {
-    if (!submission.participantName || !submission.email) {
+    if (!submission.participantName || !submission.participantSlug || !submission.email) {
       return 'missing_required_fields';
     }
 
@@ -485,18 +563,61 @@ const validateSubmission = (submission) => {
 export default {
   async fetch(request, env) {
     const origin = getAllowedOrigin(request, env);
+    const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
       return jsonResponse({ ok: true }, 200, origin);
     }
 
     if (request.method === 'GET') {
+      if (url.pathname === '/participant-questionnaire') {
+        if (!ensureAllowedOrigin(request, env)) {
+          return jsonResponse({ ok: false, error: 'origin_not_allowed' }, 403, origin);
+        }
+
+        const participantSlug = normalize(url.searchParams.get('slug') || url.searchParams.get('participantSlug'));
+        if (!participantSlug) {
+          return jsonResponse({ ok: false, error: 'missing_participant_slug' }, 400, origin);
+        }
+
+        try {
+          const match = await findParticipantQuestionnaireIssue(participantSlug, env);
+          if (!match) {
+            return jsonResponse({ ok: true, found: false }, 200, origin);
+          }
+
+          return jsonResponse(
+            {
+              ok: true,
+              found: true,
+              record: match.record,
+              issueNumber: match.issue.number,
+              issueUrl: match.issue.html_url,
+              updatedAt: match.issue.updated_at
+            },
+            200,
+            origin
+          );
+        } catch (error) {
+          return jsonResponse(
+            {
+              ok: false,
+              error: 'github_read_failed',
+              detail: error instanceof Error ? error.message : 'unknown_error'
+            },
+            502,
+            origin
+          );
+        }
+      }
+
       return jsonResponse(
         {
           ok: true,
           service: 'high-performance-lead-worker',
           githubConfigured: Boolean(env.GITHUB_OWNER && env.GITHUB_REPO && env.GITHUB_TOKEN),
-          supportedKinds: ['lead', 'participant-profile', 'participant-questionnaire']
+          supportedKinds: ['lead', 'participant-profile', 'participant-questionnaire'],
+          readEndpoints: ['/participant-questionnaire?slug=<participant-slug>']
         },
         200,
         origin
@@ -527,12 +648,16 @@ export default {
     }
 
     try {
-      const issue = await createGitHubIssue(submission, request, env);
+      const result =
+        submission.kind === 'participant-questionnaire'
+          ? await upsertParticipantQuestionnaireIssue(submission, request, env)
+          : { issue: await createGitHubIssue(submission, request, env), mode: 'created' };
       return jsonResponse(
         {
           ok: true,
-          issueNumber: issue.number,
-          issueUrl: issue.html_url
+          mode: result.mode,
+          issueNumber: result.issue.number,
+          issueUrl: result.issue.html_url
         },
         200,
         origin
