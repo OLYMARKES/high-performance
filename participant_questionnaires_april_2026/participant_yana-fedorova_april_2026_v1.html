@@ -550,6 +550,40 @@
     color: var(--text-secondary);
     font-size: 16px;
     font-weight: 300;
+    max-width: 520px;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .success-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    border-radius: 60px;
+    padding: 18px 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .success-secondary-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
   }
 
   /* ── Responsive ── */
@@ -837,7 +871,11 @@
 <!-- ═══════ SUCCESS ═══════ -->
 <div class="success-overlay" id="success">
   <h2>Готово</h2>
-  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями.</p>
+  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями. Если захочется дополнить ответ, это можно сделать сразу ниже.</p>
+  <div class="success-actions">
+    <button class="submit-btn" id="submit-more-details" type="button">Дополнить ответы</button>
+    <button class="success-secondary-btn" id="success-close" type="button">Оставить как есть</button>
+  </div>
 </div>
 
 <script>
@@ -1111,8 +1149,8 @@
       }
 
       localStorage.setItem(`${DRAFT_KEY}:last-submitted`, JSON.stringify(payload));
-      localStorage.removeItem(DRAFT_KEY);
-      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями.';
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
+      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями. Если хочешь, можешь сейчас дополнить анкету и отправить более подробную версию.';
       successOverlay.classList.add('visible');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -1135,6 +1173,18 @@
   document.querySelectorAll('select, textarea, input').forEach((field) => {
     field.addEventListener('input', saveDraft);
     field.addEventListener('change', saveDraft);
+  });
+
+  document.getElementById('submit-more-details')?.addEventListener('click', () => {
+    const successOverlay = document.getElementById('success');
+    saveDraft();
+    successOverlay.classList.remove('visible');
+    document.getElementById('personal-context')?.focus();
+    window.scrollTo({ top: document.querySelector('.section')?.offsetTop || 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('success-close')?.addEventListener('click', () => {
+    document.getElementById('success')?.classList.remove('visible');
   });
 </script>
 

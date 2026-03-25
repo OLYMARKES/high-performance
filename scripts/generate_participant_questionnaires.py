@@ -101,6 +101,11 @@ def add_personalization(template: str, name: str) -> str:
         1,
     )
     html = html.replace(
+        ".success-overlay p {\n    color: var(--text-secondary);\n    font-size: 16px;\n    font-weight: 300;\n  }",
+        """.success-overlay p {\n    color: var(--text-secondary);\n    font-size: 16px;\n    font-weight: 300;\n    max-width: 520px;\n  }\n\n  .success-actions {\n    display: flex;\n    gap: 12px;\n    flex-wrap: wrap;\n    justify-content: center;\n    margin-top: 8px;\n  }\n\n  .success-secondary-btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 10px;\n    background: transparent;\n    color: var(--text);\n    border: 1px solid var(--border-hover);\n    border-radius: 60px;\n    padding: 18px 28px;\n    font-family: 'Inter', sans-serif;\n    font-size: 12px;\n    font-weight: 600;\n    letter-spacing: 1.8px;\n    text-transform: uppercase;\n    cursor: pointer;\n    transition: all 0.3s ease;\n  }\n\n  .success-secondary-btn:hover {\n    border-color: var(--accent);\n    color: var(--accent);\n    background: var(--accent-glow);\n  }""",
+        1,
+    )
+    html = html.replace(
         '<p class="hero-sub">Я очень рада, что ты с нами. Поехали :)</p>',
         '<p class="hero-sub">Я очень рада, что ты с нами. Здесь можно спокойно заполнить всё в своём ритме — черновик сохранится автоматически.</p>',
         1,
@@ -133,7 +138,7 @@ def add_personalization(template: str, name: str) -> str:
     )
     html = html.replace(
         '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p>Я всё получила и скоро вернусь с рекомендациями.</p>\n</div>',
-        '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями.</p>\n</div>',
+        '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями. Если захочется дополнить ответ, это можно сделать сразу ниже.</p>\n  <div class="success-actions">\n    <button class="submit-btn" id="submit-more-details" type="button">Дополнить ответы</button>\n    <button class="success-secondary-btn" id="success-close" type="button">Оставить как есть</button>\n  </div>\n</div>',
         1,
     )
     return html
@@ -344,8 +349,8 @@ def build_runtime_script(name: str, slug: str) -> str:
       }}
 
       localStorage.setItem(`${{DRAFT_KEY}}:last-submitted`, JSON.stringify(payload));
-      localStorage.removeItem(DRAFT_KEY);
-      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями.';
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
+      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями. Если хочешь, можешь сейчас дополнить анкету и отправить более подробную версию.';
       successOverlay.classList.add('visible');
       window.scrollTo({{ top: 0, behavior: 'smooth' }});
     }} catch (error) {{
@@ -368,6 +373,18 @@ def build_runtime_script(name: str, slug: str) -> str:
   document.querySelectorAll('select, textarea, input').forEach((field) => {{
     field.addEventListener('input', saveDraft);
     field.addEventListener('change', saveDraft);
+  }});
+
+  document.getElementById('submit-more-details')?.addEventListener('click', () => {{
+    const successOverlay = document.getElementById('success');
+    saveDraft();
+    successOverlay.classList.remove('visible');
+    document.getElementById('personal-context')?.focus();
+    window.scrollTo({{ top: document.querySelector('.section')?.offsetTop || 0, behavior: 'smooth' }});
+  }});
+
+  document.getElementById('success-close')?.addEventListener('click', () => {{
+    document.getElementById('success')?.classList.remove('visible');
   }});
 </script>
 """
