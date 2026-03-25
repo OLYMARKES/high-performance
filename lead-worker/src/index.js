@@ -6,10 +6,15 @@ const FIELD_LIMITS = Object.freeze({
   participantName: 80,
   participantSlug: 120,
   loadLevel: 80,
+  selectedPath: 40,
   courseChoice: 240,
+  personalContext: 4000,
   profileNotes: 4000,
   pageUrl: 500,
-  source: 80
+  source: 80,
+  structuredString: 4000,
+  objectKeys: 50,
+  arrayItems: 50
 });
 
 const CONTROL_CHARS_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
@@ -88,6 +93,73 @@ const ensureAllowedOrigin = (request, env) => {
   return requestOrigin === env.ALLOWED_ORIGIN;
 };
 
+const sanitizeStructuredValue = (value, depth = 0) => {
+  if (depth > 6) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    return truncate(normalize(value, { multiline: true }), FIELD_LIMITS.structuredString);
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'number') {
+    return truncate(normalize(String(value)), 40);
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .slice(0, FIELD_LIMITS.arrayItems)
+      .map((item) => sanitizeStructuredValue(item, depth + 1))
+      .filter((item) => item !== null && item !== '' && !(Array.isArray(item) && item.length === 0));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.entries(value)
+      .slice(0, FIELD_LIMITS.objectKeys)
+      .reduce((acc, [key, nestedValue]) => {
+        const normalizedKey = truncate(normalize(key), 80);
+        if (!normalizedKey) {
+          return acc;
+        }
+
+        const sanitizedValue = sanitizeStructuredValue(nestedValue, depth + 1);
+        if (
+          sanitizedValue === null ||
+          sanitizedValue === '' ||
+          (Array.isArray(sanitizedValue) && sanitizedValue.length === 0) ||
+          (typeof sanitizedValue === 'object' && !Array.isArray(sanitizedValue) && Object.keys(sanitizedValue).length === 0)
+        ) {
+          return acc;
+        }
+
+        acc[normalizedKey] = sanitizedValue;
+        return acc;
+      }, {});
+  }
+
+  return null;
+};
+
+const hasMeaningfulStructuredValue = (value) => {
+  if (Array.isArray(value)) {
+    return value.some(hasMeaningfulStructuredValue);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.values(value).some(hasMeaningfulStructuredValue);
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  return Boolean(normalize(String(value || ''), { multiline: true }));
+};
+
 const buildSubmissionContext = (submission, request) => {
   const requestId = crypto.randomUUID();
   const forwardedFor = request.headers.get('CF-Connecting-IP') || '';
@@ -106,15 +178,15 @@ const buildSubmissionContext = (submission, request) => {
   };
 };
 
-const buildLeadIssuePayload = (lead, request) => {
-  const { requestId, metadata } = buildSubmissionContext(lead, request);
+const buildLeadIssuePayload = (submission, request) => {
+  const { requestId, metadata } = buildSubmissionContext(submission, request);
   const leadRecord = {
     version: 1,
     kind: 'high-performance-lead',
-    name: lead.name,
-    contact: lead.contact,
-    email: lead.email,
-    about: lead.about,
+    name: submission.name,
+    contact: submission.contact,
+    email: submission.email,
+    about: submission.about,
     source: metadata.source,
     pageUrl: metadata.pageUrl,
     submittedAt: metadata.submittedAt,
@@ -123,7 +195,7 @@ const buildLeadIssuePayload = (lead, request) => {
   const encodedLeadRecord = encodeBase64(JSON.stringify(leadRecord));
 
   return {
-    title: `[lead] ${lead.name} - ${metadata.submittedAt.slice(0, 10)}`,
+    title: `[lead] ${submission.name} - ${metadata.submittedAt.slice(0, 10)}`,
     body: [
       '<!-- lead-record -->',
       `<!-- ${JSON.stringify(metadata)} -->`,
@@ -131,12 +203,12 @@ const buildLeadIssuePayload = (lead, request) => {
       '# New Lead',
       '',
       '## Contact',
-      `- Name: ${escapeMd(lead.name)}`,
-      `- Contact: ${escapeMd(lead.contact)}`,
-      `- Email: ${escapeMd(lead.email || '-')}`,
+      `- Name: ${escapeMd(submission.name)}`,
+      `- Contact: ${escapeMd(submission.contact)}`,
+      `- Email: ${escapeMd(submission.email || '-')}`,
       '',
       '## Motivation',
-      quoteMd(lead.about),
+      quoteMd(submission.about),
       '',
       '## Metadata',
       `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
@@ -167,7 +239,6 @@ const buildParticipantProfileIssuePayload = (submission, request) => {
   const notesBlock = submission.profileNotes ? quoteMd(submission.profileNotes) : '> Без подробностей';
 
   return {
-    // Preserve the [lead] prefix so existing OpenClaw watchers still notice new submissions.
     title: `[lead] Participant Profile - ${submission.participantName} - ${metadata.submittedAt.slice(0, 10)}`,
     body: [
       '<!-- lead-record -->',
@@ -194,9 +265,63 @@ const buildParticipantProfileIssuePayload = (submission, request) => {
   };
 };
 
+const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
+  const { requestId, metadata } = buildSubmissionContext(submission, request);
+  const questionnaireRecord = {
+    version: 1,
+    kind: 'high-performance-participant-questionnaire',
+    participantName: submission.participantName,
+    participantSlug: submission.participantSlug,
+    selectedPath: submission.selectedPath,
+    courseChoice: submission.courseChoice,
+    personalContext: submission.personalContext,
+    responseData: submission.responseData,
+    source: metadata.source,
+    pageUrl: metadata.pageUrl,
+    submittedAt: metadata.submittedAt,
+    requestId
+  };
+  const encodedRecord = encodeBase64(JSON.stringify(questionnaireRecord));
+  const responseData = submission.responseData || {};
+  const visionBlock = responseData.visionFuture ? quoteMd(responseData.visionFuture) : '> —';
+  const contextBlock = submission.personalContext ? quoteMd(submission.personalContext) : '> —';
+
+  return {
+    title: `[lead] Participant Questionnaire - ${submission.participantName} - ${metadata.submittedAt.slice(0, 10)}`,
+    body: [
+      '<!-- lead-record -->',
+      `<!-- ${JSON.stringify(metadata)} -->`,
+      `<!-- lead-data:v1:${encodedRecord} -->`,
+      '# Participant Questionnaire',
+      '',
+      '## Participant',
+      `- Name: ${escapeMd(submission.participantName)}`,
+      `- Path: ${escapeMd(submission.selectedPath || '-')}`,
+      `- Parallel course: ${escapeMd(submission.courseChoice || '-')}`,
+      '',
+      '## Vision',
+      visionBlock,
+      '',
+      '## Personal Context',
+      contextBlock,
+      '',
+      '## Metadata',
+      `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
+      `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
+      `- Source: ${escapeMd(metadata.source)}`,
+      `- Participant slug: ${escapeMd(submission.participantSlug || '-')}`,
+      `- Request ID: ${requestId}`
+    ].join('\n')
+  };
+};
+
 const buildIssuePayload = (submission, request) => {
   if (submission.kind === 'participant-profile') {
     return buildParticipantProfileIssuePayload(submission, request);
+  }
+
+  if (submission.kind === 'participant-questionnaire') {
+    return buildParticipantQuestionnaireIssuePayload(submission, request);
   }
 
   return buildLeadIssuePayload(submission, request);
@@ -258,6 +383,21 @@ const sanitizeSubmission = (payload) => {
     };
   }
 
+  if (kind === 'participant-questionnaire') {
+    return {
+      kind: 'participant-questionnaire',
+      participantName: truncate(normalize(payload.participantName || payload.name), FIELD_LIMITS.participantName),
+      participantSlug: truncate(normalize(payload.participantSlug), FIELD_LIMITS.participantSlug),
+      selectedPath: truncate(normalize(payload.selectedPath), FIELD_LIMITS.selectedPath),
+      courseChoice: truncate(normalize(payload.courseChoice), FIELD_LIMITS.courseChoice),
+      personalContext: truncate(normalize(payload.personalContext, { multiline: true }), FIELD_LIMITS.personalContext),
+      responseData: sanitizeStructuredValue(payload.responseData || {}),
+      pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
+      submittedAt: normalize(payload.submittedAt),
+      source: truncate(normalize(payload.source), FIELD_LIMITS.source)
+    };
+  }
+
   return {
     kind: 'lead',
     name: truncate(normalize(payload.name), FIELD_LIMITS.name),
@@ -283,6 +423,31 @@ const validateSubmission = (submission) => {
     if (
       SUSPICIOUS_CONTENT_RE.test(
         `${submission.participantName}\n${submission.loadLevel}\n${submission.courseChoice}\n${submission.profileNotes}`
+      )
+    ) {
+      return 'suspicious_content';
+    }
+
+    return null;
+  }
+
+  if (submission.kind === 'participant-questionnaire') {
+    if (!submission.participantName) {
+      return 'missing_required_fields';
+    }
+
+    if (
+      !submission.selectedPath &&
+      !submission.courseChoice &&
+      !submission.personalContext &&
+      !hasMeaningfulStructuredValue(submission.responseData)
+    ) {
+      return 'missing_required_fields';
+    }
+
+    if (
+      SUSPICIOUS_CONTENT_RE.test(
+        `${submission.participantName}\n${submission.selectedPath}\n${submission.courseChoice}\n${submission.personalContext}\n${JSON.stringify(submission.responseData)}`
       )
     ) {
       return 'suspicious_content';
@@ -324,7 +489,7 @@ export default {
           ok: true,
           service: 'high-performance-lead-worker',
           githubConfigured: Boolean(env.GITHUB_OWNER && env.GITHUB_REPO && env.GITHUB_TOKEN),
-          supportedKinds: ['lead', 'participant-profile']
+          supportedKinds: ['lead', 'participant-profile', 'participant-questionnaire']
         },
         200,
         origin

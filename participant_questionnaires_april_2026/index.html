@@ -3,291 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>High Performance — анкеты участниц</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>HIGH PERFORMANCE — Анкеты участниц</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --cream: #fbf7f2;
-      --warm-white: rgba(255, 253, 249, 0.88);
-      --terracotta: #c8744d;
-      --charcoal: #3d3834;
-      --warm-gray: #847c74;
-      --line: rgba(200, 116, 77, 0.16);
-      --shadow: 0 24px 70px rgba(90, 72, 56, 0.08);
-      --font-display: "Cormorant Garamond", Georgia, serif;
-      --font-body: "Nunito Sans", "Segoe UI", sans-serif;
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface-hover: #1e1e1e;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --accent: #c9a96e;
+      --accent-glow: rgba(201, 169, 110, 0.12);
+      --radius: 14px;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(216, 141, 109, 0.14), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(239, 229, 216, 0.72), transparent 36%),
-        linear-gradient(180deg, #fcf9f5 0%, #f9f4ed 100%);
-      color: var(--charcoal);
-      font-family: var(--font-body);
-      padding: 32px 16px 56px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      padding: 40px 20px 80px;
     }
-
-    .page {
-      max-width: 1180px;
+    .container {
+      max-width: 1120px;
       margin: 0 auto;
     }
-
     .hero {
       text-align: center;
-      padding: 20px 0 30px;
+      padding: 48px 0 34px;
     }
-
-    .hero-tag {
-      display: inline-flex;
-      padding: 12px 24px;
-      border: 1px solid rgba(200, 116, 77, 0.24);
-      border-radius: 999px;
-      color: var(--terracotta);
-      letter-spacing: 0.24em;
+    .hero-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
       text-transform: uppercase;
-      font-size: 0.86rem;
-      background: rgba(255, 253, 249, 0.48);
+      color: var(--accent);
+      margin-bottom: 24px;
     }
-
     h1 {
-      margin-top: 28px;
-      font-family: var(--font-display);
-      font-size: clamp(4rem, 8vw, 6.2rem);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 8vw, 72px);
       font-weight: 400;
-      line-height: 0.94;
-      letter-spacing: -0.04em;
+      line-height: 1.04;
+      margin-bottom: 18px;
     }
-
-    h1 span {
-      display: block;
-      color: var(--terracotta);
+    h1 em {
       font-style: italic;
+      color: var(--accent);
     }
-
-    .hero p {
-      max-width: 780px;
-      margin: 24px auto 0;
-      color: var(--warm-gray);
-      font-size: 1.05rem;
-      line-height: 1.8;
+    .hero-sub {
+      max-width: 640px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 16px;
+      font-weight: 300;
     }
-
-    .section {
-      margin-top: 22px;
+    .panel {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
       padding: 28px;
-      border-radius: 28px;
-      background: var(--warm-white);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
     }
-
-    .section-label {
-      color: var(--terracotta);
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: 0.76rem;
-      margin-bottom: 12px;
-    }
-
-    .section h2 {
-      font-family: var(--font-display);
-      font-size: 2.2rem;
-      font-weight: 500;
-      line-height: 1;
-      margin-bottom: 12px;
-    }
-
-    .section p {
-      color: var(--warm-gray);
-      line-height: 1.75;
-    }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 18px;
+      gap: 14px;
+      margin-top: 26px;
     }
-
     .card {
       display: block;
       text-decoration: none;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 20px 18px;
-      background: rgba(255, 255, 255, 0.54);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      transition: all 0.25s ease;
     }
-
     .card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(200, 116, 77, 0.32);
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      transform: translateY(-1px);
     }
-
     .card-name {
       display: block;
-      font-family: var(--font-display);
-      font-size: 2rem;
-      color: var(--charcoal);
-      line-height: 1;
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      color: var(--text);
+      line-height: 1.1;
     }
-
     .card-meta {
       display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
       margin-top: 8px;
-      color: var(--warm-gray);
-      font-size: 0.94rem;
     }
-
-    .admin-grid {
-      display: grid;
-      gap: 14px;
-      margin-top: 18px;
+    .admin-note {
+      margin-top: 24px;
+      color: #6e6e6e;
+      font-size: 13px;
     }
-
-    .admin-row {
-      display: grid;
-      gap: 8px;
-    }
-
-    .label {
-      color: var(--charcoal);
-      font-size: 0.94rem;
-      font-weight: 600;
-    }
-
-    .note {
-      color: #a49b92;
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-
-    .input {
-      width: 100%;
-      border-radius: 18px;
-      border: 1px solid rgba(200, 116, 77, 0.18);
-      background: rgba(255, 255, 255, 0.75);
-      color: var(--charcoal);
-      font: inherit;
-      padding: 14px 16px;
-      outline: none;
-    }
-
-    .input:focus {
-      border-color: rgba(200, 116, 77, 0.42);
-      box-shadow: 0 0 0 4px rgba(200, 116, 77, 0.08);
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .button {
-      border: none;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--terracotta), #d88d6d);
-      color: white;
-      font: inherit;
-      padding: 13px 20px;
-      cursor: pointer;
-    }
-
-    .status {
-      color: var(--warm-gray);
-      font-size: 0.94rem;
-      line-height: 1.5;
-      min-height: 1.5em;
-    }
-
-    .status.is-error {
-      color: #b1533d;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      margin-top: 18px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.6);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 880px;
-    }
-
-    th,
-    td {
-      padding: 14px 16px;
-      text-align: left;
-      border-bottom: 1px solid rgba(200, 116, 77, 0.12);
-      vertical-align: top;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    th {
-      color: var(--terracotta);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      background: rgba(255, 253, 249, 0.84);
-    }
-
-    td small {
-      color: var(--warm-gray);
-    }
-
-    td a {
-      color: var(--terracotta);
-    }
-
     @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
     @media (max-width: 640px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 22px 18px;
-      }
+      .grid { grid-template-columns: 1fr; }
+      .panel { padding: 22px 18px; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div class="hero-tag">High Performance • анкеты участниц</div>
-      <h1>High <span>Performance</span></h1>
-      <p>
-        Здесь собраны персональные анкеты для подбора параллельного курса Sekta
-        и единая таблица ответов команды.
-      </p>
-    </section>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">High Performance</div>
+      <h1>Персональные <em>анкеты</em></h1>
+      <p class="hero-sub">Отсюда можно открыть личную страницу каждой участницы. Админка с результатами вынесена отдельно.</p>
+    </div>
 
-    <section class="section">
-      <div class="section-label">Персональные ссылки</div>
-      <h2>Анкеты участниц</h2>
-      <p>Открывай нужную страницу и отправляй её конкретной участнице.</p>
+    <div class="panel">
       <div class="grid">
 
           <a class="card" href="participant_anya_april_2026_v1.html">
@@ -370,174 +205,8 @@
             <span class="card-meta">персональная анкета</span>
           </a>
       </div>
-    </section>
-
-    <section class="section">
-      <div class="section-label">Командная таблица</div>
-      <h2>Ответы участниц</h2>
-      <p>
-        Таблица читает private GitHub issues из <code>OLYMARKES/high-performance-leads</code>.
-        Чтобы увидеть ответы, вставь GitHub token с доступом <strong>Issues: Read</strong> для этого репозитория.
-      </p>
-
-      <div class="admin-grid">
-        <div class="admin-row">
-          <label class="label" for="gh-token">GitHub token</label>
-          <div class="note">Токен хранится только в localStorage этого браузера и нужен, потому что репозиторий с ответами закрытый.</div>
-          <input class="input" id="gh-token" type="password" placeholder="github_pat_...">
-        </div>
-        <div class="actions">
-          <button class="button" id="load-table" type="button">Загрузить таблицу</button>
-          <button class="button" id="clear-token" type="button">Очистить token</button>
-          <div class="status" id="table-status" aria-live="polite"></div>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Участница</th>
-              <th>Дата</th>
-              <th>Нагрузка</th>
-              <th>Простой путь</th>
-              <th>Курс</th>
-              <th>Ответ</th>
-              <th>Issue</th>
-            </tr>
-          </thead>
-          <tbody id="table-body">
-            <tr>
-              <td colspan="7">Пока данных нет. Вставь GitHub token и нажми «Загрузить таблицу».</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    const STORAGE_KEY = 'hp-participant-table-github-token';
-    const REPO_ISSUES_URL = 'https://api.github.com/repos/OLYMARKES/high-performance-leads/issues?state=all&per_page=100';
-    const tableBody = document.getElementById('table-body');
-    const tableStatus = document.getElementById('table-status');
-    const tokenInput = document.getElementById('gh-token');
-    const loadButton = document.getElementById('load-table');
-    const clearButton = document.getElementById('clear-token');
-
-    tokenInput.value = localStorage.getItem(STORAGE_KEY) || '';
-
-    function decodeRecordFromBody(body) {
-      const match = body.match(/<!-- lead-data:v1:([^>]+) -->/);
-      if (!match) {
-        return null;
-      }
-
-      try {
-        const json = atob(match[1]);
-        return JSON.parse(json);
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;');
-    }
-
-    function renderRows(records) {
-      if (!records.length) {
-        tableBody.innerHTML = '<tr><td colspan="7">Пока нет анкет этого типа.</td></tr>';
-        return;
-      }
-
-      tableBody.innerHTML = records.map((record) => {
-        const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
-        const notes = record.profileNotes
-          ? escapeHtml(record.profileNotes).replaceAll('\n', '<br>')
-          : '<small>без подробностей</small>';
-        const course = escapeHtml(record.courseChoice || '—');
-        const loadLevel = escapeHtml(record.loadLevel || '—');
-        const simplePath = record.simplePath ? 'да' : '—';
-        const issueLink = record.issueUrl
-          ? `<a href="${record.issueUrl}" target="_blank" rel="noopener noreferrer">issue</a>`
-          : '—';
-
-        return `
-          <tr>
-            <td>${escapeHtml(record.participantName || '—')}</td>
-            <td>${submittedAt}</td>
-            <td>${loadLevel}</td>
-            <td>${simplePath}</td>
-            <td>${course}</td>
-            <td>${notes}</td>
-            <td>${issueLink}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    async function loadTable() {
-      const token = tokenInput.value.trim();
-      if (!token) {
-        tableStatus.textContent = 'Вставь GitHub token с доступом Issues: Read.';
-        tableStatus.className = 'status is-error';
-        return;
-      }
-
-      localStorage.setItem(STORAGE_KEY, token);
-      tableStatus.textContent = 'Загружаем...';
-      tableStatus.className = 'status';
-
-      try {
-        const response = await fetch(REPO_ISSUES_URL, {
-          headers: {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('github_request_failed');
-        }
-
-        const issues = await response.json();
-        const records = issues
-          .map((issue) => {
-            const record = decodeRecordFromBody(issue.body || '');
-            if (!record || record.kind !== 'high-performance-participant-profile') {
-              return null;
-            }
-
-            return {
-              ...record,
-              issueUrl: issue.html_url
-            };
-          })
-          .filter(Boolean)
-          .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
-
-        renderRows(records);
-        tableStatus.textContent = `Готово. Загружено анкет: ${records.length}.`;
-        tableStatus.className = 'status is-success';
-      } catch (error) {
-        tableStatus.textContent = 'Не удалось загрузить таблицу. Проверь token и доступ к private repo.';
-        tableStatus.className = 'status is-error';
-      }
-    }
-
-    loadButton.addEventListener('click', loadTable);
-    clearButton.addEventListener('click', () => {
-      localStorage.removeItem(STORAGE_KEY);
-      tokenInput.value = '';
-      tableStatus.textContent = 'Token очищен.';
-      tableStatus.className = 'status';
-      tableBody.innerHTML = '<tr><td colspan="7">Пока данных нет. Вставь GitHub token и нажми «Загрузить таблицу».</td></tr>';
-    });
-  </script>
+      <div class="admin-note">Отдельная админка не привязана к этому публичному индексу и должна открываться только командой.</div>
+    </div>
+  </div>
 </body>
 </html>

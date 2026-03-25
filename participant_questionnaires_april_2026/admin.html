@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIGH PERFORMANCE — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface-hover: #1e1e1e;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --text-muted: #6f6f6f;
+      --accent: #c9a96e;
+      --accent-glow: rgba(201, 169, 110, 0.12);
+      --radius: 14px;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 16px 56px;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .hero {
+      text-align: center;
+      padding: 28px 0 30px;
+    }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 8vw, 68px);
+      font-weight: 400;
+      line-height: 1.02;
+      margin-bottom: 16px;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 300;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 18px;
+    }
+    .row {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .note {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .input {
+      width: 100%;
+      background: #141414;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font: inherit;
+      padding: 14px 16px;
+      outline: none;
+    }
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .button {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .status {
+      min-height: 1.4em;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .status.is-error { color: #d98274; }
+    .status.is-success { color: #9fc47b; }
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 18px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1120px;
+      background: #141414;
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    td small {
+      color: var(--text-muted);
+    }
+    .details-btn {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(201, 169, 110, 0.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.82);
+      padding: 24px;
+      z-index: 100;
+      overflow: auto;
+    }
+    .modal.visible { display: block; }
+    .modal-card {
+      max-width: 880px;
+      margin: 40px auto;
+      background: #111;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+    .close-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .detail-section {
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .detail-section h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .detail-section p, .detail-section li {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .detail-section ul {
+      padding-left: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">High Performance</div>
+      <h1>Admin <em>results</em></h1>
+      <p class="hero-sub">
+        Эта страница читает ответы из private GitHub repo <code>OLYMARKES/high-performance-leads</code>.
+        Для просмотра нужен GitHub token с доступом <strong>Issues: Read</strong>.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <label class="label" for="gh-token">GitHub token</label>
+        <div class="note">Токен хранится только в localStorage этого браузера. Публично он никуда не вставляется, кроме запроса к GitHub API из этой страницы.</div>
+        <input class="input" id="gh-token" type="password" placeholder="github_pat_...">
+      </div>
+      <div class="actions">
+        <button class="button" id="load-results" type="button">Load results</button>
+        <button class="button" id="clear-token" type="button">Clear token</button>
+        <div class="status" id="load-status" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Участница</th>
+              <th>Дата</th>
+              <th>Путь</th>
+              <th>Курс</th>
+              <th>Вижен</th>
+              <th>Персональный контекст</th>
+              <th>Детали</th>
+              <th>Issue</th>
+            </tr>
+          </thead>
+          <tbody id="results-body">
+            <tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="details-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Ответ</div>
+        <button class="close-btn" id="close-modal" type="button">закрыть</button>
+      </div>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'hp-participant-admin-github-token-v1';
+    const REPO_ISSUES_URL = 'https://api.github.com/repos/OLYMARKES/high-performance-leads/issues?state=all&per_page=100';
+    const tokenInput = document.getElementById('gh-token');
+    const loadButton = document.getElementById('load-results');
+    const clearButton = document.getElementById('clear-token');
+    const loadStatus = document.getElementById('load-status');
+    const resultsBody = document.getElementById('results-body');
+    const detailsModal = document.getElementById('details-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const closeModalButton = document.getElementById('close-modal');
+
+    let currentRecords = [];
+
+    tokenInput.value = localStorage.getItem(STORAGE_KEY) || '';
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function decodeRecordFromBody(body) {
+      const match = body.match(/<!-- lead-data:v1:([^>]+) -->/);
+      if (!match) {
+        return null;
+      }
+
+      try {
+        const json = atob(match[1]);
+        return JSON.parse(json);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function truncateText(value, limit = 110) {
+      const text = String(value || '').trim();
+      if (!text) {
+        return '<small>—</small>';
+      }
+      return escapeHtml(text.length > limit ? `${text.slice(0, limit)}…` : text);
+    }
+
+    function labelForPath(value) {
+      if (value === 'short') return 'Короткий';
+      if (value === 'personal') return 'Персональный';
+      return '—';
+    }
+
+    function renderRows(records) {
+      if (!records.length) {
+        resultsBody.innerHTML = '<tr><td colspan="8">Пока нет анкет этого типа.</td></tr>';
+        return;
+      }
+
+      resultsBody.innerHTML = records.map((record, index) => {
+        const responseData = record.responseData || {};
+        const vision = responseData.visionFuture || '';
+        const context = record.personalContext || responseData.personalContext || '';
+        const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
+
+        return `
+          <tr>
+            <td>${escapeHtml(record.participantName || '—')}</td>
+            <td>${submittedAt}</td>
+            <td>${escapeHtml(labelForPath(record.selectedPath || responseData.selectedPath))}</td>
+            <td>${truncateText(record.courseChoice || responseData.courseChoice || '', 70)}</td>
+            <td>${truncateText(vision, 90)}</td>
+            <td>${truncateText(context, 90)}</td>
+            <td><button class="details-btn" type="button" data-index="${index}">Открыть</button></td>
+            <td><a href="${record.issueUrl}" target="_blank" rel="noopener noreferrer">issue</a></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function sectionHtml(title, body) {
+      return `
+        <div class="detail-section">
+          <h3>${escapeHtml(title)}</h3>
+          ${body}
+        </div>
+      `;
+    }
+
+    function paragraph(value) {
+      if (!value) {
+        return '<p>—</p>';
+      }
+      return `<p>${escapeHtml(String(value)).replaceAll('\n', '<br>')}</p>`;
+    }
+
+    function list(values) {
+      if (!values || !values.length) {
+        return '<p>—</p>';
+      }
+      return `<ul>${values.map((value) => `<li>${escapeHtml(value)}</li>`).join('')}</ul>`;
+    }
+
+    function openDetails(index) {
+      const record = currentRecords[index];
+      if (!record) {
+        return;
+      }
+
+      const responseData = record.responseData || {};
+      const vip = responseData.vip || {};
+      const body = [
+        sectionHtml('Вижен недалёкого будущего', paragraph(responseData.visionFuture)),
+        sectionHtml('Выбранный путь', paragraph(labelForPath(record.selectedPath || responseData.selectedPath))),
+        sectionHtml('Выбранный курс', paragraph(record.courseChoice || responseData.courseChoice)),
+        sectionHtml('Персональный контекст', paragraph(record.personalContext || responseData.personalContext)),
+        sectionHtml('Я здесь, чтобы...', paragraph(vip.purpose)),
+        sectionHtml('Возраст / Рост / Вес', paragraph([vip.age, vip.height, vip.weight].filter(Boolean).join(' / '))),
+        sectionHtml('Дети / беременность', paragraph([vip.childrenStatus, vip.childrenDetail, vip.pregnantDetail].filter(Boolean).join(' / '))),
+        sectionHtml('Здоровье и ограничения', paragraph(vip.healthRestrictions)),
+        sectionHtml('Диастаз', paragraph(vip.diastasis)),
+        sectionHtml('Актуально по тазовому дну', list(vip.pelvicFloorFlags)),
+        sectionHtml('Отношение к питанию', list(vip.nutritionFlags)),
+        sectionHtml('Твой обычный день', paragraph(vip.typicalDay)),
+        sectionHtml('Питание и привычки', paragraph(vip.foodHabits)),
+        sectionHtml('Препараты', paragraph(vip.medications)),
+        sectionHtml('Сообщение для куратора', paragraph(vip.curatorMessage))
+      ].join('');
+
+      modalTitle.textContent = record.participantName || 'Ответ';
+      modalContent.innerHTML = body;
+      detailsModal.classList.add('visible');
+    }
+
+    async function loadResults() {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        loadStatus.textContent = 'Вставь GitHub token с доступом Issues: Read.';
+        loadStatus.className = 'status is-error';
+        return;
+      }
+
+      localStorage.setItem(STORAGE_KEY, token);
+      loadStatus.textContent = 'Загружаем...';
+      loadStatus.className = 'status';
+
+      try {
+        const response = await fetch(REPO_ISSUES_URL, {
+          headers: {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('github_request_failed');
+        }
+
+        const issues = await response.json();
+        currentRecords = issues
+          .map((issue) => {
+            const record = decodeRecordFromBody(issue.body || '');
+            if (!record || record.kind !== 'high-performance-participant-questionnaire') {
+              return null;
+            }
+            return { ...record, issueUrl: issue.html_url };
+          })
+          .filter(Boolean)
+          .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+
+        renderRows(currentRecords);
+        loadStatus.textContent = `Готово. Загружено ответов: ${currentRecords.length}.`;
+        loadStatus.className = 'status is-success';
+      } catch (error) {
+        loadStatus.textContent = 'Не удалось загрузить результаты. Проверь token и доступ к private repo.';
+        loadStatus.className = 'status is-error';
+      }
+    }
+
+    resultsBody.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-index]');
+      if (!button) {
+        return;
+      }
+
+      openDetails(Number(button.dataset.index));
+    });
+
+    closeModalButton.addEventListener('click', () => detailsModal.classList.remove('visible'));
+    detailsModal.addEventListener('click', (event) => {
+      if (event.target === detailsModal) {
+        detailsModal.classList.remove('visible');
+      }
+    });
+    loadButton.addEventListener('click', loadResults);
+    clearButton.addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      tokenInput.value = '';
+      currentRecords = [];
+      resultsBody.innerHTML = '<tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>';
+      loadStatus.textContent = 'Token очищен.';
+      loadStatus.className = 'status';
+    });
+  </script>
+</body>
+</html>

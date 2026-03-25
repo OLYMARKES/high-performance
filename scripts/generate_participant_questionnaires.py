@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "participant_questionnaires_april_2026"
+SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/anketa.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 
@@ -73,840 +75,720 @@ def slugify(value: str) -> str:
     return normalized.strip("-")
 
 
-def build_questionnaire_html(name: str, slug: str) -> str:
-    title = f"High Performance — анкета для {name}"
+def quote_js(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False)
+
+
+def load_template() -> str:
+    return SOURCE_TEMPLATE_PATH.read_text(encoding="utf-8")
+
+
+def add_personalization(template: str, name: str) -> str:
+    html = template
+    html = html.replace("<title>HIGH PERFORMANCE — Анкета</title>", f"<title>HIGH PERFORMANCE — Анкета для {name}</title>", 1)
+    html = html.replace("<div class=\"hero-greeting\">Привет, <em>{Имя}</em></div>", f"<div class=\"hero-greeting\">Привет, <em>{name}</em></div>", 1)
+    html = html.replace(
+        '<p class="hero-sub">Я очень рада, что ты с нами. Поехали :)</p>',
+        '<p class="hero-sub">Я очень рада, что ты с нами. Здесь можно спокойно заполнить всё в своём ритме — черновик сохранится автоматически.</p>',
+        1,
+    )
+    html = html.replace(
+        '<textarea placeholder="Опиши своё идеальное состояние через месяц..."></textarea>',
+        '<textarea id="vision-future" placeholder="Опиши своё идеальное состояние через месяц..."></textarea>',
+        1,
+    )
+    html = html.replace(
+        '<textarea placeholder="Напиши самое важное — в любой форме, любой длины..."></textarea>',
+        '<textarea id="personal-context" placeholder="Напиши самое важное — в любой форме, любой длины..."></textarea>',
+        1,
+    )
+    html = html.replace(
+        '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p>Я всё получила и скоро вернусь с рекомендациями.</p>\n</div>',
+        '<div class="success-overlay" id="success">\n  <h2>Готово</h2>\n  <p id="success-message">Я всё получила и скоро вернусь с рекомендациями.</p>\n</div>',
+        1,
+    )
+    return html
+
+
+def build_runtime_script(name: str, slug: str) -> str:
+    return f"""
+<script>
+  const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
+  const PARTICIPANT_NAME = {quote_js(name)};
+  const PARTICIPANT_SLUG = {quote_js(slug)};
+  const DRAFT_KEY = `hp-participant-questionnaire-${{PARTICIPANT_SLUG}}-v1`;
+  const CONTROL_CHARS_RE = /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/g;
+  const BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g;
+
+  function normalizeValue(value, multiline = false) {{
+    const cleaned = String(value || '')
+      .replace(/\\r\\n?/g, '\\n')
+      .replace(CONTROL_CHARS_RE, '')
+      .replace(BIDI_CONTROL_RE, '')
+      .trim();
+
+    if (!multiline) {{
+      return cleaned.replace(/\\s+/g, ' ').trim();
+    }}
+
+    return cleaned
+      .split('\\n')
+      .map((line) => line.trimEnd())
+      .join('\\n')
+      .replace(/\\n{{3,}}/g, '\\n\\n')
+      .trim();
+  }}
+
+  function getVipBlockByTitle(title) {{
+    return [...document.querySelectorAll('.vip-block')].find((block) => {{
+      const blockTitle = block.querySelector('.vip-title');
+      return blockTitle && blockTitle.textContent.trim() === title;
+    }});
+  }}
+
+  function textFromBlock(title) {{
+    const block = getVipBlockByTitle(title);
+    const textarea = block?.querySelector('textarea');
+    return normalizeValue(textarea?.value || '', true);
+  }}
+
+  function inputFromBlock(title, placeholderStartsWith) {{
+    const block = getVipBlockByTitle(title);
+    const inputs = [...(block?.querySelectorAll('input') || [])];
+    const target = inputs.find((input) => (input.getAttribute('placeholder') || '').startsWith(placeholderStartsWith));
+    return normalizeValue(target?.value || '');
+  }}
+
+  function checkedLabelsFromBlock(title) {{
+    const block = getVipBlockByTitle(title);
+    if (!block) {{
+      return [];
+    }}
+
+    return [...block.querySelectorAll('input[type=\"checkbox\"]:checked')].map((input) => {{
+      const label = input.closest('label');
+      const textNode = label?.querySelector('.checkbox-label');
+      return normalizeValue(textNode?.textContent || '');
+    }}).filter(Boolean);
+  }}
+
+  function collectDraftState() {{
+    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    return allFields.map((field) => {{
+      if (field.type === 'checkbox' || field.type === 'radio') {{
+        return Boolean(field.checked);
+      }}
+      return field.value || '';
+    }});
+  }}
+
+  function restoreDraftState(values) {{
+    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    allFields.forEach((field, index) => {{
+      const saved = values[index];
+      if (saved === undefined) {{
+        return;
+      }}
+
+      if (field.type === 'checkbox' || field.type === 'radio') {{
+        field.checked = Boolean(saved);
+      }} else {{
+        field.value = saved;
+      }}
+    }});
+
+    if (document.getElementById('path1-fields').querySelector('select').value) {{
+      document.getElementById('path1').classList.add('active');
+      document.getElementById('path1-fields').classList.add('visible');
+    }}
+
+    if (normalizeValue(document.getElementById('personal-context').value, true)) {{
+      document.getElementById('path2').classList.add('active');
+      document.getElementById('path2-fields').classList.add('visible');
+    }}
+
+    const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
+    if (selectedChildren) {{
+      document.getElementById('children-detail').style.display = selectedChildren.value === 'yes' ? 'block' : 'none';
+      document.getElementById('pregnant-detail').style.display = selectedChildren.value === 'pregnant' ? 'block' : 'none';
+    }}
+  }}
+
+  function saveDraft() {{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
+  }}
+
+  function buildPayload() {{
+    const path1Active = document.getElementById('path1').classList.contains('active');
+    const path2Active = document.getElementById('path2').classList.contains('active');
+    const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
+
+    const responseData = {{
+      visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
+      selectedPath: path1Active ? 'short' : path2Active ? 'personal' : '',
+      courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
+      personalContext: normalizeValue(document.getElementById('personal-context')?.value || '', true),
+      vip: {{
+        purpose: textFromBlock('Я здесь, чтобы...'),
+        age: inputFromBlock('Возраст / Рост / Вес', 'Возраст'),
+        height: inputFromBlock('Возраст / Рост / Вес', 'Рост'),
+        weight: inputFromBlock('Возраст / Рост / Вес', 'Вес'),
+        childrenStatus: normalizeValue(selectedChildren?.value || ''),
+        childrenDetail: normalizeValue(document.querySelector('#children-detail input')?.value || ''),
+        pregnantDetail: normalizeValue(document.querySelector('#pregnant-detail input')?.value || ''),
+        healthRestrictions: textFromBlock('Здоровье и ограничения'),
+        diastasis: inputFromBlock('Диастаз', 'Например'),
+        pelvicFloorFlags: checkedLabelsFromBlock('Отметь, если актуально'),
+        nutritionFlags: checkedLabelsFromBlock('Отношение к питанию'),
+        typicalDay: textFromBlock('Твой обычный день'),
+        foodHabits: textFromBlock('Питание и привычки'),
+        medications: textFromBlock('Препараты'),
+        curatorMessage: textFromBlock('Сообщение для куратора')
+      }}
+    }};
+
+    return {{
+      kind: 'participant-questionnaire',
+      participantName: PARTICIPANT_NAME,
+      participantSlug: PARTICIPANT_SLUG,
+      selectedPath: responseData.selectedPath,
+      courseChoice: responseData.courseChoice,
+      personalContext: responseData.personalContext,
+      responseData,
+      source: 'high-performance-participant-questionnaire',
+      pageUrl: window.location.href,
+      submittedAt: new Date().toISOString()
+    }};
+  }}
+
+  function hasMeaningfulValue(value) {{
+    if (Array.isArray(value)) {{
+      return value.some(hasMeaningfulValue);
+    }}
+    if (value && typeof value === 'object') {{
+      return Object.values(value).some(hasMeaningfulValue);
+    }}
+    return Boolean(normalizeValue(value, true));
+  }}
+
+  async function handleSubmit() {{
+    const payload = buildPayload();
+    const successOverlay = document.getElementById('success');
+    const successMessage = document.getElementById('success-message');
+    const submitButton = document.querySelector('.submit-btn');
+
+    if (!hasMeaningfulValue(payload.responseData)) {{
+      alert('Заполни хотя бы один блок анкеты, чтобы мы могли что-то подобрать.');
+      return;
+    }}
+
+    submitButton.disabled = true;
+    submitButton.style.opacity = '0.7';
+
+    try {{
+      const response = await fetch(FORM_ENDPOINT, {{
+        method: 'POST',
+        headers: {{
+          'Content-Type': 'application/json'
+        }},
+        body: JSON.stringify(payload)
+      }});
+
+      if (!response.ok) {{
+        throw new Error('request_failed');
+      }}
+
+      localStorage.setItem(`${{DRAFT_KEY}}:last-submitted`, JSON.stringify(payload));
+      localStorage.removeItem(DRAFT_KEY);
+      successMessage.textContent = 'Я всё получила и скоро вернусь с рекомендациями.';
+      successOverlay.classList.add('visible');
+      window.scrollTo({{ top: 0, behavior: 'smooth' }});
+    }} catch (error) {{
+      alert('Не удалось отправить анкету. Попробуй ещё раз чуть позже.');
+    }} finally {{
+      submitButton.disabled = false;
+      submitButton.style.opacity = '1';
+    }}
+  }}
+
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+  if (savedDraft) {{
+    try {{
+      restoreDraftState(JSON.parse(savedDraft));
+    }} catch (error) {{
+      localStorage.removeItem(DRAFT_KEY);
+    }}
+  }}
+
+  document.querySelectorAll('select, textarea, input').forEach((field) => {{
+    field.addEventListener('input', saveDraft);
+    field.addEventListener('change', saveDraft);
+  }});
+</script>
+"""
+
+
+def build_participant_page(template: str, participant: dict[str, str]) -> str:
+    slug = participant["slug"]
+    html = add_personalization(template, participant["name"])
+    html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['name'], slug)}\n</body>\n</html>", 1)
+    source_comment = (
+        f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+        f"from GitHub issue #{participant['issue']}: https://github.com/OLYMARKES/high-performance-leads/issues/{participant['issue']} -->\n"
+    )
+    return source_comment + html
+
+
+def build_index_page(entries: list[dict[str, str]]) -> str:
+    cards_html = "\n".join(
+        f"""
+          <a class="card" href="{entry['filename']}">
+            <span class="card-name">{entry['name']}</span>
+            <span class="card-meta">персональная анкета</span>
+          </a>"""
+        for entry in entries
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>HIGH PERFORMANCE — Анкеты участниц</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
+    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     :root {{
-      --cream: #fbf7f2;
-      --warm-white: rgba(255, 253, 249, 0.88);
-      --terracotta: #c8744d;
-      --terracotta-soft: #d88d6d;
-      --charcoal: #3d3834;
-      --warm-gray: #847c74;
-      --line: rgba(200, 116, 77, 0.16);
-      --shadow: 0 24px 70px rgba(90, 72, 56, 0.08);
-      --font-display: "Cormorant Garamond", Georgia, serif;
-      --font-body: "Nunito Sans", "Segoe UI", sans-serif;
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface-hover: #1e1e1e;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --accent: #c9a96e;
+      --accent-glow: rgba(201, 169, 110, 0.12);
+      --radius: 14px;
     }}
-
-    * {{
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }}
-
     body {{
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(216, 141, 109, 0.14), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(239, 229, 216, 0.72), transparent 36%),
-        linear-gradient(180deg, #fcf9f5 0%, #f9f4ed 100%);
-      color: var(--charcoal);
-      font-family: var(--font-body);
-      padding: 32px 16px 56px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
       -webkit-font-smoothing: antialiased;
+      padding: 40px 20px 80px;
     }}
-
-    .page {{
-      max-width: 980px;
+    .container {{
+      max-width: 1120px;
       margin: 0 auto;
     }}
-
     .hero {{
       text-align: center;
-      padding: 20px 0 34px;
+      padding: 48px 0 34px;
     }}
-
-    .hero-tag {{
-      display: inline-flex;
-      padding: 12px 24px;
-      border: 1px solid rgba(200, 116, 77, 0.24);
-      border-radius: 999px;
-      color: var(--terracotta);
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      font-size: 0.86rem;
-      background: rgba(255, 253, 249, 0.48);
-    }}
-
-    h1 {{
-      margin-top: 28px;
-      font-family: var(--font-display);
-      font-size: clamp(4rem, 10vw, 6.2rem);
-      font-weight: 400;
-      line-height: 0.94;
-      letter-spacing: -0.04em;
-    }}
-
-    h1 span {{
-      display: block;
-      color: var(--terracotta);
-      font-style: italic;
-    }}
-
-    .hero p {{
-      max-width: 760px;
-      margin: 24px auto 0;
-      color: var(--warm-gray);
-      font-size: 1.08rem;
-      line-height: 1.8;
-    }}
-
-    .section {{
-      margin-top: 22px;
-      padding: 28px;
-      border-radius: 28px;
-      background: var(--warm-white);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }}
-
-    .section-label {{
-      color: var(--terracotta);
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: 0.76rem;
-      margin-bottom: 12px;
-    }}
-
-    .section h2 {{
-      font-family: var(--font-display);
-      font-size: 2.3rem;
-      font-weight: 500;
-      line-height: 1;
-      margin-bottom: 14px;
-    }}
-
-    .section p {{
-      color: var(--warm-gray);
-      line-height: 1.75;
-      font-size: 1rem;
-    }}
-
-    .cards {{
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 18px;
-    }}
-
-    .card {{
-      padding: 20px 18px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.52);
-    }}
-
-    .card h3 {{
-      font-size: 1rem;
-      margin-bottom: 10px;
-      color: var(--charcoal);
-    }}
-
-    .card p {{
-      font-size: 0.96rem;
-    }}
-
-    .examples {{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }}
-
-    .pill {{
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(200, 116, 77, 0.18);
-      color: var(--terracotta);
-      font-size: 0.9rem;
-      background: rgba(255, 253, 249, 0.76);
-    }}
-
-    .form-grid {{
-      display: grid;
-      gap: 18px;
-      margin-top: 18px;
-    }}
-
-    .field {{
-      display: grid;
-      gap: 8px;
-    }}
-
-    .label {{
-      color: var(--charcoal);
-      font-size: 0.95rem;
+    .hero-label {{
+      font-size: 11px;
       font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
     }}
-
-    .label-note {{
-      color: #a39a91;
-      font-size: 0.86rem;
-      line-height: 1.5;
+    h1 {{
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 8vw, 72px);
+      font-weight: 400;
+      line-height: 1.04;
+      margin-bottom: 18px;
     }}
-
-    .select,
-    .input,
-    .textarea {{
-      width: 100%;
-      border-radius: 18px;
-      border: 1px solid rgba(200, 116, 77, 0.18);
-      background: rgba(255, 255, 255, 0.75);
-      color: var(--charcoal);
-      font: inherit;
-      padding: 14px 16px;
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    h1 em {{
+      font-style: italic;
+      color: var(--accent);
     }}
-
-    .textarea {{
-      min-height: 190px;
-      resize: vertical;
-      line-height: 1.7;
+    .hero-sub {{
+      max-width: 640px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 16px;
+      font-weight: 300;
     }}
-
-    .select:focus,
-    .input:focus,
-    .textarea:focus {{
-      border-color: rgba(200, 116, 77, 0.42);
-      box-shadow: 0 0 0 4px rgba(200, 116, 77, 0.08);
+    .panel {{
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
     }}
-
-    .textarea::placeholder,
-    .input::placeholder {{
-      color: #b1a69d;
-    }}
-
-    .checkbox {{
+    .grid {{
       display: grid;
-      grid-template-columns: 22px 1fr;
-      gap: 12px;
-      align-items: start;
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.52);
-    }}
-
-    .checkbox input {{
-      margin-top: 3px;
-    }}
-
-    .actions {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 18px;
+      margin-top: 26px;
     }}
-
-    .button {{
-      border: none;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--terracotta), var(--terracotta-soft));
-      color: white;
-      font: inherit;
-      padding: 14px 22px;
-      cursor: pointer;
-      box-shadow: 0 14px 36px rgba(200, 116, 77, 0.18);
+    .card {{
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      transition: all 0.25s ease;
     }}
-
-    .status {{
-      color: var(--warm-gray);
-      font-size: 0.94rem;
-      line-height: 1.5;
-      min-height: 1.5em;
+    .card:hover {{
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      transform: translateY(-1px);
     }}
-
-    .status.is-error {{
-      color: #b1533d;
+    .card-name {{
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      color: var(--text);
+      line-height: 1.1;
     }}
-
-    .status.is-success {{
-      color: #587249;
+    .card-meta {{
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 8px;
     }}
-
-    @media (max-width: 760px) {{
-      .cards {{
-        grid-template-columns: 1fr;
-      }}
-
-      .section {{
-        padding: 22px 18px;
-      }}
+    .admin-note {{
+      margin-top: 24px;
+      color: #6e6e6e;
+      font-size: 13px;
+    }}
+    @media (max-width: 900px) {{
+      .grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+    }}
+    @media (max-width: 640px) {{
+      .grid {{ grid-template-columns: 1fr; }}
+      .panel {{ padding: 22px 18px; }}
     }}
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div class="hero-tag">High Performance • анкета</div>
-      <h1>{name}<span>для подбора</span></h1>
-      <p>
-        Привет. Следующий шаг для нас — подобрать для тебя оптимальную спортивную нагрузку,
-        питание и параллельный курс Sekta, который будет поддерживать основной ритм апреля.
-      </p>
-    </section>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">High Performance</div>
+      <h1>Персональные <em>анкеты</em></h1>
+      <p class="hero-sub">Отсюда можно открыть личную страницу каждой участницы. Админка с результатами вынесена отдельно.</p>
+    </div>
 
-    <section class="section">
-      <div class="section-label">Что будет</div>
-      <h2>Основной ритм</h2>
-      <p>
-        У нас будет основной план: один день — главная тренировка примерно на 30 минут, на следующий —
-        два комплекса на пресс, в сумме тоже около 30 минут. Это интенсивно, но выполнимо и легко встраивается в график.
-      </p>
-      <div class="cards">
-        <article class="card">
-          <h3>Основная нагрузка</h3>
-          <p>
-            Один день — основная тренировка около 30 минут.
-            Следующий день — 2 комплекса на пресс, общей длительностью около 30 минут.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Параллельный курс Sekta</h3>
-          <p>
-            Параллельно я предлагаю выбрать второй курс Sekta: что-то поддерживающее,
-            специальное или сфокусированное под твои особенности и текущий запрос.
-          </p>
-        </article>
+    <div class="panel">
+      <div class="grid">
+{cards_html}
       </div>
-      <div class="examples">
-        <span class="pill">короткие зарядки Core</span>
-        <span class="pill">Basics</span>
-        <span class="pill">функциональные тренировки Superhuman</span>
-        <span class="pill">или другой фокусный курс</span>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-label">Питание</div>
-      <h2>Первая неделя</h2>
-      <p>
-        В питании я предлагаю хотя бы на первую неделю делать выбор в сторону простой еды:
-        творог со сметаной, кефир, варёные яйца, мясо без жарки, варёные овощи, гречка, рис.
-        Сильно сокращаем соусы, хлеб и всё, что быстро сбивает ритм. Но здесь важны твои особенности:
-        если есть РПП, ограничения, сильные вкусовые предпочтения или своя специфика, обязательно расскажи.
-      </p>
-    </section>
-
-    <section class="section">
-      <div class="section-label">Ответ для команды</div>
-      <h2>Расскажи про себя</h2>
-      <p>
-        Всё, что нам нужно знать, чтобы подобрать тебе классную нагрузку и питание.
-        Если не хочется сильно углубляться, можешь пойти по простому пути и отметить это ниже.
-      </p>
-
-      <form id="participant-form" class="form-grid">
-        <div class="field">
-          <label class="label" for="load-level">Какой формат нагрузки тебе сейчас ближе?</label>
-          <select class="select" id="load-level" name="loadLevel">
-            <option value="">Выбрать</option>
-            <option value="soft-start">Хочу мягко начать и постепенно войти</option>
-            <option value="steady">Готова к нормальному стабильному темпу</option>
-            <option value="intensive">Готова к интенсивному режиму</option>
-            <option value="help-me-choose">Не знаю, помогите подобрать</option>
-          </select>
-        </div>
-
-        <label class="checkbox">
-          <input type="checkbox" id="simple-path" name="simplePath">
-          <span>
-            <span class="label">Хочу пойти по простому пути</span>
-            <span class="label-note">Можно не углубляться в детали. Мы просто откроем базовый оптимальный вариант и начнём с него.</span>
-          </span>
-        </label>
-
-        <div class="field">
-          <label class="label" for="course-choice">Если уже знаешь, какой курс Sekta хочешь параллельно</label>
-          <div class="label-note">Например: Basics, Superhuman, Core, или любой другой фокусный/комплексный курс.</div>
-          <input class="input" id="course-choice" name="courseChoice" type="text" maxlength="240" placeholder="Напиши название курса, если уже выбрала">
-        </div>
-
-        <div class="field">
-          <label class="label" for="profile-notes">Что важно знать про твою нагрузку, питание и особенности?</label>
-          <div class="label-note">
-            Пример ориентира: текущая форма, опыт тренировок, боли/ограничения, что сложно даётся,
-            как сейчас устроено питание, есть ли РПП, сильные вкусовые привычки, что тебе помогает или мешает.
-            Если не хочешь в это идти — можешь пропустить.
-          </div>
-          <textarea class="textarea" id="profile-notes" name="profileNotes" maxlength="4000" placeholder="Можно рассказать про тело, энергию, питание, ограничения, режим, цели, что у тебя обычно работает, а что нет."></textarea>
-        </div>
-
-        <div class="actions">
-          <button class="button" type="submit">Отправить</button>
-          <div class="status" id="participant-status" aria-live="polite"></div>
-        </div>
-      </form>
-    </section>
-  </main>
-
-  <script>
-    const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
-    const PARTICIPANT_NAME = {name!r};
-    const PARTICIPANT_SLUG = {slug!r};
-    const CONTROL_CHARS_RE = /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/g;
-    const BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g;
-    const LIMITS = Object.freeze({{
-      courseChoice: 240,
-      profileNotes: 4000
-    }});
-
-    const form = document.getElementById('participant-form');
-    const statusEl = document.getElementById('participant-status');
-
-    const sanitizeField = (value, {{ multiline = false, limit = 240 }} = {{}}) => {{
-      const cleaned = String(value || '')
-        .replace(/\\r\\n?/g, '\\n')
-        .replace(CONTROL_CHARS_RE, '')
-        .replace(BIDI_CONTROL_RE, '')
-        .trim();
-
-      const normalized = multiline
-        ? cleaned
-            .split('\\n')
-            .map((line) => line.trimEnd())
-            .join('\\n')
-            .replace(/\\n{{3,}}/g, '\\n\\n')
-            .trim()
-        : cleaned.replace(/\\s+/g, ' ').trim();
-
-      return normalized.slice(0, limit);
-    }};
-
-    form.addEventListener('submit', async (event) => {{
-      event.preventDefault();
-      statusEl.className = 'status';
-
-      const formData = new FormData(form);
-      const payload = {{
-        kind: 'participant-profile',
-        participantName: PARTICIPANT_NAME,
-        participantSlug: PARTICIPANT_SLUG,
-        loadLevel: sanitizeField(formData.get('loadLevel'), {{ limit: 80 }}),
-        simplePath: formData.get('simplePath') === 'on',
-        courseChoice: sanitizeField(formData.get('courseChoice'), {{ limit: LIMITS.courseChoice }}),
-        profileNotes: sanitizeField(formData.get('profileNotes'), {{ multiline: true, limit: LIMITS.profileNotes }}),
-        source: 'high-performance-participant-profile',
-        pageUrl: window.location.href,
-        submittedAt: new Date().toISOString()
-      }};
-
-      if (!payload.loadLevel && !payload.simplePath && !payload.courseChoice && !payload.profileNotes) {{
-        statusEl.textContent = 'Оставь хотя бы один ориентир для подбора или отметь простой путь.';
-        statusEl.classList.add('is-error');
-        return;
-      }}
-
-      const submitButton = form.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
-      submitButton.textContent = 'Отправляем...';
-
-      try {{
-        const response = await fetch(FORM_ENDPOINT, {{
-          method: 'POST',
-          headers: {{
-            'Content-Type': 'application/json'
-          }},
-          body: JSON.stringify(payload)
-        }});
-
-        if (!response.ok) {{
-          throw new Error('request_failed');
-        }}
-
-        form.reset();
-        statusEl.textContent = 'Спасибо. Всё получили, вернёмся к тебе с подходящим курсом и рекомендацией.';
-        statusEl.classList.add('is-success');
-      }} catch (error) {{
-        statusEl.textContent = 'Не удалось отправить анкету. Попробуй ещё раз чуть позже.';
-        statusEl.classList.add('is-error');
-      }} finally {{
-        submitButton.disabled = false;
-        submitButton.textContent = 'Отправить';
-      }}
-    }});
-  </script>
+      <div class="admin-note">Отдельная админка не привязана к этому публичному индексу и должна открываться только командой.</div>
+    </div>
+  </div>
 </body>
 </html>
 """
 
 
-def build_index(entries: list[dict[str, str]]) -> str:
-    cards = []
-    for entry in entries:
-        cards.append(
-            f"""
-          <a class="card" href="{entry['filename']}">
-            <span class="card-name">{entry['name']}</span>
-            <span class="card-meta">персональная анкета</span>
-          </a>"""
-        )
-
-    cards_html = "\n".join(cards)
-
+def build_admin_page() -> str:
     return f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>High Performance — анкеты участниц</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>HIGH PERFORMANCE — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
+    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     :root {{
-      --cream: #fbf7f2;
-      --warm-white: rgba(255, 253, 249, 0.88);
-      --terracotta: #c8744d;
-      --charcoal: #3d3834;
-      --warm-gray: #847c74;
-      --line: rgba(200, 116, 77, 0.16);
-      --shadow: 0 24px 70px rgba(90, 72, 56, 0.08);
-      --font-display: "Cormorant Garamond", Georgia, serif;
-      --font-body: "Nunito Sans", "Segoe UI", sans-serif;
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface-hover: #1e1e1e;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --text-muted: #6f6f6f;
+      --accent: #c9a96e;
+      --accent-glow: rgba(201, 169, 110, 0.12);
+      --radius: 14px;
     }}
-
-    * {{
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }}
-
     body {{
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(216, 141, 109, 0.14), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(239, 229, 216, 0.72), transparent 36%),
-        linear-gradient(180deg, #fcf9f5 0%, #f9f4ed 100%);
-      color: var(--charcoal);
-      font-family: var(--font-body);
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
       padding: 32px 16px 56px;
     }}
-
-    .page {{
-      max-width: 1180px;
+    .container {{
+      max-width: 1240px;
       margin: 0 auto;
     }}
-
     .hero {{
       text-align: center;
-      padding: 20px 0 30px;
+      padding: 28px 0 30px;
     }}
-
-    .hero-tag {{
-      display: inline-flex;
-      padding: 12px 24px;
-      border: 1px solid rgba(200, 116, 77, 0.24);
-      border-radius: 999px;
-      color: var(--terracotta);
-      letter-spacing: 0.24em;
+    .hero-label {{
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
       text-transform: uppercase;
-      font-size: 0.86rem;
-      background: rgba(255, 253, 249, 0.48);
+      color: var(--accent);
+      margin-bottom: 22px;
     }}
-
     h1 {{
-      margin-top: 28px;
-      font-family: var(--font-display);
-      font-size: clamp(4rem, 8vw, 6.2rem);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 8vw, 68px);
       font-weight: 400;
-      line-height: 0.94;
-      letter-spacing: -0.04em;
+      line-height: 1.02;
+      margin-bottom: 16px;
     }}
-
-    h1 span {{
-      display: block;
-      color: var(--terracotta);
+    h1 em {{
       font-style: italic;
+      color: var(--accent);
     }}
-
-    .hero p {{
-      max-width: 780px;
-      margin: 24px auto 0;
-      color: var(--warm-gray);
-      font-size: 1.05rem;
-      line-height: 1.8;
+    .hero-sub {{
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 300;
     }}
-
-    .section {{
-      margin-top: 22px;
-      padding: 28px;
-      border-radius: 28px;
-      background: var(--warm-white);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }}
-
-    .section-label {{
-      color: var(--terracotta);
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: 0.76rem;
-      margin-bottom: 12px;
-    }}
-
-    .section h2 {{
-      font-family: var(--font-display);
-      font-size: 2.2rem;
-      font-weight: 500;
-      line-height: 1;
-      margin-bottom: 12px;
-    }}
-
-    .section p {{
-      color: var(--warm-gray);
-      line-height: 1.75;
-    }}
-
-    .grid {{
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
+    .panel {{
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
       margin-top: 18px;
     }}
-
-    .card {{
-      display: block;
-      text-decoration: none;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 20px 18px;
-      background: rgba(255, 255, 255, 0.54);
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }}
-
-    .card:hover {{
-      transform: translateY(-2px);
-      border-color: rgba(200, 116, 77, 0.32);
-    }}
-
-    .card-name {{
-      display: block;
-      font-family: var(--font-display);
-      font-size: 2rem;
-      color: var(--charcoal);
-      line-height: 1;
-    }}
-
-    .card-meta {{
-      display: block;
-      margin-top: 8px;
-      color: var(--warm-gray);
-      font-size: 0.94rem;
-    }}
-
-    .admin-grid {{
-      display: grid;
-      gap: 14px;
-      margin-top: 18px;
-    }}
-
-    .admin-row {{
+    .row {{
       display: grid;
       gap: 8px;
+      margin-bottom: 16px;
     }}
-
     .label {{
-      color: var(--charcoal);
-      font-size: 0.94rem;
+      font-size: 13px;
       font-weight: 600;
+      color: var(--text);
     }}
-
     .note {{
-      color: #a49b92;
-      font-size: 0.88rem;
-      line-height: 1.5;
+      color: var(--text-muted);
+      font-size: 13px;
     }}
-
     .input {{
       width: 100%;
-      border-radius: 18px;
-      border: 1px solid rgba(200, 116, 77, 0.18);
-      background: rgba(255, 255, 255, 0.75);
-      color: var(--charcoal);
+      background: #141414;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
       font: inherit;
       padding: 14px 16px;
       outline: none;
     }}
-
     .input:focus {{
-      border-color: rgba(200, 116, 77, 0.42);
-      box-shadow: 0 0 0 4px rgba(200, 116, 77, 0.08);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }}
-
     .actions {{
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
       align-items: center;
     }}
-
     .button {{
+      background: var(--accent);
+      color: var(--bg);
       border: none;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--terracotta), #d88d6d);
-      color: white;
-      font: inherit;
       padding: 13px 20px;
+      font: inherit;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       cursor: pointer;
     }}
-
     .status {{
-      color: var(--warm-gray);
-      font-size: 0.94rem;
-      line-height: 1.5;
-      min-height: 1.5em;
+      min-height: 1.4em;
+      color: var(--text-secondary);
+      font-size: 13px;
     }}
-
-    .status.is-error {{
-      color: #b1533d;
-    }}
-
+    .status.is-error {{ color: #d98274; }}
+    .status.is-success {{ color: #9fc47b; }}
     .table-wrap {{
       overflow-x: auto;
       margin-top: 18px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.6);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
     }}
-
     table {{
       width: 100%;
       border-collapse: collapse;
-      min-width: 880px;
+      min-width: 1120px;
+      background: #141414;
     }}
-
-    th,
-    td {{
+    th, td {{
       padding: 14px 16px;
       text-align: left;
-      border-bottom: 1px solid rgba(200, 116, 77, 0.12);
+      border-bottom: 1px solid var(--border);
       vertical-align: top;
-      font-size: 0.95rem;
-      line-height: 1.5;
+      font-size: 14px;
     }}
-
     th {{
-      color: var(--terracotta);
-      font-size: 0.82rem;
-      text-transform: uppercase;
+      color: var(--accent);
+      font-size: 11px;
       letter-spacing: 0.16em;
-      background: rgba(255, 253, 249, 0.84);
+      text-transform: uppercase;
+      font-weight: 600;
     }}
-
     td small {{
-      color: var(--warm-gray);
+      color: var(--text-muted);
     }}
-
-    td a {{
-      color: var(--terracotta);
+    .details-btn {{
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(201, 169, 110, 0.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
     }}
-
-    @media (max-width: 900px) {{
-      .grid {{
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }}
+    .modal {{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.82);
+      padding: 24px;
+      z-index: 100;
+      overflow: auto;
     }}
-
-    @media (max-width: 640px) {{
-      .grid {{
-        grid-template-columns: 1fr;
-      }}
-
-      .section {{
-        padding: 22px 18px;
-      }}
+    .modal.visible {{ display: block; }}
+    .modal-card {{
+      max-width: 880px;
+      margin: 40px auto;
+      background: #111;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+    }}
+    .modal-header {{
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }}
+    .modal-title {{
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      line-height: 1.1;
+    }}
+    .close-btn {{
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      font-size: 14px;
+    }}
+    .detail-section {{
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--border);
+    }}
+    .detail-section h3 {{
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }}
+    .detail-section p, .detail-section li {{
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+    }}
+    .detail-section ul {{
+      padding-left: 18px;
     }}
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div class="hero-tag">High Performance • анкеты участниц</div>
-      <h1>High <span>Performance</span></h1>
-      <p>
-        Здесь собраны персональные анкеты для подбора параллельного курса Sekta
-        и единая таблица ответов команды.
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">High Performance</div>
+      <h1>Admin <em>results</em></h1>
+      <p class="hero-sub">
+        Эта страница читает ответы из private GitHub repo <code>{PRIVATE_REPO}</code>.
+        Для просмотра нужен GitHub token с доступом <strong>Issues: Read</strong>.
       </p>
-    </section>
+    </div>
 
-    <section class="section">
-      <div class="section-label">Персональные ссылки</div>
-      <h2>Анкеты участниц</h2>
-      <p>Открывай нужную страницу и отправляй её конкретной участнице.</p>
-      <div class="grid">
-{cards_html}
+    <div class="panel">
+      <div class="row">
+        <label class="label" for="gh-token">GitHub token</label>
+        <div class="note">Токен хранится только в localStorage этого браузера. Публично он никуда не вставляется, кроме запроса к GitHub API из этой страницы.</div>
+        <input class="input" id="gh-token" type="password" placeholder="github_pat_...">
       </div>
-    </section>
-
-    <section class="section">
-      <div class="section-label">Командная таблица</div>
-      <h2>Ответы участниц</h2>
-      <p>
-        Таблица читает private GitHub issues из <code>{PRIVATE_REPO}</code>.
-        Чтобы увидеть ответы, вставь GitHub token с доступом <strong>Issues: Read</strong> для этого репозитория.
-      </p>
-
-      <div class="admin-grid">
-        <div class="admin-row">
-          <label class="label" for="gh-token">GitHub token</label>
-          <div class="note">Токен хранится только в localStorage этого браузера и нужен, потому что репозиторий с ответами закрытый.</div>
-          <input class="input" id="gh-token" type="password" placeholder="github_pat_...">
-        </div>
-        <div class="actions">
-          <button class="button" id="load-table" type="button">Загрузить таблицу</button>
-          <button class="button" id="clear-token" type="button">Очистить token</button>
-          <div class="status" id="table-status" aria-live="polite"></div>
-        </div>
+      <div class="actions">
+        <button class="button" id="load-results" type="button">Load results</button>
+        <button class="button" id="clear-token" type="button">Clear token</button>
+        <div class="status" id="load-status" aria-live="polite"></div>
       </div>
+    </div>
 
+    <div class="panel">
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Участница</th>
               <th>Дата</th>
-              <th>Нагрузка</th>
-              <th>Простой путь</th>
+              <th>Путь</th>
               <th>Курс</th>
-              <th>Ответ</th>
+              <th>Вижен</th>
+              <th>Персональный контекст</th>
+              <th>Детали</th>
               <th>Issue</th>
             </tr>
           </thead>
-          <tbody id="table-body">
-            <tr>
-              <td colspan="7">Пока данных нет. Вставь GitHub token и нажми «Загрузить таблицу».</td>
-            </tr>
+          <tbody id="results-body">
+            <tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <div class="modal" id="details-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Ответ</div>
+        <button class="close-btn" id="close-modal" type="button">закрыть</button>
+      </div>
+      <div id="modal-content"></div>
+    </div>
+  </div>
 
   <script>
-    const STORAGE_KEY = 'hp-participant-table-github-token';
+    const STORAGE_KEY = 'hp-participant-admin-github-token-v1';
     const REPO_ISSUES_URL = 'https://api.github.com/repos/{PRIVATE_REPO}/issues?state=all&per_page=100';
-    const tableBody = document.getElementById('table-body');
-    const tableStatus = document.getElementById('table-status');
     const tokenInput = document.getElementById('gh-token');
-    const loadButton = document.getElementById('load-table');
+    const loadButton = document.getElementById('load-results');
     const clearButton = document.getElementById('clear-token');
+    const loadStatus = document.getElementById('load-status');
+    const resultsBody = document.getElementById('results-body');
+    const detailsModal = document.getElementById('details-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const closeModalButton = document.getElementById('close-modal');
+
+    let currentRecords = [];
 
     tokenInput.value = localStorage.getItem(STORAGE_KEY) || '';
+
+    function escapeHtml(value) {{
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }}
 
     function decodeRecordFromBody(body) {{
       const match = body.match(/<!-- lead-data:v1:([^>]+) -->/);
@@ -922,57 +804,112 @@ def build_index(entries: list[dict[str, str]]) -> str:
       }}
     }}
 
-    function escapeHtml(value) {{
-      return String(value || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;');
+    function truncateText(value, limit = 110) {{
+      const text = String(value || '').trim();
+      if (!text) {{
+        return '<small>—</small>';
+      }}
+      return escapeHtml(text.length > limit ? `${{text.slice(0, limit)}}…` : text);
+    }}
+
+    function labelForPath(value) {{
+      if (value === 'short') return 'Короткий';
+      if (value === 'personal') return 'Персональный';
+      return '—';
     }}
 
     function renderRows(records) {{
       if (!records.length) {{
-        tableBody.innerHTML = '<tr><td colspan="7">Пока нет анкет этого типа.</td></tr>';
+        resultsBody.innerHTML = '<tr><td colspan="8">Пока нет анкет этого типа.</td></tr>';
         return;
       }}
 
-      tableBody.innerHTML = records.map((record) => {{
+      resultsBody.innerHTML = records.map((record, index) => {{
+        const responseData = record.responseData || {{}};
+        const vision = responseData.visionFuture || '';
+        const context = record.personalContext || responseData.personalContext || '';
         const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
-        const notes = record.profileNotes
-          ? escapeHtml(record.profileNotes).replaceAll('\\n', '<br>')
-          : '<small>без подробностей</small>';
-        const course = escapeHtml(record.courseChoice || '—');
-        const loadLevel = escapeHtml(record.loadLevel || '—');
-        const simplePath = record.simplePath ? 'да' : '—';
-        const issueLink = record.issueUrl
-          ? `<a href="${{record.issueUrl}}" target="_blank" rel="noopener noreferrer">issue</a>`
-          : '—';
 
         return `
           <tr>
             <td>${{escapeHtml(record.participantName || '—')}}</td>
             <td>${{submittedAt}}</td>
-            <td>${{loadLevel}}</td>
-            <td>${{simplePath}}</td>
-            <td>${{course}}</td>
-            <td>${{notes}}</td>
-            <td>${{issueLink}}</td>
+            <td>${{escapeHtml(labelForPath(record.selectedPath || responseData.selectedPath))}}</td>
+            <td>${{truncateText(record.courseChoice || responseData.courseChoice || '', 70)}}</td>
+            <td>${{truncateText(vision, 90)}}</td>
+            <td>${{truncateText(context, 90)}}</td>
+            <td><button class="details-btn" type="button" data-index="${{index}}">Открыть</button></td>
+            <td><a href="${{record.issueUrl}}" target="_blank" rel="noopener noreferrer">issue</a></td>
           </tr>
         `;
       }}).join('');
     }}
 
-    async function loadTable() {{
+    function sectionHtml(title, body) {{
+      return `
+        <div class="detail-section">
+          <h3>${{escapeHtml(title)}}</h3>
+          ${{body}}
+        </div>
+      `;
+    }}
+
+    function paragraph(value) {{
+      if (!value) {{
+        return '<p>—</p>';
+      }}
+      return `<p>${{escapeHtml(String(value)).replaceAll('\\n', '<br>')}}</p>`;
+    }}
+
+    function list(values) {{
+      if (!values || !values.length) {{
+        return '<p>—</p>';
+      }}
+      return `<ul>${{values.map((value) => `<li>${{escapeHtml(value)}}</li>`).join('')}}</ul>`;
+    }}
+
+    function openDetails(index) {{
+      const record = currentRecords[index];
+      if (!record) {{
+        return;
+      }}
+
+      const responseData = record.responseData || {{}};
+      const vip = responseData.vip || {{}};
+      const body = [
+        sectionHtml('Вижен недалёкого будущего', paragraph(responseData.visionFuture)),
+        sectionHtml('Выбранный путь', paragraph(labelForPath(record.selectedPath || responseData.selectedPath))),
+        sectionHtml('Выбранный курс', paragraph(record.courseChoice || responseData.courseChoice)),
+        sectionHtml('Персональный контекст', paragraph(record.personalContext || responseData.personalContext)),
+        sectionHtml('Я здесь, чтобы...', paragraph(vip.purpose)),
+        sectionHtml('Возраст / Рост / Вес', paragraph([vip.age, vip.height, vip.weight].filter(Boolean).join(' / '))),
+        sectionHtml('Дети / беременность', paragraph([vip.childrenStatus, vip.childrenDetail, vip.pregnantDetail].filter(Boolean).join(' / '))),
+        sectionHtml('Здоровье и ограничения', paragraph(vip.healthRestrictions)),
+        sectionHtml('Диастаз', paragraph(vip.diastasis)),
+        sectionHtml('Актуально по тазовому дну', list(vip.pelvicFloorFlags)),
+        sectionHtml('Отношение к питанию', list(vip.nutritionFlags)),
+        sectionHtml('Твой обычный день', paragraph(vip.typicalDay)),
+        sectionHtml('Питание и привычки', paragraph(vip.foodHabits)),
+        sectionHtml('Препараты', paragraph(vip.medications)),
+        sectionHtml('Сообщение для куратора', paragraph(vip.curatorMessage))
+      ].join('');
+
+      modalTitle.textContent = record.participantName || 'Ответ';
+      modalContent.innerHTML = body;
+      detailsModal.classList.add('visible');
+    }}
+
+    async function loadResults() {{
       const token = tokenInput.value.trim();
       if (!token) {{
-        tableStatus.textContent = 'Вставь GitHub token с доступом Issues: Read.';
-        tableStatus.className = 'status is-error';
+        loadStatus.textContent = 'Вставь GitHub token с доступом Issues: Read.';
+        loadStatus.className = 'status is-error';
         return;
       }}
 
       localStorage.setItem(STORAGE_KEY, token);
-      tableStatus.textContent = 'Загружаем...';
-      tableStatus.className = 'status';
+      loadStatus.textContent = 'Загружаем...';
+      loadStatus.className = 'status';
 
       try {{
         const response = await fetch(REPO_ISSUES_URL, {{
@@ -987,37 +924,49 @@ def build_index(entries: list[dict[str, str]]) -> str:
         }}
 
         const issues = await response.json();
-        const records = issues
+        currentRecords = issues
           .map((issue) => {{
             const record = decodeRecordFromBody(issue.body || '');
-            if (!record || record.kind !== 'high-performance-participant-profile') {{
+            if (!record || record.kind !== 'high-performance-participant-questionnaire') {{
               return null;
             }}
-
-            return {{
-              ...record,
-              issueUrl: issue.html_url
-            }};
+            return {{ ...record, issueUrl: issue.html_url }};
           }})
           .filter(Boolean)
           .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
 
-        renderRows(records);
-        tableStatus.textContent = `Готово. Загружено анкет: ${{records.length}}.`;
-        tableStatus.className = 'status is-success';
+        renderRows(currentRecords);
+        loadStatus.textContent = `Готово. Загружено ответов: ${{currentRecords.length}}.`;
+        loadStatus.className = 'status is-success';
       }} catch (error) {{
-        tableStatus.textContent = 'Не удалось загрузить таблицу. Проверь token и доступ к private repo.';
-        tableStatus.className = 'status is-error';
+        loadStatus.textContent = 'Не удалось загрузить результаты. Проверь token и доступ к private repo.';
+        loadStatus.className = 'status is-error';
       }}
     }}
 
-    loadButton.addEventListener('click', loadTable);
+    resultsBody.addEventListener('click', (event) => {{
+      const button = event.target.closest('[data-index]');
+      if (!button) {{
+        return;
+      }}
+
+      openDetails(Number(button.dataset.index));
+    }});
+
+    closeModalButton.addEventListener('click', () => detailsModal.classList.remove('visible'));
+    detailsModal.addEventListener('click', (event) => {{
+      if (event.target === detailsModal) {{
+        detailsModal.classList.remove('visible');
+      }}
+    }});
+    loadButton.addEventListener('click', loadResults);
     clearButton.addEventListener('click', () => {{
       localStorage.removeItem(STORAGE_KEY);
       tokenInput.value = '';
-      tableStatus.textContent = 'Token очищен.';
-      tableStatus.className = 'status';
-      tableBody.innerHTML = '<tr><td colspan="7">Пока данных нет. Вставь GitHub token и нажми «Загрузить таблицу».</td></tr>';
+      currentRecords = [];
+      resultsBody.innerHTML = '<tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>';
+      loadStatus.textContent = 'Token очищен.';
+      loadStatus.className = 'status';
     }});
   </script>
 </body>
@@ -1025,7 +974,7 @@ def build_index(entries: list[dict[str, str]]) -> str:
 """
 
 
-def build_links(entries: list[dict[str, str]]) -> str:
+def build_links_text(entries: list[dict[str, str]]) -> str:
     lines = ["High Performance participant questionnaires", ""]
     for entry in entries:
         lines.append(f"{entry['name']}: {PUBLIC_BASE_URL}/{entry['filename']}")
@@ -1033,6 +982,7 @@ def build_links(entries: list[dict[str, str]]) -> str:
 
 
 def main() -> None:
+    template = load_template()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for old_file in OUTPUT_DIR.glob("participant_*_april_2026_v1.html"):
@@ -1047,13 +997,15 @@ def main() -> None:
         slug = base_slug if base_slug not in used_slugs else f"{base_slug}-{contact_slug}"
         used_slugs.add(slug)
 
+        participant_with_slug = {**participant, "slug": slug}
         filename = f"participant_{slug}_april_2026_v1.html"
-        html = build_questionnaire_html(participant["name"], slug)
-        (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
+        page_html = build_participant_page(template, participant_with_slug)
+        (OUTPUT_DIR / filename).write_text(page_html, encoding="utf-8")
         entries.append({"name": participant["name"], "filename": filename})
 
-    (OUTPUT_DIR / "index.html").write_text(build_index(entries), encoding="utf-8")
-    (OUTPUT_DIR / "links.txt").write_text(build_links(entries), encoding="utf-8")
+    (OUTPUT_DIR / "index.html").write_text(build_index_page(entries), encoding="utf-8")
+    (OUTPUT_DIR / "admin.html").write_text(build_admin_page(), encoding="utf-8")
+    (OUTPUT_DIR / "links.txt").write_text(build_links_text(entries), encoding="utf-8")
     print(f"Generated {len(entries)} participant questionnaires in {OUTPUT_DIR}")
 
 
