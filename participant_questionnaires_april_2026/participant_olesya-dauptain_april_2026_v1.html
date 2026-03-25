@@ -160,7 +160,7 @@
   }
 
   /* ── Form elements ── */
-  select, textarea, input[type="text"] {
+  select, textarea, input[type="text"], input[type="email"] {
     width: 100%;
     background: var(--surface);
     border: 1.5px solid var(--border);
@@ -175,7 +175,7 @@
     -webkit-appearance: none;
   }
 
-  select:focus, textarea:focus, input[type="text"]:focus {
+  select:focus, textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-glow);
   }
@@ -576,6 +576,17 @@
 </div>
 
 <div class="container">
+
+  <div class="section reveal">
+    <div class="section-label">Личный кабинет</div>
+    <h2>Сначала оставь свой email</h2>
+    <p>Он нужен нам в самом начале, чтобы создать и привязать твой личный кабинет. Это обязательное поле.</p>
+    <p><em>Если у тебя уже есть аккаунт, всё равно укажи тот email, к которому хочешь его привязать.</em></p>
+    <div class="spacer-sm"></div>
+    <input id="participant-email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com">
+  </div>
+
+  <hr class="divider">
 
   <!-- ═══════ VISION ═══════ -->
   <div class="section reveal">
@@ -1007,8 +1018,10 @@
     const path1Active = document.getElementById('path1').classList.contains('active');
     const path2Active = document.getElementById('path2').classList.contains('active');
     const selectedChildren = document.querySelector('input[name="children"]:checked');
+    const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
 
     const responseData = {
+      participantEmail,
       visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
       selectedPath: path1Active ? 'short' : path2Active ? 'personal' : '',
       courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
@@ -1036,6 +1049,7 @@
       kind: 'participant-questionnaire',
       participantName: PARTICIPANT_NAME,
       participantSlug: PARTICIPANT_SLUG,
+      email: participantEmail,
       selectedPath: responseData.selectedPath,
       courseChoice: responseData.courseChoice,
       personalContext: responseData.personalContext,
@@ -1061,6 +1075,19 @@
     const successOverlay = document.getElementById('success');
     const successMessage = document.getElementById('success-message');
     const submitButton = document.querySelector('.submit-btn');
+    const emailValue = payload.email || '';
+
+    if (!emailValue) {
+      alert('Сначала укажи email. Он нужен для привязки личного кабинета.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      alert('Похоже, email указан с ошибкой. Проверь, пожалуйста, адрес ещё раз.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }
 
     if (!hasMeaningfulValue(payload.responseData)) {
       alert('Заполни хотя бы один блок анкеты, чтобы мы могли что-то подобрать.');

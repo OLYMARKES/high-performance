@@ -91,8 +91,34 @@ def add_personalization(template: str, name: str) -> str:
     html = html.replace("<title>HIGH PERFORMANCE — Анкета</title>", f"<title>HIGH PERFORMANCE — Анкета для {name}</title>", 1)
     html = html.replace("<div class=\"hero-greeting\">Привет, <em>{Имя}</em></div>", f"<div class=\"hero-greeting\">Привет, <em>{name}</em></div>", 1)
     html = html.replace(
+        'select, textarea, input[type="text"] {',
+        'select, textarea, input[type="text"], input[type="email"] {',
+        1,
+    )
+    html = html.replace(
+        'select:focus, textarea:focus, input[type="text"]:focus {',
+        'select:focus, textarea:focus, input[type="text"]:focus, input[type="email"]:focus {',
+        1,
+    )
+    html = html.replace(
         '<p class="hero-sub">Я очень рада, что ты с нами. Поехали :)</p>',
         '<p class="hero-sub">Я очень рада, что ты с нами. Здесь можно спокойно заполнить всё в своём ритме — черновик сохранится автоматически.</p>',
+        1,
+    )
+    html = html.replace(
+        "<div class=\"container\">",
+        """<div class="container">
+
+  <div class="section reveal">
+    <div class="section-label">Личный кабинет</div>
+    <h2>Сначала оставь свой email</h2>
+    <p>Он нужен нам в самом начале, чтобы создать и привязать твой личный кабинет. Это обязательное поле.</p>
+    <p><em>Если у тебя уже есть аккаунт, всё равно укажи тот email, к которому хочешь его привязать.</em></p>
+    <div class="spacer-sm"></div>
+    <input id="participant-email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com">
+  </div>
+
+  <hr class="divider">""",
         1,
     )
     html = html.replace(
@@ -225,8 +251,10 @@ def build_runtime_script(name: str, slug: str) -> str:
     const path1Active = document.getElementById('path1').classList.contains('active');
     const path2Active = document.getElementById('path2').classList.contains('active');
     const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
+    const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
 
     const responseData = {{
+      participantEmail,
       visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
       selectedPath: path1Active ? 'short' : path2Active ? 'personal' : '',
       courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
@@ -254,6 +282,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       kind: 'participant-questionnaire',
       participantName: PARTICIPANT_NAME,
       participantSlug: PARTICIPANT_SLUG,
+      email: participantEmail,
       selectedPath: responseData.selectedPath,
       courseChoice: responseData.courseChoice,
       personalContext: responseData.personalContext,
@@ -279,6 +308,19 @@ def build_runtime_script(name: str, slug: str) -> str:
     const successOverlay = document.getElementById('success');
     const successMessage = document.getElementById('success-message');
     const submitButton = document.querySelector('.submit-btn');
+    const emailValue = payload.email || '';
+
+    if (!emailValue) {{
+      alert('Сначала укажи email. Он нужен для привязки личного кабинета.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }}
+
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(emailValue)) {{
+      alert('Похоже, email указан с ошибкой. Проверь, пожалуйста, адрес ещё раз.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }}
 
     if (!hasMeaningfulValue(payload.responseData)) {{
       alert('Заполни хотя бы один блок анкеты, чтобы мы могли что-то подобрать.');
@@ -747,6 +789,7 @@ def build_admin_page() -> str:
           <thead>
             <tr>
               <th>Участница</th>
+              <th>Email</th>
               <th>Дата</th>
               <th>Путь</th>
               <th>Курс</th>
@@ -757,7 +800,7 @@ def build_admin_page() -> str:
             </tr>
           </thead>
           <tbody id="results-body">
-            <tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>
+            <tr><td colspan="9">Пока нет данных. Вставь token и нажми Load results.</td></tr>
           </tbody>
         </table>
       </div>
@@ -829,7 +872,7 @@ def build_admin_page() -> str:
 
     function renderRows(records) {{
       if (!records.length) {{
-        resultsBody.innerHTML = '<tr><td colspan="8">Пока нет анкет этого типа.</td></tr>';
+        resultsBody.innerHTML = '<tr><td colspan="9">Пока нет анкет этого типа.</td></tr>';
         return;
       }}
 
@@ -837,11 +880,13 @@ def build_admin_page() -> str:
         const responseData = record.responseData || {{}};
         const vision = responseData.visionFuture || '';
         const context = record.personalContext || responseData.personalContext || '';
+        const email = record.email || responseData.participantEmail || '';
         const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
 
         return `
           <tr>
             <td>${{escapeHtml(record.participantName || '—')}}</td>
+            <td>${{truncateText(email, 46)}}</td>
             <td>${{submittedAt}}</td>
             <td>${{escapeHtml(labelForPath(record.selectedPath || responseData.selectedPath))}}</td>
             <td>${{truncateText(record.courseChoice || responseData.courseChoice || '', 70)}}</td>
@@ -886,6 +931,7 @@ def build_admin_page() -> str:
       const responseData = record.responseData || {{}};
       const vip = responseData.vip || {{}};
       const body = [
+        sectionHtml('Email', paragraph(record.email || responseData.participantEmail)),
         sectionHtml('Вижен недалёкого будущего', paragraph(responseData.visionFuture)),
         sectionHtml('Выбранный путь', paragraph(labelForPath(record.selectedPath || responseData.selectedPath))),
         sectionHtml('Выбранный курс', paragraph(record.courseChoice || responseData.courseChoice)),

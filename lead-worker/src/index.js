@@ -272,6 +272,7 @@ const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
     kind: 'high-performance-participant-questionnaire',
     participantName: submission.participantName,
     participantSlug: submission.participantSlug,
+    email: submission.email,
     selectedPath: submission.selectedPath,
     courseChoice: submission.courseChoice,
     personalContext: submission.personalContext,
@@ -296,6 +297,7 @@ const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
       '',
       '## Participant',
       `- Name: ${escapeMd(submission.participantName)}`,
+      `- Email: ${escapeMd(submission.email || '-')}`,
       `- Path: ${escapeMd(submission.selectedPath || '-')}`,
       `- Parallel course: ${escapeMd(submission.courseChoice || '-')}`,
       '',
@@ -388,6 +390,7 @@ const sanitizeSubmission = (payload) => {
       kind: 'participant-questionnaire',
       participantName: truncate(normalize(payload.participantName || payload.name), FIELD_LIMITS.participantName),
       participantSlug: truncate(normalize(payload.participantSlug), FIELD_LIMITS.participantSlug),
+      email: truncate(normalize(payload.email), FIELD_LIMITS.email),
       selectedPath: truncate(normalize(payload.selectedPath), FIELD_LIMITS.selectedPath),
       courseChoice: truncate(normalize(payload.courseChoice), FIELD_LIMITS.courseChoice),
       personalContext: truncate(normalize(payload.personalContext, { multiline: true }), FIELD_LIMITS.personalContext),
@@ -432,8 +435,12 @@ const validateSubmission = (submission) => {
   }
 
   if (submission.kind === 'participant-questionnaire') {
-    if (!submission.participantName) {
+    if (!submission.participantName || !submission.email) {
       return 'missing_required_fields';
+    }
+
+    if (!EMAIL_RE.test(submission.email)) {
+      return 'invalid_email';
     }
 
     if (
@@ -447,7 +454,7 @@ const validateSubmission = (submission) => {
 
     if (
       SUSPICIOUS_CONTENT_RE.test(
-        `${submission.participantName}\n${submission.selectedPath}\n${submission.courseChoice}\n${submission.personalContext}\n${JSON.stringify(submission.responseData)}`
+        `${submission.participantName}\n${submission.email}\n${submission.selectedPath}\n${submission.courseChoice}\n${submission.personalContext}\n${JSON.stringify(submission.responseData)}`
       )
     ) {
       return 'suspicious_content';

@@ -250,6 +250,7 @@
           <thead>
             <tr>
               <th>Участница</th>
+              <th>Email</th>
               <th>Дата</th>
               <th>Путь</th>
               <th>Курс</th>
@@ -260,7 +261,7 @@
             </tr>
           </thead>
           <tbody id="results-body">
-            <tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>
+            <tr><td colspan="9">Пока нет данных. Вставь token и нажми Load results.</td></tr>
           </tbody>
         </table>
       </div>
@@ -332,7 +333,7 @@
 
     function renderRows(records) {
       if (!records.length) {
-        resultsBody.innerHTML = '<tr><td colspan="8">Пока нет анкет этого типа.</td></tr>';
+        resultsBody.innerHTML = '<tr><td colspan="9">Пока нет анкет этого типа.</td></tr>';
         return;
       }
 
@@ -340,11 +341,13 @@
         const responseData = record.responseData || {};
         const vision = responseData.visionFuture || '';
         const context = record.personalContext || responseData.personalContext || '';
+        const email = record.email || responseData.participantEmail || '';
         const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
 
         return `
           <tr>
             <td>${escapeHtml(record.participantName || '—')}</td>
+            <td>${truncateText(email, 46)}</td>
             <td>${submittedAt}</td>
             <td>${escapeHtml(labelForPath(record.selectedPath || responseData.selectedPath))}</td>
             <td>${truncateText(record.courseChoice || responseData.courseChoice || '', 70)}</td>
@@ -389,6 +392,7 @@
       const responseData = record.responseData || {};
       const vip = responseData.vip || {};
       const body = [
+        sectionHtml('Email', paragraph(record.email || responseData.participantEmail)),
         sectionHtml('Вижен недалёкого будущего', paragraph(responseData.visionFuture)),
         sectionHtml('Выбранный путь', paragraph(labelForPath(record.selectedPath || responseData.selectedPath))),
         sectionHtml('Выбранный курс', paragraph(record.courseChoice || responseData.courseChoice)),
