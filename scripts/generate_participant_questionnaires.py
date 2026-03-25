@@ -13,6 +13,9 @@ PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 
 
 PARTICIPANTS = [
+    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual"},
+    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual"},
+    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual"},
     {"name": "Лера", "contact": "@lerakurepina", "issue": 26},
     {"name": "Аня", "contact": "@beregukukuhu", "issue": 25},
     {"name": "Viktoria", "contact": "@vpasko", "issue": 23},
@@ -332,10 +335,16 @@ def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
     html = add_personalization(template, participant["name"])
     html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['name'], slug)}\n</body>\n</html>", 1)
-    source_comment = (
-        f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
-        f"from GitHub issue #{participant['issue']}: https://github.com/OLYMARKES/high-performance-leads/issues/{participant['issue']} -->\n"
-    )
+    if participant.get("issue"):
+        source_comment = (
+            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+            f"from GitHub issue #{participant['issue']}: https://github.com/OLYMARKES/high-performance-leads/issues/{participant['issue']} -->\n"
+        )
+    else:
+        source_comment = (
+            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+            f"from manual roster update -->\n"
+        )
     return source_comment + html
 
 

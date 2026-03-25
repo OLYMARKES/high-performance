@@ -11,6 +11,9 @@ PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2
 
 
 PARTICIPANTS = [
+    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual"},
+    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual"},
+    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual"},
     {"name": "Лера", "contact": "@lerakurepina", "issue": 26},
     {"name": "Аня", "contact": "@beregukukuhu", "issue": 25},
     {"name": "Viktoria", "contact": "@vpasko", "issue": 23},
@@ -73,7 +76,7 @@ def slugify(value: str) -> str:
     return normalized.strip("-")
 
 
-def personalize_html(template: str, name: str, contact: str, slug: str, issue: int) -> str:
+def personalize_html(template: str, name: str, contact: str, slug: str, issue: int | None) -> str:
     title = f"Трекер дня 1–7 апреля 2026 — {name}"
     hero_tag = f"1–7 апреля 2026 • {name}"
     hero_copy = (
@@ -120,10 +123,13 @@ def personalize_html(template: str, name: str, contact: str, slug: str, issue: i
         1,
     )
 
-    source_comment = (
-        f"<!-- Generated for {name} from GitHub issue #{issue}: "
-        f"https://github.com/OLYMARKES/high-performance-leads/issues/{issue} -->\n"
-    )
+    if issue:
+        source_comment = (
+            f"<!-- Generated for {name} from GitHub issue #{issue}: "
+            f"https://github.com/OLYMARKES/high-performance-leads/issues/{issue} -->\n"
+        )
+    else:
+        source_comment = f"<!-- Generated for {name} from manual roster update -->\n"
     return source_comment + html
 
 
@@ -325,14 +331,14 @@ def main() -> None:
             name=participant["name"],
             contact=participant["contact"],
             slug=slug,
-            issue=participant["issue"],
+            issue=participant.get("issue"),
         )
         (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
         entries.append(
             {
                 "name": participant["name"],
                 "contact": participant["contact"],
-                "issue": str(participant["issue"]),
+                "issue": str(participant.get("issue", "")),
                 "filename": filename,
             }
         )

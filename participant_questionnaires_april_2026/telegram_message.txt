@@ -1,4 +1,19 @@
-High Performance participant questionnaires
+Девочки, для каждой из вас готова персональная анкета High Performance.
+
+Что делать:
+1. Открыть свою персональную ссылку.
+2. Спокойно заполнить анкету в удобном темпе.
+3. Нажать «отправить» в конце формы.
+
+Как это работает:
+- у каждой участницы своя персональная страница;
+- черновик сохраняется автоматически, так что можно не заполнять всё за один раз;
+- после отправки анкета приходит нам, и на её основе мы подберём вам подходящий курс Sekta и рекомендации по нагрузке и питанию.
+
+Если отправляешь ссылку лично участнице, можно писать так:
+«Это твоя персональная анкета для High Performance. Открой, пожалуйста, свою ссылку и заполни её в удобное время. Черновик сохраняется автоматически, а после отправки мы посмотрим ответы и подберём тебе оптимальный курс и рекомендации».
+
+Персональные ссылки:
 
 Оля Маркес: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_olya-markes_april_2026_v1.html
 Даша Простова: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_dasha-prostova_april_2026_v1.html
@@ -16,6 +31,6 @@ Ksu Matusevich: https://olymarkes.github.io/high-performance/participant_questio
 Жанар: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_zhanar_april_2026_v1.html
 Анна: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_anna_april_2026_v1.html
 Вика: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_vika_april_2026_v1.html
-Наташа: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_natasha-nathaliedanz_april_2026_v1.html
+Наташа (2): https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_natasha-nathaliedanz_april_2026_v1.html
 Катя: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_katya_april_2026_v1.html
 Екатерина Прозорова: https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/participant_ekaterina-prozorova_april_2026_v1.html
