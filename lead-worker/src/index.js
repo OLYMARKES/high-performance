@@ -295,7 +295,7 @@ const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
   const contextBlock = submission.personalContext ? quoteMd(submission.personalContext) : '> —';
 
   return {
-    title: `[lead] Participant Questionnaire - ${submission.participantName} - ${metadata.submittedAt.slice(0, 10)}`,
+    title: `Participant Questionnaire Record - ${submission.participantName}`,
     body: [
       '<!-- lead-record -->',
       `<!-- ${JSON.stringify(metadata)} -->`,
@@ -319,6 +319,48 @@ const buildParticipantQuestionnaireIssuePayload = (submission, request) => {
       `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
       `- Source: ${escapeMd(metadata.source)}`,
       `- Participant slug: ${escapeMd(submission.participantSlug || '-')}`,
+      `- Request ID: ${requestId}`
+    ].join('\n')
+  };
+};
+
+const buildParticipantQuestionnaireSaveEventPayload = (submission, request, storageIssueNumber) => {
+  const { requestId, metadata } = buildSubmissionContext(submission, request);
+  const eventRecord = {
+    version: 1,
+    kind: 'high-performance-participant-questionnaire-save-event',
+    participantName: submission.participantName,
+    participantSlug: submission.participantSlug,
+    email: submission.email,
+    selectedPath: submission.selectedPath,
+    courseChoice: submission.courseChoice,
+    pageUrl: metadata.pageUrl,
+    submittedAt: metadata.submittedAt,
+    requestId,
+    storageIssueNumber: storageIssueNumber || null
+  };
+  const encodedRecord = encodeBase64(JSON.stringify(eventRecord));
+
+  return {
+    title: `[lead] Questionnaire Saved - ${submission.participantName} - ${metadata.submittedAt}`,
+    body: [
+      '<!-- lead-record -->',
+      `<!-- ${JSON.stringify(metadata)} -->`,
+      `<!-- lead-data:v1:${encodedRecord} -->`,
+      '# Questionnaire Saved',
+      '',
+      '## Participant',
+      `- Name: ${escapeMd(submission.participantName)}`,
+      `- Email: ${escapeMd(submission.email || '-')}`,
+      `- Path: ${escapeMd(submission.selectedPath || '-')}`,
+      `- Parallel course: ${escapeMd(submission.courseChoice || '-')}`,
+      `- Participant slug: ${escapeMd(submission.participantSlug || '-')}`,
+      `- Record issue: ${storageIssueNumber ? `#${storageIssueNumber}` : '-'}`,
+      '',
+      '## Metadata',
+      `- Saved at: ${escapeMd(metadata.submittedAt)}`,
+      `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
+      `- Source: ${escapeMd(metadata.source)}`,
       `- Request ID: ${requestId}`
     ].join('\n')
   };
@@ -401,8 +443,7 @@ const findParticipantQuestionnaireIssue = async (participantSlug, env) => {
   return matches[0] || null;
 };
 
-const createGitHubIssue = async (submission, request, env) => {
-  const { title, body } = buildIssuePayload(submission, request);
+const createGitHubIssueFromPayload = async ({ title, body }, env) => {
   const labels = normalize(env.ISSUE_LABELS)
     .split(',')
     .map((value) => value.trim())
@@ -420,6 +461,9 @@ const createGitHubIssue = async (submission, request, env) => {
   return response.json();
 };
 
+const createGitHubIssue = async (submission, request, env) =>
+  createGitHubIssueFromPayload(buildIssuePayload(submission, request), env);
+
 const updateGitHubIssue = async (issueNumber, submission, request, env) => {
   const { title, body } = buildIssuePayload(submission, request);
   const response = await githubRequest(env, `/issues/${issueNumber}`, {
@@ -435,13 +479,23 @@ const updateGitHubIssue = async (issueNumber, submission, request, env) => {
 
 const upsertParticipantQuestionnaireIssue = async (submission, request, env) => {
   const existing = await findParticipantQuestionnaireIssue(submission.participantSlug, env);
+  let issue;
+  let mode;
+
   if (!existing) {
-    const issue = await createGitHubIssue(submission, request, env);
-    return { issue, mode: 'created' };
+    issue = await createGitHubIssue(submission, request, env);
+    mode = 'created';
+  } else {
+    issue = await updateGitHubIssue(existing.issue.number, submission, request, env);
+    mode = 'updated';
   }
 
-  const issue = await updateGitHubIssue(existing.issue.number, submission, request, env);
-  return { issue, mode: 'updated' };
+  const notificationIssue = await createGitHubIssueFromPayload(
+    buildParticipantQuestionnaireSaveEventPayload(submission, request, issue.number),
+    env
+  );
+
+  return { issue, mode, notificationIssue };
 };
 
 const sanitizeSubmission = (payload) => {
@@ -657,7 +711,9 @@ export default {
           ok: true,
           mode: result.mode,
           issueNumber: result.issue.number,
-          issueUrl: result.issue.html_url
+          issueUrl: result.issue.html_url,
+          notificationIssueNumber: result.notificationIssue?.number || null,
+          notificationIssueUrl: result.notificationIssue?.html_url || null
         },
         200,
         origin
