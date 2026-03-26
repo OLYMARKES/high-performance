@@ -366,6 +366,49 @@ const buildParticipantQuestionnaireSaveEventPayload = (submission, request, stor
   };
 };
 
+const buildParticipantWeekTrackerIssuePayload = (submission, request) => {
+  const { requestId, metadata } = buildSubmissionContext(submission, request);
+  const trackerRecord = {
+    version: 1,
+    kind: 'high-performance-participant-week-tracker',
+    participantName: submission.participantName,
+    participantSlug: submission.participantSlug,
+    weekKey: submission.weekKey,
+    trackerState: submission.trackerState,
+    source: metadata.source,
+    pageUrl: metadata.pageUrl,
+    submittedAt: metadata.submittedAt,
+    requestId
+  };
+  const encodedRecord = encodeBase64(JSON.stringify(trackerRecord));
+  const manifesto = normalize(submission.trackerState?.manifesto || '', { multiline: true });
+  const manifestoBlock = manifesto ? quoteMd(manifesto) : '> —';
+
+  return {
+    title: `Participant Week Tracker Record - ${submission.participantName} - ${submission.weekKey || 'week-1'}`,
+    body: [
+      '<!-- lead-record -->',
+      `<!-- ${JSON.stringify(metadata)} -->`,
+      `<!-- lead-data:v1:${encodedRecord} -->`,
+      '# Participant Week Tracker',
+      '',
+      '## Participant',
+      `- Name: ${escapeMd(submission.participantName)}`,
+      `- Week: ${escapeMd(submission.weekKey || 'week-1')}`,
+      '',
+      '## Manifesto',
+      manifestoBlock,
+      '',
+      '## Metadata',
+      `- Submitted at: ${escapeMd(metadata.submittedAt)}`,
+      `- Page: ${escapeMd(metadata.pageUrl) || '-'}`,
+      `- Source: ${escapeMd(metadata.source)}`,
+      `- Participant slug: ${escapeMd(submission.participantSlug || '-')}`,
+      `- Request ID: ${requestId}`
+    ].join('\n')
+  };
+};
+
 const buildIssuePayload = (submission, request) => {
   if (submission.kind === 'participant-profile') {
     return buildParticipantProfileIssuePayload(submission, request);
@@ -373,6 +416,10 @@ const buildIssuePayload = (submission, request) => {
 
   if (submission.kind === 'participant-questionnaire') {
     return buildParticipantQuestionnaireIssuePayload(submission, request);
+  }
+
+  if (submission.kind === 'participant-week-tracker') {
+    return buildParticipantWeekTrackerIssuePayload(submission, request);
   }
 
   return buildLeadIssuePayload(submission, request);
@@ -443,6 +490,31 @@ const findParticipantQuestionnaireIssue = async (participantSlug, env) => {
   return matches[0] || null;
 };
 
+const findParticipantWeekTrackerIssue = async (participantSlug, weekKey, env) => {
+  const slug = normalize(participantSlug);
+  const normalizedWeekKey = normalize(weekKey || 'week-1');
+  if (!slug) {
+    return null;
+  }
+
+  const issues = await listGitHubIssues(env);
+  const matches = issues
+    .map((issue) => ({ issue, record: parseRecordFromIssueBody(issue.body) }))
+    .filter(
+      ({ record }) =>
+        record?.kind === 'high-performance-participant-week-tracker' &&
+        record.participantSlug === slug &&
+        normalize(record.weekKey || 'week-1') === normalizedWeekKey
+    )
+    .sort((left, right) => {
+      const leftDate = left.record?.submittedAt || left.issue.updated_at || '';
+      const rightDate = right.record?.submittedAt || right.issue.updated_at || '';
+      return rightDate.localeCompare(leftDate);
+    });
+
+  return matches[0] || null;
+};
+
 const createGitHubIssueFromPayload = async ({ title, body }, env) => {
   const labels = normalize(env.ISSUE_LABELS)
     .split(',')
@@ -498,6 +570,17 @@ const upsertParticipantQuestionnaireIssue = async (submission, request, env) => 
   return { issue, mode, notificationIssue };
 };
 
+const upsertParticipantWeekTrackerIssue = async (submission, request, env) => {
+  const existing = await findParticipantWeekTrackerIssue(submission.participantSlug, submission.weekKey, env);
+  if (!existing) {
+    const issue = await createGitHubIssue(submission, request, env);
+    return { issue, mode: 'created' };
+  }
+
+  const issue = await updateGitHubIssue(existing.issue.number, submission, request, env);
+  return { issue, mode: 'updated' };
+};
+
 const sanitizeSubmission = (payload) => {
   const kind = normalize(payload.kind);
 
@@ -527,6 +610,19 @@ const sanitizeSubmission = (payload) => {
       personalContext: truncate(normalize(payload.personalContext, { multiline: true }), FIELD_LIMITS.personalContext),
       draftState: sanitizeStructuredValue(payload.draftState || []),
       responseData: sanitizeStructuredValue(payload.responseData || {}),
+      pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
+      submittedAt: normalize(payload.submittedAt),
+      source: truncate(normalize(payload.source), FIELD_LIMITS.source)
+    };
+  }
+
+  if (kind === 'participant-week-tracker') {
+    return {
+      kind: 'participant-week-tracker',
+      participantName: truncate(normalize(payload.participantName || payload.name), FIELD_LIMITS.participantName),
+      participantSlug: truncate(normalize(payload.participantSlug), FIELD_LIMITS.participantSlug),
+      weekKey: truncate(normalize(payload.weekKey || 'week-1'), 80),
+      trackerState: sanitizeStructuredValue(payload.trackerState || {}),
       pageUrl: truncate(normalize(payload.pageUrl), FIELD_LIMITS.pageUrl),
       submittedAt: normalize(payload.submittedAt),
       source: truncate(normalize(payload.source), FIELD_LIMITS.source)
@@ -587,6 +683,26 @@ const validateSubmission = (submission) => {
     if (
       SUSPICIOUS_CONTENT_RE.test(
         `${submission.participantName}\n${submission.email}\n${submission.selectedPath}\n${submission.courseChoice}\n${submission.personalContext}\n${JSON.stringify(submission.responseData)}`
+      )
+    ) {
+      return 'suspicious_content';
+    }
+
+    return null;
+  }
+
+  if (submission.kind === 'participant-week-tracker') {
+    if (!submission.participantName || !submission.participantSlug || !submission.weekKey) {
+      return 'missing_required_fields';
+    }
+
+    if (!hasMeaningfulStructuredValue(submission.trackerState)) {
+      return 'missing_required_fields';
+    }
+
+    if (
+      SUSPICIOUS_CONTENT_RE.test(
+        `${submission.participantName}\n${submission.participantSlug}\n${submission.weekKey}\n${JSON.stringify(submission.trackerState)}`
       )
     ) {
       return 'suspicious_content';
@@ -665,13 +781,55 @@ export default {
         }
       }
 
+      if (url.pathname === '/participant-week-tracker') {
+        if (!ensureAllowedOrigin(request, env)) {
+          return jsonResponse({ ok: false, error: 'origin_not_allowed' }, 403, origin);
+        }
+
+        const participantSlug = normalize(url.searchParams.get('slug') || url.searchParams.get('participantSlug'));
+        const weekKey = normalize(url.searchParams.get('weekKey') || 'week-1');
+        if (!participantSlug) {
+          return jsonResponse({ ok: false, error: 'missing_participant_slug' }, 400, origin);
+        }
+
+        try {
+          const match = await findParticipantWeekTrackerIssue(participantSlug, weekKey, env);
+          if (!match) {
+            return jsonResponse({ ok: true, found: false }, 200, origin);
+          }
+
+          return jsonResponse(
+            {
+              ok: true,
+              found: true,
+              record: match.record,
+              issueNumber: match.issue.number,
+              issueUrl: match.issue.html_url,
+              updatedAt: match.issue.updated_at
+            },
+            200,
+            origin
+          );
+        } catch (error) {
+          return jsonResponse(
+            {
+              ok: false,
+              error: 'github_read_failed',
+              detail: error instanceof Error ? error.message : 'unknown_error'
+            },
+            502,
+            origin
+          );
+        }
+      }
+
       return jsonResponse(
         {
           ok: true,
           service: 'high-performance-lead-worker',
           githubConfigured: Boolean(env.GITHUB_OWNER && env.GITHUB_REPO && env.GITHUB_TOKEN),
-          supportedKinds: ['lead', 'participant-profile', 'participant-questionnaire'],
-          readEndpoints: ['/participant-questionnaire?slug=<participant-slug>']
+          supportedKinds: ['lead', 'participant-profile', 'participant-questionnaire', 'participant-week-tracker'],
+          readEndpoints: ['/participant-questionnaire?slug=<participant-slug>', '/participant-week-tracker?slug=<participant-slug>&weekKey=week-1']
         },
         200,
         origin
@@ -705,6 +863,8 @@ export default {
       const result =
         submission.kind === 'participant-questionnaire'
           ? await upsertParticipantQuestionnaireIssue(submission, request, env)
+          : submission.kind === 'participant-week-tracker'
+            ? await upsertParticipantWeekTrackerIssue(submission, request, env)
           : { issue: await createGitHubIssue(submission, request, env), mode: 'created' };
       return jsonResponse(
         {
