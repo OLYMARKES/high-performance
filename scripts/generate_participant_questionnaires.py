@@ -206,9 +206,9 @@ def load_template() -> str:
     return SOURCE_TEMPLATE_PATH.read_text(encoding="utf-8")
 
 
-def add_personalization(template: str, name: str) -> str:
+def add_personalization(template: str, name: str, for_name: str) -> str:
     html = template
-    html = html.replace("<title>HIGH PERFORMANCE — Анкета</title>", f"<title>HIGH PERFORMANCE — Анкета для {name}</title>", 1)
+    html = html.replace("<title>HIGH PERFORMANCE — Анкета</title>", f"<title>HIGH PERFORMANCE — Анкета для {for_name}</title>", 1)
     html = html.replace(
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="robots" content="noindex, nofollow, noarchive">',
@@ -750,7 +750,7 @@ def build_runtime_script(name: str, slug: str) -> str:
 
 def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
-    html = add_personalization(template, participant["public_name"])
+    html = add_personalization(template, participant["public_name"], participant["for_name"])
     html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['public_name'], slug)}\n</body>\n</html>", 1)
     if participant.get("issue"):
         source_comment = (

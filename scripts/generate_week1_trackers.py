@@ -17,7 +17,7 @@ def quote_js(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def add_personalization(template: str, name: str, slug: str) -> str:
+def add_personalization(template: str, name: str, for_name: str, slug: str) -> str:
     html = template
     html = html.replace(
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
@@ -32,7 +32,7 @@ def add_personalization(template: str, name: str, slug: str) -> str:
     )
     html = html.replace(
         '<p class="hero-sub">Твой ежедневный трекер привычек. Отмечай, наблюдай, двигайся вперёд.</p>',
-        f'<p class="hero-sub">Персональный трекер первой недели для {name}. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>',
+        f'<p class="hero-sub">Персональный трекер первой недели для {for_name}. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>',
         1,
     )
     html = html.replace(
@@ -357,7 +357,7 @@ def build_runtime_script(name: str, slug: str) -> str:
 
 def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
-    html = add_personalization(template, participant["public_name"], slug)
+    html = add_personalization(template, participant["public_name"], participant["for_name"], slug)
     html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['public_name'], slug)}\n</body>\n</html>", 1)
     if participant.get("issue"):
         source_comment = (

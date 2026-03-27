@@ -77,6 +77,27 @@ def extract_public_name(raw: dict[str, str]) -> str:
     return str(raw["name"]).strip().split()[0]
 
 
+def build_for_name(public_name: str) -> str:
+    explicit_overrides = {
+        "Ксю": "Ксю",
+    }
+    if public_name in explicit_overrides:
+        return explicit_overrides[public_name]
+
+    lowered = public_name.lower()
+    if len(public_name) >= 2 and lowered.endswith("ия"):
+        return public_name[:-2] + "ии"
+    if lowered.endswith("я"):
+        return public_name[:-1] + "и"
+    if lowered.endswith("а"):
+        if len(public_name) >= 2 and public_name[-2].lower() in {"г", "к", "х", "ж", "ч", "ш", "щ"}:
+            return public_name[:-1] + "и"
+        return public_name[:-1] + "ы"
+    if lowered.endswith("ь"):
+        return public_name[:-1] + "и"
+    return public_name
+
+
 def get_participants() -> list[dict[str, str]]:
     participants: list[dict[str, str]] = []
     used_slugs: set[str] = set()
@@ -89,6 +110,7 @@ def get_participants() -> list[dict[str, str]]:
         used_slugs.add(slug)
 
         public_name = extract_public_name(raw)
+        for_name = str(raw.get("for_name", "")).strip() or build_for_name(public_name)
         display_name = public_name
         if duplicate_names[public_name] > 1:
             display_name = public_name
@@ -98,6 +120,7 @@ def get_participants() -> list[dict[str, str]]:
                 **raw,
                 "full_name": raw["name"],
                 "public_name": public_name,
+                "for_name": for_name,
                 "slug": slug,
                 "display_name": display_name,
                 "telegram_handle": raw["contact"],

@@ -11,16 +11,16 @@ OUTPUT_DIR = ROOT / "trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2026"
 
 
-def personalize_html(template: str, name: str, contact: str, slug: str, issue: int | None) -> str:
+def personalize_html(template: str, name: str, for_name: str, contact: str, slug: str, issue: int | None) -> str:
     title = f"Трекер дня 1–7 апреля 2026 — {name}"
     hero_tag = f"1–7 апреля 2026 • {name}"
     hero_copy = (
-        f"Персональный трекер недели для {name}. "
+        f"Персональный трекер недели для {for_name}. "
         "Отмечай ежедневные ритуалы, вписывай свои задачи и держи фокус "
         "на том, что реально двигает тебя вперёд."
     )
     footer_copy = (
-        f"Базовые привычки уже добавлены для {name}: медитация, тренировка, чтение книги, "
+        f"Базовые привычки уже добавлены для {for_name}: медитация, тренировка, чтение книги, "
         "хардстоп работы в 19:00, отказ от экрана после 20:00, вовремя лечь спать, "
         "план дня и джорналинг 10 минут."
     )
@@ -259,6 +259,7 @@ def main() -> None:
         html = personalize_html(
             template=template,
             name=participant["public_name"],
+            for_name=participant["for_name"],
             contact=participant["contact"],
             slug=slug,
             issue=participant.get("issue"),
