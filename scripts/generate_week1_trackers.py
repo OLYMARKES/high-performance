@@ -32,7 +32,7 @@ def add_personalization(template: str, name: str, slug: str) -> str:
     )
     html = html.replace(
         '<p class="hero-sub">Твой ежедневный трекер привычек. Отмечай, наблюдай, двигайся вперёд.</p>',
-        f'<p class="hero-sub">Персональный трекер первой недели для {name}. Заполняй манифест, отмечай ежедневные шаги и сохраняй прогресс по этой же ссылке.</p>',
+        f'<p class="hero-sub">Персональный трекер первой недели для {name}. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>',
         1,
     )
     html = html.replace(
@@ -43,7 +43,12 @@ def add_personalization(template: str, name: str, slug: str) -> str:
     html = html.replace("'hp_week1_tracker'", f"'hp_week1_tracker_{slug}'", 2)
     html = html.replace(
         "/* ── Footer ── */",
-        """/* ── Save panel ── */
+        """/* ── Single-day view ── */
+.day-nav {
+  display: none;
+}
+
+/* ── Save panel ── */
 .save-panel {
   margin-top: 40px;
   margin-bottom: 12px;
@@ -121,6 +126,21 @@ def add_personalization(template: str, name: str, slug: str) -> str:
         1,
     )
     html = html.replace(
+        "const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];",
+        "const DAY_NAMES = ['День 1'];",
+        1,
+    )
+    html = html.replace(
+        '<h1>Неделя <em>1</em></h1>',
+        '<h1>Неделя <em>1</em> · День <em>1</em></h1>',
+        1,
+    )
+    html = html.replace(
+        '<div class="day-date">День ${currentDay + 1} из 7</div>',
+        '<div class="day-date">День ${currentDay + 1}</div>',
+        1,
+    )
+    html = html.replace(
         """// Show overlay on load if no manifesto yet
 if (!state.manifesto) {
   setTimeout(() => overlay.classList.add('active'), 600);
@@ -154,6 +174,53 @@ def build_runtime_script(name: str, slug: str) -> str:
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
 
+  function getDefaultDayItems() {{
+    return DEFAULT_ITEMS.map((item, index) => ({{
+      ...item,
+      id: item.id + '_' + index,
+      checked: false,
+      inputValue: ''
+    }}));
+  }}
+
+  function normalizeTrackerState(rawState) {{
+    const baseDay = {{
+      name: 'День 1',
+      items: getDefaultDayItems()
+    }};
+
+    if (!rawState || typeof rawState !== 'object') {{
+      return {{
+        manifesto: '',
+        days: [baseDay]
+      }};
+    }}
+
+    const firstDay = Array.isArray(rawState.days) && rawState.days.length > 0 && rawState.days[0] && typeof rawState.days[0] === 'object'
+      ? rawState.days[0]
+      : null;
+
+    const normalizedItems = Array.isArray(firstDay?.items)
+      ? firstDay.items.map((item, index) => ({{
+          ...item,
+          id: item?.id || `item_${{index}}`,
+          checked: Boolean(item?.checked),
+          inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
+        }}))
+      : baseDay.items;
+
+    return {{
+      ...rawState,
+      manifesto: typeof rawState.manifesto === 'string' ? rawState.manifesto : '',
+      days: [{{
+        ...baseDay,
+        ...firstDay,
+        name: 'День 1',
+        items: normalizedItems
+      }}]
+    }};
+  }}
+
   function setSaveStatus(message) {{
     const status = document.getElementById('saveStatus');
     if (status) {{
@@ -180,7 +247,8 @@ def build_runtime_script(name: str, slug: str) -> str:
       if (!saved) {{
         return false;
       }}
-      state = JSON.parse(saved);
+      state = normalizeTrackerState(JSON.parse(saved));
+      currentDay = 0;
       renderManifestoBanner();
       renderDayNav();
       renderDay();
@@ -207,7 +275,8 @@ def build_runtime_script(name: str, slug: str) -> str:
         return false;
       }}
 
-      state = result.record.trackerState;
+      state = normalizeTrackerState(result.record.trackerState);
+      currentDay = 0;
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
       renderManifestoBanner();
       renderDayNav();
@@ -273,6 +342,8 @@ def build_runtime_script(name: str, slug: str) -> str:
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
 
   (async () => {{
+    state = normalizeTrackerState(state);
+    currentDay = 0;
     await loadSavedTracker();
     restoreLocalState();
     renderManifestoBanner();

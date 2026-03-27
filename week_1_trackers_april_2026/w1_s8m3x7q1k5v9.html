@@ -690,6 +690,11 @@ body {
   color: var(--warm-gray);
 }
 
+/* ── Single-day view ── */
+.day-nav {
+  display: none;
+}
+
 /* ── Save panel ── */
 .save-panel {
   margin-top: 40px;
@@ -826,8 +831,8 @@ body {
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-tag">High Performance · Ксю · Неделя 1</div>
-    <h1>Неделя <em>1</em></h1>
-    <p class="hero-sub">Персональный трекер первой недели для Ксю. Заполняй манифест, отмечай ежедневные шаги и сохраняй прогресс по этой же ссылке.</p>
+    <h1>Неделя <em>1</em> · День <em>1</em></h1>
+    <p class="hero-sub">Персональный трекер первой недели для Ксю. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>
   </div>
 </section>
 
@@ -880,7 +885,7 @@ body {
    DATA MODEL
    ────────────────────────────────── */
 
-const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+const DAY_NAMES = ['День 1'];
 
 // Default tracker items template — each day starts with this
 const DEFAULT_ITEMS = [
@@ -1164,7 +1169,7 @@ function renderDay() {
     <div class="day-section active">
       <div class="day-header">
         <h2>${day.name}</h2>
-        <div class="day-date">День ${currentDay + 1} из 7</div>
+        <div class="day-date">День ${currentDay + 1}</div>
         <div class="day-progress">
           <div class="day-progress-bar">
             <div class="day-progress-bar-fill" style="width:${pct}%"></div>
@@ -1357,6 +1362,53 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${PARTICIPANT_SLUG}`;
 
+  function getDefaultDayItems() {
+    return DEFAULT_ITEMS.map((item, index) => ({
+      ...item,
+      id: item.id + '_' + index,
+      checked: false,
+      inputValue: ''
+    }));
+  }
+
+  function normalizeTrackerState(rawState) {
+    const baseDay = {
+      name: 'День 1',
+      items: getDefaultDayItems()
+    };
+
+    if (!rawState || typeof rawState !== 'object') {
+      return {
+        manifesto: '',
+        days: [baseDay]
+      };
+    }
+
+    const firstDay = Array.isArray(rawState.days) && rawState.days.length > 0 && rawState.days[0] && typeof rawState.days[0] === 'object'
+      ? rawState.days[0]
+      : null;
+
+    const normalizedItems = Array.isArray(firstDay?.items)
+      ? firstDay.items.map((item, index) => ({
+          ...item,
+          id: item?.id || `item_${index}`,
+          checked: Boolean(item?.checked),
+          inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
+        }))
+      : baseDay.items;
+
+    return {
+      ...rawState,
+      manifesto: typeof rawState.manifesto === 'string' ? rawState.manifesto : '',
+      days: [{
+        ...baseDay,
+        ...firstDay,
+        name: 'День 1',
+        items: normalizedItems
+      }]
+    };
+  }
+
   function setSaveStatus(message) {
     const status = document.getElementById('saveStatus');
     if (status) {
@@ -1383,7 +1435,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       if (!saved) {
         return false;
       }
-      state = JSON.parse(saved);
+      state = normalizeTrackerState(JSON.parse(saved));
+      currentDay = 0;
       renderManifestoBanner();
       renderDayNav();
       renderDay();
@@ -1410,7 +1463,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         return false;
       }
 
-      state = result.record.trackerState;
+      state = normalizeTrackerState(result.record.trackerState);
+      currentDay = 0;
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
       renderManifestoBanner();
       renderDayNav();
@@ -1476,6 +1530,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
 
   (async () => {
+    state = normalizeTrackerState(state);
+    currentDay = 0;
     await loadSavedTracker();
     restoreLocalState();
     renderManifestoBanner();
