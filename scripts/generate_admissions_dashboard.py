@@ -203,6 +203,7 @@ def build_rows() -> tuple[list[dict], str]:
 
         rows.append(
             {
+                "rowId": participant["slug"] or f"participant-{participant['token']}",
                 "slug": participant["slug"],
                 "displayName": participant["display_name"],
                 "telegramHandle": participant["telegram_handle"],
@@ -250,6 +251,7 @@ def build_rows() -> tuple[list[dict], str]:
 
         rows.append(
             {
+                "rowId": f"lead-{issue_number}",
                 "slug": "",
                 "displayName": lead["name"] or lead["contact"] or f"Lead #{issue_number}",
                 "telegramHandle": lead["contact"] or "—",
@@ -588,6 +590,15 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       font-size: 12px;
       cursor: pointer;
     }}
+    .details-btn.is-muted {{
+      color: var(--muted);
+      border-color: var(--border);
+    }}
+    .button-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }}
     .modal {{
       display: none;
       position: fixed;
@@ -664,6 +675,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
     <section class="panel">
       <div class="snapshot"><strong>Снимок данных:</strong> {format_timestamp(snapshot_time)}. Данные подтянуты из последних GitHub issues и встроены прямо в страницу.</div>
+      <div class="snapshot">Скрытие работает локально в этом браузере: можно убирать тех, кто не пошёл, не меняя исходные данные.</div>
       <input class="search" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email, курсу или slug">
       <div class="filters" id="stage-filters">
         <button class="chip is-active" data-stage="all" type="button">Все</button>
@@ -678,6 +690,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         <button class="chip" data-status="waiting-questionnaire" type="button">Ждём анкету</button>
         <button class="chip" data-status="needs-pick" type="button">Подобрать курс</button>
         <button class="chip" data-status="ready-open" type="button">Открыть курс</button>
+        <button class="chip" data-status="hidden" type="button">Скрытые</button>
       </div>
     </section>
 
@@ -688,6 +701,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         <div class="stat"><div class="stat-label">Оплатили</div><div class="stat-value" id="stat-paid">0</div></div>
         <div class="stat"><div class="stat-label">Заполнили анкету</div><div class="stat-value" id="stat-questionnaire">0</div></div>
         <div class="stat"><div class="stat-label">Курс открыт</div><div class="stat-value" id="stat-course-opened">0</div></div>
+        <div class="stat"><div class="stat-label">Скрыто</div><div class="stat-value" id="stat-hidden">0</div></div>
       </div>
     </section>
 
@@ -748,6 +762,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
   <script>
     const ALL_ROWS = {script_json(rows)};
+    const HIDDEN_KEY = 'hp-admissions-hidden-v1';
     const searchInput = document.getElementById('search-input');
     const stageFilters = document.getElementById('stage-filters');
     const statusFilters = document.getElementById('status-filters');
@@ -761,6 +776,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     const statPaid = document.getElementById('stat-paid');
     const statQuestionnaire = document.getElementById('stat-questionnaire');
     const statCourseOpened = document.getElementById('stat-course-opened');
+    const statHidden = document.getElementById('stat-hidden');
     const detailsModal = document.getElementById('details-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalContent = document.getElementById('modal-content');
@@ -768,6 +784,36 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
     let activeStage = 'all';
     let activeStatus = 'all';
+    let hiddenIds = loadHiddenIds();
+
+    function loadHiddenIds() {{
+      try {{
+        const raw = localStorage.getItem(HIDDEN_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return new Set(Array.isArray(parsed) ? parsed.map((value) => String(value)) : []);
+      }} catch (error) {{
+        return new Set();
+      }}
+    }}
+
+    function persistHiddenIds() {{
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hiddenIds]));
+    }}
+
+    function isHidden(row) {{
+      return hiddenIds.has(String(row.rowId));
+    }}
+
+    function setRowHidden(row, hidden) {{
+      const key = String(row.rowId);
+      if (hidden) {{
+        hiddenIds.add(key);
+      }} else {{
+        hiddenIds.delete(key);
+      }}
+      persistHiddenIds();
+      syncPage();
+    }}
 
     function escapeHtml(value) {{
       return String(value || '')
@@ -849,18 +895,23 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       const query = searchInput.value.trim().toLowerCase();
       return ALL_ROWS.filter((row) => {{
         const stageMatches = activeStage === 'all' ? true : stageForRow(row) === activeStage;
-        const statusMatches = activeStatus === 'all' ? true : statusForRow(row) === activeStatus;
+        const hiddenState = isHidden(row);
+        const hiddenMatches = activeStatus === 'hidden' ? hiddenState : !hiddenState;
+        const statusMatches =
+          activeStatus === 'all' || activeStatus === 'hidden' ? true : statusForRow(row) === activeStatus;
         const searchMatches = !query || rowSearchIndex(row).includes(query);
-        return stageMatches && statusMatches && searchMatches;
+        return stageMatches && hiddenMatches && statusMatches && searchMatches;
       }});
     }}
 
     function updateStats() {{
-      statTotal.textContent = String(ALL_ROWS.length);
-      statLeads.textContent = String(ALL_ROWS.filter((row) => row.leadSubmitted).length);
-      statPaid.textContent = String(ALL_ROWS.filter((row) => row.paid).length);
-      statQuestionnaire.textContent = String(ALL_ROWS.filter((row) => row.questionnaireFilled).length);
-      statCourseOpened.textContent = String(ALL_ROWS.filter((row) => row.courseOpened).length);
+      const activeRows = ALL_ROWS.filter((row) => !isHidden(row));
+      statTotal.textContent = String(activeRows.length);
+      statLeads.textContent = String(activeRows.filter((row) => row.leadSubmitted).length);
+      statPaid.textContent = String(activeRows.filter((row) => row.paid).length);
+      statQuestionnaire.textContent = String(activeRows.filter((row) => row.questionnaireFilled).length);
+      statCourseOpened.textContent = String(activeRows.filter((row) => row.courseOpened).length);
+      statHidden.textContent = String(ALL_ROWS.filter((row) => isHidden(row)).length);
     }}
 
     function renderQueue(container, rows, emptyText) {{
@@ -890,6 +941,8 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
       resultsBody.innerHTML = rows.map((row, index) => {{
         const [actionTitle, actionNote] = nextAction(row);
+        const hiddenButtonLabel = isHidden(row) ? 'Вернуть' : 'Скрыть';
+        const hiddenButtonClass = isHidden(row) ? '' : ' is-muted';
         return `
           <tr>
             <td>
@@ -918,7 +971,12 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
             </td>
             <td>${{escapeHtml(row.email || '—')}}</td>
             <td>${{escapeHtml(row.updatedAtLabel || '—')}}</td>
-            <td><button class="details-btn" type="button" data-index="${{index}}">Открыть</button></td>
+            <td>
+              <div class="button-row">
+                <button class="details-btn" type="button" data-index="${{index}}">Открыть</button>
+                <button class="details-btn${{hiddenButtonClass}}" type="button" data-hide-index="${{index}}">${{hiddenButtonLabel}}</button>
+              </div>
+            </td>
           </tr>
         `;
       }}).join('');
@@ -956,11 +1014,12 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
     function syncPage() {{
       const rows = getVisibleRows();
+      const activeRows = ALL_ROWS.filter((row) => !isHidden(row));
       renderRows(rows);
-      renderQueue(queueUnpaid, ALL_ROWS.filter((row) => statusForRow(row) === 'unpaid'), 'Сейчас нет лидов без оплаты.');
-      renderQueue(queueWaitingQuestionnaire, ALL_ROWS.filter((row) => statusForRow(row) === 'waiting-questionnaire'), 'Сейчас нет участниц без анкеты.');
-      renderQueue(queueNeedsPick, ALL_ROWS.filter((row) => statusForRow(row) === 'needs-pick'), 'Сейчас нет участниц, которым нужно подобрать курс.');
-      renderQueue(queueReadyOpen, ALL_ROWS.filter((row) => statusForRow(row) === 'ready-open'), 'Сейчас нет участниц, которым нужно открыть курс.');
+      renderQueue(queueUnpaid, activeRows.filter((row) => statusForRow(row) === 'unpaid'), 'Сейчас нет лидов без оплаты.');
+      renderQueue(queueWaitingQuestionnaire, activeRows.filter((row) => statusForRow(row) === 'waiting-questionnaire'), 'Сейчас нет участниц без анкеты.');
+      renderQueue(queueNeedsPick, activeRows.filter((row) => statusForRow(row) === 'needs-pick'), 'Сейчас нет участниц, которым нужно подобрать курс.');
+      renderQueue(queueReadyOpen, activeRows.filter((row) => statusForRow(row) === 'ready-open'), 'Сейчас нет участниц, которым нужно открыть курс.');
       updateStats();
     }}
 
@@ -989,8 +1048,16 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     searchInput.addEventListener('input', syncPage);
     resultsBody.addEventListener('click', (event) => {{
       const button = event.target.closest('[data-index]');
-      if (!button) return;
-      openDetails(Number(button.dataset.index));
+      if (button) {{
+        openDetails(Number(button.dataset.index));
+        return;
+      }}
+
+      const hideButton = event.target.closest('[data-hide-index]');
+      if (!hideButton) return;
+      const row = getVisibleRows()[Number(hideButton.dataset.hideIndex)];
+      if (!row) return;
+      setRowHidden(row, !isHidden(row));
     }});
     closeModal.addEventListener('click', () => detailsModal.classList.remove('visible'));
     detailsModal.addEventListener('click', (event) => {{
