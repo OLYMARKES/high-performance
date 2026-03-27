@@ -325,15 +325,35 @@
     }
     .section {
       border-top: 1px solid var(--border);
-      padding-top: 16px;
       margin-top: 16px;
+      padding-top: 16px;
     }
-    .section h3 {
+    .section summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
       color: var(--accent);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      margin-bottom: 10px;
+      user-select: none;
+    }
+    .section summary::-webkit-details-marker { display: none; }
+    .section summary::after {
+      content: '+';
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .section[open] summary::after {
+      content: '−';
+    }
+    .section-body {
+      margin-top: 10px;
     }
     .section p, .section li {
       color: var(--muted);
@@ -361,7 +381,7 @@
     </section>
 
     <section class="panel">
-      <div class="snapshot"><strong>Снимок данных:</strong> 27.03.2026 09:05 UTC. Данные подтянуты из последних GitHub issues и встроены прямо в страницу.</div>
+      <div class="snapshot"><strong>Снимок данных:</strong> 27.03.2026 09:08 UTC. Данные подтянуты из последних GitHub issues и встроены прямо в страницу.</div>
       <div class="snapshot">Скрытие работает локально в этом браузере: можно убирать тех, кто не пошёл, не меняя исходные данные.</div>
       <input class="search" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email, курсу или slug">
       <div class="filters" id="stage-filters">
@@ -560,12 +580,12 @@
       return `<ul>${values.map((value) => `<li>${escapeHtml(value)}</li>`).join('')}</ul>`;
     }
 
-    function sectionHtml(title, body) {
+    function sectionHtml(title, body, expanded = false) {
       return `
-        <div class="section">
-          <h3>${escapeHtml(title)}</h3>
-          ${body}
-        </div>
+        <details class="section"${expanded ? ' open' : ''}>
+          <summary>${escapeHtml(title)}</summary>
+          <div class="section-body">${body}</div>
+        </details>
       `;
     }
 
@@ -742,15 +762,15 @@
 
       const [actionTitle, actionNote] = nextAction(row);
       const body = [
-        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle || '—', row.slug ? `slug: ${row.slug}` : 'без slug'].join('\n'))),
-        sectionHtml('Быстрые ссылки', quickLinksHtml(row)),
+        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle || '—', row.slug ? `slug: ${row.slug}` : 'без slug'].join('\n')), true),
+        sectionHtml('Быстрые ссылки', quickLinksHtml(row), true),
         sectionHtml('Этапы', paragraph([
           row.leadSubmitted ? 'Заявка есть' : 'Заявки нет',
           rowPaid(row) ? 'Оплата есть' : 'Оплаты нет',
           row.questionnaireFilled ? 'Анкета заполнена' : 'Анкета не заполнена',
           rowCourseOpened(row) ? 'Курс открыт' : 'Курс не открыт'
-        ].join('\n'))),
-        sectionHtml('Следующее действие', paragraph([actionTitle, actionNote].join('\n'))),
+        ].join('\n')), true),
+        sectionHtml('Следующее действие', paragraph([actionTitle, actionNote].join('\n')), true),
         sectionHtml('Lead note', paragraph(row.leadAbout)),
         sectionHtml('Vision', paragraph(row.summary?.visionFuture)),
         sectionHtml('Personal context', paragraph(row.summary?.personalContext)),
