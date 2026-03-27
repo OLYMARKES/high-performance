@@ -1,0 +1,1430 @@
+<!-- Generated from /Users/olymarkes/Documents/Claude/Projects/High perfomance/anketa.html for Таня from GitHub issue #33: https://github.com/OLYMARKES/high-performance-leads/issues/33 -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>HIGH PERFORMANCE — Анкета для Тани</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0e0e0e;
+    --bg-soft: #131313;
+    --surface: #181818;
+    --surface-hover: #1e1e1e;
+    --border: #272727;
+    --border-hover: #363636;
+    --text: #ebebeb;
+    --text-secondary: #999;
+    --text-muted: #5a5a5a;
+    --accent: #c9a96e;
+    --accent-glow: rgba(201, 169, 110, 0.12);
+    --accent-hover: #d4b87d;
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .spacer { height: 64px; }
+  .spacer-sm { height: 40px; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+
+  .hero-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+  }
+
+  .hero-greeting {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .hero-greeting em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ── Sections ── */
+  .section {
+    padding: 56px 0;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+
+  .section p {
+    color: var(--text-secondary);
+    font-size: 15.5px;
+    line-height: 1.85;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .section p:last-child { margin-bottom: 0; }
+
+  .section p em {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ── Form elements ── */
+  select, textarea, input[type="text"], input[type="email"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 16px 20px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-appearance: none;
+  }
+
+  select:focus, textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 48px;
+  }
+
+  select option { background: var(--bg); color: var(--text); }
+
+  textarea {
+    resize: vertical;
+    min-height: 160px;
+    line-height: 1.75;
+  }
+
+  textarea::placeholder, input::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* ── Path cards ── */
+  .paths-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .path-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .path-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+
+  .path-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .path-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .path-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .path-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .path-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    margin-top: 8px;
+    margin-left: 40px;
+  }
+
+  .field-group {
+    margin-top: 20px;
+    display: none;
+  }
+
+  .field-group.visible { display: block; }
+
+  /* ── Hints ── */
+  .hints {
+    margin-top: 16px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  /* ── Expandable ── */
+  .expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all 0.3s ease;
+  }
+
+  .expand-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  .expand-btn .arrow {
+    transition: transform 0.3s ease;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .expand-btn.open .arrow { transform: rotate(90deg); }
+
+  .expand-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease;
+  }
+
+  .expand-content.open { max-height: 5000px; }
+
+  .expand-inner { padding-top: 36px; }
+
+  /* ── VIP blocks ── */
+  .vip-block { margin-bottom: 40px; }
+
+  .vip-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .vip-desc {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .vip-desc a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 169, 110, 0.3);
+    transition: border-color 0.2s ease;
+  }
+
+  .vip-desc a:hover { border-color: var(--accent); }
+
+  .vip-block textarea { min-height: 100px; font-size: 14px; }
+
+  /* ── Checkboxes ── */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+  }
+
+  .checkbox-item:hover { background: var(--surface-hover); }
+
+  .checkbox-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-item input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Radio ── */
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+  }
+
+  .radio-item:hover { background: var(--surface-hover); }
+
+  .radio-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .radio-item input[type="radio"]:checked {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .radio-item input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  .radio-label {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-secondary);
+  }
+
+  .radio-sub-input {
+    margin-left: 44px;
+    margin-top: 4px;
+  }
+
+  .radio-sub-input input { font-size: 14px; padding: 12px 16px; }
+
+  /* ── Photo ── */
+  .photo-upload {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    margin-top: 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .photo-upload:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .photo-upload-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.35;
+  }
+
+  .photo-upload p {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  /* ── Submit ── */
+  .submit-section {
+    padding: 48px 0 100px;
+    text-align: center;
+  }
+
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 60px;
+    padding: 18px 52px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201, 169, 110, 0.2);
+  }
+
+  /* ── Success ── */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .success-overlay.visible { display: flex; }
+
+  .success-overlay h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .success-overlay p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 300;
+    max-width: 520px;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .save-note {
+    margin-top: 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .success-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    border-radius: 60px;
+    padding: 18px 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .success-secondary-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .hero { padding: 60px 20px 48px; min-height: 45vh; }
+    .hero-greeting { font-size: 32px; }
+    .section h2 { font-size: 24px; }
+    .path-card { padding: 22px 20px; }
+    .container { padding: 0 18px; }
+    .photo-upload { padding: 28px 20px; }
+    .vip-block div[style*="flex"] { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="hero-content reveal">
+    <div class="hero-label">High Performance</div>
+    <div class="hero-greeting">Привет, <em>Таня</em></div>
+    <p class="hero-sub">Я очень рада, что ты с нами. Здесь можно спокойно заполнить всё в своём ритме — черновик сохранится автоматически.</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section reveal">
+    <div class="section-label">Личный кабинет</div>
+    <h2>Сначала оставь свой email</h2>
+    <p>Он нужен нам в самом начале, чтобы создать и привязать твой личный кабинет. Это обязательное поле.</p>
+    <p><em>Если у тебя уже есть аккаунт, всё равно укажи тот email, к которому хочешь его привязать.</em></p>
+    <div class="spacer-sm"></div>
+    <input id="participant-email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com">
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ VISION ═══════ -->
+  <div class="section reveal">
+    <div class="section-label">Начнём с самого классного</div>
+    <h2>Вижен недалёкого будущего</h2>
+    <p>Представь: апрель закончился, наш перформанс-месяц позади. Как ты выглядишь? Как себя чувствуешь? Что изменилось в теле, в энергии, в голове? Опиши картинку, которая тебя зажигает — и сколько сил и времени ты готова этому посвящать весь апрель.</p>
+    <div class="spacer-sm"></div>
+    <textarea id="vision-future" placeholder="Опиши своё идеальное состояние через месяц..."></textarea>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ ТЕЛО — ЭТО БАЗА ═══════ -->
+  <div class="section reveal">
+    <div class="section-label">Тело — это база</div>
+    <p>Эта анкета — возможность порефлексировать о своём теле и своих целях. Это лишь часть нашего перформанса на месяц, но я считаю её фундаментом, потому что всё, чего мы хотим — ясность, фокус, смелость, энергия, огонь — рождается в теле.</p>
+
+    <p>Это не метафора. Гарвардский нейропсихиатр Джон Рэйти в книге <em>Spark</em> называет физическую нагрузку «удобрением для мозга»: даже 20 минут движения запускают выброс BDNF — белка, который буквально выращивает новые нейронные связи и делает мозг быстрее, а мышление яснее. Келли Макгонигал в <em>The Joy of Movement</em> показывает, что удовольствие и сила приходят не от результата, а от самого процесса движения — именно действие пробуждает дофамин, эндорфины и ощущение «я могу».</p>
+
+    <p>Питание работает так же: то, что ты ешь, напрямую влияет на работу мозга через ось «кишечник — мозг». Это не эзотерика, а нейробиология — состояние микробиома определяет настроение, уровень тревоги и способность концентрироваться.</p>
+
+    <p>Поэтому программа тренировок и фокус на питании — то, с чего я всегда начинаю, когда хочу выйти на новый уровень. Мы тоже начнём с этого.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ ЗАЧЕМ АНКЕТА ═══════ -->
+  <div class="section reveal">
+    <div class="section-label">Подбор курса</div>
+    <p>Нам нужно подобрать для тебя курс #Sekta — он будет backup-вариантом к основной программе. Основную программу я составила под себя на этот месяц, и она может подойти не всем — чуть позже расскажу о ней подробнее. Параллельно нужен второй курс из каталога #Sekta: как дополнение, как фокус на то, что важно именно тебе.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ ДВА ПУТИ ═══════ -->
+  <div class="section reveal">
+    <div class="section-label">Выбери свой путь</div>
+
+    <div class="paths-wrapper">
+
+      <!-- Path 1 -->
+      <div class="path-card" id="path1" onclick="togglePath(1)">
+        <div class="path-header">
+          <span class="path-number">1</span>
+          <span class="path-name">Короткий</span>
+        </div>
+        <div class="path-desc">Ты уже знаешь, чего хочешь — просто выбери курс.</div>
+        <div class="field-group" id="path1-fields">
+          <select id="course-select">
+            <option value="" disabled selected>Выбери курс</option>
+            <optgroup label="Комплексные">
+              <option value="care">Care — мягкий старт, щадящая нагрузка, подходит после перерыва</option>
+              <option value="basics">Basics — базовый сбалансированный курс, выносливость и форма</option>
+              <option value="superhuman">SuperHuman — силовые с гантелями, рельеф, интенсив</option>
+            </optgroup>
+            <optgroup label="Фокусные">
+              <option value="abs">Пресс — кор, осанка, проработка пресса, 21 тренировка</option>
+              <option value="woman-health">Женское здоровье — тазовое дно, комплексная работа с телом</option>
+              <option value="soft-power">Soft Power — йога-формат, мягкость, контакт с телом</option>
+              <option value="stretch">Растяжка — гибкость и подвижность</option>
+            </optgroup>
+            <optgroup label="Специальные">
+              <option value="pregnancy">Для беременных — адаптированная программа со 2-го триместра</option>
+              <option value="mama">Мама — восстановление после родов</option>
+              <option value="bed">Не вставая с кровати — утренние мини-тренировки</option>
+              <option value="body-contact">Контакт с телом — практики на связь с телом и эмоции</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- Path 2 -->
+      <div class="path-card" id="path2" onclick="togglePath(2)">
+        <div class="path-header">
+          <span class="path-number">2</span>
+          <span class="path-name">Персональный</span>
+        </div>
+        <div class="path-desc">Расскажи о себе, о своей нагрузке, о предпочтениях — мы подберём курс за тебя. Всё сохранится: кураторы будут в курсе с первого дня.</div>
+        <div class="field-group" id="path2-fields">
+          <textarea id="personal-context" placeholder="Напиши самое важное — в любой форме, любой длины..."></textarea>
+          <div class="hints">
+            О чём мы обычно просим рассказать — но это не обязательно, пиши только то, что сама считаешь нужным:<br>
+            цели и ожидания от месяца · здоровье, травмы, ограничения к нагрузкам · дети, беременность · диастаз · проблемы тазового дна · отношение к питанию, есть ли РПП · режим дня, сон, уровень стресса · что обычно ешь, сколько приёмов пищи, вода · препараты для снижения веса (Оземпик, Саксенда и подобные) · что пробовала раньше, что сработало и что нет
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ ФОТО ═══════ -->
+  <div class="section reveal">
+    <div class="section-label">Фото или видео</div>
+    <p>В ближайшие дни, когда будет настроение и пара минут, сделай фото или короткое видео. Это не про вес и не про «до/после» в классическом смысле — у нас нет фокуса на похудение как таковое, если только ты сама не ставишь такую цель.</p>
+
+    <p>Но за этот месяц ты точно изменишься. Это может быть осанка, то, как ты держишься, что-то в языке тела, что сложно заметить день ко дню, но хорошо видно в сравнении. Люди, которые не зафиксировали точку старта, потом чаще всего жалеют — потому что хотели бы увидеть разницу, но не с чем сравнить.</p>
+
+    <p>Самый простой способ: поставь телефон на штатив или прислони к чему-нибудь устойчивому, включи видео при хорошем ровном свете и просто какое-то время стой, поворачивайся в разные стороны. В обтягивающей одежде или в белье — как тебе удобно.</p>
+
+    <p>Эти фото и видео останутся только у тебя — если ты сама не захочешь поделиться.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════ VIP АНКЕТА ═══════ -->
+  <div class="section reveal">
+    <button class="expand-btn" onclick="toggleExpand(this)">
+      <span class="arrow">▸</span>
+      Полная анкета — вопросы, которые мы задаём VIP-ученикам. Если есть время и настроение — заполни.
+    </button>
+
+    <div class="expand-content" id="vip-content">
+      <div class="expand-inner">
+
+        <p style="color: var(--text-muted); font-size: 13.5px; font-weight: 300; line-height: 1.85; margin-bottom: 40px;">
+          Подойди к этому как к проекту: загляни в каждую тему, подумай о своих целях и о своём теле. Ни один вопрос не обязательный — отвечай на то, что откликается.
+        </p>
+
+        <div class="vip-block">
+          <div class="vip-title">Я здесь, чтобы...</div>
+          <div class="vip-desc">Что хочешь сдвинуть? По какому внутреннему сигналу поймёшь, что идёшь правильно?</div>
+          <textarea placeholder="..."></textarea>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Возраст / Рост / Вес</div>
+          <div style="display: flex; gap: 12px;">
+            <input type="text" placeholder="Возраст" style="flex: 1;">
+            <input type="text" placeholder="Рост, см" style="flex: 1;">
+            <input type="text" placeholder="Вес, кг" style="flex: 1;">
+          </div>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Дети</div>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="children" value="no">
+              <span class="radio-label">Нет</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="children" value="yes">
+              <span class="radio-label">Да</span>
+            </label>
+            <div class="radio-sub-input" id="children-detail" style="display:none;">
+              <input type="text" placeholder="Укажи возраст каждого ребёнка">
+            </div>
+            <label class="radio-item">
+              <input type="radio" name="children" value="pregnant">
+              <span class="radio-label">Я беременна</span>
+            </label>
+            <div class="radio-sub-input" id="pregnant-detail" style="display:none;">
+              <input type="text" placeholder="Укажи срок">
+            </div>
+          </div>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Здоровье и ограничения</div>
+          <div class="vip-desc">Заболевания, травмы, состояния, которые влияют на нагрузку. Суставы, позвоночник, сердце, анемия, операции, хронические истории. Чем точнее — тем точнее программа.</div>
+          <textarea placeholder="..."></textarea>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Диастаз</div>
+          <div class="vip-desc">Есть диастаз или подозрения? Если да — укажи расхождение в см. <a href="#">Как проверить →</a></div>
+          <input type="text" placeholder="Например: 2 см / нет / не знаю">
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Отметь, если актуально</div>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" class="pelvic-cb">
+              <span class="checkbox-label">Попадание воздуха во влагалище во время секса</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="pelvic-cb">
+              <span class="checkbox-label">Боли или тяжесть в области лобка</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="pelvic-cb">
+              <span class="checkbox-label">Частое мочеиспускание или недержание при нагрузке, смехе, кашле</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="none-above">
+              <span class="checkbox-label">Ничего из перечисленного</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Отношение к питанию</div>
+          <div class="vip-desc">Выбери всё, что откликается. Здесь нет правильных ответов — есть твоя реальность.</div>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Диагностировано РПП</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Подозреваю РПП, к специалисту не обращалась</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Отношения с едой в порядке</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Часто беспокоюсь о весе, ограничиваю себя</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Мысли о еде занимают непропорционально много времени</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Бывают эпизоды переедания</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Строго считаю калории</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Избегаю углеводов или сахара</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Окружающие замечают, что я зациклена на весе</span></label>
+            <label class="checkbox-item"><input type="checkbox"><span class="checkbox-label">Регулярно чувствую вину после еды</span></label>
+          </div>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Твой обычный день</div>
+          <div class="vip-desc">Во сколько засыпаешь и встаёшь, из чего состоит день. Где физическая активность, если есть. В какие моменты накрывает напряжение. Что жрёт ресурс больше всего.</div>
+          <textarea placeholder="..."></textarea>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Питание и привычки</div>
+          <div class="vip-desc">Типичный день: сколько приёмов пищи, что обычно ешь, размер порций, сколько воды. Продукты, без которых не можешь, и те, от которых пытаешься отказаться.</div>
+          <textarea placeholder="..."></textarea>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Препараты</div>
+          <div class="vip-desc">Принимаешь или недавно принимала препараты для снижения веса или контроля аппетита — Оземпик, Саксенда и подобные? Если да — название, причина, как себя чувствуешь.</div>
+          <textarea placeholder="..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="vip-block">
+          <div class="vip-title">Сообщение для куратора</div>
+          <div class="vip-desc">Что-то ещё? Любой контекст, пожелания, сомнения.</div>
+          <textarea placeholder="..." style="min-height: 80px;"></textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SUBMIT ═══════ -->
+  <div class="submit-section">
+    <button class="submit-btn" id="save-questionnaire" onclick="handleSubmit()">
+      Сохранить и редактировать <span>→</span>
+    </button>
+    <div class="save-note" id="save-note">По этой ссылке всегда будет открываться актуальная сохранённая версия анкеты.</div>
+  </div>
+
+</div>
+
+<!-- ═══════ SUCCESS ═══════ -->
+<div class="success-overlay" id="success">
+  <h2>Сохранено</h2>
+  <p id="success-message">Анкета сохранена. По этой же ссылке можно в любой момент вернуться и продолжить редактирование.</p>
+  <div class="success-actions">
+    <button class="submit-btn" id="continue-editing" type="button">Продолжить редактировать</button>
+    <button class="success-secondary-btn" id="success-close" type="button">Закрыть</button>
+  </div>
+</div>
+
+<script>
+  // ── Reveal on scroll ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Path toggle ──
+  function togglePath(num) {
+    const cards = [document.getElementById('path1'), document.getElementById('path2')];
+    const fields = [document.getElementById('path1-fields'), document.getElementById('path2-fields')];
+
+    cards.forEach((card, i) => {
+      if (i === num - 1) {
+        card.classList.toggle('active');
+        fields[i].classList.toggle('visible');
+      } else {
+        card.classList.remove('active');
+        fields[i].classList.remove('visible');
+      }
+    });
+  }
+
+  // ── Expand VIP ──
+  function toggleExpand(btn) {
+    btn.classList.toggle('open');
+    document.getElementById('vip-content').classList.toggle('open');
+  }
+
+  // ── Children radio ──
+  document.querySelectorAll('input[name="children"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.getElementById('children-detail').style.display = this.value === 'yes' ? 'block' : 'none';
+      document.getElementById('pregnant-detail').style.display = this.value === 'pregnant' ? 'block' : 'none';
+    });
+  });
+
+  // ── "None of the above" exclusive ──
+  document.getElementById('none-above').addEventListener('change', function() {
+    if (this.checked) {
+      document.querySelectorAll('.pelvic-cb').forEach(cb => cb.checked = false);
+    }
+  });
+  document.querySelectorAll('.pelvic-cb').forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (this.checked) document.getElementById('none-above').checked = false;
+    });
+  });
+
+  // ── Stop propagation on form elements ──
+  document.querySelectorAll('select, textarea, input, label').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.closest('.field-group') || e.target.closest('.expand-content') || e.target.closest('.vip-block')) {
+        e.stopPropagation();
+      }
+    });
+  });
+
+  // ── Submit ──
+  function handleSubmit() {
+    document.getElementById('success').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+
+<script>
+  const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
+  const PARTICIPANT_NAME = "Таня";
+  const PARTICIPANT_SLUG = "tanya";
+  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-questionnaire?slug=${encodeURIComponent(PARTICIPANT_SLUG)}`;
+  const DRAFT_KEY = `hp-participant-questionnaire-${PARTICIPANT_SLUG}-v1`;
+  const LAST_SAVED_KEY = `${DRAFT_KEY}:last-saved-at`;
+  const CONTROL_CHARS_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+  const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
+
+  function normalizeValue(value, multiline = false) {
+    const cleaned = String(value || '')
+      .replace(/\r\n?/g, '\n')
+      .replace(CONTROL_CHARS_RE, '')
+      .replace(BIDI_CONTROL_RE, '')
+      .trim();
+
+    if (!multiline) {
+      return cleaned.replace(/\s+/g, ' ').trim();
+    }
+
+    return cleaned
+      .split('\n')
+      .map((line) => line.trimEnd())
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function getVipBlockByTitle(title) {
+    return [...document.querySelectorAll('.vip-block')].find((block) => {
+      const blockTitle = block.querySelector('.vip-title');
+      return blockTitle && blockTitle.textContent.trim() === title;
+    });
+  }
+
+  function formatDate(value) {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function autoResizeTextarea(textarea) {
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.max(textarea.scrollHeight, 80)}px`;
+  }
+
+  function autoResizeAllTextareas() {
+    document.querySelectorAll('textarea').forEach((textarea) => autoResizeTextarea(textarea));
+  }
+
+  function textFromBlock(title) {
+    const block = getVipBlockByTitle(title);
+    const textarea = block?.querySelector('textarea');
+    return normalizeValue(textarea?.value || '', true);
+  }
+
+  function inputFromBlock(title, placeholderStartsWith) {
+    const block = getVipBlockByTitle(title);
+    const inputs = [...(block?.querySelectorAll('input') || [])];
+    const target = inputs.find((input) => (input.getAttribute('placeholder') || '').startsWith(placeholderStartsWith));
+    return normalizeValue(target?.value || '');
+  }
+
+  function checkedLabelsFromBlock(title) {
+    const block = getVipBlockByTitle(title);
+    if (!block) {
+      return [];
+    }
+
+    return [...block.querySelectorAll('input[type="checkbox"]:checked')].map((input) => {
+      const label = input.closest('label');
+      const textNode = label?.querySelector('.checkbox-label');
+      return normalizeValue(textNode?.textContent || '');
+    }).filter(Boolean);
+  }
+
+  function setTextInBlock(title, value) {
+    const block = getVipBlockByTitle(title);
+    const textarea = block?.querySelector('textarea');
+    if (textarea) {
+      textarea.value = value || '';
+      autoResizeTextarea(textarea);
+    }
+  }
+
+  function setInputInBlock(title, placeholderStartsWith, value) {
+    const block = getVipBlockByTitle(title);
+    const inputs = [...(block?.querySelectorAll('input') || [])];
+    const target = inputs.find((input) => (input.getAttribute('placeholder') || '').startsWith(placeholderStartsWith));
+    if (target) {
+      target.value = value || '';
+    }
+  }
+
+  function setCheckedLabelsInBlock(title, labels) {
+    const normalized = new Set((labels || []).map((label) => normalizeValue(label)));
+    const block = getVipBlockByTitle(title);
+    if (!block) {
+      return;
+    }
+
+    [...block.querySelectorAll('input[type="checkbox"]')].forEach((input) => {
+      const label = input.closest('label');
+      const textNode = label?.querySelector('.checkbox-label');
+      const value = normalizeValue(textNode?.textContent || '');
+      input.checked = normalized.has(value);
+    });
+  }
+
+  function applySavedRecord(record) {
+    const responseData = record?.responseData || {};
+    const vip = responseData.vip || {};
+    const participantEmail = record?.email || responseData.participantEmail || '';
+    const selectedPath = record?.selectedPath || responseData.selectedPath || '';
+    const courseChoice = record?.courseChoice || responseData.courseChoice || '';
+    const personalContext = record?.personalContext || responseData.personalContext || '';
+
+    const emailField = document.getElementById('participant-email');
+    if (emailField) {
+      emailField.value = participantEmail;
+    }
+
+    const visionField = document.getElementById('vision-future');
+    if (visionField) {
+      visionField.value = responseData.visionFuture || '';
+      autoResizeTextarea(visionField);
+    }
+
+    const courseSelect = document.getElementById('course-select');
+    if (courseSelect) {
+      courseSelect.value = courseChoice;
+    }
+
+    const personalContextField = document.getElementById('personal-context');
+    if (personalContextField) {
+      personalContextField.value = personalContext;
+      autoResizeTextarea(personalContextField);
+    }
+
+    setTextInBlock('Я здесь, чтобы...', vip.purpose);
+    setInputInBlock('Возраст / Рост / Вес', 'Возраст', vip.age);
+    setInputInBlock('Возраст / Рост / Вес', 'Рост', vip.height);
+    setInputInBlock('Возраст / Рост / Вес', 'Вес', vip.weight);
+    setTextInBlock('Здоровье и ограничения', vip.healthRestrictions);
+    setInputInBlock('Диастаз', 'Например', vip.diastasis);
+    setCheckedLabelsInBlock('Отметь, если актуально', vip.pelvicFloorFlags);
+    setCheckedLabelsInBlock('Отношение к питанию', vip.nutritionFlags);
+    setTextInBlock('Твой обычный день', vip.typicalDay);
+    setTextInBlock('Питание и привычки', vip.foodHabits);
+    setTextInBlock('Препараты', vip.medications);
+    setTextInBlock('Сообщение для куратора', vip.curatorMessage);
+
+    const childrenValue = normalizeValue(vip.childrenStatus || '');
+    if (childrenValue) {
+      const radio = document.querySelector(`input[name="children"][value="${childrenValue}"]`);
+      if (radio) {
+        radio.checked = true;
+      }
+    }
+
+    const childrenDetail = document.querySelector('#children-detail input');
+    if (childrenDetail) {
+      childrenDetail.value = vip.childrenDetail || '';
+    }
+
+    const pregnantDetail = document.querySelector('#pregnant-detail input');
+    if (pregnantDetail) {
+      pregnantDetail.value = vip.pregnantDetail || '';
+    }
+
+    syncConditionalState(selectedPath);
+  }
+
+  function getSelectedPath() {
+    if (document.getElementById('path1')?.classList.contains('active')) {
+      return 'short';
+    }
+    if (document.getElementById('path2')?.classList.contains('active')) {
+      return 'personal';
+    }
+    return '';
+  }
+
+  function syncConditionalState(explicitPath = '') {
+    const inferredPath =
+      normalizeValue(document.getElementById('course-select')?.value || '') ? 'short' :
+      normalizeValue(document.getElementById('personal-context')?.value || '', true) ? 'personal' :
+      getSelectedPath();
+    const selectedPath = explicitPath || inferredPath;
+    const path1Active = selectedPath === 'short';
+    const path2Active = selectedPath === 'personal';
+    const path1 = document.getElementById('path1');
+    const path2 = document.getElementById('path2');
+    const path1Fields = document.getElementById('path1-fields');
+    const path2Fields = document.getElementById('path2-fields');
+
+    path1?.classList.toggle('active', path1Active);
+    path2?.classList.toggle('active', path2Active);
+    path1Fields?.classList.toggle('visible', path1Active);
+    path2Fields?.classList.toggle('visible', path2Active);
+
+    const selectedChildren = document.querySelector('input[name="children"]:checked');
+    const childrenDetail = document.getElementById('children-detail');
+    const pregnantDetail = document.getElementById('pregnant-detail');
+    if (childrenDetail) {
+      childrenDetail.style.display = selectedChildren?.value === 'yes' ? 'block' : 'none';
+    }
+    if (pregnantDetail) {
+      pregnantDetail.style.display = selectedChildren?.value === 'pregnant' ? 'block' : 'none';
+    }
+
+    autoResizeAllTextareas();
+  }
+
+  function collectDraftState() {
+    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    return {
+      selectedPath: getSelectedPath(),
+      fields: allFields.map((field) => {
+        if (field.type === 'checkbox' || field.type === 'radio') {
+          return Boolean(field.checked);
+        }
+        return field.value || '';
+      })
+    };
+  }
+
+  function restoreDraftState(state) {
+    const values = Array.isArray(state) ? state : state?.fields || [];
+    const selectedPath = !Array.isArray(state) ? normalizeValue(state?.selectedPath || '') : '';
+    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    allFields.forEach((field, index) => {
+      const saved = values[index];
+      if (saved === undefined) {
+        return;
+      }
+
+      if (field.type === 'checkbox' || field.type === 'radio') {
+        field.checked = Boolean(saved);
+      } else {
+        field.value = saved;
+      }
+    });
+
+    syncConditionalState(selectedPath);
+  }
+
+  function saveDraft() {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraftState()));
+  }
+
+  function setSaveNote(message) {
+    const saveNote = document.getElementById('save-note');
+    if (saveNote) {
+      saveNote.textContent = message;
+    }
+  }
+
+  async function loadSavedVersion() {
+    setSaveNote('Загружаю сохранённую версию анкеты...');
+
+    try {
+      const response = await fetch(LOAD_ENDPOINT);
+      if (!response.ok) {
+        throw new Error('load_failed');
+      }
+
+      const result = await response.json();
+      if (!result.ok || !result.found || !result.record) {
+        setSaveNote('Пока нет сохранённой версии. Можно заполнить анкету и сохранить её по этой же ссылке.');
+        return false;
+      }
+
+      if (result.record.draftState?.fields?.length || Array.isArray(result.record.draftState)) {
+        restoreDraftState(result.record.draftState);
+      } else {
+        applySavedRecord(result.record);
+      }
+      const savedAt = formatDate(result.record.submittedAt || result.updatedAt);
+      setSaveNote(savedAt ? `Открыта сохранённая версия от ${savedAt}.` : 'Открыта последняя сохранённая версия анкеты.');
+      localStorage.setItem(LAST_SAVED_KEY, result.record.submittedAt || result.updatedAt || '');
+      return true;
+    } catch (error) {
+      setSaveNote('Не удалось загрузить сохранённую версию. Можно продолжить с локальным черновиком и сохранить позже.');
+      return false;
+    }
+  }
+
+  function restoreLocalDraft() {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (!savedDraft) {
+      return false;
+    }
+
+    try {
+      restoreDraftState(JSON.parse(savedDraft));
+      setSaveNote('Восстановлен локальный черновик из этого браузера.');
+      return true;
+    } catch (error) {
+      localStorage.removeItem(DRAFT_KEY);
+      return false;
+    }
+  }
+
+  function buildPayload() {
+    const selectedPath = getSelectedPath();
+    const selectedChildren = document.querySelector('input[name="children"]:checked');
+    const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
+
+    const responseData = {
+      participantEmail,
+      visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
+      selectedPath,
+      courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
+      personalContext: normalizeValue(document.getElementById('personal-context')?.value || '', true),
+      vip: {
+        purpose: textFromBlock('Я здесь, чтобы...'),
+        age: inputFromBlock('Возраст / Рост / Вес', 'Возраст'),
+        height: inputFromBlock('Возраст / Рост / Вес', 'Рост'),
+        weight: inputFromBlock('Возраст / Рост / Вес', 'Вес'),
+        childrenStatus: normalizeValue(selectedChildren?.value || ''),
+        childrenDetail: normalizeValue(document.querySelector('#children-detail input')?.value || ''),
+        pregnantDetail: normalizeValue(document.querySelector('#pregnant-detail input')?.value || ''),
+        healthRestrictions: textFromBlock('Здоровье и ограничения'),
+        diastasis: inputFromBlock('Диастаз', 'Например'),
+        pelvicFloorFlags: checkedLabelsFromBlock('Отметь, если актуально'),
+        nutritionFlags: checkedLabelsFromBlock('Отношение к питанию'),
+        typicalDay: textFromBlock('Твой обычный день'),
+        foodHabits: textFromBlock('Питание и привычки'),
+        medications: textFromBlock('Препараты'),
+        curatorMessage: textFromBlock('Сообщение для куратора')
+      }
+    };
+
+    return {
+      kind: 'participant-questionnaire',
+      participantName: PARTICIPANT_NAME,
+      participantSlug: PARTICIPANT_SLUG,
+      email: participantEmail,
+      draftState: collectDraftState(),
+      selectedPath: responseData.selectedPath,
+      courseChoice: responseData.courseChoice,
+      personalContext: responseData.personalContext,
+      responseData,
+      source: 'high-performance-participant-questionnaire',
+      pageUrl: window.location.href,
+      submittedAt: new Date().toISOString()
+    };
+  }
+
+  function hasMeaningfulValue(value) {
+    if (Array.isArray(value)) {
+      return value.some(hasMeaningfulValue);
+    }
+    if (value && typeof value === 'object') {
+      return Object.values(value).some(hasMeaningfulValue);
+    }
+    return Boolean(normalizeValue(value, true));
+  }
+
+  async function handleSubmit() {
+    const payload = buildPayload();
+    const successOverlay = document.getElementById('success');
+    const successMessage = document.getElementById('success-message');
+    const submitButton = document.getElementById('save-questionnaire');
+    const emailValue = payload.email || '';
+
+    if (!emailValue) {
+      alert('Сначала укажи email. Он нужен для привязки личного кабинета.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      alert('Похоже, email указан с ошибкой. Проверь, пожалуйста, адрес ещё раз.');
+      document.getElementById('participant-email')?.focus();
+      return;
+    }
+
+    if (!hasMeaningfulValue(payload.responseData)) {
+      alert('Заполни хотя бы один блок анкеты, чтобы мы могли что-то подобрать.');
+      return;
+    }
+
+    setSaveNote('Сохраняю анкету...');
+    submitButton.disabled = true;
+    submitButton.style.opacity = '0.7';
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('request_failed');
+      }
+
+      const result = await response.json();
+      const savedAt = formatDate(payload.submittedAt);
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(payload.draftState));
+      localStorage.setItem(LAST_SAVED_KEY, payload.submittedAt);
+      successMessage.textContent =
+        result.mode === 'updated'
+          ? 'Анкета сохранена заново. По этой же ссылке всегда откроется её актуальная версия.'
+          : 'Анкета сохранена. По этой же ссылке можно в любой момент вернуться и продолжить редактирование.';
+      setSaveNote(savedAt ? `Сохранено ${savedAt}.` : 'Анкета сохранена.');
+      successOverlay.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      setSaveNote('Не удалось сохранить анкету. Локальный черновик остался в браузере.');
+      alert('Не удалось сохранить анкету. Попробуй ещё раз чуть позже.');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.style.opacity = '1';
+    }
+  }
+
+  document.querySelectorAll('select, textarea, input').forEach((field) => {
+    field.addEventListener('input', () => {
+      if (field.tagName === 'TEXTAREA') {
+        autoResizeTextarea(field);
+      }
+      syncConditionalState();
+      saveDraft();
+    });
+    field.addEventListener('change', () => {
+      syncConditionalState();
+      saveDraft();
+    });
+  });
+
+  document.getElementById('continue-editing')?.addEventListener('click', () => {
+    document.getElementById('success')?.classList.remove('visible');
+    document.getElementById('personal-context')?.focus();
+  });
+
+  document.getElementById('success-close')?.addEventListener('click', () => {
+    document.getElementById('success')?.classList.remove('visible');
+  });
+
+  (async () => {
+    autoResizeAllTextareas();
+    await loadSavedVersion();
+    restoreLocalDraft();
+    syncConditionalState();
+  })();
+</script>
+
+</body>
+</html>

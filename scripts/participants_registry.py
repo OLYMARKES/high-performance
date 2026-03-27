@@ -24,6 +24,7 @@ RAW_PARTICIPANTS = [
     {"name": "Наташа", "public_name": "Наташа", "contact": "@nathaliedanz", "issue": 10, "token": "l5q9t3m7v2k8"},
     {"name": "Катя", "public_name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
     {"name": "Екатерина Прозорова", "public_name": "Екатерина", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
+    {"name": "Таня", "public_name": "Таня", "contact": "+79122852083", "issue": 33, "token": "m6p4t8k2v7q1"},
 ]
 
 
