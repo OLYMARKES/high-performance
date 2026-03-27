@@ -63,6 +63,96 @@ def normalize_key(value: str) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip().lower())
 
 
+def first_name_only(value: str) -> str:
+    cleaned = str(value or "").strip()
+    if not cleaned:
+        return ""
+    return re.split(r"\s+", cleaned)[0]
+
+
+LATIN_TO_CYRILLIC = [
+    ("shch", "щ"),
+    ("yo", "ё"),
+    ("yu", "ю"),
+    ("ya", "я"),
+    ("zh", "ж"),
+    ("kh", "х"),
+    ("ts", "ц"),
+    ("ch", "ч"),
+    ("sh", "ш"),
+    ("a", "а"),
+    ("b", "б"),
+    ("c", "к"),
+    ("d", "д"),
+    ("e", "е"),
+    ("f", "ф"),
+    ("g", "г"),
+    ("h", "х"),
+    ("i", "и"),
+    ("j", "й"),
+    ("k", "к"),
+    ("l", "л"),
+    ("m", "м"),
+    ("n", "н"),
+    ("o", "о"),
+    ("p", "п"),
+    ("q", "к"),
+    ("r", "р"),
+    ("s", "с"),
+    ("t", "т"),
+    ("u", "у"),
+    ("v", "в"),
+    ("w", "в"),
+    ("x", "кс"),
+    ("y", "и"),
+    ("z", "з"),
+]
+
+
+def cyrillicize_name(value: str) -> str:
+    first_name = first_name_only(value)
+    if not re.fullmatch(r"[A-Za-z-]+", first_name):
+        return first_name
+
+    normalized = first_name.lower()
+    result: list[str] = []
+    index = 0
+    while index < len(normalized):
+        matched = False
+        for latin, cyrillic in LATIN_TO_CYRILLIC:
+            if normalized.startswith(latin, index):
+                result.append(cyrillic)
+                index += len(latin)
+                matched = True
+                break
+        if not matched:
+            result.append(normalized[index])
+            index += 1
+
+    joined = "".join(result)
+    return joined[:1].upper() + joined[1:] if joined else first_name
+
+
+def extract_telegram_handle(value: str) -> str:
+    if "manual-" in str(value or ""):
+        return ""
+    match = re.search(r"@([A-Za-z0-9_]+)", str(value or ""))
+    if not match:
+        return ""
+
+    handle = f"@{match.group(1)}"
+    if handle == "@manual":
+        return ""
+    return handle
+
+
+def telegram_url(value: str) -> str:
+    handle = extract_telegram_handle(value)
+    if not handle:
+        return ""
+    return f"https://t.me/{handle[1:]}"
+
+
 def format_timestamp(value: str) -> str:
     if not value:
         return "—"
@@ -122,7 +212,8 @@ def build_lead_index(issues: list[dict]) -> tuple[dict[int, dict], dict[str, dic
             "submittedAt": record.get("submittedAt") or issue.get("created_at") or "",
             "submittedAtLabel": format_timestamp(str(record.get("submittedAt") or issue.get("created_at") or "")),
             "name": lead_name,
-            "contact": contact,
+            "contact": extract_telegram_handle(contact) or contact,
+            "telegramUrl": telegram_url(contact),
             "email": record.get("email", ""),
             "about": record.get("about", ""),
         }
@@ -208,11 +299,13 @@ def build_rows() -> tuple[list[dict], str]:
                 "rowId": participant["slug"] or f"participant-{participant['token']}",
                 "slug": participant["slug"],
                 "displayName": participant["display_name"],
-                "telegramHandle": participant["telegram_handle"],
+                "telegramHandle": extract_telegram_handle(participant["telegram_handle"]) or "",
+                "telegramUrl": telegram_url(participant["telegram_handle"]),
                 "leadSubmitted": bool(lead),
                 "paid": bool(participant["paid"]),
                 "questionnaireFilled": bool(questionnaire_match),
                 "courseOpened": bool(participant["course_opened"]),
+                "flagged": False,
                 "openedCourse": participant.get("opened_course", "") or label_for_course(selected_course),
                 "needsPick": needs_pick,
                 "readyToOpen": ready_to_open,
@@ -257,12 +350,14 @@ def build_rows() -> tuple[list[dict], str]:
             {
                 "rowId": f"lead-{issue_number}",
                 "slug": "",
-                "displayName": lead["name"] or lead["contact"] or f"Lead #{issue_number}",
+                "displayName": cyrillicize_name(lead["name"]) or lead["contact"] or f"Lead #{issue_number}",
                 "telegramHandle": lead["contact"] or "—",
+                "telegramUrl": lead.get("telegramUrl", ""),
                 "leadSubmitted": True,
                 "paid": False,
                 "questionnaireFilled": False,
                 "courseOpened": False,
+                "flagged": False,
                 "openedCourse": "",
                 "needsPick": False,
                 "readyToOpen": False,
@@ -446,7 +541,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     }}
     .stats {{
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 14px;
     }}
     .stat {{
@@ -576,6 +671,11 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       color: var(--yellow);
       border-color: rgba(240, 195, 111, 0.35);
       background: rgba(240, 195, 111, 0.08);
+    }}
+    .badge.flag {{
+      color: #ffb3b3;
+      border-color: rgba(255, 132, 132, 0.34);
+      background: rgba(255, 132, 132, 0.1);
     }}
     .badge.muted {{ color: var(--muted); }}
     .checklist {{
@@ -722,7 +822,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     <section class="panel">
       <div class="snapshot"><strong>Снимок данных:</strong> {format_timestamp(snapshot_time)}. Данные подтянуты из последних GitHub issues и встроены прямо в страницу.</div>
       <div class="snapshot">Скрытие работает локально в этом браузере: можно убирать тех, кто не пошёл, не меняя исходные данные.</div>
-      <input class="search" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email, курсу или slug">
+      <input class="search" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email или курсу">
       <div class="filters" id="stage-filters">
         <button class="chip is-active" data-stage="all" type="button">Все</button>
         <button class="chip" data-stage="lead" type="button">Заявки</button>
@@ -736,6 +836,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         <button class="chip" data-status="waiting-questionnaire" type="button">Ждём анкету</button>
         <button class="chip" data-status="needs-pick" type="button">Подобрать курс</button>
         <button class="chip" data-status="ready-open" type="button">Открыть курс</button>
+        <button class="chip" data-status="flagged" type="button">С флагом</button>
         <button class="chip" data-status="hidden" type="button">Скрытые</button>
       </div>
     </section>
@@ -878,6 +979,13 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         : Boolean(row.courseOpened);
     }}
 
+    function rowFlagged(row) {{
+      const override = rowOverride(row);
+      return Object.prototype.hasOwnProperty.call(override, 'flagged')
+        ? Boolean(override.flagged)
+        : Boolean(row.flagged);
+    }}
+
     function setRowFlag(row, flag, value) {{
       const key = String(row.rowId);
       const next = {{ ...(overrides[key] || {{}}), [flag]: Boolean(value) }};
@@ -929,12 +1037,15 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     }}
 
     function quickLinksHtml(row) {{
+      return quickLinksHtmlVariant(row, false);
+    }}
+
+    function quickLinksHtmlVariant(row, compact = false) {{
       const links = [
-        row.leadIssueUrl ? `<a class="link" href="${{row.leadIssueUrl}}" target="_blank" rel="noopener noreferrer">lead #${{row.leadIssueNumber}}</a>` : '',
         row.questionnaireUrl ? `<a class="link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>` : '',
-        row.personalTrackerUrl ? `<a class="link" href="${{row.personalTrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер</a>` : '',
-        row.week1TrackerUrl ? `<a class="link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер week 1</a>` : '',
-        row.questionnaireIssueUrl ? `<a class="link" href="${{row.questionnaireIssueUrl}}" target="_blank" rel="noopener noreferrer">record #${{row.questionnaireIssueNumber}}</a>` : '',
+        row.personalTrackerUrl ? `<a class="link" href="${{row.personalTrackerUrl}}" target="_blank" rel="noopener noreferrer">${{compact ? 'трекер' : 'трекер апреля'}}</a>` : '',
+        !compact && row.week1TrackerUrl ? `<a class="link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер неделя 1</a>` : '',
+        row.telegramUrl ? `<a class="link" href="${{row.telegramUrl}}" target="_blank" rel="noopener noreferrer">написать в Telegram</a>` : '',
       ].filter(Boolean);
 
       if (!links.length) {{
@@ -1000,10 +1111,13 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         const stageMatches = activeStage === 'all' ? true : stageForRow(row) === activeStage;
         const hiddenState = isHidden(row);
         const hiddenMatches = activeStatus === 'hidden' ? hiddenState : !hiddenState;
+        const flaggedMatches = activeStatus === 'flagged' ? rowFlagged(row) : true;
         const statusMatches =
-          activeStatus === 'all' || activeStatus === 'hidden' ? true : statusForRow(row) === activeStatus;
+          activeStatus === 'all' || activeStatus === 'hidden' || activeStatus === 'flagged'
+            ? true
+            : statusForRow(row) === activeStatus;
         const searchMatches = !query || rowSearchIndex(row).includes(query);
-        return stageMatches && hiddenMatches && statusMatches && searchMatches;
+        return stageMatches && hiddenMatches && flaggedMatches && statusMatches && searchMatches;
       }});
     }}
 
@@ -1027,7 +1141,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         const [title, note] = nextAction(row);
         return `
           <div class="queue-item">
-            <div class="queue-name">${{escapeHtml(row.displayName)}}</div>
+            <div class="queue-name">${{escapeHtml(row.displayName)}}${{rowFlagged(row) ? ' · Флаг' : ''}}</div>
             <div class="queue-meta">${{escapeHtml(row.telegramHandle || '—')}}${{row.email ? ` · ${{escapeHtml(row.email)}}` : ''}}</div>
             <div class="queue-meta">${{escapeHtml(title)}}${{row.selectedCourseLabel && row.selectedCourseLabel !== '—' ? ` · ${{escapeHtml(row.selectedCourseLabel)}}` : ''}}</div>
             <div class="queue-meta">${{escapeHtml(note)}}</div>
@@ -1046,13 +1160,14 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
         const [actionTitle, actionNote] = nextAction(row);
         const hiddenButtonLabel = isHidden(row) ? 'Вернуть' : 'Скрыть';
         const hiddenButtonClass = isHidden(row) ? '' : ' is-muted';
+        const flagButtonLabel = rowFlagged(row) ? 'Снять флаг' : 'Флаг';
         return `
           <tr>
             <td>
+              ${{rowFlagged(row) ? '<span class="badge flag">Флаг</span>' : ''}}
               <span class="name">${{escapeHtml(row.displayName)}}</span>
               <span class="meta">${{escapeHtml(row.telegramHandle || '—')}}</span>
-              <span class="meta">${{row.slug ? `slug: ${{escapeHtml(row.slug)}}` : 'без slug'}}</span>
-              ${{quickLinksHtml(row)}}
+              ${{quickLinksHtmlVariant(row, true)}}
             </td>
             <td>
               <div class="checklist">
@@ -1087,6 +1202,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
             <td>
               <div class="button-row">
                 <button class="details-btn" type="button" data-index="${{index}}">Открыть</button>
+                <button class="details-btn" type="button" data-flag-index="${{index}}">${{flagButtonLabel}}</button>
                 <button class="details-btn${{hiddenButtonClass}}" type="button" data-hide-index="${{index}}">${{hiddenButtonLabel}}</button>
               </div>
             </td>
@@ -1101,13 +1217,18 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
       const [actionTitle, actionNote] = nextAction(row);
       const body = [
-        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle || '—', row.slug ? `slug: ${{row.slug}}` : 'без slug'].join('\\n')), true),
+        sectionHtml('Идентификация', paragraph([
+          row.displayName,
+          row.telegramHandle || '—',
+          row.email ? `email: ${{row.email}}` : 'email: —'
+        ].join('\\n')), true),
         sectionHtml('Быстрые ссылки', quickLinksHtml(row), true),
         sectionHtml('Этапы', paragraph([
           row.leadSubmitted ? 'Заявка есть' : 'Заявки нет',
           rowPaid(row) ? 'Оплата есть' : 'Оплаты нет',
           row.questionnaireFilled ? 'Анкета заполнена' : 'Анкета не заполнена',
-          rowCourseOpened(row) ? 'Курс открыт' : 'Курс не открыт'
+          rowCourseOpened(row) ? 'Курс открыт' : 'Курс не открыт',
+          rowFlagged(row) ? 'Есть флаг' : 'Флага нет'
         ].join('\\n')), true),
         sectionHtml('Следующее действие', paragraph([actionTitle, actionNote].join('\\n')), true),
         sectionHtml('Lead note', paragraph(row.leadAbout)),
@@ -1178,6 +1299,14 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       const button = event.target.closest('[data-index]');
       if (button) {{
         openDetails(Number(button.dataset.index));
+        return;
+      }}
+
+      const flagButton = event.target.closest('[data-flag-index]');
+      if (flagButton) {{
+        const row = getVisibleRows()[Number(flagButton.dataset.flagIndex)];
+        if (!row) return;
+        setRowFlag(row, 'flagged', !rowFlagged(row));
         return;
       }}
 

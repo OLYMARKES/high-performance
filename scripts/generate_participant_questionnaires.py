@@ -750,16 +750,16 @@ def build_runtime_script(name: str, slug: str) -> str:
 
 def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
-    html = add_personalization(template, participant["name"])
-    html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['name'], slug)}\n</body>\n</html>", 1)
+    html = add_personalization(template, participant["public_name"])
+    html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['public_name'], slug)}\n</body>\n</html>", 1)
     if participant.get("issue"):
         source_comment = (
-            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['public_name']} "
             f"from GitHub issue #{participant['issue']}: https://github.com/OLYMARKES/high-performance-leads/issues/{participant['issue']} -->\n"
         )
     else:
         source_comment = (
-            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['public_name']} "
             f"from manual roster update -->\n"
         )
     return source_comment + html
@@ -1527,23 +1527,13 @@ def build_admin_page(snapshot_rows: list[dict[str, object]], snapshot_generated_
       }}
 
       resultsBody.innerHTML = rows.map((row, index) => {{
-        const leadIssueHtml = row.leadIssueUrl
-          ? `<a class="inline-link" href="${{row.leadIssueUrl}}" target="_blank" rel="noopener noreferrer">lead #${{row.leadIssueNumber}}</a>`
-          : '<span class="participant-meta">manual</span>';
-        const recordIssueHtml = row.issueUrl
-          ? `<a class="inline-link" href="${{row.issueUrl}}" target="_blank" rel="noopener noreferrer">record #${{row.issueNumber}}</a>`
-          : '';
-
         return `
           <tr>
             <td>
               <span class="participant-name">${{escapeHtml(row.displayName)}}</span>
               <span class="participant-meta">${{escapeHtml(row.telegramHandle)}}</span>
-              <span class="participant-meta">slug: ${{escapeHtml(row.slug)}}</span>
               <div class="link-list">
                 <a class="inline-link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>
-                ${{leadIssueHtml}}
-                ${{recordIssueHtml}}
               </div>
             </td>
             <td><span class="pill ${{row.statusKey}}">${{escapeHtml(row.statusLabel)}}</span></td>
@@ -1571,8 +1561,8 @@ def build_admin_page(snapshot_rows: list[dict[str, object]], snapshot_generated_
 
       const summary = row.summary || {{}};
       const body = [
-        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle, `slug: ${{row.slug}}`].join('\\n'))),
-        sectionHtml('Ссылки', paragraph([row.questionnaireUrl, row.leadIssueUrl || '', row.issueUrl || ''].filter(Boolean).join('\\n'))),
+        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle].join('\\n'))),
+        sectionHtml('Ссылки', paragraph([row.questionnaireUrl].filter(Boolean).join('\\n'))),
         sectionHtml('Статус', paragraph([row.statusLabel, row.actionTitle, row.actionNote].join('\\n'))),
         sectionHtml('Выбранный путь', paragraph(row.selectedPathLabel)),
         sectionHtml('Выбранный курс', paragraph(row.selectedCourseLabel)),

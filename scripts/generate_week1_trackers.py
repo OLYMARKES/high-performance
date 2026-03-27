@@ -286,15 +286,15 @@ def build_runtime_script(name: str, slug: str) -> str:
 
 def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
-    html = add_personalization(template, participant["name"], slug)
-    html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['name'], slug)}\n</body>\n</html>", 1)
+    html = add_personalization(template, participant["public_name"], slug)
+    html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['public_name'], slug)}\n</body>\n</html>", 1)
     if participant.get("issue"):
         source_comment = (
-            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} "
+            f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['public_name']} "
             f"from GitHub issue #{participant['issue']}: https://github.com/OLYMARKES/high-performance-leads/issues/{participant['issue']} -->\n"
         )
     else:
-        source_comment = f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['name']} from manual roster update -->\n"
+        source_comment = f"<!-- Generated from {SOURCE_TEMPLATE_PATH} for {participant['public_name']} from manual roster update -->\n"
     return source_comment + html
 
 

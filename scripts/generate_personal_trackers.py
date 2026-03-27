@@ -246,6 +246,10 @@ def main() -> None:
 
     for old_file in OUTPUT_DIR.glob("tracker_*_april_2026_v1.html"):
         old_file.unlink()
+    for stale_name in ("links.txt", "telegram_message.txt"):
+        stale_file = OUTPUT_DIR / stale_name
+        if stale_file.exists():
+            stale_file.unlink()
 
     entries = []
 
@@ -254,7 +258,7 @@ def main() -> None:
         filename = f"tracker_{slug}_april_2026_v1.html"
         html = personalize_html(
             template=template,
-            name=participant["name"],
+            name=participant["public_name"],
             contact=participant["contact"],
             slug=slug,
             issue=participant.get("issue"),
@@ -262,7 +266,7 @@ def main() -> None:
         (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
         entries.append(
             {
-                "name": participant["name"],
+                "name": participant["public_name"],
                 "display_name": participant["display_name"],
                 "contact": participant["contact"],
                 "issue": str(participant.get("issue", "")),
