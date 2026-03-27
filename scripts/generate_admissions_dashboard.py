@@ -14,6 +14,8 @@ SNAPSHOT_PATH = ROOT / "scripts" / "admin_issues_snapshot.json"
 OUTPUT_PATH = ROOT / "admissions-dashboard.html"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
+PERSONAL_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2026"
+WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 COURSE_LABELS = {
     "care": "Care",
     "basics": "Basics",
@@ -224,6 +226,8 @@ def build_rows() -> tuple[list[dict], str]:
                 "questionnaireIssueNumber": issue.get("number", ""),
                 "questionnaireIssueUrl": issue.get("html_url", ""),
                 "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/q_{participant['token']}.html",
+                "personalTrackerUrl": f"{PERSONAL_TRACKER_BASE_URL}/tracker_{participant['slug']}_april_2026_v1.html",
+                "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html",
                 "email": resolved_email,
                 "updatedAt": resolved_updated_at,
                 "updatedAtLabel": format_timestamp(resolved_updated_at),
@@ -270,6 +274,8 @@ def build_rows() -> tuple[list[dict], str]:
                 "questionnaireIssueNumber": "",
                 "questionnaireIssueUrl": "",
                 "questionnaireUrl": "",
+                "personalTrackerUrl": "",
+                "week1TrackerUrl": "",
                 "email": lead["email"],
                 "updatedAt": lead["submittedAt"],
                 "updatedAtLabel": lead["submittedAtLabel"],
@@ -902,6 +908,22 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       `;
     }}
 
+    function quickLinksHtml(row) {{
+      const links = [
+        row.leadIssueUrl ? `<a class="link" href="${{row.leadIssueUrl}}" target="_blank" rel="noopener noreferrer">lead #${{row.leadIssueNumber}}</a>` : '',
+        row.questionnaireUrl ? `<a class="link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>` : '',
+        row.personalTrackerUrl ? `<a class="link" href="${{row.personalTrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер</a>` : '',
+        row.week1TrackerUrl ? `<a class="link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер week 1</a>` : '',
+        row.questionnaireIssueUrl ? `<a class="link" href="${{row.questionnaireIssueUrl}}" target="_blank" rel="noopener noreferrer">record #${{row.questionnaireIssueNumber}}</a>` : '',
+      ].filter(Boolean);
+
+      if (!links.length) {{
+        return '<p>—</p>';
+      }}
+
+      return `<div class="links">${{links.join('')}}</div>`;
+    }}
+
     function stageForRow(row) {{
       if (rowCourseOpened(row)) return 'course-opened';
       if (row.questionnaireFilled) return 'questionnaire';
@@ -1010,11 +1032,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
               <span class="name">${{escapeHtml(row.displayName)}}</span>
               <span class="meta">${{escapeHtml(row.telegramHandle || '—')}}</span>
               <span class="meta">${{row.slug ? `slug: ${{escapeHtml(row.slug)}}` : 'без slug'}}</span>
-              <div class="links">
-                ${{row.leadIssueUrl ? `<a class="link" href="${{row.leadIssueUrl}}" target="_blank" rel="noopener noreferrer">lead #${{row.leadIssueNumber}}</a>` : ''}}
-                ${{row.questionnaireUrl ? `<a class="link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>` : ''}}
-                ${{row.questionnaireIssueUrl ? `<a class="link" href="${{row.questionnaireIssueUrl}}" target="_blank" rel="noopener noreferrer">record #${{row.questionnaireIssueNumber}}</a>` : ''}}
-              </div>
+              ${{quickLinksHtml(row)}}
             </td>
             <td>
               <div class="checklist">
@@ -1041,7 +1059,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
               <span class="action-note">${{escapeHtml(actionNote)}}</span>
             </td>
             <td>
-              <span class="name">${{escapeHtml(row.courseOpened ? (row.openedCourse || row.selectedCourseLabel || '—') : (row.selectedCourseLabel || '—'))}}</span>
+              <span class="name">${{escapeHtml(rowCourseOpened(row) ? (row.openedCourse || row.selectedCourseLabel || '—') : (row.selectedCourseLabel || '—'))}}</span>
               <span class="meta">Путь: ${{escapeHtml(row.selectedPathLabel || '—')}}</span>
             </td>
             <td>${{escapeHtml(row.email || '—')}}</td>
@@ -1064,11 +1082,12 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       const [actionTitle, actionNote] = nextAction(row);
       const body = [
         sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle || '—', row.slug ? `slug: ${{row.slug}}` : 'без slug'].join('\\n'))),
+        sectionHtml('Быстрые ссылки', quickLinksHtml(row)),
         sectionHtml('Этапы', paragraph([
           row.leadSubmitted ? 'Заявка есть' : 'Заявки нет',
-          row.paid ? 'Оплата есть' : 'Оплаты нет',
+          rowPaid(row) ? 'Оплата есть' : 'Оплаты нет',
           row.questionnaireFilled ? 'Анкета заполнена' : 'Анкета не заполнена',
-          row.courseOpened ? 'Курс открыт' : 'Курс не открыт'
+          rowCourseOpened(row) ? 'Курс открыт' : 'Курс не открыт'
         ].join('\\n'))),
         sectionHtml('Следующее действие', paragraph([actionTitle, actionNote].join('\\n'))),
         sectionHtml('Lead note', paragraph(row.leadAbout)),
