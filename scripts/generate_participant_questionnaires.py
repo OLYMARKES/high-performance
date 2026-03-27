@@ -1,87 +1,205 @@
 from __future__ import annotations
 
+import base64
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
+
+from participants_registry import get_participants
 
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "participant_questionnaires_april_2026"
+ISSUES_SNAPSHOT_PATH = ROOT / "scripts" / "admin_issues_snapshot.json"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/anketa.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 
-
-PARTICIPANTS = [
-    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual", "token": "q7k2m9b4v8x3"},
-    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual", "token": "n4r8t2y6p1c5"},
-    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual", "token": "h8m3q5z7k2w9"},
-    {"name": "Лера", "contact": "@lerakurepina", "issue": 26, "token": "d6v9n3k7t2m8"},
-    {"name": "Аня", "contact": "@beregukukuhu", "issue": 25, "token": "a7c2r9m4x6p3"},
-    {"name": "Viktoria", "contact": "@vpasko", "issue": 23, "token": "p3t8m6k1z9w4"},
-    {"name": "Вера", "contact": "@verushkavera", "issue": 22, "token": "u5n2c8r4x7p1"},
-    {"name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3"},
-    {"name": "Olesya Dauptain", "contact": "@aramba_annecy", "issue": 20, "token": "y7p3n8k5c2m6"},
-    {"name": "Надежда", "contact": "@moroznb", "issue": 18, "token": "b9t4m7q2x5k8"},
-    {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17, "token": "r6k2v9p4m8c1"},
-    {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16, "token": "s8m3x7q1k5v9"},
-    {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14, "token": "e4p7t2m9c6k3"},
-    {"name": "Жанар", "contact": "@zhantik87", "issue": 13, "token": "w9k5m2r8x3p6"},
-    {"name": "Анна", "contact": "@Jayms17", "issue": 12, "token": "f2v8m4q7k1t5"},
-    {"name": "Вика", "contact": "@vikaevdokimova", "issue": 11, "token": "g7m1p6x9c3k4"},
-    {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10, "token": "l5q9t3m7v2k8"},
-    {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
-    {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
-]
-
 TEAM_PAGE_TOKEN = "team-vault-7m4k9p2x6c8q"
-
-
-TRANSLIT = {
-    "а": "a",
-    "б": "b",
-    "в": "v",
-    "г": "g",
-    "д": "d",
-    "е": "e",
-    "ё": "e",
-    "ж": "zh",
-    "з": "z",
-    "и": "i",
-    "й": "y",
-    "к": "k",
-    "л": "l",
-    "м": "m",
-    "н": "n",
-    "о": "o",
-    "п": "p",
-    "р": "r",
-    "с": "s",
-    "т": "t",
-    "у": "u",
-    "ф": "f",
-    "х": "kh",
-    "ц": "ts",
-    "ч": "ch",
-    "ш": "sh",
-    "щ": "shch",
-    "ъ": "",
-    "ы": "y",
-    "ь": "",
-    "э": "e",
-    "ю": "yu",
-    "я": "ya",
+COURSE_LABELS = {
+    "care": "Care",
+    "basics": "Basics",
+    "superhuman": "SuperHuman",
+    "abs": "Пресс",
+    "woman-health": "Женское здоровье",
+    "soft-power": "Soft Power",
+    "stretch": "Растяжка",
+    "pregnancy": "Для беременных",
+    "mama": "Мама",
+    "bed": "Не вставая с кровати",
+    "body-contact": "Контакт с телом",
 }
-
-
-def slugify(value: str) -> str:
-    normalized = "".join(TRANSLIT.get(char, char) for char in value.lower())
-    normalized = re.sub(r"[^a-z0-9]+", "-", normalized)
-    return normalized.strip("-")
 
 
 def quote_js(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
+
+
+def script_json(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
+
+
+def decode_record_from_issue_body(body: str) -> dict | None:
+    match = re.search(r"<!-- lead-data:v1:([^>]+) -->", body or "")
+    if not match:
+        return None
+
+    try:
+        return json.loads(base64.b64decode(match.group(1)).decode("utf-8"))
+    except (ValueError, json.JSONDecodeError):
+        return None
+
+
+def course_label(value: str) -> str:
+    return COURSE_LABELS.get(value, value or "")
+
+
+def label_for_path(value: str) -> str:
+    if value == "short":
+        return "Короткий"
+    if value == "personal":
+        return "Персональный"
+    return "—"
+
+
+def format_snapshot_time(value: str) -> str:
+    if not value:
+        return ""
+
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return value
+    return dt.strftime("%d.%m.%Y %H:%M UTC")
+
+
+def fetch_github_issues() -> list[dict]:
+    payload = json.loads(ISSUES_SNAPSHOT_PATH.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, list) else []
+
+
+def build_admin_snapshot(entries: list[dict[str, str]]) -> tuple[list[dict[str, object]], str, str | None]:
+    snapshot_generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    try:
+        issues = fetch_github_issues()
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        return [], snapshot_generated_at, str(error)
+
+    latest_by_slug: dict[str, dict[str, object]] = {}
+    for issue in issues:
+        record = decode_record_from_issue_body(issue.get("body", ""))
+        if not record or record.get("kind") != "high-performance-participant-questionnaire":
+            continue
+
+        slug = str(record.get("participantSlug") or "").strip()
+        if not slug:
+            continue
+
+        candidate_date = str(record.get("submittedAt") or issue.get("updated_at") or "")
+        existing = latest_by_slug.get(slug)
+        existing_date = ""
+        if existing:
+            existing_record = existing.get("record", {})
+            existing_issue = existing.get("issue", {})
+            existing_date = str(existing_record.get("submittedAt") or existing_issue.get("updated_at") or "")
+
+        if not existing or candidate_date > existing_date:
+            latest_by_slug[slug] = {"record": record, "issue": issue}
+
+    rows: list[dict[str, object]] = []
+    for entry in entries:
+        match = latest_by_slug.get(entry["slug"])
+        record = match["record"] if match else {}
+        issue = match["issue"] if match else {}
+        response_data = record.get("responseData", {}) if isinstance(record, dict) else {}
+        vip = response_data.get("vip", {}) if isinstance(response_data, dict) else {}
+
+        selected_path = str(record.get("selectedPath") or response_data.get("selectedPath") or "")
+        selected_course = str(record.get("courseChoice") or response_data.get("courseChoice") or "")
+        personal_context = str(record.get("personalContext") or response_data.get("personalContext") or "")
+        updated_at = str(record.get("submittedAt") or issue.get("updated_at") or "")
+
+        status_key = "waiting"
+        status_label = "Ждём анкету"
+        action_title = "Напомнить заполнить"
+        action_note = "Сохранённой версии анкеты пока нет."
+
+        if record:
+            if selected_course:
+                status_key = "ready-open"
+                status_label = "Курс выбран"
+                action_title = f"Открыть курс {course_label(selected_course)}"
+                action_note = "Участница сама выбрала курс в анкете."
+            elif selected_path == "personal" or personal_context.strip():
+                status_key = "needs-pick"
+                status_label = "Нужно подобрать"
+                action_title = "Подобрать курс"
+                action_note = "Нужен ручной подбор по анкете."
+            elif selected_path == "short":
+                status_key = "review"
+                status_label = "Нужно проверить"
+                action_title = "Проверить выбор"
+                action_note = "Короткий путь выбран, но курс не определён."
+            else:
+                status_key = "review"
+                status_label = "Нужно проверить"
+                action_title = "Проверить анкету"
+                action_note = "Данные анкеты неполные для решения."
+
+        rows.append(
+            {
+                "slug": entry["slug"],
+                "displayName": entry["display_name"],
+                "telegramHandle": entry["telegram_handle"],
+                "questionnaireUrl": f"{PUBLIC_BASE_URL}/{entry['filename']}",
+                "leadIssueNumber": entry.get("lead_issue"),
+                "leadIssueUrl": f"https://github.com/{PRIVATE_REPO}/issues/{entry['lead_issue']}" if entry.get("lead_issue") else "",
+                "issueUrl": issue.get("html_url", ""),
+                "issueNumber": issue.get("number", ""),
+                "email": record.get("email") or response_data.get("participantEmail") or "",
+                "selectedPath": selected_path,
+                "selectedPathLabel": label_for_path(selected_path),
+                "selectedCourse": selected_course,
+                "selectedCourseLabel": course_label(selected_course) or "—",
+                "updatedAt": updated_at,
+                "updatedAtLabel": format_snapshot_time(updated_at) or "—",
+                "statusKey": status_key,
+                "statusLabel": status_label,
+                "actionTitle": action_title,
+                "actionNote": action_note,
+                "summary": {
+                    "visionFuture": response_data.get("visionFuture", ""),
+                    "personalContext": personal_context,
+                    "purpose": vip.get("purpose", ""),
+                    "healthRestrictions": vip.get("healthRestrictions", ""),
+                    "nutritionFlags": vip.get("nutritionFlags", []),
+                    "foodHabits": vip.get("foodHabits", ""),
+                    "medications": vip.get("medications", ""),
+                    "curatorMessage": vip.get("curatorMessage", ""),
+                },
+            }
+        )
+
+    status_priority = {"needs-pick": 0, "ready-open": 1, "review": 2, "waiting": 3}
+
+    def sort_key(row: dict[str, object]) -> tuple[int, float, str]:
+        updated_at = str(row.get("updatedAt") or "")
+        timestamp = 0.0
+        if updated_at:
+            try:
+                timestamp = datetime.fromisoformat(updated_at.replace("Z", "+00:00")).timestamp()
+            except ValueError:
+                timestamp = 0.0
+        return (
+            status_priority.get(str(row.get("statusKey") or ""), 9),
+            -timestamp,
+            str(row.get("displayName") or ""),
+        )
+
+    rows.sort(key=sort_key)
+    return rows, snapshot_generated_at, None
 
 
 def load_template() -> str:
@@ -724,8 +842,8 @@ def build_team_page(entries: list[dict[str, str]]) -> str:
     cards_html = "\n".join(
         f"""
           <a class="card" href="{entry['filename']}">
-            <span class="card-name">{entry['name']}</span>
-            <span class="card-meta">персональная анкета</span>
+            <span class="card-name">{entry['display_name']}</span>
+            <span class="card-meta">персональная анкета · {entry['telegram_handle']}</span>
           </a>"""
         for entry in entries
     )
@@ -861,12 +979,13 @@ def build_team_page(entries: list[dict[str, str]]) -> str:
 """
 
 
-def build_admin_page() -> str:
+def build_admin_page(snapshot_rows: list[dict[str, object]], snapshot_generated_at: str, snapshot_error: str | None) -> str:
     return f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
   <title>HIGH PERFORMANCE — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
@@ -881,7 +1000,7 @@ def build_admin_page() -> str:
       --text-muted: #6f6f6f;
       --accent: #c9a96e;
       --accent-glow: rgba(201, 169, 110, 0.12);
-      --radius: 14px;
+      --radius: 16px;
     }}
     body {{
       font-family: 'Inter', -apple-system, sans-serif;
@@ -892,7 +1011,7 @@ def build_admin_page() -> str:
       padding: 32px 16px 56px;
     }}
     .container {{
-      max-width: 1240px;
+      max-width: 1280px;
       margin: 0 auto;
     }}
     .hero {{
@@ -919,7 +1038,7 @@ def build_admin_page() -> str:
       color: var(--accent);
     }}
     .hero-sub {{
-      max-width: 700px;
+      max-width: 760px;
       margin: 0 auto;
       color: var(--text-secondary);
       font-size: 15px;
@@ -932,19 +1051,16 @@ def build_admin_page() -> str:
       padding: 24px;
       margin-top: 18px;
     }}
-    .row {{
-      display: grid;
-      gap: 8px;
-      margin-bottom: 16px;
-    }}
-    .label {{
+    .snapshot-note {{
+      color: var(--text-secondary);
       font-size: 13px;
-      font-weight: 600;
+    }}
+    .snapshot-note strong {{
       color: var(--text);
+      font-weight: 600;
     }}
-    .note {{
-      color: var(--text-muted);
-      font-size: 13px;
+    .snapshot-note.is-error {{
+      color: #d98274;
     }}
     .input {{
       width: 100%;
@@ -955,16 +1071,17 @@ def build_admin_page() -> str:
       font: inherit;
       padding: 14px 16px;
       outline: none;
+      margin-top: 14px;
     }}
     .input:focus {{
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }}
-    .actions {{
+    .filter-bar {{
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      align-items: center;
+      margin-top: 16px;
     }}
     .button {{
       background: var(--accent);
@@ -978,13 +1095,75 @@ def build_admin_page() -> str:
       text-transform: uppercase;
       cursor: pointer;
     }}
-    .status {{
-      min-height: 1.4em;
+    .button.is-secondary {{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }}
+    .stats-grid {{
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }}
+    .stat-card, .queue-card {{
+      background: #141414;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }}
+    .stat-label {{
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }}
+    .stat-value {{
+      margin-top: 8px;
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      line-height: 1;
+      color: var(--text);
+    }}
+    .queue-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }}
+    .queue-title {{
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      line-height: 1.1;
+    }}
+    .queue-sub {{
+      margin-top: 6px;
       color: var(--text-secondary);
       font-size: 13px;
     }}
-    .status.is-error {{ color: #d98274; }}
-    .status.is-success {{ color: #9fc47b; }}
+    .queue-list {{
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }}
+    .queue-item {{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #101010;
+    }}
+    .queue-name {{
+      font-weight: 600;
+      color: var(--text);
+    }}
+    .queue-meta {{
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }}
+    .empty-note {{
+      color: var(--text-muted);
+      font-size: 13px;
+    }}
     .table-wrap {{
       overflow-x: auto;
       margin-top: 18px;
@@ -994,7 +1173,7 @@ def build_admin_page() -> str:
     table {{
       width: 100%;
       border-collapse: collapse;
-      min-width: 1120px;
+      min-width: 1080px;
       background: #141414;
     }}
     th, td {{
@@ -1011,8 +1190,68 @@ def build_admin_page() -> str:
       text-transform: uppercase;
       font-weight: 600;
     }}
-    td small {{
-      color: var(--text-muted);
+    .participant-name {{
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+    }}
+    .participant-meta {{
+      display: block;
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }}
+    .link-list {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }}
+    .inline-link, .inline-link:visited {{
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 12px;
+    }}
+    .pill {{
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }}
+    .pill.needs-pick {{
+      color: #f0c36f;
+      border-color: rgba(240, 195, 111, 0.4);
+      background: rgba(240, 195, 111, 0.08);
+    }}
+    .pill.ready-open {{
+      color: #9fc47b;
+      border-color: rgba(159, 196, 123, 0.4);
+      background: rgba(159, 196, 123, 0.08);
+    }}
+    .pill.waiting {{
+      color: #999;
+      background: transparent;
+    }}
+    .pill.review {{
+      color: #d9a874;
+      border-color: rgba(217, 168, 116, 0.4);
+      background: rgba(217, 168, 116, 0.08);
+    }}
+    .action-text {{
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+    }}
+    .action-note {{
+      display: block;
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
     }}
     .details-btn {{
       background: transparent;
@@ -1035,7 +1274,7 @@ def build_admin_page() -> str:
     }}
     .modal.visible {{ display: block; }}
     .modal-card {{
-      max-width: 880px;
+      max-width: 840px;
       margin: 40px auto;
       background: #111;
       border: 1.5px solid var(--border);
@@ -1082,29 +1321,74 @@ def build_admin_page() -> str:
     .detail-section ul {{
       padding-left: 18px;
     }}
+    @media (max-width: 980px) {{
+      .stats-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+      .queue-grid {{ grid-template-columns: 1fr; }}
+    }}
+    @media (max-width: 640px) {{
+      .stats-grid {{ grid-template-columns: 1fr; }}
+    }}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="hero">
       <div class="hero-label">High Performance</div>
-      <h1>Admin <em>results</em></h1>
+      <h1>Course <em>dashboard</em></h1>
       <p class="hero-sub">
-        Эта страница читает ответы из private GitHub repo <code>{PRIVATE_REPO}</code>.
-        Для просмотра нужен GitHub token с доступом <strong>Issues: Read</strong>.
+        Операционный дашборд по анкетам: кто уже выбрал курс, кому нужно открыть доступ и где нужен ручной подбор.
       </p>
     </div>
 
     <div class="panel">
-      <div class="row">
-        <label class="label" for="gh-token">GitHub token</label>
-        <div class="note">Токен хранится только в localStorage этого браузера. Публично он никуда не вставляется, кроме запроса к GitHub API из этой страницы.</div>
-        <input class="input" id="gh-token" type="password" placeholder="github_pat_...">
+      <div class="snapshot-note">
+        <strong>Снимок данных:</strong> {format_snapshot_time(snapshot_generated_at) or snapshot_generated_at}.
+        Страница уже содержит готовые данные и не требует GitHub token.
       </div>
-      <div class="actions">
-        <button class="button" id="load-results" type="button">Load results</button>
-        <button class="button" id="clear-token" type="button">Clear token</button>
-        <div class="status" id="load-status" aria-live="polite"></div>
+      {"<div class=\"snapshot-note is-error\">Не удалось обновить snapshot из GitHub. Открыта последняя собранная версия без новых данных.</div>" if snapshot_error else ""}
+      <input class="input" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email, курсу или slug">
+      <div class="filter-bar" id="filter-bar">
+        <button class="button" data-filter="all" type="button">Все</button>
+        <button class="button is-secondary" data-filter="needs-pick" type="button">Нужно подобрать</button>
+        <button class="button is-secondary" data-filter="ready-open" type="button">Нужно открыть</button>
+        <button class="button is-secondary" data-filter="review" type="button">Проверить</button>
+        <button class="button is-secondary" data-filter="waiting" type="button">Ждём анкету</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Всего участниц</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Нужно подобрать</div>
+          <div class="stat-value" id="stat-needs-pick">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Нужно открыть</div>
+          <div class="stat-value" id="stat-ready-open">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ждём анкету</div>
+          <div class="stat-value" id="stat-waiting">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="queue-grid">
+        <div class="queue-card">
+          <div class="queue-title">Открыть курс</div>
+          <div class="queue-sub">Участницы, которые уже выбрали курс и готовы к открытию доступа.</div>
+          <div class="queue-list" id="queue-ready-open"></div>
+        </div>
+        <div class="queue-card">
+          <div class="queue-title">Подобрать курс</div>
+          <div class="queue-sub">Участницы, где по анкете нужен ручной подбор команды.</div>
+          <div class="queue-list" id="queue-needs-pick"></div>
+        </div>
       </div>
     </div>
 
@@ -1114,19 +1398,15 @@ def build_admin_page() -> str:
           <thead>
             <tr>
               <th>Участница</th>
+              <th>Статус</th>
+              <th>Следующее действие</th>
+              <th>Курс / путь</th>
               <th>Email</th>
-              <th>Дата</th>
-              <th>Путь</th>
-              <th>Курс</th>
-              <th>Вижен</th>
-              <th>Персональный контекст</th>
+              <th>Обновлено</th>
               <th>Детали</th>
-              <th>Issue</th>
             </tr>
           </thead>
-          <tbody id="results-body">
-            <tr><td colspan="9">Пока нет данных. Вставь token и нажми Load results.</td></tr>
-          </tbody>
+          <tbody id="results-body"></tbody>
         </table>
       </div>
     </div>
@@ -1135,7 +1415,7 @@ def build_admin_page() -> str:
   <div class="modal" id="details-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <div class="modal-title" id="modal-title">Ответ</div>
+        <div class="modal-title" id="modal-title">Анкета</div>
         <button class="close-btn" id="close-modal" type="button">закрыть</button>
       </div>
       <div id="modal-content"></div>
@@ -1143,21 +1423,22 @@ def build_admin_page() -> str:
   </div>
 
   <script>
-    const STORAGE_KEY = 'hp-participant-admin-github-token-v1';
-    const REPO_ISSUES_URL = 'https://api.github.com/repos/{PRIVATE_REPO}/issues?state=all&per_page=100';
-    const tokenInput = document.getElementById('gh-token');
-    const loadButton = document.getElementById('load-results');
-    const clearButton = document.getElementById('clear-token');
-    const loadStatus = document.getElementById('load-status');
+    const ALL_ROWS = {script_json(snapshot_rows)};
+    const searchInput = document.getElementById('search-input');
+    const filterBar = document.getElementById('filter-bar');
     const resultsBody = document.getElementById('results-body');
+    const queueReadyOpen = document.getElementById('queue-ready-open');
+    const queueNeedsPick = document.getElementById('queue-needs-pick');
+    const statTotal = document.getElementById('stat-total');
+    const statNeedsPick = document.getElementById('stat-needs-pick');
+    const statReadyOpen = document.getElementById('stat-ready-open');
+    const statWaiting = document.getElementById('stat-waiting');
     const detailsModal = document.getElementById('details-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalContent = document.getElementById('modal-content');
     const closeModalButton = document.getElementById('close-modal');
 
-    let currentRecords = [];
-
-    tokenInput.value = localStorage.getItem(STORAGE_KEY) || '';
+    let activeFilter = 'all';
 
     function escapeHtml(value) {{
       return String(value || '')
@@ -1167,70 +1448,12 @@ def build_admin_page() -> str:
         .replaceAll('"', '&quot;');
     }}
 
-    function decodeRecordFromBody(body) {{
-      const match = body.match(/<!-- lead-data:v1:([^>]+) -->/);
-      if (!match) {{
-        return null;
-      }}
-
-      try {{
-        const json = atob(match[1]);
-        return JSON.parse(json);
-      }} catch (error) {{
-        return null;
-      }}
-    }}
-
-    function truncateText(value, limit = 110) {{
+    function truncateText(value, limit = 72) {{
       const text = String(value || '').trim();
       if (!text) {{
         return '<small>—</small>';
       }}
-      return escapeHtml(text.length > limit ? `${{text.slice(0, limit)}}…` : text);
-    }}
-
-    function labelForPath(value) {{
-      if (value === 'short') return 'Короткий';
-      if (value === 'personal') return 'Персональный';
-      return '—';
-    }}
-
-    function renderRows(records) {{
-      if (!records.length) {{
-        resultsBody.innerHTML = '<tr><td colspan="9">Пока нет анкет этого типа.</td></tr>';
-        return;
-      }}
-
-      resultsBody.innerHTML = records.map((record, index) => {{
-        const responseData = record.responseData || {{}};
-        const vision = responseData.visionFuture || '';
-        const context = record.personalContext || responseData.personalContext || '';
-        const email = record.email || responseData.participantEmail || '';
-        const submittedAt = record.submittedAt ? new Date(record.submittedAt).toLocaleString('ru-RU') : '-';
-
-        return `
-          <tr>
-            <td>${{escapeHtml(record.participantName || '—')}}</td>
-            <td>${{truncateText(email, 46)}}</td>
-            <td>${{submittedAt}}</td>
-            <td>${{escapeHtml(labelForPath(record.selectedPath || responseData.selectedPath))}}</td>
-            <td>${{truncateText(record.courseChoice || responseData.courseChoice || '', 70)}}</td>
-            <td>${{truncateText(vision, 90)}}</td>
-            <td>${{truncateText(context, 90)}}</td>
-            <td><button class="details-btn" type="button" data-index="${{index}}">Открыть</button></td>
-            <td><a href="${{record.issueUrl}}" target="_blank" rel="noopener noreferrer">issue</a></td>
-          </tr>
-        `;
-      }}).join('');
-    }}
-
-    function sectionHtml(title, body) {{
-      return `
-        <div class="detail-section">
-          <h3>${{escapeHtml(title)}}</h3>
-          ${{body}}
-        </div>
-      `;
+      return escapeHtml(text.length > limit ? `${{text.slice(0, limit)}}...` : text);
     }}
 
     function paragraph(value) {{
@@ -1247,81 +1470,141 @@ def build_admin_page() -> str:
       return `<ul>${{values.map((value) => `<li>${{escapeHtml(value)}}</li>`).join('')}}</ul>`;
     }}
 
-    function openDetails(index) {{
-      const record = currentRecords[index];
-      if (!record) {{
+    function sectionHtml(title, body) {{
+      return `
+        <div class="detail-section">
+          <h3>${{escapeHtml(title)}}</h3>
+          ${{body}}
+        </div>
+      `;
+    }}
+
+    function getVisibleRows() {{
+      const query = searchInput.value.trim().toLowerCase();
+      return ALL_ROWS.filter((row) => {{
+        const haystack = [
+          row.displayName,
+          row.telegramHandle,
+          row.slug,
+          row.email,
+          row.selectedCourse,
+          row.selectedCourseLabel,
+          row.summary?.personalContext,
+          row.summary?.visionFuture
+        ].join(' ').toLowerCase();
+        const matchesFilter = activeFilter === 'all' ? true : row.statusKey === activeFilter;
+        const matchesSearch = !query || haystack.includes(query);
+        return matchesFilter && matchesSearch;
+      }});
+    }}
+
+    function updateStats() {{
+      statTotal.textContent = String(ALL_ROWS.length);
+      statNeedsPick.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'needs-pick').length);
+      statReadyOpen.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'ready-open').length);
+      statWaiting.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'waiting').length);
+    }}
+
+    function renderQueue(container, rows, emptyMessage) {{
+      if (!rows.length) {{
+        container.innerHTML = `<div class="empty-note">${{escapeHtml(emptyMessage)}}</div>`;
         return;
       }}
 
-      const responseData = record.responseData || {{}};
-      const vip = responseData.vip || {{}};
+      container.innerHTML = rows.map((row) => `
+        <div class="queue-item">
+          <div class="queue-name">${{escapeHtml(row.displayName)}}</div>
+          <div class="queue-meta">${{escapeHtml(row.telegramHandle)}}${{row.email ? ` · ${{escapeHtml(row.email)}}` : ''}}</div>
+          <div class="queue-meta">${{escapeHtml(row.actionTitle)}}${{row.selectedCourseLabel && row.selectedCourseLabel !== '—' ? ` · ${{escapeHtml(row.selectedCourseLabel)}}` : ''}}</div>
+        </div>
+      `).join('');
+    }}
+
+    function renderRows(rows) {{
+      if (!rows.length) {{
+        resultsBody.innerHTML = '<tr><td colspan="7">Нет записей под текущий фильтр.</td></tr>';
+        return;
+      }}
+
+      resultsBody.innerHTML = rows.map((row, index) => {{
+        const leadIssueHtml = row.leadIssueUrl
+          ? `<a class="inline-link" href="${{row.leadIssueUrl}}" target="_blank" rel="noopener noreferrer">lead #${{row.leadIssueNumber}}</a>`
+          : '<span class="participant-meta">manual</span>';
+        const recordIssueHtml = row.issueUrl
+          ? `<a class="inline-link" href="${{row.issueUrl}}" target="_blank" rel="noopener noreferrer">record #${{row.issueNumber}}</a>`
+          : '';
+
+        return `
+          <tr>
+            <td>
+              <span class="participant-name">${{escapeHtml(row.displayName)}}</span>
+              <span class="participant-meta">${{escapeHtml(row.telegramHandle)}}</span>
+              <span class="participant-meta">slug: ${{escapeHtml(row.slug)}}</span>
+              <div class="link-list">
+                <a class="inline-link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>
+                ${{leadIssueHtml}}
+                ${{recordIssueHtml}}
+              </div>
+            </td>
+            <td><span class="pill ${{row.statusKey}}">${{escapeHtml(row.statusLabel)}}</span></td>
+            <td>
+              <span class="action-text">${{escapeHtml(row.actionTitle)}}</span>
+              <span class="action-note">${{escapeHtml(row.actionNote)}}</span>
+            </td>
+            <td>
+              <span class="participant-name">${{escapeHtml(row.selectedCourseLabel || '—')}}</span>
+              <span class="participant-meta">Путь: ${{escapeHtml(row.selectedPathLabel || '—')}}</span>
+            </td>
+            <td>${{truncateText(row.email, 44)}}</td>
+            <td>${{escapeHtml(row.updatedAtLabel || '—')}}</td>
+            <td><button class="details-btn" type="button" data-index="${{index}}">Открыть</button></td>
+          </tr>
+        `;
+      }}).join('');
+    }}
+
+    function openDetails(index) {{
+      const row = getVisibleRows()[index];
+      if (!row) {{
+        return;
+      }}
+
+      const summary = row.summary || {{}};
       const body = [
-        sectionHtml('Email', paragraph(record.email || responseData.participantEmail)),
-        sectionHtml('Вижен недалёкого будущего', paragraph(responseData.visionFuture)),
-        sectionHtml('Выбранный путь', paragraph(labelForPath(record.selectedPath || responseData.selectedPath))),
-        sectionHtml('Выбранный курс', paragraph(record.courseChoice || responseData.courseChoice)),
-        sectionHtml('Персональный контекст', paragraph(record.personalContext || responseData.personalContext)),
-        sectionHtml('Я здесь, чтобы...', paragraph(vip.purpose)),
-        sectionHtml('Возраст / Рост / Вес', paragraph([vip.age, vip.height, vip.weight].filter(Boolean).join(' / '))),
-        sectionHtml('Дети / беременность', paragraph([vip.childrenStatus, vip.childrenDetail, vip.pregnantDetail].filter(Boolean).join(' / '))),
-        sectionHtml('Здоровье и ограничения', paragraph(vip.healthRestrictions)),
-        sectionHtml('Диастаз', paragraph(vip.diastasis)),
-        sectionHtml('Актуально по тазовому дну', list(vip.pelvicFloorFlags)),
-        sectionHtml('Отношение к питанию', list(vip.nutritionFlags)),
-        sectionHtml('Твой обычный день', paragraph(vip.typicalDay)),
-        sectionHtml('Питание и привычки', paragraph(vip.foodHabits)),
-        sectionHtml('Препараты', paragraph(vip.medications)),
-        sectionHtml('Сообщение для куратора', paragraph(vip.curatorMessage))
+        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle, `slug: ${{row.slug}}`].join('\\n'))),
+        sectionHtml('Ссылки', paragraph([row.questionnaireUrl, row.leadIssueUrl || '', row.issueUrl || ''].filter(Boolean).join('\\n'))),
+        sectionHtml('Статус', paragraph([row.statusLabel, row.actionTitle, row.actionNote].join('\\n'))),
+        sectionHtml('Выбранный путь', paragraph(row.selectedPathLabel)),
+        sectionHtml('Выбранный курс', paragraph(row.selectedCourseLabel)),
+        sectionHtml('Vision', paragraph(summary.visionFuture)),
+        sectionHtml('Personal context', paragraph(summary.personalContext)),
+        sectionHtml('Purpose', paragraph(summary.purpose)),
+        sectionHtml('Health restrictions', paragraph(summary.healthRestrictions)),
+        sectionHtml('Nutrition flags', list(summary.nutritionFlags)),
+        sectionHtml('Food habits', paragraph(summary.foodHabits)),
+        sectionHtml('Medications', paragraph(summary.medications)),
+        sectionHtml('Message for curator', paragraph(summary.curatorMessage))
       ].join('');
 
-      modalTitle.textContent = record.participantName || 'Ответ';
+      modalTitle.textContent = row.displayName;
       modalContent.innerHTML = body;
       detailsModal.classList.add('visible');
     }}
 
-    async function loadResults() {{
-      const token = tokenInput.value.trim();
-      if (!token) {{
-        loadStatus.textContent = 'Вставь GitHub token с доступом Issues: Read.';
-        loadStatus.className = 'status is-error';
-        return;
-      }}
-
-      localStorage.setItem(STORAGE_KEY, token);
-      loadStatus.textContent = 'Загружаем...';
-      loadStatus.className = 'status';
-
-      try {{
-        const response = await fetch(REPO_ISSUES_URL, {{
-          headers: {{
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${{token}}`
-          }}
-        }});
-
-        if (!response.ok) {{
-          throw new Error('github_request_failed');
-        }}
-
-        const issues = await response.json();
-        currentRecords = issues
-          .map((issue) => {{
-            const record = decodeRecordFromBody(issue.body || '');
-            if (!record || record.kind !== 'high-performance-participant-questionnaire') {{
-              return null;
-            }}
-            return {{ ...record, issueUrl: issue.html_url }};
-          }})
-          .filter(Boolean)
-          .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
-
-        renderRows(currentRecords);
-        loadStatus.textContent = `Готово. Загружено ответов: ${{currentRecords.length}}.`;
-        loadStatus.className = 'status is-success';
-      }} catch (error) {{
-        loadStatus.textContent = 'Не удалось загрузить результаты. Проверь token и доступ к private repo.';
-        loadStatus.className = 'status is-error';
-      }}
+    function syncPage() {{
+      const visibleRows = getVisibleRows();
+      renderRows(visibleRows);
+      renderQueue(
+        queueReadyOpen,
+        ALL_ROWS.filter((row) => row.statusKey === 'ready-open'),
+        'Сейчас нет участниц, которым нужно открыть курс.'
+      );
+      renderQueue(
+        queueNeedsPick,
+        ALL_ROWS.filter((row) => row.statusKey === 'needs-pick'),
+        'Сейчас нет участниц, которым нужен ручной подбор.'
+      );
+      updateStats();
     }}
 
     resultsBody.addEventListener('click', (event) => {{
@@ -1329,25 +1612,30 @@ def build_admin_page() -> str:
       if (!button) {{
         return;
       }}
-
       openDetails(Number(button.dataset.index));
     }});
 
+    searchInput.addEventListener('input', syncPage);
+    filterBar.addEventListener('click', (event) => {{
+      const button = event.target.closest('[data-filter]');
+      if (!button) {{
+        return;
+      }}
+
+      activeFilter = button.dataset.filter || 'all';
+      [...filterBar.querySelectorAll('[data-filter]')].forEach((item) => {{
+        item.classList.toggle('is-secondary', item.dataset.filter !== activeFilter);
+      }});
+      syncPage();
+    }});
     closeModalButton.addEventListener('click', () => detailsModal.classList.remove('visible'));
     detailsModal.addEventListener('click', (event) => {{
       if (event.target === detailsModal) {{
         detailsModal.classList.remove('visible');
       }}
     }});
-    loadButton.addEventListener('click', loadResults);
-    clearButton.addEventListener('click', () => {{
-      localStorage.removeItem(STORAGE_KEY);
-      tokenInput.value = '';
-      currentRecords = [];
-      resultsBody.innerHTML = '<tr><td colspan="8">Пока нет данных. Вставь token и нажми Load results.</td></tr>';
-      loadStatus.textContent = 'Token очищен.';
-      loadStatus.className = 'status';
-    }});
+
+    syncPage();
   </script>
 </body>
 </html>
@@ -1370,22 +1658,22 @@ def main() -> None:
         old_team_page.unlink()
 
     entries = []
-    used_slugs = set()
 
-    for participant in PARTICIPANTS:
-        base_slug = slugify(participant["name"])
-        contact_slug = slugify(participant["contact"].replace("@", ""))
-        slug = base_slug if base_slug not in used_slugs else f"{base_slug}-{contact_slug}"
-        used_slugs.add(slug)
-
-        participant_with_slug = {**participant, "slug": slug}
+    for participant in get_participants():
+        participant_with_slug = participant
         filename = f"q_{participant['token']}.html"
         page_html = build_participant_page(template, participant_with_slug)
         (OUTPUT_DIR / filename).write_text(page_html, encoding="utf-8")
-        entries.append({"name": participant["name"], "filename": filename})
+        entries.append({**participant, "filename": filename})
+
+    admin_snapshot_rows, snapshot_generated_at, snapshot_error = build_admin_snapshot(entries)
 
     (OUTPUT_DIR / "index.html").write_text(build_index_page(), encoding="utf-8")
     (OUTPUT_DIR / f"{TEAM_PAGE_TOKEN}.html").write_text(build_team_page(entries), encoding="utf-8")
+    (OUTPUT_DIR / "admin.html").write_text(
+        build_admin_page(admin_snapshot_rows, snapshot_generated_at, snapshot_error),
+        encoding="utf-8",
+    )
     print(f"Generated {len(entries)} participant questionnaires in {OUTPUT_DIR}")
 
 

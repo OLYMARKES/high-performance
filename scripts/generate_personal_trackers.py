@@ -1,79 +1,14 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
+
+from participants_registry import get_participants
 
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE_PATH = ROOT / "tracker_april_2026_v1.html"
 OUTPUT_DIR = ROOT / "trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2026"
-
-
-PARTICIPANTS = [
-    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual"},
-    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual"},
-    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual"},
-    {"name": "Лера", "contact": "@lerakurepina", "issue": 26},
-    {"name": "Аня", "contact": "@beregukukuhu", "issue": 25},
-    {"name": "Viktoria", "contact": "@vpasko", "issue": 23},
-    {"name": "Вера", "contact": "@verushkavera", "issue": 22},
-    {"name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21},
-    {"name": "Olesya Dauptain", "contact": "@aramba_annecy", "issue": 20},
-    {"name": "Надежда", "contact": "@moroznb", "issue": 18},
-    {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17},
-    {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16},
-    {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14},
-    {"name": "Жанар", "contact": "@zhantik87", "issue": 13},
-    {"name": "Анна", "contact": "@Jayms17", "issue": 12},
-    {"name": "Вика", "contact": "@vikaevdokimova", "issue": 11},
-    {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10},
-    {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8},
-    {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6},
-]
-
-
-TRANSLIT = {
-    "а": "a",
-    "б": "b",
-    "в": "v",
-    "г": "g",
-    "д": "d",
-    "е": "e",
-    "ё": "e",
-    "ж": "zh",
-    "з": "z",
-    "и": "i",
-    "й": "y",
-    "к": "k",
-    "л": "l",
-    "м": "m",
-    "н": "n",
-    "о": "o",
-    "п": "p",
-    "р": "r",
-    "с": "s",
-    "т": "t",
-    "у": "u",
-    "ф": "f",
-    "х": "kh",
-    "ц": "ts",
-    "ч": "ch",
-    "ш": "sh",
-    "щ": "shch",
-    "ъ": "",
-    "ы": "y",
-    "ь": "",
-    "э": "e",
-    "ю": "yu",
-    "я": "ya",
-}
-
-
-def slugify(value: str) -> str:
-    normalized = "".join(TRANSLIT.get(char, char) for char in value.lower())
-    normalized = re.sub(r"[^a-z0-9]+", "-", normalized)
-    return normalized.strip("-")
 
 
 def personalize_html(template: str, name: str, contact: str, slug: str, issue: int | None) -> str:
@@ -139,7 +74,7 @@ def build_index(entries: list[dict[str, str]]) -> str:
       cards.append(
           f"""
           <a class="card" href="{entry['filename']}">
-            <span class="card-name">{entry['name']}</span>
+            <span class="card-name">{entry['display_name']}</span>
             <span class="card-meta">персональный трекер</span>
           </a>"""
       )
@@ -301,7 +236,7 @@ def build_index(entries: list[dict[str, str]]) -> str:
 def build_links_text(entries: list[dict[str, str]]) -> str:
     lines = ["High Performance trackers", ""]
     for entry in entries:
-        lines.append(f"{entry['name']}: {PUBLIC_BASE_URL}/{entry['filename']}")
+        lines.append(f"{entry['display_name']}: {PUBLIC_BASE_URL}/{entry['filename']}")
     return "\n".join(lines) + "\n"
 
 
@@ -313,18 +248,9 @@ def main() -> None:
         old_file.unlink()
 
     entries = []
-    used_slugs = set()
 
-    for participant in PARTICIPANTS:
-        base_slug = slugify(participant["name"])
-        contact_slug = slugify(participant["contact"].replace("@", ""))
-        slug = base_slug
-
-        if slug in used_slugs:
-            slug = f"{base_slug}-{contact_slug}"
-
-        used_slugs.add(slug)
-
+    for participant in get_participants():
+        slug = participant["slug"]
         filename = f"tracker_{slug}_april_2026_v1.html"
         html = personalize_html(
             template=template,
@@ -337,6 +263,7 @@ def main() -> None:
         entries.append(
             {
                 "name": participant["name"],
+                "display_name": participant["display_name"],
                 "contact": participant["contact"],
                 "issue": str(participant.get("issue", "")),
                 "filename": filename,

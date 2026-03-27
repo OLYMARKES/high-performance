@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>HIGH PERFORMANCE — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface-hover: #1e1e1e;
+      --border: #272727;
+      --text: #ebebeb;
+      --text-secondary: #999;
+      --text-muted: #6f6f6f;
+      --accent: #c9a96e;
+      --accent-glow: rgba(201, 169, 110, 0.12);
+      --radius: 16px;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 16px 56px;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .hero {
+      text-align: center;
+      padding: 28px 0 30px;
+    }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 8vw, 68px);
+      font-weight: 400;
+      line-height: 1.02;
+      margin-bottom: 16px;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 300;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 18px;
+    }
+    .snapshot-note {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .snapshot-note strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .snapshot-note.is-error {
+      color: #d98274;
+    }
+    .input {
+      width: 100%;
+      background: #141414;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font: inherit;
+      padding: 14px 16px;
+      outline: none;
+      margin-top: 14px;
+    }
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .button {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .button.is-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .stat-card, .queue-card {
+      background: #141414;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .stat-value {
+      margin-top: 8px;
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      line-height: 1;
+      color: var(--text);
+    }
+    .queue-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .queue-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+    .queue-sub {
+      margin-top: 6px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .queue-list {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+    .queue-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #101010;
+    }
+    .queue-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .queue-meta {
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .empty-note {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 18px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1080px;
+      background: #141414;
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .participant-name {
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .participant-meta {
+      display: block;
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .link-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .inline-link, .inline-link:visited {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .pill.needs-pick {
+      color: #f0c36f;
+      border-color: rgba(240, 195, 111, 0.4);
+      background: rgba(240, 195, 111, 0.08);
+    }
+    .pill.ready-open {
+      color: #9fc47b;
+      border-color: rgba(159, 196, 123, 0.4);
+      background: rgba(159, 196, 123, 0.08);
+    }
+    .pill.waiting {
+      color: #999;
+      background: transparent;
+    }
+    .pill.review {
+      color: #d9a874;
+      border-color: rgba(217, 168, 116, 0.4);
+      background: rgba(217, 168, 116, 0.08);
+    }
+    .action-text {
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .action-note {
+      display: block;
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .details-btn {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(201, 169, 110, 0.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.82);
+      padding: 24px;
+      z-index: 100;
+      overflow: auto;
+    }
+    .modal.visible { display: block; }
+    .modal-card {
+      max-width: 840px;
+      margin: 40px auto;
+      background: #111;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+    .close-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .detail-section {
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .detail-section h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .detail-section p, .detail-section li {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .detail-section ul {
+      padding-left: 18px;
+    }
+    @media (max-width: 980px) {
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .queue-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">High Performance</div>
+      <h1>Course <em>dashboard</em></h1>
+      <p class="hero-sub">
+        Операционный дашборд по анкетам: кто уже выбрал курс, кому нужно открыть доступ и где нужен ручной подбор.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="snapshot-note">
+        <strong>Снимок данных:</strong> 27.03.2026 08:28 UTC.
+        Страница уже содержит готовые данные и не требует GitHub token.
+      </div>
+      
+      <input class="input" id="search-input" type="text" placeholder="Поиск по имени, Telegram, email, курсу или slug">
+      <div class="filter-bar" id="filter-bar">
+        <button class="button" data-filter="all" type="button">Все</button>
+        <button class="button is-secondary" data-filter="needs-pick" type="button">Нужно подобрать</button>
+        <button class="button is-secondary" data-filter="ready-open" type="button">Нужно открыть</button>
+        <button class="button is-secondary" data-filter="review" type="button">Проверить</button>
+        <button class="button is-secondary" data-filter="waiting" type="button">Ждём анкету</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Всего участниц</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Нужно подобрать</div>
+          <div class="stat-value" id="stat-needs-pick">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Нужно открыть</div>
+          <div class="stat-value" id="stat-ready-open">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ждём анкету</div>
+          <div class="stat-value" id="stat-waiting">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="queue-grid">
+        <div class="queue-card">
+          <div class="queue-title">Открыть курс</div>
+          <div class="queue-sub">Участницы, которые уже выбрали курс и готовы к открытию доступа.</div>
+          <div class="queue-list" id="queue-ready-open"></div>
+        </div>
+        <div class="queue-card">
+          <div class="queue-title">Подобрать курс</div>
+          <div class="queue-sub">Участницы, где по анкете нужен ручной подбор команды.</div>
+          <div class="queue-list" id="queue-needs-pick"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Участница</th>
+              <th>Статус</th>
+              <th>Следующее действие</th>
+              <th>Курс / путь</th>
+              <th>Email</th>
+              <th>Обновлено</th>
+              <th>Детали</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="details-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Анкета</div>
+        <button class="close-btn" id="close-modal" type="button">закрыть</button>
+      </div>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const ALL_ROWS = [{"slug": "viktoria", "displayName": "Viktoria", "telegramHandle": "@vpasko", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_p3t8m6k1z9w4.html", "leadIssueNumber": 23, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/23", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/53", "issueNumber": 53, "email": "victoria.pasko@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T13:40:37.050Z", "updatedAtLabel": "26.03.2026 13:40 UTC", "statusKey": "needs-pick", "statusLabel": "Нужно подобрать", "actionTitle": "Подобрать курс", "actionNote": "Нужен ручной подбор по анкете.", "summary": {"visionFuture": "У меня много энергии и я чувствую себя заряжено весь день. Я не залипаю на работу, не проваливаюсь в задачи, а помню про себя и своё тело в течение дня, двигаюсь. Я нахожу время для важных ритуалов каждый день - дыхание, медитации; спорт вписан в мою рутину и я двигаюсь регулярно, а не когда вспомню об этом.\nЯ пробую фокусно приоритизировать задачи по важности и удовольствию, меньше сабботирую (или лучше понимаю, почему «сливаюсь»), провожу своё время качественно.\n\nУ меня высокая мотивация наладить эти процессы, поэтому есть запал вникнуть в это насколько возможно!", "personalContext": "Я довольно чувствительна к нагрузкам, моя нервная система не выдерживает высокоинтенсивных или тяжелых силовых тренировок. Тело и мышцы могут и в моменте ок, но после таких тренировок часто бывают аллергические реакции и серьезный упадок сил. Поэтому 1,5 года назад я отказалась от персональной работы с тренером и перешла на мобильность, биомеханику, пилатес. Лучше всего мне подходят короткие тренировки (до 30 мин) с неинтесивной нагрузкой. Пульс повышаю очень постепенно и мягко.\n\nВторой важный момент - у меня есть нюансы с кишечником, периодически после стрессов или сильных вирусов серьезно нарушается его работа, что сказывается сильно на физ. состоянии - есть аллергические симптомы (гистаминоз), меньше сил, меньше концентрации, больше тревоги. Сейчас я как раз нахожусь в фазе восстановления после вируса, поэтому у меня меньше сил, чем обычно. На это время я исключаю глютен, алкоголь, мучные изделия, сильно уменьшаю сахар (включая фрукты). Знаю, что делать, тк не впервые прохожу это, но каждый раз сильно раздражаюсь, что нет сил и нужны ограничения.\nПо питанию: кроме временных ограничений выше, ем всё, больший упор делаю на белки, жиры и овощи, питаюсь довольно чисто. Из-за особенностей с кишечником также обязательно слежу за клетчаткой. Не могу без кофе и сыра 😅 Ем обычно 3 р в день, перекусываю редко.\n\nСплю хорошо и достаточно (это priority), но sleep consistency хромает.\nРежим у меня не постоянный, сложно вписать в день регулярно практики, которые бы я хотела, особенно, когда работаю из офиса, поэтому медитации, дыхание и спорт делаю ad-hoc. У меня большой скоуп на работе, который я сейчас пытаюсь сократить, и, бывает, пропадаю в звонках и задачах, забываю о движении.\n\nЧасто бывают отеки, особенно в области таза, как реакция на стресс, но в последнее время и в общем.", "purpose": "Хочу больше движения регулярно, чтобы в рутину были вписаны практики дыхания, медитации, которые мне реально помогают (проверяла). Пойму, что иду правильно, когда не буду сабботировать движение, когда работа перестанет занимать так много места в жизни", "healthRestrictions": "Только то, что описала выше. Чувствительный кишечник, как следствие периодические аллергические реакции в периоды обострения, упадок сил. Сложности с высоко-интенсивной нагрузкой, высоким пульсом и тяжелыми силовыми тренировками.", "nutritionFlags": ["Отношения с едой в порядке", "Избегаю углеводов или сахара"], "foodHabits": "Обычно 3 приёма пищи, иногда 4, часто большой перерыв между обедом и ужином; размер порций небольшой.\nЗавтрак люблю несладкий и белковый, ем в основном всё, но упор на белки, жиры и овощи.\nВоды пью довольно много, уделяю этому внимание.\n\nНе люблю никакую пасту (макароны), стараюсь избегать глютен, мучные изделия, хлеб, сахар минимально. В целом, не очень люблю сладости, фрукты ем мало, больше ягоды.\nНе могу без кофе, яиц на завтрак, очень люблю сыр и всякие мясные нарезки 😅", "medications": "Нет", "curatorMessage": "У меня есть тенденция пытаться ускорять результат, мне сложно ждать, если плохо себя чувствую, бывает, пытаюсь пробовать слишком много всего, чтобы решить проблему, вместо того, чтобы выбрать 2-3 инструмента, которые работают, и в своем темпе двигаться к изменениям. Работаю с этим, но еще сваливаюсь в привычный паттерн."}}, {"slug": "katya", "displayName": "Катя", "telegramHandle": "@Ekaterina_Novopashina", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_c3k8p5m1x7t4.html", "leadIssueNumber": 8, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/8", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/46", "issueNumber": 46, "email": "yourrealcareer@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T13:07:31.043Z", "updatedAtLabel": "26.03.2026 13:07 UTC", "statusKey": "needs-pick", "statusLabel": "Нужно подобрать", "actionTitle": "Подобрать курс", "actionNote": "Нужен ручной подбор по анкете.", "summary": {"visionFuture": "У меня классный режим. Я успеваю тренироваться, отдыхать, работать, учиться, быть с семьей и начала реализацию новых проектов из своих задумок.\nМоё тело в тонусе. Много энергии. Радостное состояние. Ощущаю, что классно справляюсь со всеми задачами в работе, учебе и в материнстве.\nМой живот подтянулся.\nПитание более чистое.\nЯ с радостью делаю свою работу и глаза горят. Есть желание и силы, планы на 3 месяца вперед.", "personalContext": "У меня сколиоз. Много лет работаю над осанкой. Сейчас делаю программу (начала сегодня) по 3 раза в неделю по 20 минут для спины и выравнивания оси.\nОчень много сижу, работаю и учусь за компом, по 10-12 часов в день провожу сидя. Мало хожу.\nПитаюсь в последнее время много углеводами. Очень тянет на сладкое, ем его часто, по 2-3 раза в день, после каждого приема пищи, иногда чаще.\nПроходила курс секты на пресс несколько раз, очень понравилось.\nНе могу тренироваться долго, максимум 30 минут.\nОчень много энергии уходит, если мышцы болят. Потом тяжело просыпаться, хочется долго спать. Поэтому волнуюсь за перетрен.\nРаз в неделю планирую заниматься бальными танцами. Раньше занималась очень плотно, в последний год сбавила обороты.\nУ меня есть повар, мне важно подготовить ей задачи по приготовлению еды, так как сама совсем не люблю готовить.\nОчень на мое тело влияет кардио и работа на пресс и руки. Быстро вижу результат, мотивация растет. Но кардио на коврике не люблю конечно, но готова потерпеть=)\nПланирую заниматься до завтрака в первой половине дня, иначе потом не могу выделить время. Вечером хорошо бы делать комплекс для спины или днем в перерывах между работой на 15-20 минут.\nСтресса достаточно много. Спать ложусь в 12 ночи в среднем, просыпаюсь в 8:30 с трудом, иногда в 9:00. Хочется есть после 22:30 часто, когда укладываю детей спать.", "purpose": "Повысить уровень энергии. Перейти из внутреннего \"надо\" в \"хочу\" и \"рада делать это\". Я хочу делать всё, что сейчас и даже больше из собственного выбора, ощущения удовольствия и драйва, а не в ожидании выдоха.", "healthRestrictions": "Есть сколиоз и кифоз с детства.", "nutritionFlags": ["Бывают эпизоды переедания"], "foodHabits": "Завтрак обычно: яйца жареные, бутерброд с маслом/сыром/с красной рыбой. Иногда гречка с мясом. Плюс что-то сладкое.\nОбед: борщ, гарнир и мясо/курица, что-то из закусок типа баклажанов, иногда салат. Сладкое.\nУжин: гарнир и мясо. Сладкое.\nВ обед пью одну чашку кофе.\nВоду пью около 1,5 литров примерно.\nНа гарнир часто: гречка, макароны, рис, тушеные овощи, иногда чечевица.\nМясо: говядина, курица, индейка.\nЕжедневно шоколад, конфеты, печенье, пироженки. Что-то из этого.\n\nХочу уменьшить тесто в любом виде. Вообще хочу отказаться на время совсем, хотя бы на 21 день. Был опыт отказа от кофе, от сахара на 21 день, справлялась хорошо и потом какой-то период не хотелось. Был опыт отказа на 2 месяца от животного белка, тоже справлялась, очень нравилось качество тела, кстати!\n\nОщущение, что без теста не могу, но думаю, что могу без всего.\nБез курения пока не могу=) А по еде смогу без всего.", "medications": "Нет", "curatorMessage": "Я склонна брать сразу большую цель и внедрять всё и сразу. Буду благодарна, если вы поможете мне двигаться маленькими шагами. И переживаю за то, что в тренировках тоже люблю прям до отказа делать упражнение, но потом тяжело пару дней, сильно снижается энергия из-за болей в мышцах. Я вижу сама решение всех своих вопросов в корректировке режима. Увеличить эффективное бодрое состояние с утра, чтобы туда вставить то, что потом не успеваю: тренировки, контент, принятие решений. И хочу найти способы восстановления, в идеале самой и с детьми, чтобы объединить эти задачи."}}, {"slug": "olesya-dauptain", "displayName": "Olesya Dauptain", "telegramHandle": "@aramba_annecy", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_y7p3n8k5c2m6.html", "leadIssueNumber": 20, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/20", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/48", "issueNumber": 48, "email": "olesya.dauptain@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T13:06:01.108Z", "updatedAtLabel": "26.03.2026 13:06 UTC", "statusKey": "needs-pick", "statusLabel": "Нужно подобрать", "actionTitle": "Подобрать курс", "actionNote": "Нужен ручной подбор по анкете.", "summary": {"visionFuture": "Я чувствую себя сильнее и устойчивее. Моё тело выпрямлено, я двигаюсь свободно, без боли в спине и руках. У меня есть естественное желание заботиться о теле — утром размяться, вечером сделать растяжку. Движение становится частью моей жизни, а не усилием.\n\nВ голове больше ясности. Я вижу конкретные маленькие шаги и спокойно их выполняю. Тревоги меньше, даже если что-то сдвигается из-за обстоятельств — я остаюсь в процессе и не выпадаю.\n\nЯ готова регулярно вкладываться в этот процесс: каждый день по 30 минут и два раза в неделю по часу. Это становится моей опорой и приоритетом.", "personalContext": "Привет, меня зовут Олеся, мне 38 лет. У меня ребёнок 4,5 года, я живу во Франции.\n\nМой график достаточно плотный. Три дня в неделю (понедельник, вторник и четверг) я провожу в дороге — по 1,5–2 часа в одну сторону. Я выезжаю из дома в 6 утра и возвращаюсь около 19:00.\n\nСреда — более гибкий день. Я провожу его с ребёнком или отвожу его в лагерь. В этот день я занимаюсь домом: закупки, уборка, бытовые задачи, а также работаю над своими проектами. При этом именно в среду у меня есть возможность уделить время себе.\n\nВ пятницу я работаю из дома, но также включена в домашние обязанности.\n\nВыходные в основном посвящены ребёнку, но при желании я могу выделить время на себя.\n\nУ меня есть опыт занятий спортом с 2016 года, но он был нерегулярным, с перерывами.\n\nМоя основная сложность — это регулярность.\n\nВ плане питания в целом всё хорошо, но в последнее время в рационе стало больше жирной пищи и мяса, чем хотелось бы.", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "ksu-matusevich", "displayName": "Ksu Matusevich", "telegramHandle": "@ksumatu", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_s8m3x7q1k5v9.html", "leadIssueNumber": 16, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/16", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/43", "issueNumber": 43, "email": "tulesha@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T11:07:20.072Z", "updatedAtLabel": "26.03.2026 11:07 UTC", "statusKey": "needs-pick", "statusLabel": "Нужно подобрать", "actionTitle": "Подобрать курс", "actionNote": "Нужен ручной подбор по анкете.", "summary": {"visionFuture": "В конце апреля я чувствую подьем сил и наполненность ресурсов, я чуть увереннее в себе, возможно с новыми устойчивыми привычками, лучше справляюсь с тревожным состояниями. Я в целом готова уделять много сил, единственное что, с 10 по 16 апреля вероятно буду в отпуске (если полеты а Дубай не отменят😏), а так в остальном  готова отдаться процессу всецело ✅", "personalContext": "У меня большой опыт силовых тренировок. Практически 12 лет хожу в зал.\n\nТренируюсь индивидуально с тренером, обычно три раза в неделю. Плюс раз в неделю у меня занятия по растяжке и укреплению мелких внутренних мышц. В целом, могу поднимать большие веса и выдерживать большие нагрузки, но с кардио посложнее. Из-за стресса и кучи микро-менеджмента вокруг моей семьи с трудом нахаживаю необходимые 10 тысяч шагов в день. С прошлого апреля постоянно считаю калории, ношу с собой весы. Это приносило результаты до лета, а потом вес туда-сюда меняется, но как будто бы не идет больше вниз.\n\nМеня это очень фрустрирует, поэтому хочу как-то встряхнуться в этом вопросе, посмотреть, может быть, пол другим углом.\n\nДело в том, что 10 лет назад я эмигрировала, и это сильно сказалось на моих пищевых привычках.\n\nНу, точнее, привычки были всегда, но вот сейчас они усугубились. Заедание стресса и постоянные перекусы как бы сказываются на моем теле. Я набрала за эти годы больше 20 килограммов. Пять-шесть из них получилось сбросить с прошлого года.\n\nНо тем не менее, я далека от того образа, который у меня в голове. И, как я уже сказала, меня это постоянно расстраивает.\n\nЯ постоянно мечусь в мыслях: что надо либо принять себя и забросить вообще какие-либо изменения, либо найти толкового хирурга и убрать все лишнее радикальным методом.\n\nПо здоровью в целом ограничений нет. Таких серьёзных заболеваний нет. Единственное, что аутоиммунный тиреидит, но он никак не сказывается на моей жизни.\n\nЧто касается моей жизни, у меня двое детей-подростков. Старший с СДВГ проживает не лучший период в школе ещё и отчягчен депрессией, и это очень сильно влияет на всю нашу семью.\n\nОчень мало сплю, в целом 5-6 часов в неделю.\nПлюс один выходной отсыпаюсь, когда могу поспать 8-10 часов\n\nРПП, наверное, компульсивное питание, но последний год как-то немножко балансирую его предельно точным подсчетом калорий.\n\nХожу везде с весами. Не знаю, то ли это увеличивает мою тревожность, то ли немножко снижает — по-разному. За эти годы пробовала многое: работу с нутрициологом и разные виды тренировок. Также лет десять назад пыталась пройти секту, но тогда это показалось для меня слишком интенсивной программой. Я тогда не помню, в какую вступала, но там был принцип, что утро-ворк плюс тренировка каждый день Я не смогла встроить этот ритм в свою жизнь, поэтому какое-то время была далека от секты. Последние годы вернулась, слежу, но пока еще не вступала. Сейчас мой тренер уехала в отпуск на три недели, и я как раз думала рассмотреть какую-нибудь короткую программу секты. Но вот замечательно наткнулась на вот это предложение от Оли.", "purpose": "Снизить тревожность, сдвинуться с мёртвой точки, привить какие-то новые привычки, рутины", "healthRestrictions": "Аутоиммунный тироедит", "nutritionFlags": ["Подозреваю РПП, к специалисту не обращалась", "Часто беспокоюсь о весе, ограничиваю себя", "Мысли о еде занимают непропорционально много времени", "Бывают эпизоды переедания", "Строго считаю калории", "Регулярно чувствую вину после еды"], "foodHabits": "Сейчас я заканчиваю третий поток физикл. Нахожусь в режиме дефицита калорий.\n\nПланка — 1400 калорий и 100 грамм белка в день. Пью не так, чтобы много, но стараюсь следить. Не могу жить без фруктов, хотя бы яблок.\n\nОтказываюсь от перекусов, потому что очень часто бывает, что я сижу, ничего не делаю, прокрастинирую, потом понимаю, что хочу есть, и начинаю судорожно есть все, что найду.", "medications": "Нет", "curatorMessage": ""}}, {"slug": "vika", "displayName": "Вика", "telegramHandle": "@vikaevdokimova", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_g7m1p6x9c3k4.html", "leadIssueNumber": 11, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/11", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/41", "issueNumber": 41, "email": "evdokimova@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T11:04:45.213Z", "updatedAtLabel": "26.03.2026 11:04 UTC", "statusKey": "needs-pick", "statusLabel": "Нужно подобрать", "actionTitle": "Подобрать курс", "actionNote": "Нужен ручной подбор по анкете.", "summary": {"visionFuture": "1. Вид: похудеть на 1-2 кг ( жир, конечно, не мышцы) и убрать зажимы в шее и спине, стать чуть гибче. Мне не хватает собственной дисциплины на растяжку - йога, пилатес, что угодно. Только силовые и падел. Поэтому я как кочерга:)\n2. Дела: закрыть бэклог по \"Долгу\", Сдать на права. Научиться вайбкодить. Чуть плотнее погрузиться в рабочие процессы, сейчас иногда тяп-ляп.\n3. Ментальное здоровье: медитации или бег неск раз в неделю как привычка\n4. General inspiration:) Новый идеи для проектов, карьеры.", "personalContext": "У меня есть силовые и кардио. Мне нужны занятия на растяжку, спина и шея + тазовое дно.", "purpose": "стать лучшей версией себя по сравнению с мартом) Дела, тело, знания, дисциплина", "healthRestrictions": "", "nutritionFlags": ["Часто беспокоюсь о весе, ограничиваю себя"], "foodHabits": "кофмортно на 1600 кк, пробовала считать. часто переедаю конфетами и пр( точно мало белка и овощей. много кофе, мало воды.", "medications": "", "curatorMessage": ""}}, {"slug": "zhanar", "displayName": "Жанар", "telegramHandle": "@zhantik87", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_w9k5m2r8x3p6.html", "leadIssueNumber": 13, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/13", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/68", "issueNumber": 68, "email": "katagorovaz@gmail.com", "selectedPath": "short", "selectedPathLabel": "Короткий", "selectedCourse": "superhuman", "selectedCourseLabel": "SuperHuman", "updatedAt": "2026-03-27T07:00:16.049Z", "updatedAtLabel": "27.03.2026 07:00 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс SuperHuman", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "Я полна энергии, замотивирована двигаться вперед, скинула лишний жирок и прокачена в плане качества своего тела. Я очень оптимист по жизни, но иногда не хватает смелости, поэтому я уверена, что апрель мне придаст вкус к жизни, чтобы каждый день реально чувствовался живым и классно прожитым!", "personalContext": "Сс", "purpose": "Хочу изменений в жизни, больше трансформационных. Хочу понять, как я хочу жить, кем я хочу быть. Хочу настоящей жизни!", "healthRestrictions": "Два кесарева, аппендицит. Люблю сладкое и мучное, могу питаться сытно и полноценно 2 раза в день. Иногда лень готовить и ем, что придется. Непонятные отношения с едой, как только вижу хороший результат - срываюсь так сказать в крайности)", "nutritionFlags": ["Подозреваю РПП, к специалисту не обращалась", "Бывают эпизоды переедания"], "foodHabits": "Воды 2-3 литра в течение дня. Люблю плотные завтраки (яйца, бутерброды с индейкой, авокадо, овощи, сырники, каши), но иногда завтрак может быть просто кофе с молоком и сахаром и хлеб с маслом. Обед - гречка/макароны/рис/картошка + курица/рыба/мясо + салат (может быть просто огурцы/помидоры, а может и оливье) Если полноценно съедаю 2 приема пищи, то чаще всего не ужинаю. Если нет, то ужин может быть такой же как и обед или просто пельмени, еще и с хлебом)", "medications": "Нет", "curatorMessage": "Я понимаю, что цель этого интенсива - это совсем не про похудение, но как верно подмечено - тело взаимосвязано с головой и настроением. Поэтому я хочу наладить отношения с телом, чтобы оно меня вдохновляло и мотивировало двигаться вперед!!!"}}, {"slug": "anya", "displayName": "Аня", "telegramHandle": "@beregukukuhu", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_a7c2r9m4x6p3.html", "leadIssueNumber": 25, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/25", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/61", "issueNumber": 61, "email": "jel_89@mail.ru", "selectedPath": "short", "selectedPathLabel": "Короткий", "selectedCourse": "woman-health", "selectedCourseLabel": "Женское здоровье", "updatedAt": "2026-03-27T06:15:31.012Z", "updatedAtLabel": "27.03.2026 06:15 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс Женское здоровье", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "anna", "displayName": "Анна", "telegramHandle": "@Jayms17", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_f2v8m4q7k1t5.html", "leadIssueNumber": 12, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/12", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/59", "issueNumber": 59, "email": "any.kobiakova@gmail.com", "selectedPath": "short", "selectedPathLabel": "Короткий", "selectedCourse": "abs", "selectedCourseLabel": "Пресс", "updatedAt": "2026-03-26T15:21:16.756Z", "updatedAtLabel": "26.03.2026 15:21 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс Пресс", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "Энергии хватает на жизнь, хочется гулять, танцевать, смотреть мир.", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "lera", "displayName": "Лера", "telegramHandle": "@lerakurepina", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_d6v9n3k7t2m8.html", "leadIssueNumber": 26, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/26", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/57", "issueNumber": 57, "email": "lora041090@rambler.ru", "selectedPath": "short", "selectedPathLabel": "Короткий", "selectedCourse": "basics", "selectedCourseLabel": "Basics", "updatedAt": "2026-03-26T15:13:48.289Z", "updatedAtLabel": "26.03.2026 15:13 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс Basics", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "Главное, что я очень жду чтобы изменилось - это решение начать строить свое дело (возможно в процессе апреля первые шаги уже будут сделаны) . Это совершенно новая для меня ниша, совершенно другой уровень ответственности , но это решение зреет во мне уже несколько лет, и пока я его упорно избегаю из-за страха неизвестности ) именно с этой мыслью я шла на этот курс к Оле - потому что , как мне видится, она человек - действие , мне этого не хватает.\n\nЧто касается тела и привычек. Я достаточно давно дружу со спортом. Сейчас регулярно делаю утреннюю практику йоги и основную тренировку днем - силовую или кардио. К сожалению после родов (2 года назад) сохраняется легкий диастаз , и пока я тренируюсь все ок, живот почти плоский. Стоит пропустить пару дней - и он выпячивается вперед ( раньле у меня был идеально плоский живот, очень хочется его вернуть. Так же хочется поработать с бедрами, уменьшить обьем.\n\nПитанием я в целом довольна, стабильная гарвардская тарелка, иногда немного уносит, но не критично) самый большая сложность - это сладкое с чаем, очень его люблю, это как закрепленный с детства ритуал .\n\nСон стараюсь держать и ложится спать в 23.00. Не всегда получается, но я стремлюсь.\n\nГлавное что хочется - это новый заряд, обновление, новая энергия в самореализации. Все остальные сферы меня радуют - семья, дом, путешествия , отношения с собой . Главный вопрос - это самореализация и (как следствие эмиграции) новое окружение. Очень скучаю по своим друзьям которые остались в Питере. Ищу новых соратников )", "personalContext": "", "purpose": "Перестать бояться быть собой", "healthRestrictions": "Протрузия в поясничном отделе", "nutritionFlags": ["Отношения с едой в порядке", "Избегаю углеводов или сахара"], "foodHabits": "Обычно 4 приема\nВ 8.30\n13.00\n16.00\n20.00\n\nСтараюсь везде иметь овощи, длинные углеводы белок. Часто после еды есть чай со сладким (сладкие булки я почти перестала есть, но хотя бы вафлю или шоколад, глазированный сырок )", "medications": "", "curatorMessage": ""}}, {"slug": "olya-markes", "displayName": "Оля Маркес", "telegramHandle": "@manual-olya-markes", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_q7k2m9b4v8x3.html", "leadIssueNumber": null, "leadIssueUrl": "", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/27", "issueNumber": 27, "email": "markesbootcamp@gmail.com", "selectedPath": "personal", "selectedPathLabel": "Персональный", "selectedCourse": "basics", "selectedCourseLabel": "Basics", "updatedAt": "2026-03-25T16:09:38.811Z", "updatedAtLabel": "25.03.2026 16:09 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс Basics", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "yana-fedorova", "displayName": "Яна Федорова", "telegramHandle": "@manual-yana-fedorova", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_h8m3q5z7k2w9.html", "leadIssueNumber": null, "leadIssueUrl": "", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/30", "issueNumber": 30, "email": "Yashkinof@gmail.com", "selectedPath": "short", "selectedPathLabel": "Короткий", "selectedCourse": "superhuman", "selectedCourseLabel": "SuperHuman", "updatedAt": "2026-03-25T15:59:18.362Z", "updatedAtLabel": "25.03.2026 15:59 UTC", "statusKey": "ready-open", "statusLabel": "Курс выбран", "actionTitle": "Открыть курс SuperHuman", "actionNote": "Участница сама выбрала курс в анкете.", "summary": {"visionFuture": "Я участвую в фотосете: я чувствую себя секси, я выгляжу уверенно и стильно. У меня виден пресс, нет отеков, тонкое лицо.\nЯ встаю раньше, потому что высыпаюсь и у меня нет ощущения fomo (поэтому я не торчу до глубокой ночи в фильмах/соц сетях).\nЯ нахожу каждый время на книгу и мне нравится. У меня так много книг, которые я хочу прочесть.\nЯ возобновила йога тренировки и чувствую себя гибкой и сильной во время танца.", "personalContext": "", "purpose": "найти наконец время на практики, о которых читала у Оли\nвдохновлять других и самой опираться на силу чата\nобуздать свою тревожность, которая фоново жрет мой дофамин\nВсе идет по плану, если мне потребуется усилие только первые несколько дней, если я начну \"хотеть\" поездок/покупок - откроется энергетический портал", "healthRestrictions": "все норм", "nutritionFlags": ["Отношения с едой в порядке"], "foodHabits": "поздний завтрак, обычно после 12:00\n3-5 приемов пищи\nесли след за белком в рационе, то живу без сладкого и хлеба\nесли не слежу — вижу по отекам, что что-то идет не так\nпри этом не ем фастфуд, крайне редко хлеб, совсем не пью алкоголь", "medications": "нет", "curatorMessage": "нет"}}, {"slug": "dasha-prostova", "displayName": "Даша Простова", "telegramHandle": "@manual-dasha-prostova", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_n4r8t2y6p1c5.html", "leadIssueNumber": null, "leadIssueUrl": "", "issueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/39", "issueNumber": 39, "email": "dariaprostova@gmail.com", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "2026-03-26T10:27:08.715Z", "updatedAtLabel": "26.03.2026 10:27 UTC", "statusKey": "review", "statusLabel": "Нужно проверить", "actionTitle": "Проверить анкету", "actionNote": "Данные анкеты неполные для решения.", "summary": {"visionFuture": "В конце апреля я абсолютно понимаю своё направление в развитии своего дела, знаю, куда двигаюсь. У меня есть чётко поставленные цели, вижн и конкретный план, который синхронизируется с моим внутренним ощущением и зажигает огонёк внизу живота. Мне хочется это делать, у меня есть команда, партнёры и понятные цели, подкреплённые деньгами", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "valeriya", "displayName": "Валерия", "telegramHandle": "@Valeriia_Tu", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_j4m9v2k6t8q3.html", "leadIssueNumber": 21, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/21", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "vera", "displayName": "Вера", "telegramHandle": "@verushkavera", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_u5n2c8r4x7p1.html", "leadIssueNumber": 22, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/22", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "ekaterina-prozorova", "displayName": "Екатерина Прозорова", "telegramHandle": "@katia_paints", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_z2m7v4k9p6c1.html", "leadIssueNumber": 6, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/6", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "nadezhda", "displayName": "Надежда", "telegramHandle": "@moroznb", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_b9t4m7q2x5k8.html", "leadIssueNumber": 18, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/18", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "natasha", "displayName": "Наташа (@Natasha_SHWD)", "telegramHandle": "@Natasha_SHWD", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_r6k2v9p4m8c1.html", "leadIssueNumber": 17, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/17", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "natasha-nathaliedanz", "displayName": "Наташа (@nathaliedanz)", "telegramHandle": "@nathaliedanz", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_l5q9t3m7v2k8.html", "leadIssueNumber": 10, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/10", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}, {"slug": "yulya-karasik", "displayName": "Юля Карасик", "telegramHandle": "@karasichka", "questionnaireUrl": "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026/q_e4p7t2m9c6k3.html", "leadIssueNumber": 14, "leadIssueUrl": "https://github.com/OLYMARKES/high-performance-leads/issues/14", "issueUrl": "", "issueNumber": "", "email": "", "selectedPath": "", "selectedPathLabel": "—", "selectedCourse": "", "selectedCourseLabel": "—", "updatedAt": "", "updatedAtLabel": "—", "statusKey": "waiting", "statusLabel": "Ждём анкету", "actionTitle": "Напомнить заполнить", "actionNote": "Сохранённой версии анкеты пока нет.", "summary": {"visionFuture": "", "personalContext": "", "purpose": "", "healthRestrictions": "", "nutritionFlags": [], "foodHabits": "", "medications": "", "curatorMessage": ""}}];
+    const searchInput = document.getElementById('search-input');
+    const filterBar = document.getElementById('filter-bar');
+    const resultsBody = document.getElementById('results-body');
+    const queueReadyOpen = document.getElementById('queue-ready-open');
+    const queueNeedsPick = document.getElementById('queue-needs-pick');
+    const statTotal = document.getElementById('stat-total');
+    const statNeedsPick = document.getElementById('stat-needs-pick');
+    const statReadyOpen = document.getElementById('stat-ready-open');
+    const statWaiting = document.getElementById('stat-waiting');
+    const detailsModal = document.getElementById('details-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const closeModalButton = document.getElementById('close-modal');
+
+    let activeFilter = 'all';
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function truncateText(value, limit = 72) {
+      const text = String(value || '').trim();
+      if (!text) {
+        return '<small>—</small>';
+      }
+      return escapeHtml(text.length > limit ? `${text.slice(0, limit)}...` : text);
+    }
+
+    function paragraph(value) {
+      if (!value) {
+        return '<p>—</p>';
+      }
+      return `<p>${escapeHtml(String(value)).replaceAll('\n', '<br>')}</p>`;
+    }
+
+    function list(values) {
+      if (!values || !values.length) {
+        return '<p>—</p>';
+      }
+      return `<ul>${values.map((value) => `<li>${escapeHtml(value)}</li>`).join('')}</ul>`;
+    }
+
+    function sectionHtml(title, body) {
+      return `
+        <div class="detail-section">
+          <h3>${escapeHtml(title)}</h3>
+          ${body}
+        </div>
+      `;
+    }
+
+    function getVisibleRows() {
+      const query = searchInput.value.trim().toLowerCase();
+      return ALL_ROWS.filter((row) => {
+        const haystack = [
+          row.displayName,
+          row.telegramHandle,
+          row.slug,
+          row.email,
+          row.selectedCourse,
+          row.selectedCourseLabel,
+          row.summary?.personalContext,
+          row.summary?.visionFuture
+        ].join(' ').toLowerCase();
+        const matchesFilter = activeFilter === 'all' ? true : row.statusKey === activeFilter;
+        const matchesSearch = !query || haystack.includes(query);
+        return matchesFilter && matchesSearch;
+      });
+    }
+
+    function updateStats() {
+      statTotal.textContent = String(ALL_ROWS.length);
+      statNeedsPick.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'needs-pick').length);
+      statReadyOpen.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'ready-open').length);
+      statWaiting.textContent = String(ALL_ROWS.filter((row) => row.statusKey === 'waiting').length);
+    }
+
+    function renderQueue(container, rows, emptyMessage) {
+      if (!rows.length) {
+        container.innerHTML = `<div class="empty-note">${escapeHtml(emptyMessage)}</div>`;
+        return;
+      }
+
+      container.innerHTML = rows.map((row) => `
+        <div class="queue-item">
+          <div class="queue-name">${escapeHtml(row.displayName)}</div>
+          <div class="queue-meta">${escapeHtml(row.telegramHandle)}${row.email ? ` · ${escapeHtml(row.email)}` : ''}</div>
+          <div class="queue-meta">${escapeHtml(row.actionTitle)}${row.selectedCourseLabel && row.selectedCourseLabel !== '—' ? ` · ${escapeHtml(row.selectedCourseLabel)}` : ''}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderRows(rows) {
+      if (!rows.length) {
+        resultsBody.innerHTML = '<tr><td colspan="7">Нет записей под текущий фильтр.</td></tr>';
+        return;
+      }
+
+      resultsBody.innerHTML = rows.map((row, index) => {
+        const leadIssueHtml = row.leadIssueUrl
+          ? `<a class="inline-link" href="${row.leadIssueUrl}" target="_blank" rel="noopener noreferrer">lead #${row.leadIssueNumber}</a>`
+          : '<span class="participant-meta">manual</span>';
+        const recordIssueHtml = row.issueUrl
+          ? `<a class="inline-link" href="${row.issueUrl}" target="_blank" rel="noopener noreferrer">record #${row.issueNumber}</a>`
+          : '';
+
+        return `
+          <tr>
+            <td>
+              <span class="participant-name">${escapeHtml(row.displayName)}</span>
+              <span class="participant-meta">${escapeHtml(row.telegramHandle)}</span>
+              <span class="participant-meta">slug: ${escapeHtml(row.slug)}</span>
+              <div class="link-list">
+                <a class="inline-link" href="${row.questionnaireUrl}" target="_blank" rel="noopener noreferrer">анкета</a>
+                ${leadIssueHtml}
+                ${recordIssueHtml}
+              </div>
+            </td>
+            <td><span class="pill ${row.statusKey}">${escapeHtml(row.statusLabel)}</span></td>
+            <td>
+              <span class="action-text">${escapeHtml(row.actionTitle)}</span>
+              <span class="action-note">${escapeHtml(row.actionNote)}</span>
+            </td>
+            <td>
+              <span class="participant-name">${escapeHtml(row.selectedCourseLabel || '—')}</span>
+              <span class="participant-meta">Путь: ${escapeHtml(row.selectedPathLabel || '—')}</span>
+            </td>
+            <td>${truncateText(row.email, 44)}</td>
+            <td>${escapeHtml(row.updatedAtLabel || '—')}</td>
+            <td><button class="details-btn" type="button" data-index="${index}">Открыть</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openDetails(index) {
+      const row = getVisibleRows()[index];
+      if (!row) {
+        return;
+      }
+
+      const summary = row.summary || {};
+      const body = [
+        sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle, `slug: ${row.slug}`].join('\n'))),
+        sectionHtml('Ссылки', paragraph([row.questionnaireUrl, row.leadIssueUrl || '', row.issueUrl || ''].filter(Boolean).join('\n'))),
+        sectionHtml('Статус', paragraph([row.statusLabel, row.actionTitle, row.actionNote].join('\n'))),
+        sectionHtml('Выбранный путь', paragraph(row.selectedPathLabel)),
+        sectionHtml('Выбранный курс', paragraph(row.selectedCourseLabel)),
+        sectionHtml('Vision', paragraph(summary.visionFuture)),
+        sectionHtml('Personal context', paragraph(summary.personalContext)),
+        sectionHtml('Purpose', paragraph(summary.purpose)),
+        sectionHtml('Health restrictions', paragraph(summary.healthRestrictions)),
+        sectionHtml('Nutrition flags', list(summary.nutritionFlags)),
+        sectionHtml('Food habits', paragraph(summary.foodHabits)),
+        sectionHtml('Medications', paragraph(summary.medications)),
+        sectionHtml('Message for curator', paragraph(summary.curatorMessage))
+      ].join('');
+
+      modalTitle.textContent = row.displayName;
+      modalContent.innerHTML = body;
+      detailsModal.classList.add('visible');
+    }
+
+    function syncPage() {
+      const visibleRows = getVisibleRows();
+      renderRows(visibleRows);
+      renderQueue(
+        queueReadyOpen,
+        ALL_ROWS.filter((row) => row.statusKey === 'ready-open'),
+        'Сейчас нет участниц, которым нужно открыть курс.'
+      );
+      renderQueue(
+        queueNeedsPick,
+        ALL_ROWS.filter((row) => row.statusKey === 'needs-pick'),
+        'Сейчас нет участниц, которым нужен ручной подбор.'
+      );
+      updateStats();
+    }
+
+    resultsBody.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-index]');
+      if (!button) {
+        return;
+      }
+      openDetails(Number(button.dataset.index));
+    });
+
+    searchInput.addEventListener('input', syncPage);
+    filterBar.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-filter]');
+      if (!button) {
+        return;
+      }
+
+      activeFilter = button.dataset.filter || 'all';
+      [...filterBar.querySelectorAll('[data-filter]')].forEach((item) => {
+        item.classList.toggle('is-secondary', item.dataset.filter !== activeFilter);
+      });
+      syncPage();
+    });
+    closeModalButton.addEventListener('click', () => detailsModal.classList.remove('visible'));
+    detailsModal.addEventListener('click', (event) => {
+      if (event.target === detailsModal) {
+        detailsModal.classList.remove('visible');
+      }
+    });
+
+    syncPage();
+  </script>
+</body>
+</html>

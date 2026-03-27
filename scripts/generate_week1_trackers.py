@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
+
+from participants_registry import get_participants
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -10,72 +11,6 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-
-
-PARTICIPANTS = [
-    {"name": "Оля Маркес", "contact": "@manual-olya-markes", "source": "manual", "token": "q7k2m9b4v8x3"},
-    {"name": "Даша Простова", "contact": "@manual-dasha-prostova", "source": "manual", "token": "n4r8t2y6p1c5"},
-    {"name": "Яна Федорова", "contact": "@manual-yana-fedorova", "source": "manual", "token": "h8m3q5z7k2w9"},
-    {"name": "Лера", "contact": "@lerakurepina", "issue": 26, "token": "d6v9n3k7t2m8"},
-    {"name": "Аня", "contact": "@beregukukuhu", "issue": 25, "token": "a7c2r9m4x6p3"},
-    {"name": "Viktoria", "contact": "@vpasko", "issue": 23, "token": "p3t8m6k1z9w4"},
-    {"name": "Вера", "contact": "@verushkavera", "issue": 22, "token": "u5n2c8r4x7p1"},
-    {"name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3"},
-    {"name": "Olesya Dauptain", "contact": "@aramba_annecy", "issue": 20, "token": "y7p3n8k5c2m6"},
-    {"name": "Надежда", "contact": "@moroznb", "issue": 18, "token": "b9t4m7q2x5k8"},
-    {"name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17, "token": "r6k2v9p4m8c1"},
-    {"name": "Ksu Matusevich", "contact": "@ksumatu", "issue": 16, "token": "s8m3x7q1k5v9"},
-    {"name": "Юля Карасик", "contact": "@karasichka", "issue": 14, "token": "e4p7t2m9c6k3"},
-    {"name": "Жанар", "contact": "@zhantik87", "issue": 13, "token": "w9k5m2r8x3p6"},
-    {"name": "Анна", "contact": "@Jayms17", "issue": 12, "token": "f2v8m4q7k1t5"},
-    {"name": "Вика", "contact": "@vikaevdokimova", "issue": 11, "token": "g7m1p6x9c3k4"},
-    {"name": "Наташа", "contact": "@nathaliedanz", "issue": 10, "token": "l5q9t3m7v2k8"},
-    {"name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
-    {"name": "Екатерина Прозорова", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
-]
-
-
-TRANSLIT = {
-    "а": "a",
-    "б": "b",
-    "в": "v",
-    "г": "g",
-    "д": "d",
-    "е": "e",
-    "ё": "e",
-    "ж": "zh",
-    "з": "z",
-    "и": "i",
-    "й": "y",
-    "к": "k",
-    "л": "l",
-    "м": "m",
-    "н": "n",
-    "о": "o",
-    "п": "p",
-    "р": "r",
-    "с": "s",
-    "т": "t",
-    "у": "u",
-    "ф": "f",
-    "х": "kh",
-    "ц": "ts",
-    "ч": "ch",
-    "ш": "sh",
-    "щ": "shch",
-    "ъ": "",
-    "ы": "y",
-    "ь": "",
-    "э": "e",
-    "ю": "yu",
-    "я": "ya",
-}
-
-
-def slugify(value: str) -> str:
-    normalized = "".join(TRANSLIT.get(char, char) for char in value.lower())
-    normalized = re.sub(r"[^a-z0-9]+", "-", normalized)
-    return normalized.strip("-")
 
 
 def quote_js(value: str) -> str:
@@ -441,7 +376,7 @@ def build_team_page(entries: list[dict[str, str]]) -> str:
         f"""
           <a class="card" href="{entry['filename']}">
             <span class="card-name">{entry['name']}</span>
-            <span class="card-meta">трекер недели 1</span>
+            <span class="card-meta">трекер недели 1 · {entry['telegram_handle']}</span>
           </a>"""
         for entry in entries
     )
@@ -591,17 +526,18 @@ def main() -> None:
         old_team_page.unlink()
 
     entries = []
-    used_slugs = set()
-    for participant in PARTICIPANTS:
-        base_slug = slugify(participant["name"])
-        contact_slug = slugify(participant["contact"].replace("@", ""))
-        slug = base_slug if base_slug not in used_slugs else f"{base_slug}-{contact_slug}"
-        used_slugs.add(slug)
-
+    for participant in get_participants():
+        slug = participant["slug"]
         filename = f"w1_{participant['token']}.html"
         page_html = build_participant_page(template, {**participant, "slug": slug})
         (OUTPUT_DIR / filename).write_text(page_html, encoding="utf-8")
-        entries.append({"name": participant["name"], "filename": filename})
+        entries.append(
+            {
+                "name": participant["display_name"],
+                "telegram_handle": participant["telegram_handle"],
+                "filename": filename,
+            }
+        )
 
     (OUTPUT_DIR / "index.html").write_text(build_index_page(), encoding="utf-8")
     (OUTPUT_DIR / f"{TEAM_PAGE_TOKEN}.html").write_text(build_team_page(entries), encoding="utf-8")
