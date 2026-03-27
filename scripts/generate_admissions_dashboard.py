@@ -572,6 +572,26 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       background: rgba(240, 195, 111, 0.08);
     }}
     .badge.muted {{ color: var(--muted); }}
+    .checklist {{
+      display: grid;
+      gap: 8px;
+    }}
+    .check-item {{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+    }}
+    .check-item input {{
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }}
+    .check-item.is-readonly {{
+      color: var(--muted);
+    }}
     .action-title {{ font-weight: 600; display: block; }}
     .action-note {{
       display: block;
@@ -763,6 +783,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
   <script>
     const ALL_ROWS = {script_json(rows)};
     const HIDDEN_KEY = 'hp-admissions-hidden-v1';
+    const OVERRIDES_KEY = 'hp-admissions-overrides-v1';
     const searchInput = document.getElementById('search-input');
     const stageFilters = document.getElementById('stage-filters');
     const statusFilters = document.getElementById('status-filters');
@@ -785,6 +806,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     let activeStage = 'all';
     let activeStatus = 'all';
     let hiddenIds = loadHiddenIds();
+    let overrides = loadOverrides();
 
     function loadHiddenIds() {{
       try {{
@@ -798,6 +820,44 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
     function persistHiddenIds() {{
       localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hiddenIds]));
+    }}
+
+    function loadOverrides() {{
+      try {{
+        const raw = localStorage.getItem(OVERRIDES_KEY);
+        const parsed = raw ? JSON.parse(raw) : {{}};
+        return parsed && typeof parsed === 'object' ? parsed : {{}};
+      }} catch (error) {{
+        return {{}};
+      }}
+    }}
+
+    function persistOverrides() {{
+      localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
+    }}
+
+    function rowOverride(row) {{
+      return overrides[String(row.rowId)] || {{}};
+    }}
+
+    function rowPaid(row) {{
+      const override = rowOverride(row);
+      return Object.prototype.hasOwnProperty.call(override, 'paid') ? Boolean(override.paid) : Boolean(row.paid);
+    }}
+
+    function rowCourseOpened(row) {{
+      const override = rowOverride(row);
+      return Object.prototype.hasOwnProperty.call(override, 'courseOpened')
+        ? Boolean(override.courseOpened)
+        : Boolean(row.courseOpened);
+    }}
+
+    function setRowFlag(row, flag, value) {{
+      const key = String(row.rowId);
+      const next = {{ ...(overrides[key] || {{}}), [flag]: Boolean(value) }};
+      overrides = {{ ...overrides, [key]: next }};
+      persistOverrides();
+      syncPage();
     }}
 
     function isHidden(row) {{
@@ -843,35 +903,36 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     }}
 
     function stageForRow(row) {{
-      if (row.courseOpened) return 'course-opened';
+      if (rowCourseOpened(row)) return 'course-opened';
       if (row.questionnaireFilled) return 'questionnaire';
-      if (row.paid) return 'paid';
+      if (rowPaid(row)) return 'paid';
       if (row.leadSubmitted) return 'lead';
       return 'other';
     }}
 
     function statusForRow(row) {{
-      if (row.readyToOpen) return 'ready-open';
-      if (row.needsPick) return 'needs-pick';
-      if (row.paid && !row.questionnaireFilled) return 'waiting-questionnaire';
-      if (row.leadSubmitted && !row.paid) return 'unpaid';
+      if (rowCourseOpened(row)) return 'complete';
+      if (row.readyToOpen && rowPaid(row)) return 'ready-open';
+      if (row.needsPick && rowPaid(row)) return 'needs-pick';
+      if (rowPaid(row) && !row.questionnaireFilled) return 'waiting-questionnaire';
+      if (row.leadSubmitted && !rowPaid(row)) return 'unpaid';
       return 'complete';
     }}
 
     function nextAction(row) {{
-      if (row.courseOpened) {{
+      if (rowCourseOpened(row)) {{
         return ['Курс уже открыт', row.openedCourse ? `Открыт курс: ${{row.openedCourse}}` : 'Этап закрыт.'];
       }}
-      if (row.readyToOpen) {{
+      if (row.readyToOpen && rowPaid(row)) {{
         return [`Открыть курс ${{row.selectedCourseLabel}}`, 'Участница уже выбрала курс в анкете.'];
       }}
-      if (row.needsPick) {{
+      if (row.needsPick && rowPaid(row)) {{
         return ['Подобрать курс', 'Нужен ручной выбор курса по анкете.'];
       }}
-      if (row.paid && !row.questionnaireFilled) {{
+      if (rowPaid(row) && !row.questionnaireFilled) {{
         return ['Напомнить про анкету', 'Оплата есть, но анкета ещё не сохранена.'];
       }}
-      if (row.leadSubmitted && !row.paid) {{
+      if (row.leadSubmitted && !rowPaid(row)) {{
         return ['Довести до оплаты', 'Есть заявка, но человек ещё не переведён в список участниц.'];
       }}
       return ['Проверить вручную', 'Статус не требует действия или закрыт.'];
@@ -908,9 +969,9 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
       const activeRows = ALL_ROWS.filter((row) => !isHidden(row));
       statTotal.textContent = String(activeRows.length);
       statLeads.textContent = String(activeRows.filter((row) => row.leadSubmitted).length);
-      statPaid.textContent = String(activeRows.filter((row) => row.paid).length);
+      statPaid.textContent = String(activeRows.filter((row) => rowPaid(row)).length);
       statQuestionnaire.textContent = String(activeRows.filter((row) => row.questionnaireFilled).length);
-      statCourseOpened.textContent = String(activeRows.filter((row) => row.courseOpened).length);
+      statCourseOpened.textContent = String(activeRows.filter((row) => rowCourseOpened(row)).length);
       statHidden.textContent = String(ALL_ROWS.filter((row) => isHidden(row)).length);
     }}
 
@@ -956,10 +1017,24 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
               </div>
             </td>
             <td>
-              <span class="badge ${{row.leadSubmitted ? 'ok' : 'muted'}}">Заявка</span>
-              <span class="badge ${{row.paid ? 'ok' : 'muted'}}">Оплата</span>
-              <span class="badge ${{row.questionnaireFilled ? 'ok' : 'muted'}}">Анкета</span>
-              <span class="badge ${{row.courseOpened ? 'ok' : 'muted'}}">Курс открыт</span>
+              <div class="checklist">
+                <label class="check-item is-readonly">
+                  <input type="checkbox" disabled ${{row.leadSubmitted ? 'checked' : ''}}>
+                  <span>Есть заявка</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" data-toggle="paid" data-index="${{index}}" ${{rowPaid(row) ? 'checked' : ''}}>
+                  <span>Есть оплата</span>
+                </label>
+                <label class="check-item is-readonly">
+                  <input type="checkbox" disabled ${{row.questionnaireFilled ? 'checked' : ''}}>
+                  <span>Анкета заполнена</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" data-toggle="course-opened" data-index="${{index}}" ${{rowCourseOpened(row) ? 'checked' : ''}}>
+                  <span>Курс открыт</span>
+                </label>
+              </div>
             </td>
             <td>
               <span class="action-title">${{escapeHtml(actionTitle)}}</span>
@@ -1047,6 +1122,20 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
 
     searchInput.addEventListener('input', syncPage);
     resultsBody.addEventListener('click', (event) => {{
+      const toggle = event.target.closest('[data-toggle]');
+      if (toggle) {{
+        const row = getVisibleRows()[Number(toggle.dataset.index)];
+        if (!row) return;
+        if (toggle.dataset.toggle === 'paid') {{
+          setRowFlag(row, 'paid', toggle.checked);
+          return;
+        }}
+        if (toggle.dataset.toggle === 'course-opened') {{
+          setRowFlag(row, 'courseOpened', toggle.checked);
+          return;
+        }}
+      }}
+
       const button = event.target.closest('[data-index]');
       if (button) {{
         openDetails(Number(button.dataset.index));
