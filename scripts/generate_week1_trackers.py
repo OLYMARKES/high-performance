@@ -11,10 +11,11 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v5"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v5"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v5"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v6"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v6"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v6"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v6"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 
@@ -424,11 +425,12 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
           <article class="material-card">
             <div class="material-kicker">Практика</div>
             <h3>Тренировки</h3>
-            <p>Тренировки будут ждать тебя в личном кабинете SektaSchool.ru. Если доступ ещё не пришёл или что-то не открывается, пиши мне.</p>
+            <p>Тренировки будут ждать тебя в личном кабинете SektaSchool.ru. Или можно скачать себе на компьютер основную программу в PDF.</p>
             <div class="material-actions">
               <a class="material-btn" href="{SEKTA_CABINET_URL}" target="_blank" rel="noopener noreferrer">Открыть личный кабинет</a>
+              <a class="material-btn secondary" href="{MAIN_PROGRAM_PDF}" download="main-program.pdf">Скачать PDF с программой</a>
             </div>
-            <div class="material-meta">В трекере оставляем живую ссылку на кабинет, чтобы не зависеть от вложенных файлов и их версий.</div>
+            <div class="material-meta">В трекере оставляем и живую ссылку на кабинет, и скачиваемый PDF с основной программой.</div>
           </article>
         </div>
 
@@ -493,6 +495,7 @@ syncManifestoVisibility();""",
     html = html.replace("{HABITS_PDF}", HABITS_PDF)
     html = html.replace("{NUTRITION_PDF}", NUTRITION_PDF)
     html = html.replace("{SEKTA_CABINET_URL}", SEKTA_CABINET_URL)
+    html = html.replace("{MAIN_PROGRAM_PDF}", MAIN_PROGRAM_PDF)
     return html
 
 
