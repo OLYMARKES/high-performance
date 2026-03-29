@@ -11,7 +11,10 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v2"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v3"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v3"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v3"
+WORKOUTS_PDF = "../workouts.pdf?v=materials-pdf-v3"
 
 
 def quote_js(value: str) -> str:
@@ -376,8 +379,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../Лист привычки.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../Лист привычки.pdf" download>Скачать на компьютер</a>
+                  <a class="material-btn" href="{HABITS_PDF}" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="{HABITS_PDF}" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -387,8 +390,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../Питание.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../Питание.pdf" download>Скачать на компьютер</a>
+                  <a class="material-btn" href="{NUTRITION_PDF}" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="{NUTRITION_PDF}" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -409,8 +412,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
             <h3>Тренировки</h3>
             <p>Здесь лежит PDF с тренировками. Его можно открыть в браузере, быстро посмотреть с телефона или скачать на компьютер.</p>
             <div class="material-actions">
-              <a class="material-btn" href="../Тренировки.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-              <a class="material-btn secondary" href="../Тренировки.pdf" download>Скачать на компьютер</a>
+              <a class="material-btn" href="{WORKOUTS_PDF}" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+              <a class="material-btn secondary" href="{WORKOUTS_PDF}" download="workouts.pdf">Скачать на компьютер</a>
             </div>
             <div class="material-meta">Если позже появится отдельный кабинет или новая версия тренировок, здесь достаточно будет заменить только ссылку на файл.</div>
           </article>
@@ -474,6 +477,9 @@ if (!state.manifesto) {
 syncManifestoVisibility();""",
         1,
     )
+    html = html.replace("{HABITS_PDF}", HABITS_PDF)
+    html = html.replace("{NUTRITION_PDF}", NUTRITION_PDF)
+    html = html.replace("{WORKOUTS_PDF}", WORKOUTS_PDF)
     return html
 
 
