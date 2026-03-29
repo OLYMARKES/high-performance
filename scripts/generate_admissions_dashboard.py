@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import base64
 import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from issue_snapshot_tools import build_questionnaire_match_index, decode_record_from_issue_body
 from participants_registry import get_participants
 
 
@@ -28,18 +28,6 @@ COURSE_LABELS = {
     "bed": "Не вставая с кровати",
     "body-contact": "Контакт с телом",
 }
-
-
-def decode_record(body: str) -> dict | None:
-    match = re.search(r"<!-- lead-data:v1:([^>]+) -->", body or "")
-    if not match:
-        return None
-
-    try:
-        return json.loads(base64.b64decode(match.group(1)).decode("utf-8"))
-    except (ValueError, json.JSONDecodeError):
-        return None
-
 
 def load_issues() -> list[dict]:
     payload = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
@@ -165,29 +153,8 @@ def format_timestamp(value: str) -> str:
 
 
 def build_questionnaire_index(issues: list[dict]) -> dict[str, dict]:
-    latest_by_slug: dict[str, dict] = {}
-
-    for issue in issues:
-        record = decode_record(issue.get("body", ""))
-        if not record or record.get("kind") != "high-performance-participant-questionnaire":
-            continue
-
-        slug = str(record.get("participantSlug") or "").strip()
-        if not slug:
-            continue
-
-        current_date = str(record.get("submittedAt") or issue.get("updated_at") or "")
-        existing = latest_by_slug.get(slug)
-        existing_date = ""
-        if existing:
-            existing_record = existing["record"]
-            existing_issue = existing["issue"]
-            existing_date = str(existing_record.get("submittedAt") or existing_issue.get("updated_at") or "")
-
-        if not existing or current_date > existing_date:
-            latest_by_slug[slug] = {"record": record, "issue": issue}
-
-    return latest_by_slug
+    participants = get_participants()
+    return build_questionnaire_match_index(participants, issues)
 
 
 def build_lead_index(issues: list[dict]) -> tuple[dict[int, dict], dict[str, dict], dict[str, dict]]:
@@ -196,7 +163,7 @@ def build_lead_index(issues: list[dict]) -> tuple[dict[int, dict], dict[str, dic
     leads_by_name: dict[str, list[dict]] = {}
 
     for issue in issues:
-        record = decode_record(issue.get("body", ""))
+        record = decode_record_from_issue_body(issue.get("body", ""))
         if not record or record.get("kind") != "high-performance-lead":
             continue
 
@@ -247,7 +214,9 @@ def stage_for_row(row: dict) -> str:
 
 def build_rows() -> tuple[list[dict], str]:
     issues = load_issues()
-    snapshot_time = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    snapshot_time = max((str(issue.get("updated_at") or "") for issue in issues), default="")
+    if not snapshot_time:
+        snapshot_time = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     participants = get_participants()
     questionnaire_index = build_questionnaire_index(issues)
     leads_by_issue, leads_by_contact, unique_leads_by_name = build_lead_index(issues)

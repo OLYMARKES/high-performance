@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import base64
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from issue_snapshot_tools import build_questionnaire_match_index
 from participants_registry import get_participants
 
 
@@ -38,18 +37,6 @@ def quote_js(value: str) -> str:
 
 def script_json(value: object) -> str:
     return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
-
-
-def decode_record_from_issue_body(body: str) -> dict | None:
-    match = re.search(r"<!-- lead-data:v1:([^>]+) -->", body or "")
-    if not match:
-        return None
-
-    try:
-        return json.loads(base64.b64decode(match.group(1)).decode("utf-8"))
-    except (ValueError, json.JSONDecodeError):
-        return None
-
 
 def course_label(value: str) -> str:
     return COURSE_LABELS.get(value, value or "")
@@ -87,26 +74,10 @@ def build_admin_snapshot(entries: list[dict[str, str]]) -> tuple[list[dict[str, 
     except (FileNotFoundError, json.JSONDecodeError) as error:
         return [], snapshot_generated_at, str(error)
 
-    latest_by_slug: dict[str, dict[str, object]] = {}
-    for issue in issues:
-        record = decode_record_from_issue_body(issue.get("body", ""))
-        if not record or record.get("kind") != "high-performance-participant-questionnaire":
-            continue
-
-        slug = str(record.get("participantSlug") or "").strip()
-        if not slug:
-            continue
-
-        candidate_date = str(record.get("submittedAt") or issue.get("updated_at") or "")
-        existing = latest_by_slug.get(slug)
-        existing_date = ""
-        if existing:
-            existing_record = existing.get("record", {})
-            existing_issue = existing.get("issue", {})
-            existing_date = str(existing_record.get("submittedAt") or existing_issue.get("updated_at") or "")
-
-        if not existing or candidate_date > existing_date:
-            latest_by_slug[slug] = {"record": record, "issue": issue}
+    latest_by_slug = build_questionnaire_match_index(entries, issues)
+    latest_issue_update = max((str(issue.get("updated_at") or "") for issue in issues), default="")
+    if latest_issue_update:
+        snapshot_generated_at = latest_issue_update
 
     rows: list[dict[str, object]] = []
     for entry in entries:
@@ -158,6 +129,7 @@ def build_admin_snapshot(entries: list[dict[str, str]]) -> tuple[list[dict[str, 
                 "leadIssueUrl": f"https://github.com/{PRIVATE_REPO}/issues/{entry['lead_issue']}" if entry.get("lead_issue") else "",
                 "issueUrl": issue.get("html_url", ""),
                 "issueNumber": issue.get("number", ""),
+                "matchedBy": match.get("matchedBy", "") if match else "",
                 "email": record.get("email") or response_data.get("participantEmail") or "",
                 "selectedPath": selected_path,
                 "selectedPathLabel": label_for_path(selected_path),
@@ -283,8 +255,28 @@ def build_runtime_script(name: str, slug: str) -> str:
   const LOAD_ENDPOINT = `${{FORM_ENDPOINT}}/participant-questionnaire?slug=${{encodeURIComponent(PARTICIPANT_SLUG)}}`;
   const DRAFT_KEY = `hp-participant-questionnaire-${{PARTICIPANT_SLUG}}-v1`;
   const LAST_SAVED_KEY = `${{DRAFT_KEY}}:last-saved-at`;
+  const DRAFT_VERSION = 2;
   const CONTROL_CHARS_RE = /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/g;
   const BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g;
+  const LEGACY_COURSE_VALUES = new Set(['care', 'basics', 'superhuman', 'abs', 'woman-health', 'soft-power', 'stretch', 'pregnancy', 'mama', 'bed', 'body-contact']);
+  const LEGACY_PELVIC_LABELS = [
+    'Попадание воздуха во влагалище во время секса',
+    'Боли или тяжесть в области лобка',
+    'Частое мочеиспускание или недержание при нагрузке, смехе, кашле',
+    'Ничего из перечисленного'
+  ];
+  const LEGACY_NUTRITION_LABELS = [
+    'Диагностировано РПП',
+    'Подозреваю РПП, к специалисту не обращалась',
+    'Отношения с едой в порядке',
+    'Часто беспокоюсь о весе, ограничиваю себя',
+    'Мысли о еде занимают непропорционально много времени',
+    'Бывают эпизоды переедания',
+    'Строго считаю калории',
+    'Избегаю углеводов или сахара',
+    'Окружающие замечают, что я зациклена на весе',
+    'Регулярно чувствую вину после еды'
+  ];
 
   function normalizeValue(value, multiline = false) {{
     const cleaned = String(value || '')
@@ -403,6 +395,202 @@ def build_runtime_script(name: str, slug: str) -> str:
     }});
   }}
 
+  function buildEmptyResponseData() {{
+    return {{
+      participantEmail: '',
+      visionFuture: '',
+      selectedPath: '',
+      courseChoice: '',
+      personalContext: '',
+      vip: {{
+        purpose: '',
+        age: '',
+        height: '',
+        weight: '',
+        childrenStatus: '',
+        childrenDetail: '',
+        pregnantDetail: '',
+        healthRestrictions: '',
+        diastasis: '',
+        pelvicFloorFlags: [],
+        nutritionFlags: [],
+        typicalDay: '',
+        foodHabits: '',
+        medications: '',
+        curatorMessage: ''
+      }}
+    }};
+  }}
+
+  function preferMeaningful(current, fallback) {{
+    return hasMeaningfulValue(current) ? current : fallback;
+  }}
+
+  function mergeStructuredData(fallback, current) {{
+    if (Array.isArray(fallback) || Array.isArray(current)) {{
+      return hasMeaningfulValue(current) ? current : (fallback || []);
+    }}
+
+    if ((fallback && typeof fallback === 'object') || (current && typeof current === 'object')) {{
+      const merged = {{}};
+      const keys = new Set([
+        ...Object.keys(fallback || {{}}),
+        ...Object.keys(current || {{}})
+      ]);
+
+      keys.forEach((key) => {{
+        merged[key] = mergeStructuredData(fallback?.[key], current?.[key]);
+      }});
+      return merged;
+    }}
+
+    return hasMeaningfulValue(current) ? current : (fallback ?? current ?? '');
+  }}
+
+  function isLikelyMetric(value) {{
+    if (typeof value !== 'string') {{
+      return false;
+    }}
+
+    const normalized = normalizeValue(value);
+    if (!normalized) {{
+      return false;
+    }}
+
+    return /^\\d{{1,3}}([.,]\\d+)?$/.test(normalized);
+  }}
+
+  function parseLegacyDraftState(state) {{
+    const values = Array.isArray(state) ? state : Array.isArray(state?.fields) ? state.fields : [];
+    if (!values.length) {{
+      return null;
+    }}
+
+    const parsed = {{
+      email: '',
+      selectedPath: '',
+      courseChoice: '',
+      personalContext: '',
+      responseData: buildEmptyResponseData()
+    }};
+
+    if (typeof values[0] === 'string') {{
+      parsed.email = normalizeValue(values[0]);
+      parsed.responseData.participantEmail = parsed.email;
+    }}
+
+    if (typeof values[1] === 'string') {{
+      parsed.responseData.visionFuture = normalizeValue(values[1], true);
+    }}
+
+    let ageIndex = -1;
+    for (let index = 3; index <= 5; index += 1) {{
+      if (
+        isLikelyMetric(values[index]) &&
+        isLikelyMetric(values[index + 1]) &&
+        isLikelyMetric(values[index + 2]) &&
+        typeof values[index + 3] === 'boolean' &&
+        typeof values[index + 4] === 'boolean'
+      ) {{
+        ageIndex = index;
+        break;
+      }}
+    }}
+
+    if (ageIndex === -1) {{
+      const freeform = normalizeValue(values[2], true);
+      if (freeform) {{
+        parsed.selectedPath = LEGACY_COURSE_VALUES.has(freeform) ? 'short' : 'personal';
+        if (parsed.selectedPath === 'short') {{
+          parsed.courseChoice = freeform;
+          parsed.responseData.courseChoice = freeform;
+        }} else {{
+          parsed.personalContext = freeform;
+          parsed.responseData.personalContext = freeform;
+        }}
+        parsed.responseData.selectedPath = parsed.selectedPath;
+      }}
+      return parsed;
+    }}
+
+    const pathField = normalizeValue(values[2], true);
+    const purposeIndex = ageIndex === 4 ? 3 : -1;
+    if (pathField) {{
+      if (LEGACY_COURSE_VALUES.has(pathField)) {{
+        parsed.selectedPath = 'short';
+        parsed.courseChoice = pathField;
+        parsed.responseData.courseChoice = pathField;
+      }} else {{
+        parsed.selectedPath = 'personal';
+        parsed.personalContext = pathField;
+        parsed.responseData.personalContext = pathField;
+      }}
+      parsed.responseData.selectedPath = parsed.selectedPath;
+    }}
+
+    if (purposeIndex !== -1 && typeof values[purposeIndex] === 'string') {{
+      parsed.responseData.vip.purpose = normalizeValue(values[purposeIndex], true);
+    }}
+
+    parsed.responseData.vip.age = normalizeValue(values[ageIndex]);
+    parsed.responseData.vip.height = normalizeValue(values[ageIndex + 1]);
+    parsed.responseData.vip.weight = normalizeValue(values[ageIndex + 2]);
+
+    let cursor = ageIndex + 3;
+    const noChildren = Boolean(values[cursor]);
+    const hasChildren = Boolean(values[cursor + 1]);
+    cursor += 2;
+
+    let childrenDetail = '';
+    let pregnant = false;
+    if (typeof values[cursor] === 'string') {{
+      childrenDetail = normalizeValue(values[cursor], true);
+      cursor += 1;
+      pregnant = Boolean(values[cursor]);
+      cursor += 1;
+    }} else if (typeof values[cursor] === 'boolean') {{
+      pregnant = Boolean(values[cursor]);
+      cursor += 1;
+    }}
+
+    parsed.responseData.vip.childrenStatus = pregnant ? 'pregnant' : hasChildren ? 'yes' : noChildren ? 'no' : '';
+    parsed.responseData.vip.childrenDetail = childrenDetail;
+    parsed.responseData.vip.healthRestrictions = normalizeValue(values[cursor] || '', true);
+    cursor += 1;
+    parsed.responseData.vip.diastasis = normalizeValue(values[cursor] || '');
+    cursor += 1;
+
+    const flagValues = [];
+    while (cursor < values.length && typeof values[cursor] === 'boolean') {{
+      flagValues.push(Boolean(values[cursor]));
+      cursor += 1;
+    }}
+
+    parsed.responseData.vip.pelvicFloorFlags = LEGACY_PELVIC_LABELS.filter((_, index) => Boolean(flagValues[index]));
+    parsed.responseData.vip.nutritionFlags = LEGACY_NUTRITION_LABELS.filter((_, index) => Boolean(flagValues[index + LEGACY_PELVIC_LABELS.length]));
+
+    const remainingText = values.slice(cursor).filter((value) => typeof value === 'string' && normalizeValue(value, true));
+    parsed.responseData.vip.typicalDay = normalizeValue(remainingText[0] || '', true);
+    parsed.responseData.vip.foodHabits = normalizeValue(remainingText[1] || '', true);
+    parsed.responseData.vip.medications = normalizeValue(remainingText[2] || '', true);
+    parsed.responseData.vip.curatorMessage = normalizeValue(remainingText[3] || '', true);
+
+    return parsed;
+  }}
+
+  function hydrateStoredRecord(record) {{
+    const legacy = parseLegacyDraftState(record?.draftState);
+    const mergedResponseData = mergeStructuredData(legacy?.responseData || buildEmptyResponseData(), record?.responseData || {{}});
+    return {{
+      ...record,
+      email: preferMeaningful(record?.email, legacy?.email || mergedResponseData.participantEmail || ''),
+      selectedPath: preferMeaningful(record?.selectedPath, mergedResponseData.selectedPath || legacy?.selectedPath || ''),
+      courseChoice: preferMeaningful(record?.courseChoice, mergedResponseData.courseChoice || legacy?.courseChoice || ''),
+      personalContext: preferMeaningful(record?.personalContext, mergedResponseData.personalContext || legacy?.personalContext || ''),
+      responseData: mergedResponseData,
+    }};
+  }}
+
   function applySavedRecord(record) {{
     const responseData = record?.responseData || {{}};
     const vip = responseData.vip || {{}};
@@ -446,6 +634,9 @@ def build_runtime_script(name: str, slug: str) -> str:
     setTextInBlock('Препараты', vip.medications);
     setTextInBlock('Сообщение для куратора', vip.curatorMessage);
 
+    document.querySelectorAll('input[name="children"]').forEach((radio) => {{
+      radio.checked = false;
+    }});
     const childrenValue = normalizeValue(vip.childrenStatus || '');
     if (childrenValue) {{
       const radio = document.querySelector(`input[name="children"][value="${{childrenValue}}"]`);
@@ -509,36 +700,63 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function collectDraftState() {{
-    const allFields = [...document.querySelectorAll('select, textarea, input')];
+    const responseData = collectResponseData();
     return {{
-      selectedPath: getSelectedPath(),
-      fields: allFields.map((field) => {{
-        if (field.type === 'checkbox' || field.type === 'radio') {{
-          return Boolean(field.checked);
-        }}
-        return field.value || '';
-      }})
+      version: DRAFT_VERSION,
+      updatedAt: new Date().toISOString(),
+      selectedPath: responseData.selectedPath,
+      participantEmail: responseData.participantEmail,
+      responseData,
     }};
   }}
 
   function restoreDraftState(state) {{
-    const values = Array.isArray(state) ? state : state?.fields || [];
-    const selectedPath = !Array.isArray(state) ? normalizeValue(state?.selectedPath || '') : '';
-    const allFields = [...document.querySelectorAll('select, textarea, input')];
-    allFields.forEach((field, index) => {{
-      const saved = values[index];
-      if (saved === undefined) {{
-        return;
-      }}
+    if (state && typeof state === 'object' && Number(state.version) >= DRAFT_VERSION && state.responseData) {{
+      applySavedRecord({{
+        email: state.participantEmail || state.responseData.participantEmail || '',
+        selectedPath: state.selectedPath || state.responseData.selectedPath || '',
+        courseChoice: state.responseData.courseChoice || '',
+        personalContext: state.responseData.personalContext || '',
+        responseData: state.responseData,
+      }});
+      return;
+    }}
 
-      if (field.type === 'checkbox' || field.type === 'radio') {{
-        field.checked = Boolean(saved);
-      }} else {{
-        field.value = saved;
-      }}
-    }});
+    const parsedLegacy = parseLegacyDraftState(state);
+    if (parsedLegacy) {{
+      applySavedRecord(parsedLegacy);
+    }}
+  }}
 
-    syncConditionalState(selectedPath);
+  function collectResponseData() {{
+    const selectedPath = getSelectedPath();
+    const selectedChildren = document.querySelector('input[name="children"]:checked');
+    const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
+
+    return {{
+      participantEmail,
+      visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
+      selectedPath,
+      courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
+      personalContext: normalizeValue(document.getElementById('personal-context')?.value || '', true),
+      vip: {{
+        purpose: textFromBlock('Я здесь, чтобы...'),
+        age: inputFromBlock('Возраст / Рост / Вес', 'Возраст'),
+        height: inputFromBlock('Возраст / Рост / Вес', 'Рост'),
+        weight: inputFromBlock('Возраст / Рост / Вес', 'Вес'),
+        childrenStatus: normalizeValue(selectedChildren?.value || ''),
+        childrenDetail: normalizeValue(document.querySelector('#children-detail input')?.value || ''),
+        pregnantDetail: normalizeValue(document.querySelector('#pregnant-detail input')?.value || ''),
+        healthRestrictions: textFromBlock('Здоровье и ограничения'),
+        diastasis: inputFromBlock('Диастаз', 'Например'),
+        pelvicFloorFlags: checkedLabelsFromBlock('Отметь, если актуально'),
+        nutritionFlags: checkedLabelsFromBlock('Отношение к питанию'),
+        typicalDay: textFromBlock('Твой обычный день'),
+        foodHabits: textFromBlock('Питание и привычки'),
+        medications: textFromBlock('Препараты'),
+        curatorMessage: textFromBlock('Сообщение для куратора')
+      }}
+    }};
   }}
 
   function saveDraft() {{
@@ -567,11 +785,7 @@ def build_runtime_script(name: str, slug: str) -> str:
         return false;
       }}
 
-      if (result.record.draftState?.fields?.length || Array.isArray(result.record.draftState)) {{
-        restoreDraftState(result.record.draftState);
-      }} else {{
-        applySavedRecord(result.record);
-      }}
+      applySavedRecord(hydrateStoredRecord(result.record));
       const savedAt = formatDate(result.record.submittedAt || result.updatedAt);
       setSaveNote(savedAt ? `Открыта сохранённая версия от ${{savedAt}}.` : 'Открыта последняя сохранённая версия анкеты.');
       localStorage.setItem(LAST_SAVED_KEY, result.record.submittedAt || result.updatedAt || '');
@@ -582,15 +796,51 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
   }}
 
-  function restoreLocalDraft() {{
+  function parseComparableTime(value) {{
+    if (!value) {{
+      return 0;
+    }}
+
+    const parsed = Date.parse(String(value));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }}
+
+  function shouldRestoreLocalDraft(state, hasServerVersion) {{
+    if (!hasServerVersion) {{
+      return true;
+    }}
+
+    const draftVersion = Number(state?.version || 0);
+    if (draftVersion < DRAFT_VERSION) {{
+      return false;
+    }}
+
+    const localUpdatedAt = parseComparableTime(state?.updatedAt || state?.submittedAt || '');
+    const serverSavedAt = parseComparableTime(localStorage.getItem(LAST_SAVED_KEY) || '');
+    if (!localUpdatedAt || !serverSavedAt) {{
+      return false;
+    }}
+
+    return localUpdatedAt > serverSavedAt;
+  }}
+
+  function restoreLocalDraft(hasServerVersion = false) {{
     const savedDraft = localStorage.getItem(DRAFT_KEY);
     if (!savedDraft) {{
       return false;
     }}
 
     try {{
-      restoreDraftState(JSON.parse(savedDraft));
-      setSaveNote('Восстановлен локальный черновик из этого браузера.');
+      const draftState = JSON.parse(savedDraft);
+      if (!shouldRestoreLocalDraft(draftState, hasServerVersion)) {{
+        return false;
+      }}
+      restoreDraftState(draftState);
+      setSaveNote(
+        hasServerVersion
+          ? 'Восстановлен более новый локальный черновик из этого браузера.'
+          : 'Восстановлен локальный черновик из этого браузера.'
+      );
       return true;
     }} catch (error) {{
       localStorage.removeItem(DRAFT_KEY);
@@ -599,34 +849,8 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function buildPayload() {{
-    const selectedPath = getSelectedPath();
-    const selectedChildren = document.querySelector('input[name=\"children\"]:checked');
-    const participantEmail = normalizeValue(document.getElementById('participant-email')?.value || '');
-
-    const responseData = {{
-      participantEmail,
-      visionFuture: normalizeValue(document.getElementById('vision-future')?.value || '', true),
-      selectedPath,
-      courseChoice: normalizeValue(document.getElementById('course-select')?.value || ''),
-      personalContext: normalizeValue(document.getElementById('personal-context')?.value || '', true),
-      vip: {{
-        purpose: textFromBlock('Я здесь, чтобы...'),
-        age: inputFromBlock('Возраст / Рост / Вес', 'Возраст'),
-        height: inputFromBlock('Возраст / Рост / Вес', 'Рост'),
-        weight: inputFromBlock('Возраст / Рост / Вес', 'Вес'),
-        childrenStatus: normalizeValue(selectedChildren?.value || ''),
-        childrenDetail: normalizeValue(document.querySelector('#children-detail input')?.value || ''),
-        pregnantDetail: normalizeValue(document.querySelector('#pregnant-detail input')?.value || ''),
-        healthRestrictions: textFromBlock('Здоровье и ограничения'),
-        diastasis: inputFromBlock('Диастаз', 'Например'),
-        pelvicFloorFlags: checkedLabelsFromBlock('Отметь, если актуально'),
-        nutritionFlags: checkedLabelsFromBlock('Отношение к питанию'),
-        typicalDay: textFromBlock('Твой обычный день'),
-        foodHabits: textFromBlock('Питание и привычки'),
-        medications: textFromBlock('Препараты'),
-        curatorMessage: textFromBlock('Сообщение для куратора')
-      }}
-    }};
+    const responseData = collectResponseData();
+    const participantEmail = responseData.participantEmail || '';
 
     return {{
       kind: 'participant-questionnaire',
@@ -740,8 +964,8 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   (async () => {{
     autoResizeAllTextareas();
-    await loadSavedVersion();
-    restoreLocalDraft();
+    const hasServerVersion = await loadSavedVersion();
+    restoreLocalDraft(hasServerVersion);
     syncConditionalState();
   }})();
 </script>
