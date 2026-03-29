@@ -964,6 +964,56 @@ body {
   flex-shrink: 0;
 }
 
+.day-workouts-card {
+  margin-top: 18px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 213, 195, 0.95);
+  background: rgba(255, 253, 249, 0.9);
+}
+.day-workouts-kicker {
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+}
+.day-workouts-title {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.05;
+  color: var(--charcoal);
+}
+.day-workouts-copy {
+  margin-top: 8px;
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.day-workouts-links {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.day-workout-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--charcoal);
+  background: var(--charcoal);
+  color: var(--warm-white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex: 1 1 180px;
+}
+
 /* ── Footer ── */
 .footer {
   text-align: center;
@@ -1138,8 +1188,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v8" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v8" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v9" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v9" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1149,8 +1199,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v8" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v8" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v9" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v9" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1171,8 +1221,8 @@ body {
             <h3>Тренировки</h3>
             <p>Здесь лежит основная программа в PDF. Если удобнее, ниже оставляю и бэкап-вариант: личный кабинет на SektaSchool.ru.</p>
             <div class="material-actions">
-              <a class="material-btn" href="../main-program.pdf?v=materials-pdf-v8#page=999" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v8" download="main-program.pdf">Скачать на компьютер</a>
+              <a class="material-btn" href="../main-program.pdf?v=materials-pdf-v9#page=999" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v9" download="main-program.pdf">Скачать на компьютер</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Бэкап-программа на SektaSchool.ru</a>
             </div>
             <div class="material-meta">Сначала даю основной файл, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1489,6 +1539,19 @@ function renderDay() {
   const total = day.items.length;
   const done = day.items.filter(it => it.checked).length;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const workoutLinks = Array.isArray(window.DAY_WORKOUT_LINKS?.[currentDay]) ? window.DAY_WORKOUT_LINKS[currentDay] : [];
+  const workoutLinksHtml = workoutLinks.length
+    ? `
+      <div class="day-workouts-card">
+        <div class="day-workouts-kicker">Практика дня</div>
+        <div class="day-workouts-title">Тренировки</div>
+        <div class="day-workouts-copy">${workoutLinks.length > 1 ? 'Здесь собраны прямые ссылки на сегодняшние тренировки, чтобы не искать их внутри PDF.' : 'Здесь лежит прямая ссылка на сегодняшнюю тренировку, чтобы можно было открыть её сразу из трекера.'}</div>
+        <div class="day-workouts-links">
+          ${workoutLinks.map((link) => `<a class="day-workout-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`).join('')}
+        </div>
+      </div>
+    `
+    : '';
 
   daysContainer.innerHTML = `
     <div class="day-section active">
@@ -1502,6 +1565,7 @@ function renderDay() {
           <div class="day-progress-text">${pct}%</div>
         </div>
       </div>
+      ${workoutLinksHtml}
       <div class="tracker-list" id="trackerList"></div>
       <button class="add-item-btn" onclick="openAddItem()">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/></svg>
@@ -1686,6 +1750,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   const PARTICIPANT_SLUG = "valeriya";
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${PARTICIPANT_SLUG}`;
+  window.DAY_WORKOUT_LINKS = [[{"label": "Тренировка дня", "url": "https://kinescope.io/et2qFrFvqZ5oohxazHhCHn"}]];
 
   function getDefaultDayItems() {
     return DEFAULT_ITEMS.map((item, index) => ({

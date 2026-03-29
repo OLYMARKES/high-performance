@@ -11,14 +11,22 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v8"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v8"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v8"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v9"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v9"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v9"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v8"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v8#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v9"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v9#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
+DAY_WORKOUT_LINKS = [
+    [
+        {
+            "label": "Тренировка дня",
+            "url": "https://kinescope.io/et2qFrFvqZ5oohxazHhCHn",
+        }
+    ]
+]
 
 
 def quote_js(value: str) -> str:
@@ -325,6 +333,56 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   flex-shrink: 0;
 }
 
+.day-workouts-card {
+  margin-top: 18px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 213, 195, 0.95);
+  background: rgba(255, 253, 249, 0.9);
+}
+.day-workouts-kicker {
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+}
+.day-workouts-title {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.05;
+  color: var(--charcoal);
+}
+.day-workouts-copy {
+  margin-top: 8px;
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.day-workouts-links {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.day-workout-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--charcoal);
+  background: var(--charcoal);
+  color: var(--warm-white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex: 1 1 180px;
+}
+
 /* ── Footer ── */""",
         1,
     )
@@ -474,6 +532,75 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         1,
     )
     html = html.replace(
+        """function renderDay() {
+  const day = state.days[currentDay];
+  const total = day.items.length;
+  const done = day.items.filter(it => it.checked).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  daysContainer.innerHTML = `
+    <div class="day-section active">
+      <div class="day-header">
+        <h2>${day.name}</h2>
+        <div class="day-date">День ${currentDay + 1}</div>
+        <div class="day-progress">
+          <div class="day-progress-bar">
+            <div class="day-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="day-progress-text">${pct}%</div>
+        </div>
+      </div>
+      <div class="tracker-list" id="trackerList"></div>
+      <button class="add-item-btn" onclick="openAddItem()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/></svg>
+        Добавить пункт
+      </button>
+    </div>
+  `;
+""",
+        """function renderDay() {
+  const day = state.days[currentDay];
+  const total = day.items.length;
+  const done = day.items.filter(it => it.checked).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const workoutLinks = Array.isArray(window.DAY_WORKOUT_LINKS?.[currentDay]) ? window.DAY_WORKOUT_LINKS[currentDay] : [];
+  const workoutLinksHtml = workoutLinks.length
+    ? `
+      <div class="day-workouts-card">
+        <div class="day-workouts-kicker">Практика дня</div>
+        <div class="day-workouts-title">Тренировки</div>
+        <div class="day-workouts-copy">${workoutLinks.length > 1 ? 'Здесь собраны прямые ссылки на сегодняшние тренировки, чтобы не искать их внутри PDF.' : 'Здесь лежит прямая ссылка на сегодняшнюю тренировку, чтобы можно было открыть её сразу из трекера.'}</div>
+        <div class="day-workouts-links">
+          ${workoutLinks.map((link) => `<a class="day-workout-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`).join('')}
+        </div>
+      </div>
+    `
+    : '';
+
+  daysContainer.innerHTML = `
+    <div class="day-section active">
+      <div class="day-header">
+        <h2>${day.name}</h2>
+        <div class="day-date">День ${currentDay + 1}</div>
+        <div class="day-progress">
+          <div class="day-progress-bar">
+            <div class="day-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="day-progress-text">${pct}%</div>
+        </div>
+      </div>
+      ${workoutLinksHtml}
+      <div class="tracker-list" id="trackerList"></div>
+      <button class="add-item-btn" onclick="openAddItem()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/></svg>
+        Добавить пункт
+      </button>
+    </div>
+  `;
+""",
+        1,
+    )
+    html = html.replace(
         """// Show overlay on load if no manifesto yet
 if (!state.manifesto) {
   setTimeout(() => overlay.classList.add('active'), 600);
@@ -511,6 +638,7 @@ def build_runtime_script(name: str, slug: str) -> str:
   const PARTICIPANT_SLUG = {quote_js(slug)};
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
+  window.DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
 
   function getDefaultDayItems() {{
     return DEFAULT_ITEMS.map((item, index) => ({{
