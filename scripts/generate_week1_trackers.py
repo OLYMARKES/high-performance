@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v15"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v15"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v15"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v16"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v16"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v16"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v15"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v15#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v16"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v16#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -36,10 +36,38 @@ DAY_WORKOUT_LINKS = [
             "url": "https://kinescope.io/k3554A5VX2cGM2p2NzBXgp",
         }
     ],
-    [],
-    [],
-    [],
-    [],
+    [
+        {
+            "label": "Тренировка дня",
+            "url": "https://kinescope.io/4k83NSdtZyhTWaKEcYGY6f",
+        }
+    ],
+    [
+        {
+            "label": "Тренировка 1",
+            "url": "https://kinescope.io/dJuYS7wUg6jLdC7Wn4WHEe",
+        },
+        {
+            "label": "Тренировка 2",
+            "url": "https://kinescope.io/bnyKxZVoQBBgRdd9a6v5be",
+        }
+    ],
+    [
+        {
+            "label": "Тренировка дня",
+            "url": "https://kinescope.io/dg41DeFZiV3bestR5vsgNT",
+        }
+    ],
+    [
+        {
+            "label": "Тренировка 1",
+            "url": "https://kinescope.io/8bNzN33rMMc5F289UnjDYn",
+        },
+        {
+            "label": "Тренировка 2",
+            "url": "https://kinescope.io/et2qFrFvqZ5oohxazHhCHn",
+        }
+    ],
     [],
 ]
 
