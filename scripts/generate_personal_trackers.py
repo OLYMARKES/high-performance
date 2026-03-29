@@ -9,10 +9,11 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v4"
 
 
 def build_redirect_page(name: str, token: str, issue: int | None) -> str:
-    destination = f"{WEEK1_TRACKER_BASE_URL}/w1_{token}.html"
+    destination = f"{WEEK1_TRACKER_BASE_URL}/w1_{token}.html?{TRACKER_VERSION_QUERY}"
     if issue:
         source_comment = (
             f"<!-- Redirect stub for {name} from GitHub issue #{issue}: "

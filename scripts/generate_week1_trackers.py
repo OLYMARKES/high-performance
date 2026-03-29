@@ -11,10 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v3"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v3"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v3"
-WORKOUTS_PDF = "../workouts.pdf?v=materials-pdf-v3"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v4"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v4"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v4"
+WORKOUTS_PDF = "../workouts.pdf?v=materials-pdf-v4"
+CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
+LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 
 
 def quote_js(value: str) -> str:
@@ -925,9 +927,37 @@ def build_team_page(entries: list[dict[str, str]]) -> str:
 """
 
 
+def build_message_for_participant(participant: dict[str, str]) -> str:
+    tracker_url = f"{PUBLIC_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}"
+    greeting_name = participant["public_name"]
+    return (
+        f"=== {participant['display_name']} · {participant['telegram_handle']} ===\n"
+        f"Привет, {greeting_name}!\n\n"
+        f"Очень рада пригласить тебя в наш чат High Performance:\n"
+        f"{CHAT_URL}\n\n"
+        f"Я открываю чат и твой личный трекер заранее, чтобы ты могла спокойно войти в процесс в своём темпе, без спешки.\n\n"
+        f"Здесь короткое Loom-видео, где я рассказываю, как устроен трекер и как с ним работать:\n"
+        f"{LOOM_URL}\n\n"
+        f"А вот твой личный трекер:\n"
+        f"{tracker_url}\n\n"
+        f"Внутри уже есть манифест, материалы по питанию и тренировкам и сам трекер первой недели. "
+        f"Первая неделя у нас про базу: тело, питание, тренировки, ритм и снижение лишней когнитивной нагрузки на себя.\n\n"
+        f"И там уже есть одна тренировка на завтра, так что если будет желание и ресурс, можно сразу её сделать)\n\n"
+        f"Можно просто сначала открыть, осмотреться, почитать, посмотреть видео и постепенно начать входить в процесс. "
+        f"Если захочешь, можешь сначала даже взять мой пример манифеста как опору, а потом уже написать свой.\n\n"
+        f"Если что-то не открывается или будут вопросы, пиши мне.\n"
+    )
+
+
+def build_telegram_messages(participants: list[dict[str, str]]) -> str:
+    blocks = [build_message_for_participant(participant) for participant in participants]
+    return "\n\n" + ("\n\n" + ("-" * 72) + "\n\n").join(blocks) + "\n"
+
+
 def main() -> None:
     template = SOURCE_TEMPLATE_PATH.read_text(encoding="utf-8")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    participants = get_participants()
 
     for old_file in OUTPUT_DIR.glob("w1_*.html"):
         old_file.unlink()
@@ -939,7 +969,7 @@ def main() -> None:
         old_team_page.unlink()
 
     entries = []
-    for participant in get_participants():
+    for participant in participants:
         slug = participant["slug"]
         filename = f"w1_{participant['token']}.html"
         page_html = build_participant_page(template, {**participant, "slug": slug})
@@ -954,6 +984,7 @@ def main() -> None:
 
     (OUTPUT_DIR / "index.html").write_text(build_index_page(), encoding="utf-8")
     (OUTPUT_DIR / f"{TEAM_PAGE_TOKEN}.html").write_text(build_team_page(entries), encoding="utf-8")
+    (OUTPUT_DIR / "telegram_message.txt").write_text(build_telegram_messages(participants), encoding="utf-8")
     print(f"Generated {len(entries)} week 1 trackers in {OUTPUT_DIR}")
 
 

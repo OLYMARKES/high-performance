@@ -10,13 +10,10 @@ High Performance trackers (redirects)
 Валерия: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_valeriya_april_2026_v1.html
 Олеся: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_olesya-dauptain_april_2026_v1.html
 Надежда: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_nadezhda_april_2026_v1.html
-Наташа: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_natasha_april_2026_v1.html
 Ксю: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_ksu-matusevich_april_2026_v1.html
-Юля: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_yulya-karasik_april_2026_v1.html
 Жанар: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_zhanar_april_2026_v1.html
 Анна: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_anna_april_2026_v1.html
 Вика: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_vika_april_2026_v1.html
-Наташа: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_natasha-nathaliedanz_april_2026_v1.html
 Катя: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_katya_april_2026_v1.html
 Екатерина: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_ekaterina-prozorova_april_2026_v1.html
 Таня: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_tanya_april_2026_v1.html
@@ -24,4 +21,4 @@ High Performance trackers (redirects)
 Севара: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_sevara_april_2026_v1.html
 Лена: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_lena_april_2026_v1.html
 Полина: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_polina-reytblat_april_2026_v1.html
-Наташа: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_natasha-natalytoomany_april_2026_v1.html
+Наташа: https://olymarkes.github.io/high-performance/trackers_april_2026/tracker_natasha_april_2026_v1.html
