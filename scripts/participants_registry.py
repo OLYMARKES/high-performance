@@ -24,11 +24,11 @@ RAW_PARTICIPANTS = [
     {"name": "Наташа", "public_name": "Наташа", "contact": "@nathaliedanz", "issue": 10, "token": "l5q9t3m7v2k8", "paid": False, "active": False},
     {"name": "Катя", "public_name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
     {"name": "Екатерина Прозорова", "public_name": "Екатерина", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
-    {"name": "Таня", "public_name": "Таня", "contact": "+79122852083", "issue": 33, "token": "m6p4t8k2v7q1"},
+    {"name": "Таня", "public_name": "Таня", "contact": "@Tatiana_Apakhova", "issue": 33, "token": "m6p4t8k2v7q1"},
     {"name": "Алена Замесина", "public_name": "Алена", "contact": "@alenazamesina", "issue": 56, "token": "n7v3k8p2m5q4", "paid": True, "active": False},
     {"name": "Севара", "public_name": "Севара", "contact": "@sevaragreene", "issue": 38, "token": "r4m8t2q6v1k9", "paid": True},
     {"name": "Лена", "public_name": "Лена", "contact": "@barkovaquality", "issue": 35, "token": "c8p2m6v4k9t1", "paid": False, "active": False},
-    {"name": "Полина Рэйтблат", "public_name": "Полина", "contact": "@paulina_raitblat", "issue": 34, "token": "y5k2m8q4v7p1", "paid": False, "active": False},
+    {"name": "Полина Рэйтблат", "public_name": "Полина", "contact": "@paulina_raitblat", "issue": 34, "token": "y5k2m8q4v7p1", "paid": False},
     {"name": "Наташа", "public_name": "Наташа", "contact": "@natalytoomany", "issue": 28, "token": "h4v7m2k9p5q8", "paid": False},
 ]
 
