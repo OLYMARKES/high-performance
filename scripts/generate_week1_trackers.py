@@ -348,7 +348,6 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
     <section class="materials-shell reveal" id="materialsShell">
       <div class="materials-topline">
         <div>
-          <div class="banner-label">Материалы недели</div>
           <h2 class="materials-title">Материалы <em>внутри трекера</em></h2>
         </div>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
