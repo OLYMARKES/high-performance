@@ -922,11 +922,6 @@ body {
   line-height: 1.65;
 }
 
-/* ── Single-day view ── */
-.day-nav {
-  display: none;
-}
-
 /* ── Save panel ── */
 .save-panel {
   margin-top: 40px;
@@ -1076,7 +1071,7 @@ body {
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-tag">High Performance · Олеся · Неделя 1</div>
-    <h1>Неделя <em>1</em> · День <em>1</em></h1>
+    <h1>Неделя <em>1</em></h1>
     <p class="hero-sub">Персональный трекер первой недели для Олеси. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>
   </div>
 </section>
@@ -1138,8 +1133,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v12" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v12" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v13" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v13" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1149,8 +1144,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v12" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v12" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v13" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v13" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1172,7 +1167,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
             <div class="material-actions">
               <a class="material-btn" href="https://kinescope.io/et2qFrFvqZ5oohxazHhCHn" target="_blank" rel="noopener noreferrer">Тренировка дня</a>
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v12" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v13" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1210,7 +1205,7 @@ body {
    DATA MODEL
    ────────────────────────────────── */
 
-const DAY_NAMES = ['День 1'];
+const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
 // Default tracker items template — each day starts with this
 const DEFAULT_ITEMS = [
@@ -1494,7 +1489,7 @@ function renderDay() {
     <div class="day-section active">
       <div class="day-header">
         <h2>${day.name}</h2>
-        <div class="day-date">День ${currentDay + 1}</div>
+        <div class="day-date">День ${currentDay + 1} из 7</div>
         <div class="day-progress">
           <div class="day-progress-bar">
             <div class="day-progress-bar-fill" style="width:${pct}%"></div>
@@ -1696,40 +1691,47 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
   function normalizeTrackerState(rawState) {
-    const baseDay = {
-      name: 'День 1',
+    const baseDays = DAY_NAMES.map((name) => ({
+      name,
       items: getDefaultDayItems()
-    };
+    }));
 
     if (!rawState || typeof rawState !== 'object') {
       return {
         manifesto: '',
-        days: [baseDay]
+        days: baseDays
       };
     }
 
-    const firstDay = Array.isArray(rawState.days) && rawState.days.length > 0 && rawState.days[0] && typeof rawState.days[0] === 'object'
-      ? rawState.days[0]
-      : null;
+    const rawDays = Array.isArray(rawState.days) ? rawState.days : [];
+    const normalizedDays = baseDays.map((baseDay, dayIndex) => {
+      const incomingDay = rawDays[dayIndex] && typeof rawDays[dayIndex] === 'object'
+        ? rawDays[dayIndex]
+        : dayIndex === 0 && rawDays[0] && typeof rawDays[0] === 'object'
+          ? rawDays[0]
+          : null;
 
-    const normalizedItems = Array.isArray(firstDay?.items)
-      ? firstDay.items.map((item, index) => ({
-          ...item,
-          id: item?.id || `item_${index}`,
-          checked: Boolean(item?.checked),
-          inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
-        }))
-      : baseDay.items;
+      const normalizedItems = Array.isArray(incomingDay?.items)
+        ? incomingDay.items.map((item, index) => ({
+            ...item,
+            id: item?.id || `item_${dayIndex}_${index}`,
+            checked: Boolean(item?.checked),
+            inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
+          }))
+        : baseDay.items;
+
+      return {
+        ...baseDay,
+        ...incomingDay,
+        name: baseDay.name,
+        items: normalizedItems
+      };
+    });
 
     return {
       ...rawState,
       manifesto: typeof rawState.manifesto === 'string' ? rawState.manifesto : '',
-      days: [{
-        ...baseDay,
-        ...firstDay,
-        name: 'День 1',
-        items: normalizedItems
-      }]
+      days: normalizedDays
     };
   }
 

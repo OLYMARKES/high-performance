@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v12"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v12"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v12"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v13"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v13"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v13"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v12"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v12#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v13"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v13#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -302,11 +302,6 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   line-height: 1.65;
 }
 
-/* ── Single-day view ── */
-.day-nav {
-  display: none;
-}
-
 /* ── Save panel ── */
 .save-panel {
   margin-top: 40px;
@@ -479,17 +474,17 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
     )
     html = html.replace(
         "const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];",
-        "const DAY_NAMES = ['День 1'];",
+        "const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];",
         1,
     )
     html = html.replace(
         '<h1>Неделя <em>1</em></h1>',
-        '<h1>Неделя <em>1</em> · День <em>1</em></h1>',
+        '<h1>Неделя <em>1</em></h1>',
         1,
     )
     html = html.replace(
         '<div class="day-date">День ${currentDay + 1} из 7</div>',
-        '<div class="day-date">День ${currentDay + 1}</div>',
+        '<div class="day-date">День ${currentDay + 1} из 7</div>',
         1,
     )
     html = html.replace(
@@ -596,40 +591,47 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function normalizeTrackerState(rawState) {{
-    const baseDay = {{
-      name: 'День 1',
+    const baseDays = DAY_NAMES.map((name) => ({{
+      name,
       items: getDefaultDayItems()
-    }};
+    }}));
 
     if (!rawState || typeof rawState !== 'object') {{
       return {{
         manifesto: '',
-        days: [baseDay]
+        days: baseDays
       }};
     }}
 
-    const firstDay = Array.isArray(rawState.days) && rawState.days.length > 0 && rawState.days[0] && typeof rawState.days[0] === 'object'
-      ? rawState.days[0]
-      : null;
+    const rawDays = Array.isArray(rawState.days) ? rawState.days : [];
+    const normalizedDays = baseDays.map((baseDay, dayIndex) => {{
+      const incomingDay = rawDays[dayIndex] && typeof rawDays[dayIndex] === 'object'
+        ? rawDays[dayIndex]
+        : dayIndex === 0 && rawDays[0] && typeof rawDays[0] === 'object'
+          ? rawDays[0]
+          : null;
 
-    const normalizedItems = Array.isArray(firstDay?.items)
-      ? firstDay.items.map((item, index) => ({{
-          ...item,
-          id: item?.id || `item_${{index}}`,
-          checked: Boolean(item?.checked),
-          inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
-        }}))
-      : baseDay.items;
+      const normalizedItems = Array.isArray(incomingDay?.items)
+        ? incomingDay.items.map((item, index) => ({{
+            ...item,
+            id: item?.id || `item_${{dayIndex}}_${{index}}`,
+            checked: Boolean(item?.checked),
+            inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
+          }}))
+        : baseDay.items;
+
+      return {{
+        ...baseDay,
+        ...incomingDay,
+        name: baseDay.name,
+        items: normalizedItems
+      }};
+    }});
 
     return {{
       ...rawState,
       manifesto: typeof rawState.manifesto === 'string' ? rawState.manifesto : '',
-      days: [{{
-        ...baseDay,
-        ...firstDay,
-        name: 'День 1',
-        items: normalizedItems
-      }}]
+      days: normalizedDays
     }};
   }}
 
