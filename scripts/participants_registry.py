@@ -12,7 +12,7 @@ RAW_PARTICIPANTS = [
     {"name": "Аня", "public_name": "Аня", "contact": "@beregukukuhu", "issue": 25, "token": "a7c2r9m4x6p3"},
     {"name": "Viktoria", "public_name": "Вика", "contact": "@vpasko", "issue": 23, "token": "p3t8m6k1z9w4"},
     {"name": "Вера", "public_name": "Вера", "contact": "@verushkavera", "issue": 22, "token": "u5n2c8r4x7p1"},
-    {"name": "Валерия", "public_name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3", "active": False},
+    {"name": "Валерия", "public_name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3"},
     {"name": "Olesya Dauptain", "public_name": "Олеся", "contact": "@aramba_annecy", "issue": 20, "token": "y7p3n8k5c2m6"},
     {"name": "Надежда", "public_name": "Надежда", "contact": "@moroznb", "issue": 18, "token": "b9t4m7q2x5k8"},
     {"name": "Наташа", "public_name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17, "token": "r6k2v9p4m8c1", "paid": False, "active": False},
