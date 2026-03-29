@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v14"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v14"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v14"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v15"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v15"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v15"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v14"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v14#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v15"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v15#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -25,23 +25,31 @@ DAY_WORKOUT_LINKS = [
             "label": "Тренировка дня",
             "url": "https://kinescope.io/6PmxVSfi4BYsarEmW2XRrZ",
         }
-    ]
+    ],
+    [
+        {
+            "label": "Тренировка утра",
+            "url": "https://kinescope.io/vfoVu9d7q1wSYKdK5qpo2t",
+        },
+        {
+            "label": "Основная тренировка",
+            "url": "https://kinescope.io/k3554A5VX2cGM2p2NzBXgp",
+        }
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
 ]
+
+
+def build_workout_day_buttons_shell() -> str:
+    return """              <div class="material-actions" id="workoutDayButtons"></div>"""
 
 
 def quote_js(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
-
-
-def build_workout_day_button() -> str:
-    links = DAY_WORKOUT_LINKS[0] if DAY_WORKOUT_LINKS else []
-    if not links:
-        return ""
-    first = links[0]
-    return (
-        f'              <a class="material-btn" href="{first["url"]}" target="_blank" rel="noopener noreferrer">'
-        f'{first["label"]}</a>'
-    )
 
 
 def add_personalization(template: str, name: str, for_name: str, slug: str) -> str:
@@ -441,8 +449,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
             <div class="material-kicker">Практика</div>
             <h3>Тренировки</h3>
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
+{WORKOUT_DAY_BUTTONS_SHELL}
             <div class="material-actions">
-{WORKOUT_DAY_BUTTON}
               <a class="material-btn secondary" href="{MAIN_PROGRAM_PDF}" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="{SEKTA_CABINET_URL}" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
@@ -543,6 +551,20 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         1,
     )
     html = html.replace(
+        """function switchDay(index) {
+  currentDay = index;
+  renderDayNav();
+  renderDay();
+}""",
+        """function switchDay(index) {
+  currentDay = index;
+  renderWorkoutMaterialButtons();
+  renderDayNav();
+  renderDay();
+}""",
+        1,
+    )
+    html = html.replace(
         """// Show overlay on load if no manifesto yet
 if (!state.manifesto) {
   setTimeout(() => overlay.classList.add('active'), 600);
@@ -568,7 +590,7 @@ syncManifestoVisibility();""",
     html = html.replace("{SEKTA_CABINET_URL}", SEKTA_CABINET_URL)
     html = html.replace("{MAIN_PROGRAM_PDF}", MAIN_PROGRAM_PDF)
     html = html.replace("{MAIN_PROGRAM_PDF_OPEN}", MAIN_PROGRAM_PDF_OPEN)
-    html = html.replace("{WORKOUT_DAY_BUTTON}", build_workout_day_button())
+    html = html.replace("{WORKOUT_DAY_BUTTONS_SHELL}", build_workout_day_buttons_shell())
     return html
 
 
@@ -581,6 +603,7 @@ def build_runtime_script(name: str, slug: str) -> str:
   const PARTICIPANT_SLUG = {quote_js(slug)};
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
+  const DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
   function getDefaultDayItems() {{
     return DEFAULT_ITEMS.map((item, index) => ({{
       ...item,
@@ -646,6 +669,23 @@ def build_runtime_script(name: str, slug: str) -> str:
     return JSON.parse(JSON.stringify(value));
   }}
 
+  function renderWorkoutMaterialButtons() {{
+    const container = document.getElementById('workoutDayButtons');
+    if (!container) {{
+      return;
+    }}
+
+    const links = Array.isArray(DAY_WORKOUT_LINKS[currentDay]) ? DAY_WORKOUT_LINKS[currentDay] : [];
+    if (!links.length) {{
+      container.innerHTML = '';
+      return;
+    }}
+
+    container.innerHTML = links.map((link, index) => `
+      <a class="material-btn${{index === 0 ? '' : ' secondary'}}" href="${{link.url}}" target="_blank" rel="noopener noreferrer">${{link.label}}</a>
+    `).join('');
+  }}
+
   function saveState() {{
     try {{
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
@@ -664,6 +704,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       state = normalizeTrackerState(JSON.parse(saved));
       currentDay = 0;
       renderManifestoBanner();
+      renderWorkoutMaterialButtons();
       renderDayNav();
       renderDay();
       syncManifestoVisibility();
@@ -693,6 +734,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       currentDay = 0;
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
       renderManifestoBanner();
+      renderWorkoutMaterialButtons();
       renderDayNav();
       renderDay();
       syncManifestoVisibility();
@@ -785,6 +827,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     await loadSavedTracker();
     restoreLocalState();
     renderManifestoBanner();
+    renderWorkoutMaterialButtons();
     renderDayNav();
     renderDay();
     syncManifestoVisibility();
