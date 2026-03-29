@@ -11,11 +11,11 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v6"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v6"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v6"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v7"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v7"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v7"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v6"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v7"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 
@@ -425,12 +425,12 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
           <article class="material-card">
             <div class="material-kicker">Практика</div>
             <h3>Тренировки</h3>
-            <p>Тренировки будут ждать тебя в личном кабинете SektaSchool.ru. Или можно скачать себе на компьютер основную программу в PDF.</p>
+            <p>Здесь лежит основная программа в PDF. Если удобнее, ниже оставляю и бэкап-вариант: личный кабинет на SektaSchool.ru.</p>
             <div class="material-actions">
-              <a class="material-btn" href="{SEKTA_CABINET_URL}" target="_blank" rel="noopener noreferrer">Открыть личный кабинет</a>
-              <a class="material-btn secondary" href="{MAIN_PROGRAM_PDF}" download="main-program.pdf">Скачать PDF с программой</a>
+              <a class="material-btn" href="{MAIN_PROGRAM_PDF}" download="main-program.pdf">Основная программа PDF</a>
+              <a class="material-btn secondary" href="{SEKTA_CABINET_URL}" target="_blank" rel="noopener noreferrer">Бэкап-программа на SektaSchool.ru</a>
             </div>
-            <div class="material-meta">В трекере оставляем и живую ссылку на кабинет, и скачиваемый PDF с основной программой.</div>
+            <div class="material-meta">Сначала даю основной файл, а личный кабинет оставляю как запасной вариант доступа.</div>
           </article>
         </div>
 
