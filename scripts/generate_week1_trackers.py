@@ -11,6 +11,7 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v2"
 
 
 def quote_js(value: str) -> str:
@@ -155,6 +156,51 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.material-resource-list {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.material-resource {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 253, 249, 0.84);
+}
+.material-resource-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.material-resource-title {
+  color: var(--charcoal);
+  font-size: 16px;
+  font-weight: 700;
+}
+.material-resource-type {
+  color: var(--light-gray);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.material-resource p {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.material-link-row {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.material-link-row .material-btn {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 180px;
 }
 .material-btn {
   display: inline-flex;
@@ -319,30 +365,54 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
 
         <div class="materials-grid">
           <article class="material-card">
-            <div class="material-kicker">Общий материал</div>
-            <h3>Рекомендации</h3>
-            <p>Полный документ с ориентирами на месяц: восстановление, режим, питание, фокус и общая логика движения внутри программы.</p>
+            <div class="material-kicker">Рекомендации</div>
+            <h3>Привычки и питание</h3>
+            <p>Здесь лежат два базовых PDF, чтобы участнице не приходилось искать материалы по переписке: отдельный лист привычек и отдельный документ по питанию.</p>
+            <div class="material-resource-list">
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">Лист привычек</div>
+                  <div class="material-resource-type">PDF</div>
+                </div>
+                <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../Лист привычки.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../Лист привычки.pdf" download>Скачать на компьютер</a>
+                </div>
+              </div>
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">Питание</div>
+                  <div class="material-resource-type">PDF</div>
+                </div>
+                <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../Питание.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../Питание.pdf" download>Скачать на компьютер</a>
+                </div>
+              </div>
+            </div>
             <div class="material-actions">
-              <a class="material-btn" href="../реки HP .pdf" target="_blank" rel="noopener noreferrer">Открыть PDF с рекомендациями</a>
-              <button class="material-btn secondary" id="summaryToggle" type="button" aria-expanded="false" aria-controls="nutritionSummary">Открыть краткую выжимку</button>
+              <button class="material-btn secondary" id="summaryToggle" type="button" aria-expanded="false" aria-controls="nutritionSummary">Открыть краткое содержание</button>
             </div>
             <div class="summary-snippet" id="nutritionSummary">
-              <div class="summary-snippet-title">Краткая выжимка по 1 неделе</div>
-              <p>Смысл первой недели не в том, чтобы сразу всё делать идеально, а в том, чтобы убрать хаос и лишние решения вокруг еды, режима и движения. Чем проще базовая система, тем легче держать ритм.</p>
-              <p>Вечером заранее понять, что ты ешь завтра, купить продукты заранее и снять с себя вопрос «что бы сейчас съесть?» — это уже большой кусок прогресса. Хорошие решения должны становиться легче, чем хаотичные.</p>
-              <p>Первая неделя нужна не для контроля, а для настройки среды: сон, питание, шаги, тренировки и внимание к себе.</p>
+              <div class="summary-snippet-title">Коротко, что внутри</div>
+              <p><strong>Лист привычек:</strong> базовые опоры на день, минимум действий, повторяемость и фокус не на идеальности, а на устойчивом ритме.</p>
+              <p><strong>Питание:</strong> простая логика тарелки, регулярность, понятные закупки и решения, которые снижают импульсивные перекусы и хаос вокруг еды.</p>
+              <p><strong>Смысл первой недели:</strong> не усложнять себе жизнь, а собрать рабочую базу из сна, еды, движения и внимания к своему состоянию.</p>
             </div>
-            <div class="material-meta">Общий документ для всей группы. При необходимости его можно дублировать в закрепе чата.</div>
+            <div class="material-meta">Материалы общие для всей группы и лежат прямо в трекере, чтобы не зависеть от закрепов и пересланных файлов.</div>
           </article>
 
           <article class="material-card">
             <div class="material-kicker">Практика</div>
             <h3>Тренировки</h3>
-            <p>Здесь лежит план тренировок недели. Это быстрый вход в нужный PDF без поиска по перепискам и закрепам.</p>
+            <p>Здесь лежит PDF с тренировками. Его можно открыть в браузере, быстро посмотреть с телефона или скачать на компьютер.</p>
             <div class="material-actions">
-              <a class="material-btn" href="../plan1.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF с тренировками</a>
+              <a class="material-btn" href="../Тренировки.pdf" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+              <a class="material-btn secondary" href="../Тренировки.pdf" download>Скачать на компьютер</a>
             </div>
-            <div class="material-meta">Если позже появится отдельный кабинет или другая ссылка на тренировки, этот блок можно будет заменить без изменения логики трекера.</div>
+            <div class="material-meta">Если позже появится отдельный кабинет или новая версия тренировок, здесь достаточно будет заменить только ссылку на файл.</div>
           </article>
         </div>
 
@@ -599,14 +669,14 @@ def build_runtime_script(name: str, slug: str) -> str:
     materialsToggleText.textContent = collapsed ? 'Развернуть материалы' : 'Свернуть материалы';
   }});
 
-  summaryToggle?.addEventListener('click', () => {{
-    if (!nutritionSummary) {{
-      return;
-    }}
-    const isOpen = nutritionSummary.classList.toggle('is-open');
-    summaryToggle.setAttribute('aria-expanded', String(isOpen));
-    summaryToggle.textContent = isOpen ? 'Скрыть краткую выжимку' : 'Открыть краткую выжимку';
-  }});
+    summaryToggle?.addEventListener('click', () => {{
+      if (!nutritionSummary) {{
+        return;
+      }}
+      const isOpen = nutritionSummary.classList.toggle('is-open');
+      summaryToggle.setAttribute('aria-expanded', String(isOpen));
+      summaryToggle.textContent = isOpen ? 'Скрыть краткое содержание' : 'Открыть краткое содержание';
+    }});
 
   (async () => {{
     state = normalizeTrackerState(state);
@@ -712,7 +782,7 @@ def build_index_page() -> str:
 def build_team_page(entries: list[dict[str, str]]) -> str:
     cards_html = "\n".join(
         f"""
-          <a class="card" href="{entry['filename']}">
+          <a class="card" href="{entry['filename']}?{TRACKER_VERSION_QUERY}">
             <span class="card-name">{entry['name']}</span>
             <span class="card-meta">трекер недели 1 · {entry['telegram_handle']}</span>
           </a>"""
