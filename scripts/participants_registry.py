@@ -5,14 +5,14 @@ import re
 
 
 RAW_PARTICIPANTS = [
-    {"name": "Оля Маркес", "public_name": "Оля", "contact": "@manual-olya-markes", "source": "manual", "token": "q7k2m9b4v8x3"},
-    {"name": "Даша Простова", "public_name": "Даша", "contact": "@manual-dasha-prostova", "source": "manual", "token": "n4r8t2y6p1c5"},
+    {"name": "Оля Маркес", "public_name": "Оля", "contact": "@OlyMarkes", "source": "manual", "token": "q7k2m9b4v8x3"},
+    {"name": "Даша Простова", "public_name": "Даша", "contact": "@beloved_dasha", "source": "manual", "token": "n4r8t2y6p1c5"},
     {"name": "Яна Федорова", "public_name": "Яна", "contact": "@yanabraun", "source": "manual", "token": "h8m3q5z7k2w9"},
     {"name": "Лера", "public_name": "Лера", "contact": "@lerakurepina", "issue": 26, "token": "d6v9n3k7t2m8"},
     {"name": "Аня", "public_name": "Аня", "contact": "@beregukukuhu", "issue": 25, "token": "a7c2r9m4x6p3"},
     {"name": "Viktoria", "public_name": "Вика", "contact": "@vpasko", "issue": 23, "token": "p3t8m6k1z9w4"},
     {"name": "Вера", "public_name": "Вера", "contact": "@verushkavera", "issue": 22, "token": "u5n2c8r4x7p1"},
-    {"name": "Валерия", "public_name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3"},
+    {"name": "Валерия", "public_name": "Валерия", "contact": "@Valeriia_Tu", "issue": 21, "token": "j4m9v2k6t8q3", "active": False},
     {"name": "Olesya Dauptain", "public_name": "Олеся", "contact": "@aramba_annecy", "issue": 20, "token": "y7p3n8k5c2m6"},
     {"name": "Надежда", "public_name": "Надежда", "contact": "@moroznb", "issue": 18, "token": "b9t4m7q2x5k8"},
     {"name": "Наташа", "public_name": "Наташа", "contact": "@Natasha_SHWD", "issue": 17, "token": "r6k2v9p4m8c1", "paid": False, "active": False},
@@ -25,10 +25,10 @@ RAW_PARTICIPANTS = [
     {"name": "Катя", "public_name": "Катя", "contact": "@Ekaterina_Novopashina", "issue": 8, "token": "c3k8p5m1x7t4"},
     {"name": "Екатерина Прозорова", "public_name": "Екатерина", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
     {"name": "Таня", "public_name": "Таня", "contact": "+79122852083", "issue": 33, "token": "m6p4t8k2v7q1"},
-    {"name": "Алена Замесина", "public_name": "Алена", "contact": "@alenazamesina", "issue": 56, "token": "n7v3k8p2m5q4", "paid": True},
+    {"name": "Алена Замесина", "public_name": "Алена", "contact": "@alenazamesina", "issue": 56, "token": "n7v3k8p2m5q4", "paid": True, "active": False},
     {"name": "Севара", "public_name": "Севара", "contact": "@sevaragreene", "issue": 38, "token": "r4m8t2q6v1k9", "paid": True},
-    {"name": "Лена", "public_name": "Лена", "contact": "@barkovaquality", "issue": 35, "token": "c8p2m6v4k9t1", "paid": False},
-    {"name": "Полина Рэйтблат", "public_name": "Полина", "contact": "@paulina_raitblat", "issue": 34, "token": "y5k2m8q4v7p1", "paid": False},
+    {"name": "Лена", "public_name": "Лена", "contact": "@barkovaquality", "issue": 35, "token": "c8p2m6v4k9t1", "paid": False, "active": False},
+    {"name": "Полина Рэйтблат", "public_name": "Полина", "contact": "@paulina_raitblat", "issue": 34, "token": "y5k2m8q4v7p1", "paid": False, "active": False},
     {"name": "Наташа", "public_name": "Наташа", "contact": "@natalytoomany", "issue": 28, "token": "h4v7m2k9p5q8", "paid": False},
 ]
 
