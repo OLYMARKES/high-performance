@@ -1327,7 +1327,7 @@ function getDefaultState() {
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('hp_week1_tracker_natasha-natalytoomany');
+    const saved = localStorage.getItem('hp_week1_tracker_natasha');
     if (saved) return JSON.parse(saved);
   } catch (e) {}
   return getDefaultState();
@@ -1335,7 +1335,7 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem('hp_week1_tracker_natasha-natalytoomany', JSON.stringify(state));
+    localStorage.setItem('hp_week1_tracker_natasha', JSON.stringify(state));
   } catch (e) {}
 }
 
@@ -1667,9 +1667,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 <script>
   const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
-  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-week-tracker?slug=${encodeURIComponent("natasha-natalytoomany")}&weekKey=week-1`;
+  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-week-tracker?slug=${encodeURIComponent("natasha")}&weekKey=week-1`;
   const PARTICIPANT_NAME = "Наташа";
-  const PARTICIPANT_SLUG = "natasha-natalytoomany";
+  const PARTICIPANT_SLUG = "natasha";
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${PARTICIPANT_SLUG}`;
 
