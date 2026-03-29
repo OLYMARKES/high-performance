@@ -878,6 +878,33 @@ def build_runtime_script(name: str, slug: str) -> str:
     return Boolean(normalizeValue(value, true));
   }}
 
+  function formatSaveError(errorCode, detail = '') {{
+    const code = normalizeValue(errorCode || '');
+    const extra = normalizeValue(detail || '', true);
+
+    if (code === 'invalid_email') {{
+      return 'Не удалось сохранить анкету: email указан с ошибкой.';
+    }}
+    if (code === 'missing_required_fields') {{
+      return 'Не удалось сохранить анкету: похоже, не заполнено обязательное поле.';
+    }}
+    if (code === 'origin_not_allowed') {{
+      return 'Не удалось сохранить анкету: открыта не та версия страницы. Лучше открыть ссылку заново.';
+    }}
+    if (code === 'github_write_failed') {{
+      return extra
+        ? `Не удалось сохранить анкету на сервере: ${{extra}}.`
+        : 'Не удалось сохранить анкету на сервере.';
+    }}
+    if (code === 'request_failed') {{
+      return 'Не удалось сохранить анкету: сервер вернул ошибку.';
+    }}
+    if (code === 'network_error') {{
+      return 'Не удалось сохранить анкету: похоже на сетевую ошибку.';
+    }}
+    return 'Не удалось сохранить анкету. Локальный черновик остался в браузере.';
+  }}
+
   async function handleSubmit() {{
     const payload = buildPayload();
     const successOverlay = document.getElementById('success');
@@ -915,11 +942,14 @@ def build_runtime_script(name: str, slug: str) -> str:
         body: JSON.stringify(payload)
       }});
 
+      const result = await response.json().catch(() => ({{}}));
+
       if (!response.ok) {{
-        throw new Error('request_failed');
+        const requestError = new Error(normalizeValue(result?.error || 'request_failed') || 'request_failed');
+        requestError.detail = normalizeValue(result?.detail || '', true);
+        throw requestError;
       }}
 
-      const result = await response.json();
       const savedAt = formatDate(payload.submittedAt);
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload.draftState));
       localStorage.setItem(LAST_SAVED_KEY, payload.submittedAt);
@@ -931,8 +961,17 @@ def build_runtime_script(name: str, slug: str) -> str:
       successOverlay.classList.add('visible');
       window.scrollTo({{ top: 0, behavior: 'smooth' }});
     }} catch (error) {{
-      setSaveNote('Не удалось сохранить анкету. Локальный черновик остался в браузере.');
-      alert('Не удалось сохранить анкету. Попробуй ещё раз чуть позже.');
+      const errorCode = normalizeValue(error?.message || '') || 'network_error';
+      const errorDetail = normalizeValue(error?.detail || '', true);
+      const readableError = formatSaveError(errorCode, errorDetail);
+      console.error('Participant questionnaire save failed', {{
+        participantSlug: PARTICIPANT_SLUG,
+        errorCode,
+        errorDetail,
+        payload
+      }});
+      setSaveNote(readableError);
+      alert(readableError);
     }} finally {{
       submitButton.disabled = false;
       submitButton.style.opacity = '1';
