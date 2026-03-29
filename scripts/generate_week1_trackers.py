@@ -57,6 +57,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   padding: 34px 32px 24px;
   margin-bottom: 28px;
   box-shadow: 0 18px 44px rgba(58, 54, 50, 0.06);
+  position: relative;
+  z-index: 4;
 }
 .materials-topline {
   display: flex;
@@ -120,6 +122,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
 }
 .materials-content {
   display: block;
+  position: relative;
+  z-index: 5;
 }
 .materials-shell.is-collapsed .materials-content {
   display: none;
@@ -135,6 +139,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   border-radius: 20px;
   padding: 22px 20px 20px;
   min-height: 100%;
+  position: relative;
+  z-index: 6;
 }
 .material-kicker {
   color: var(--terracotta);
@@ -161,6 +167,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+  z-index: 7;
 }
 .material-resource-list {
   margin-top: 18px;
@@ -201,6 +209,8 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  position: relative;
+  z-index: 7;
 }
 .material-link-row .material-btn {
   width: auto;
@@ -224,6 +234,9 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
+  position: relative;
+  z-index: 8;
+  pointer-events: auto;
 }
 .material-btn.secondary {
   background: transparent;
