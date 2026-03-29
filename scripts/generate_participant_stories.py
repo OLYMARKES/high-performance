@@ -14,6 +14,7 @@ SNAPSHOT_PATH = ROOT / "scripts" / "admin_issues_snapshot.json"
 OUTPUT_PATH = ROOT / "participant-stories.html"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=ebc2be4"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 COURSE_LABELS = {
     "care": "Care",
@@ -468,7 +469,7 @@ def build_rows() -> tuple[list[dict], str]:
             "questionnaireIssueNumber": questionnaire_match["issue"]["number"] if questionnaire_match else "",
             "questionnaireIssueUrl": questionnaire_match["issue"]["html_url"] if questionnaire_match else "",
             "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/q_{participant['token']}.html",
-            "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html",
+            "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
             "hasQuestionnaire": bool(questionnaire_match),
             "matchedBy": questionnaire_match.get("matchedBy", "") if questionnaire_match else "",
             "submittedAt": hydrated_record.get("submittedAt") or (questionnaire_match["issue"].get("updated_at") if questionnaire_match else "") or "",

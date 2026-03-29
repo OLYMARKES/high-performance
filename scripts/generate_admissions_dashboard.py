@@ -15,6 +15,7 @@ OUTPUT_PATH = ROOT / "admissions-dashboard.html"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=ebc2be4"
 COURSE_LABELS = {
     "care": "Care",
     "basics": "Basics",
@@ -287,7 +288,7 @@ def build_rows() -> tuple[list[dict], str]:
                 "questionnaireIssueNumber": issue.get("number", ""),
                 "questionnaireIssueUrl": issue.get("html_url", ""),
                 "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/q_{participant['token']}.html",
-                "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html",
+                "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
                 "email": resolved_email,
                 "updatedAt": resolved_updated_at,
                 "updatedAtLabel": format_timestamp(resolved_updated_at),
