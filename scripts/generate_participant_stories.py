@@ -300,6 +300,28 @@ def first_sentences(text: str, limit: int = 2, max_chars: int = 340) -> str:
     return " ".join(selected).strip()
 
 
+def take_paragraphs(text: str, max_paragraphs: int = 3, max_chars: int = 900) -> str:
+    source = normalize_multiline(text)
+    if not source:
+        return ""
+
+    paragraphs = [part.strip() for part in re.split(r"\n{2,}", source) if part.strip()]
+    if not paragraphs:
+        paragraphs = [source]
+
+    selected: list[str] = []
+    total = 0
+    for paragraph in paragraphs:
+        if selected and (len(selected) >= max_paragraphs or total + len(paragraph) > max_chars):
+            break
+        selected.append(paragraph)
+        total += len(paragraph)
+
+    if not selected:
+        return source[:max_chars].strip()
+    return "\n\n".join(selected).strip()
+
+
 def children_label(status: str, detail: str) -> str:
     if status == "pregnant":
         return f"Беременность{f' ({detail})' if detail else ''}"
@@ -355,53 +377,59 @@ def build_story(row: dict) -> dict[str, str]:
             for bit in [
                 route_line,
                 f"Базовый профиль: {profile_line}." if profile_line else "",
-                f"Главный запрос: {first_sentences(purpose or personal_context or lead_about, limit=2, max_chars=300)}" if has_meaningful_value(purpose or personal_context or lead_about) else "",
+                f"Главный запрос: {take_paragraphs(purpose or personal_context or lead_about, max_paragraphs=2, max_chars=520)}" if has_meaningful_value(purpose or personal_context or lead_about) else "",
             ]
             if bit
         )
 
-        context = " ".join(
-            bit
-            for bit in [
-                f"Контекст и мотивация: {first_sentences(vision or lead_about or personal_context, limit=3, max_chars=520)}" if has_meaningful_value(vision or lead_about or personal_context) else "",
-                f"Текущая жизнь и ритм: {first_sentences(day or personal_context, limit=2, max_chars=380)}" if has_meaningful_value(day or personal_context) else "",
-            ]
-            if bit
-        )
+        context = take_paragraphs(vision or lead_about or personal_context, max_paragraphs=3, max_chars=1100)
+        rhythm = take_paragraphs(day or personal_context, max_paragraphs=3, max_chars=1000)
 
-        body_parts = []
+        health_parts = []
         if health:
-            body_parts.append(f"По здоровью и ограничениям отмечает: {first_sentences(health, limit=2, max_chars=260)}")
+            health_parts.append(f"По здоровью и ограничениям отмечает:\n{take_paragraphs(health, max_paragraphs=3, max_chars=900)}")
         if normalize_text(vip.get("diastasis")):
-            body_parts.append(f"Диастаз: {normalize_text(vip.get('diastasis'))}.")
+            health_parts.append(f"Диастаз: {normalize_text(vip.get('diastasis'))}.")
         if pelvic_flags:
-            body_parts.append(f"По тазовому дну отмечены пункты: {', '.join(pelvic_flags)}.")
+            health_parts.append(f"По тазовому дну отмечены пункты: {', '.join(pelvic_flags)}.")
+        health_summary = "\n\n".join(health_parts)
+
+        food_parts = []
         if nutrition_flags:
-            body_parts.append(f"По отношению к питанию видны риски/триггеры: {', '.join(nutrition_flags)}.")
+            food_parts.append(f"По отношению к питанию видны риски/триггеры: {', '.join(nutrition_flags)}.")
         if food:
-            body_parts.append(f"Пищевой паттерн сейчас выглядит так: {first_sentences(food, limit=2, max_chars=360)}")
+            food_parts.append(f"Пищевой паттерн сейчас выглядит так:\n{take_paragraphs(food, max_paragraphs=4, max_chars=1000)}")
+        food_summary = "\n\n".join(food_parts)
+
+        extra_parts = []
         if medications and medications.lower() != "нет":
-            body_parts.append(f"Препараты: {first_sentences(medications, limit=1, max_chars=180)}")
+            extra_parts.append(f"Препараты: {take_paragraphs(medications, max_paragraphs=2, max_chars=300)}")
         if curator_message:
-            body_parts.append(f"Отдельный запрос к куратору: {first_sentences(curator_message, limit=2, max_chars=220)}")
-        body = " ".join(body_parts)
+            extra_parts.append(f"Отдельный запрос к куратору:\n{take_paragraphs(curator_message, max_paragraphs=2, max_chars=340)}")
+        extra = "\n\n".join(extra_parts)
     else:
         intro = " ".join(
             bit
             for bit in [
                 "Сохранённой серверной анкеты пока нет.",
                 "Есть только исходная заявка." if has_meaningful_value(lead_about) else "",
-                f"Из заявки: {first_sentences(lead_about, limit=3, max_chars=520)}" if has_meaningful_value(lead_about) else "",
+                f"Из заявки: {take_paragraphs(lead_about, max_paragraphs=3, max_chars=1100)}" if has_meaningful_value(lead_about) else "",
             ]
             if bit
         )
         context = ""
-        body = ""
+        rhythm = ""
+        health_summary = ""
+        food_summary = ""
+        extra = ""
 
     return {
         "intro": intro,
         "context": context,
-        "body": body,
+        "rhythm": rhythm,
+        "healthSummary": health_summary,
+        "foodSummary": food_summary,
+        "extra": extra,
         "vision": vision,
         "personalContext": personal_context,
         "purpose": purpose,
@@ -896,8 +924,11 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
                 <div class="block-label">Подробный рассказ</div>
                 ${{paragraph(story.intro)}}
               </section>
-              ${{story.context ? `<section class="block"><div class="block-label">Контекст</div>${{paragraph(story.context)}}</section>` : ''}}
-              ${{story.body ? `<section class="block"><div class="block-label">Риски и детали</div>${{paragraph(story.body)}}</section>` : ''}}
+              ${{story.context ? `<section class="block"><div class="block-label">Контекст и мотивация</div>${{paragraph(story.context)}}</section>` : ''}}
+              ${{story.rhythm ? `<section class="block"><div class="block-label">Текущий ритм и жизнь</div>${{paragraph(story.rhythm)}}</section>` : ''}}
+              ${{story.healthSummary ? `<section class="block"><div class="block-label">Здоровье и ограничения</div>${{paragraph(story.healthSummary)}}</section>` : ''}}
+              ${{story.foodSummary ? `<section class="block"><div class="block-label">Питание и привычки</div>${{paragraph(story.foodSummary)}}</section>` : ''}}
+              ${{story.extra ? `<section class="block"><div class="block-label">Дополнительно</div>${{paragraph(story.extra)}}</section>` : ''}}
               <section class="block">
                 <div class="block-label">Исходные фрагменты</div>
                 <div style="margin-top:12px; display:grid; gap:10px;">
