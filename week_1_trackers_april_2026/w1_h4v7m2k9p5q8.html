@@ -988,9 +988,15 @@ body {
   border: 1px solid var(--sand);
   border-radius: 20px;
   background: rgba(255, 253, 249, 0.92);
+  transition: box-shadow 0.32s ease, border-color 0.32s ease, transform 0.32s ease;
 }
 .generated-story-card[hidden] {
   display: none;
+}
+.generated-story-card.is-refreshed {
+  border-color: rgba(196, 112, 75, 0.55);
+  box-shadow: 0 0 0 4px rgba(196, 112, 75, 0.12), 0 16px 36px rgba(58, 54, 50, 0.08);
+  transform: translateY(-2px);
 }
 .generated-story-kicker {
   color: var(--terracotta);
@@ -1278,8 +1284,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v27" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v27" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v28" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v28" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1289,8 +1295,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v27" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v27" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v28" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v28" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1312,7 +1318,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v27" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v28" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -2295,6 +2301,19 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     card.hidden = false;
   }
 
+  function flashGeneratedStoryCard() {
+    const card = document.getElementById('generatedStoryCard');
+    if (!card || card.hidden) {
+      return;
+    }
+    card.classList.remove('is-refreshed');
+    void card.offsetWidth;
+    card.classList.add('is-refreshed');
+    window.setTimeout(() => {
+      card.classList.remove('is-refreshed');
+    }, 1400);
+  }
+
   function toggleStoryControls(forceOpen = null) {
     const controls = document.getElementById('generatedStoryControls');
     const trigger = document.getElementById('regenerateStoryBtn');
@@ -2489,6 +2508,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   function applyStoryPreferences() {
     syncStoryPreferencesFromUI();
     renderGeneratedStory(buildStoryFromCurrentDay());
+    flashGeneratedStoryCard();
     setSaveStatus('Рассказ пересобран с новыми акцентами.');
   }
 
