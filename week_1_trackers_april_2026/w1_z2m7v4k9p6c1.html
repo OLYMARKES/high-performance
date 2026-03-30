@@ -1217,8 +1217,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v17" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v17" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v18" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v18" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1228,8 +1228,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v17" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v17" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v18" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v18" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1251,7 +1251,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v17" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v18" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1893,18 +1893,12 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return cropText(sentence, 140);
   }
 
-  function storyTone(done, total) {
-    if (!total || done === 0) {
-      return 'скорее днём наблюдения и настройки';
+  function manifestoSpark() {
+    const current = manifestoLead();
+    if (current) {
+      return current;
     }
-    const ratio = done / total;
-    if (ratio >= 0.75) {
-      return 'собранным и очень опорным днём';
-    }
-    if (ratio >= 0.45) {
-      return 'ровным днём, где получилось удержать несколько важных опор';
-    }
-    return 'днём возвращения к базе и мягкой сборки ритма';
+    return 'Сегодня я выбираю ясность, фокус, смелость, энергию и огонь. Мои ценности важнее хаоса, а дисциплина — это форма заботы о себе';
   }
 
   function buildStoryFromCurrentDay() {
@@ -1912,23 +1906,27 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     const items = Array.isArray(day.items) ? day.items : [];
     const checked = items.filter((item) => item && item.checked);
     const noted = items.filter((item) => item && typeof item.inputValue === 'string' && item.inputValue.trim());
+    const completedTitles = checked.slice(0, 5).map((item) => item.title.toLowerCase());
     const noteDetails = noted
       .slice(0, 2)
       .map((item) => `${item.title.toLowerCase()}: ${cropText(item.inputValue, 120)}`);
-
-    const opening = `Сегодня у тебя ${day.name.toLowerCase()} получился ${storyTone(checked.length, items.length)}.`;
+    const opening = checked.length >= 5
+      ? `Сегодня я правда собрала для себя очень сильный ${day.name.toLowerCase()}, и это хочется отпраздновать. Я не просто держалась за список, а реально выбрала себя, свой ритм и свои опоры.`
+      : checked.length >= 3
+        ? `Сегодня я удержала важные опоры дня, и это уже очень классный результат. Я двигаюсь не за счёт рывка, а за счёт повторяемости, и именно это даёт мне чувство внутренней силы.`
+        : checked.length >= 1
+          ? `Сегодня я всё равно не выпала из контакта с собой. Даже несколько выполненных опор — это уже движение в сторону моей базы, и я хочу это отметить.`
+          : `Сегодня я хотя бы посмотрела на свой день честно, а это уже начало опоры. Иногда мой главный шаг — не сделать идеально, а заметить, где я сейчас, и остаться рядом с собой.`;
     const progress = checked.length
-      ? `Из опорных пунктов ты отметила ${checked.length} из ${items.length}: ${joinHumanList(checked.slice(0, 4).map((item) => item.title.toLowerCase()))}.`
-      : 'Пока ни один пункт не отмечен как выполненный, и это тоже полезная точка честного контакта с собой.';
+      ? `Больше всего мне удалось вот это: ${joinHumanList(completedTitles)}. Из ${items.length} опорных пунктов я отметила ${checked.length}, и это даёт мне ощущение, что день не растворился, а реально сложился во что-то живое.`
+      : 'Сегодня в трекере пока нет отмеченных пунктов, но сам факт, что я вернулась сюда и вижу этот день, уже собирает меня и возвращает фокус.';
     const notes = noteDetails.length
-      ? `По заметкам дня видно, что в фокусе были ${joinHumanList(noteDetails)}.`
-      : 'Если захочешь, в следующий раз можно оставить пару коротких заметок в полях трекера, чтобы рассказ получался ещё живее.';
-    const manifesto = manifestoLead()
-      ? `Через день считывается и твой манифест: «${manifestoLead()}».`
-      : '';
+      ? `Особенно мне нравится, что в заметках дня уже есть мой живой след: ${joinHumanList(noteDetails)}. Именно такие детали делают день не абстрактным, а моим.`
+      : 'В следующий раз я могу оставить здесь ещё пару коротких заметок, чтобы лучше увидеть не только структуру дня, но и своё состояние внутри него.';
+    const manifesto = `И я слышу, как это связано с моим манифестом: «${manifestoSpark()}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const closing = checked.length >= 4
-      ? 'Это выглядит как день, в котором ты не пыталась сделать идеально, а реально держала базу.'
-      : 'Главное здесь не идеальность, а то, что день уже виден и его можно продолжать собирать дальше.';
+      ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
+      : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
 
     return [opening, progress, notes, manifesto, closing].filter(Boolean).join('\n\n');
   }

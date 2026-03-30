@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v17"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v17"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v17"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v18"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v18"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v18"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v17"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v17#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v18"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v18#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -842,18 +842,12 @@ def build_runtime_script(name: str, slug: str) -> str:
     return cropText(sentence, 140);
   }}
 
-  function storyTone(done, total) {{
-    if (!total || done === 0) {{
-      return 'скорее днём наблюдения и настройки';
+  function manifestoSpark() {{
+    const current = manifestoLead();
+    if (current) {{
+      return current;
     }}
-    const ratio = done / total;
-    if (ratio >= 0.75) {{
-      return 'собранным и очень опорным днём';
-    }}
-    if (ratio >= 0.45) {{
-      return 'ровным днём, где получилось удержать несколько важных опор';
-    }}
-    return 'днём возвращения к базе и мягкой сборки ритма';
+    return 'Сегодня я выбираю ясность, фокус, смелость, энергию и огонь. Мои ценности важнее хаоса, а дисциплина — это форма заботы о себе';
   }}
 
   function buildStoryFromCurrentDay() {{
@@ -861,23 +855,27 @@ def build_runtime_script(name: str, slug: str) -> str:
     const items = Array.isArray(day.items) ? day.items : [];
     const checked = items.filter((item) => item && item.checked);
     const noted = items.filter((item) => item && typeof item.inputValue === 'string' && item.inputValue.trim());
+    const completedTitles = checked.slice(0, 5).map((item) => item.title.toLowerCase());
     const noteDetails = noted
       .slice(0, 2)
       .map((item) => `${{item.title.toLowerCase()}}: ${{cropText(item.inputValue, 120)}}`);
-
-    const opening = `Сегодня у тебя ${{day.name.toLowerCase()}} получился ${{storyTone(checked.length, items.length)}}.`;
+    const opening = checked.length >= 5
+      ? `Сегодня я правда собрала для себя очень сильный ${{day.name.toLowerCase()}}, и это хочется отпраздновать. Я не просто держалась за список, а реально выбрала себя, свой ритм и свои опоры.`
+      : checked.length >= 3
+        ? `Сегодня я удержала важные опоры дня, и это уже очень классный результат. Я двигаюсь не за счёт рывка, а за счёт повторяемости, и именно это даёт мне чувство внутренней силы.`
+        : checked.length >= 1
+          ? `Сегодня я всё равно не выпала из контакта с собой. Даже несколько выполненных опор — это уже движение в сторону моей базы, и я хочу это отметить.`
+          : `Сегодня я хотя бы посмотрела на свой день честно, а это уже начало опоры. Иногда мой главный шаг — не сделать идеально, а заметить, где я сейчас, и остаться рядом с собой.`;
     const progress = checked.length
-      ? `Из опорных пунктов ты отметила ${{checked.length}} из ${{items.length}}: ${{joinHumanList(checked.slice(0, 4).map((item) => item.title.toLowerCase()))}}.`
-      : 'Пока ни один пункт не отмечен как выполненный, и это тоже полезная точка честного контакта с собой.';
+      ? `Больше всего мне удалось вот это: ${{joinHumanList(completedTitles)}}. Из ${{items.length}} опорных пунктов я отметила ${{checked.length}}, и это даёт мне ощущение, что день не растворился, а реально сложился во что-то живое.`
+      : 'Сегодня в трекере пока нет отмеченных пунктов, но сам факт, что я вернулась сюда и вижу этот день, уже собирает меня и возвращает фокус.';
     const notes = noteDetails.length
-      ? `По заметкам дня видно, что в фокусе были ${{joinHumanList(noteDetails)}}.`
-      : 'Если захочешь, в следующий раз можно оставить пару коротких заметок в полях трекера, чтобы рассказ получался ещё живее.';
-    const manifesto = manifestoLead()
-      ? `Через день считывается и твой манифест: «${{manifestoLead()}}».`
-      : '';
+      ? `Особенно мне нравится, что в заметках дня уже есть мой живой след: ${{joinHumanList(noteDetails)}}. Именно такие детали делают день не абстрактным, а моим.`
+      : 'В следующий раз я могу оставить здесь ещё пару коротких заметок, чтобы лучше увидеть не только структуру дня, но и своё состояние внутри него.';
+    const manifesto = `И я слышу, как это связано с моим манифестом: «${{manifestoSpark()}}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const closing = checked.length >= 4
-      ? 'Это выглядит как день, в котором ты не пыталась сделать идеально, а реально держала базу.'
-      : 'Главное здесь не идеальность, а то, что день уже виден и его можно продолжать собирать дальше.';
+      ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
+      : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
 
     return [opening, progress, notes, manifesto, closing].filter(Boolean).join('\\n\\n');
   }}
