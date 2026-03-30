@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v19"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v19"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v19"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v20"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v20"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v20"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v19"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v19#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v20"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v20#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -439,6 +439,9 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   border: 1px solid rgba(226, 213, 195, 0.9);
   background: rgba(255, 255, 255, 0.56);
 }
+.generated-story-controls[hidden] {
+  display: none;
+}
 .generated-story-controls-title {
   color: var(--charcoal);
   font-size: 14px;
@@ -655,13 +658,16 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         <div class="generated-story-title">Рассказ о твоём дне</div>
         <div class="generated-story-day" id="generatedStoryDay">День 1</div>
       </div>
-      <div class="generated-story-controls">
+      <div class="generated-story-body" id="generatedStoryBody"></div>
+      <div class="generated-story-controls" id="generatedStoryControls" hidden>
         <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
         <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
         <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
         <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
+        <div class="generated-story-actions">
+          <button class="manifesto-btn" id="applyStoryPreferencesBtn" type="button">Пересобрать рассказ</button>
+        </div>
       </div>
-      <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-actions">
         <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
         <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Сгенерировать заново</button>
@@ -1038,6 +1044,17 @@ def build_runtime_script(name: str, slug: str) -> str:
     card.hidden = false;
   }}
 
+  function toggleStoryControls(forceOpen = null) {{
+    const controls = document.getElementById('generatedStoryControls');
+    const trigger = document.getElementById('regenerateStoryBtn');
+    if (!controls || !trigger) {{
+      return;
+    }}
+    const shouldOpen = forceOpen === null ? controls.hidden : !forceOpen ? false : true;
+    controls.hidden = !shouldOpen;
+    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Сгенерировать заново';
+  }}
+
   async function copyGeneratedStory() {{
     const body = document.getElementById('generatedStoryBody');
     const copyButton = document.getElementById('copyGeneratedStoryBtn');
@@ -1221,7 +1238,8 @@ def build_runtime_script(name: str, slug: str) -> str:
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
-  document.getElementById('regenerateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
+  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {{
     const preferences = readStoryPreferences();
     persistStoryPreferences({{
@@ -1270,6 +1288,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     await loadSavedTracker();
     restoreLocalState();
     renderStoryControls();
+    toggleStoryControls(false);
     renderManifestoBanner();
     renderWorkoutMaterialButtons();
     renderDayNav();

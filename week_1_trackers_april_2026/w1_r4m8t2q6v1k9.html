@@ -1023,6 +1023,9 @@ body {
   border: 1px solid rgba(226, 213, 195, 0.9);
   background: rgba(255, 255, 255, 0.56);
 }
+.generated-story-controls[hidden] {
+  display: none;
+}
 .generated-story-controls-title {
   color: var(--charcoal);
   font-size: 14px;
@@ -1275,8 +1278,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v19" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v19" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v20" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v20" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1286,8 +1289,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v19" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v19" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v20" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v20" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1309,7 +1312,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v19" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v20" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1343,13 +1346,16 @@ body {
         <div class="generated-story-title">Рассказ о твоём дне</div>
         <div class="generated-story-day" id="generatedStoryDay">День 1</div>
       </div>
-      <div class="generated-story-controls">
+      <div class="generated-story-body" id="generatedStoryBody"></div>
+      <div class="generated-story-controls" id="generatedStoryControls" hidden>
         <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
         <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
         <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
         <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
+        <div class="generated-story-actions">
+          <button class="manifesto-btn" id="applyStoryPreferencesBtn" type="button">Пересобрать рассказ</button>
+        </div>
       </div>
-      <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-actions">
         <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
         <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Сгенерировать заново</button>
@@ -2089,6 +2095,17 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     card.hidden = false;
   }
 
+  function toggleStoryControls(forceOpen = null) {
+    const controls = document.getElementById('generatedStoryControls');
+    const trigger = document.getElementById('regenerateStoryBtn');
+    if (!controls || !trigger) {
+      return;
+    }
+    const shouldOpen = forceOpen === null ? controls.hidden : !forceOpen ? false : true;
+    controls.hidden = !shouldOpen;
+    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Сгенерировать заново';
+  }
+
   async function copyGeneratedStory() {
     const body = document.getElementById('generatedStoryBody');
     const copyButton = document.getElementById('copyGeneratedStoryBtn');
@@ -2272,7 +2289,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
-  document.getElementById('regenerateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
+  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {
     const preferences = readStoryPreferences();
     persistStoryPreferences({
@@ -2321,6 +2339,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     await loadSavedTracker();
     restoreLocalState();
     renderStoryControls();
+    toggleStoryControls(false);
     renderManifestoBanner();
     renderWorkoutMaterialButtons();
     renderDayNav();
