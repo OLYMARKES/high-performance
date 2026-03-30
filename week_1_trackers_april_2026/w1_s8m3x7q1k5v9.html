@@ -1278,8 +1278,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v20" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v20" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v21" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v21" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1289,8 +1289,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v20" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v20" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v21" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v21" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1312,7 +1312,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v20" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v21" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1348,7 +1348,7 @@ body {
       </div>
       <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-controls" id="generatedStoryControls" hidden>
-        <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
+        <div class="generated-story-controls-title">Перед «Уточнить рассказ» можно подсветить важные углы</div>
         <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
         <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
         <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
@@ -1358,7 +1358,7 @@ body {
       </div>
       <div class="generated-story-actions">
         <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
-        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Сгенерировать заново</button>
+        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Уточнить рассказ</button>
       </div>
       <div class="generated-story-note">Пока это локальная тестовая функция: трекер сначала сохраняется, а затем текст собирается прямо из текущего дня без изменения твоих данных.</div>
     </div>
@@ -2103,7 +2103,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     }
     const shouldOpen = forceOpen === null ? controls.hidden : !forceOpen ? false : true;
     controls.hidden = !shouldOpen;
-    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Сгенерировать заново';
+    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Уточнить рассказ';
   }
 
   async function copyGeneratedStory() {

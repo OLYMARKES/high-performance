@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v20"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v20"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v20"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v21"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v21"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v21"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v20"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v20#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v21"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v21#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -660,7 +660,7 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
       </div>
       <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-controls" id="generatedStoryControls" hidden>
-        <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
+        <div class="generated-story-controls-title">Перед «Уточнить рассказ» можно подсветить важные углы</div>
         <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
         <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
         <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
@@ -670,7 +670,7 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
       </div>
       <div class="generated-story-actions">
         <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
-        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Сгенерировать заново</button>
+        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Уточнить рассказ</button>
       </div>
       <div class="generated-story-note">Пока это локальная тестовая функция: трекер сначала сохраняется, а затем текст собирается прямо из текущего дня без изменения твоих данных.</div>
     </div>
@@ -1052,7 +1052,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
     const shouldOpen = forceOpen === null ? controls.hidden : !forceOpen ? false : true;
     controls.hidden = !shouldOpen;
-    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Сгенерировать заново';
+    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Уточнить рассказ';
   }}
 
   async function copyGeneratedStory() {{

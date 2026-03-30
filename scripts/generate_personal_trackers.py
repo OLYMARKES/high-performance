@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/trackers_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v20"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v21"
 
 
 def build_redirect_page(name: str, token: str, issue: int | None) -> str:
