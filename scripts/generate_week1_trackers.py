@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v18"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v18"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v18"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v19"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v19"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v19"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v18"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v18#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v19"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v19#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -432,6 +432,64 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   color: var(--warm-gray);
   font-size: 14px;
 }
+.generated-story-controls {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 255, 255, 0.56);
+}
+.generated-story-controls-title {
+  color: var(--charcoal);
+  font-size: 14px;
+  font-weight: 700;
+}
+.generated-story-controls-copy {
+  margin-top: 6px;
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.generated-story-angle-grid {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.generated-story-angle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generated-story-angle.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+.generated-story-input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.96);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 96px;
+}
 .generated-story-body {
   margin-top: 16px;
   color: var(--charcoal);
@@ -597,6 +655,12 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         <div class="generated-story-title">Рассказ о твоём дне</div>
         <div class="generated-story-day" id="generatedStoryDay">День 1</div>
       </div>
+      <div class="generated-story-controls">
+        <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
+        <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
+        <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
+        <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
+      </div>
       <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-actions">
         <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
@@ -733,7 +797,9 @@ def build_runtime_script(name: str, slug: str) -> str:
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
   const MATERIALS_COLLAPSED_KEY = `${{LOCAL_KEY}}:materials-collapsed`;
+  const STORY_PREFERENCES_KEY = `${{LOCAL_KEY}}:story-preferences`;
   const DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
+  const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   function getDefaultDayItems() {{
     return DEFAULT_ITEMS.map((item, index) => ({{
       ...item,
@@ -833,6 +899,81 @@ def build_runtime_script(name: str, slug: str) -> str:
     return `${{filtered.slice(0, -1).join(', ')}} и ${{filtered[filtered.length - 1]}}`;
   }}
 
+  function normalizeStoryPreferences(raw) {{
+    const base = raw && typeof raw === 'object' ? raw : {{}};
+    const rawAngles = Array.isArray(base.angles) ? base.angles : [];
+    const angles = rawAngles
+      .map((value) => String(value || '').trim().toLowerCase())
+      .filter((value, index, list) => value && STORY_ANGLE_OPTIONS.includes(value) && list.indexOf(value) === index);
+    return {{
+      angles,
+      customPrompt: typeof base.customPrompt === 'string' ? base.customPrompt : ''
+    }};
+  }}
+
+  function readStoryPreferences() {{
+    try {{
+      const saved = localStorage.getItem(STORY_PREFERENCES_KEY);
+      if (!saved) {{
+        return normalizeStoryPreferences(null);
+      }}
+      return normalizeStoryPreferences(JSON.parse(saved));
+    }} catch (error) {{
+      return normalizeStoryPreferences(null);
+    }}
+  }}
+
+  function persistStoryPreferences(preferences) {{
+    try {{
+      localStorage.setItem(STORY_PREFERENCES_KEY, JSON.stringify(normalizeStoryPreferences(preferences)));
+    }} catch (error) {{
+      // Ignore local preference storage failures.
+    }}
+  }}
+
+  function toggleStoryAngle(angle) {{
+    const preferences = readStoryPreferences();
+    const angles = preferences.angles.includes(angle)
+      ? preferences.angles.filter((item) => item !== angle)
+      : [...preferences.angles, angle];
+    persistStoryPreferences({{
+      ...preferences,
+      angles
+    }});
+    renderStoryControls();
+  }}
+
+  function renderStoryControls() {{
+    const grid = document.getElementById('generatedStoryAngleGrid');
+    const input = document.getElementById('generatedStoryPrompt');
+    const preferences = readStoryPreferences();
+    if (grid) {{
+      grid.innerHTML = STORY_ANGLE_OPTIONS.map((angle) => `
+        <button class="generated-story-angle${{preferences.angles.includes(angle) ? ' is-active' : ''}}" type="button" data-angle="${{angle}}">${{angle}}</button>
+      `).join('');
+      grid.querySelectorAll('[data-angle]').forEach((button) => {{
+        button.addEventListener('click', () => toggleStoryAngle(button.dataset.angle || ''));
+      }});
+    }}
+    if (input && input.value !== preferences.customPrompt) {{
+      input.value = preferences.customPrompt;
+    }}
+  }}
+
+  function buildAngleFocusParagraph(angles) {{
+    const map = {{
+      'фокус': 'Сегодня мне важно услышать, что через этот день у меня собирается фокус и я перестаю распыляться.',
+      'энергия': 'Я хочу отдельно отметить, что такими шагами я возвращаю себе энергию и внутренний огонь.',
+      'тело': 'Мне важно почувствовать, что тело здесь не фон, а моя реальная опора и точка силы.',
+      'дисциплина': 'Хочу удержать мысль, что дисциплина в этом дне — не наказание, а форма любви и уважения к себе.',
+      'мягкость': 'Мне нравится, что я могу двигаться мягко, без жёсткости к себе, и всё равно не выпадать из процесса.',
+      'смелость': 'Я хочу видеть в этом дне свою смелость: не ждать идеального состояния, а всё равно выбирать движение.',
+      'радость': 'Для меня важно не только сделать, но и порадоваться себе, заметить живую радость от того, что получается.',
+      'контакт с собой': 'Больше всего мне хочется слышать, что через этот день я возвращаюсь в контакт с собой и яснее чувствую, что для меня важно.'
+    }};
+    return angles.map((angle) => map[angle]).filter(Boolean).slice(0, 3).join(' ');
+  }}
+
   function manifestoLead() {{
     const text = String(state.manifesto || '').replace(/\s+/g, ' ').trim();
     if (!text) {{
@@ -851,6 +992,7 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function buildStoryFromCurrentDay() {{
+    const preferences = readStoryPreferences();
     const day = state.days[currentDay] || {{ name: `День ${{currentDay + 1}}`, items: [] }};
     const items = Array.isArray(day.items) ? day.items : [];
     const checked = items.filter((item) => item && item.checked);
@@ -873,11 +1015,15 @@ def build_runtime_script(name: str, slug: str) -> str:
       ? `Особенно мне нравится, что в заметках дня уже есть мой живой след: ${{joinHumanList(noteDetails)}}. Именно такие детали делают день не абстрактным, а моим.`
       : 'В следующий раз я могу оставить здесь ещё пару коротких заметок, чтобы лучше увидеть не только структуру дня, но и своё состояние внутри него.';
     const manifesto = `И я слышу, как это связано с моим манифестом: «${{manifestoSpark()}}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
+    const angleFocus = buildAngleFocusParagraph(preferences.angles);
+    const promptLine = preferences.customPrompt.trim()
+      ? `И ещё я хочу удержать в этом рассказе вот такой мой акцент: ${{cropText(preferences.customPrompt, 220)}}.`
+      : '';
     const closing = checked.length >= 4
       ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
       : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
 
-    return [opening, progress, notes, manifesto, closing].filter(Boolean).join('\\n\\n');
+    return [opening, progress, notes, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\\n\\n');
   }}
 
   function renderGeneratedStory(text) {{
@@ -1076,6 +1222,13 @@ def build_runtime_script(name: str, slug: str) -> str:
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
   document.getElementById('regenerateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {{
+    const preferences = readStoryPreferences();
+    persistStoryPreferences({{
+      ...preferences,
+      customPrompt: event.target.value
+    }});
+  }});
 
   const materialsShell = document.getElementById('materialsShell');
   const materialsToggle = document.getElementById('materialsToggle');
@@ -1116,6 +1269,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     currentDay = 0;
     await loadSavedTracker();
     restoreLocalState();
+    renderStoryControls();
     renderManifestoBanner();
     renderWorkoutMaterialButtons();
     renderDayNav();

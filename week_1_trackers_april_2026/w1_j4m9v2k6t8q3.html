@@ -1016,6 +1016,64 @@ body {
   color: var(--warm-gray);
   font-size: 14px;
 }
+.generated-story-controls {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 255, 255, 0.56);
+}
+.generated-story-controls-title {
+  color: var(--charcoal);
+  font-size: 14px;
+  font-weight: 700;
+}
+.generated-story-controls-copy {
+  margin-top: 6px;
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.generated-story-angle-grid {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.generated-story-angle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generated-story-angle.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+.generated-story-input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.96);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 96px;
+}
 .generated-story-body {
   margin-top: 16px;
   color: var(--charcoal);
@@ -1217,8 +1275,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v18" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v18" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v19" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v19" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1228,8 +1286,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v18" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v18" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v19" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v19" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1251,7 +1309,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v18" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v19" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -1284,6 +1342,12 @@ body {
       <div class="generated-story-head">
         <div class="generated-story-title">Рассказ о твоём дне</div>
         <div class="generated-story-day" id="generatedStoryDay">День 1</div>
+      </div>
+      <div class="generated-story-controls">
+        <div class="generated-story-controls-title">Перед «Сгенерировать заново» можно подсветить важные углы</div>
+        <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
+        <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
+        <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
       </div>
       <div class="generated-story-body" id="generatedStoryBody"></div>
       <div class="generated-story-actions">
@@ -1784,7 +1848,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${PARTICIPANT_SLUG}`;
   const MATERIALS_COLLAPSED_KEY = `${LOCAL_KEY}:materials-collapsed`;
+  const STORY_PREFERENCES_KEY = `${LOCAL_KEY}:story-preferences`;
   const DAY_WORKOUT_LINKS = [[{"label": "Тренировка дня", "url": "https://kinescope.io/6PmxVSfi4BYsarEmW2XRrZ"}], [{"label": "Тренировка утра", "url": "https://kinescope.io/vfoVu9d7q1wSYKdK5qpo2t"}, {"label": "Основная тренировка", "url": "https://kinescope.io/k3554A5VX2cGM2p2NzBXgp"}], [{"label": "Тренировка дня", "url": "https://kinescope.io/4k83NSdtZyhTWaKEcYGY6f"}], [{"label": "Тренировка 1", "url": "https://kinescope.io/dJuYS7wUg6jLdC7Wn4WHEe"}, {"label": "Тренировка 2", "url": "https://kinescope.io/bnyKxZVoQBBgRdd9a6v5be"}], [{"label": "Тренировка дня", "url": "https://kinescope.io/dg41DeFZiV3bestR5vsgNT"}], [{"label": "Тренировка 1", "url": "https://kinescope.io/8bNzN33rMMc5F289UnjDYn"}, {"label": "Тренировка 2", "url": "https://kinescope.io/et2qFrFvqZ5oohxazHhCHn"}], []];
+  const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   function getDefaultDayItems() {
     return DEFAULT_ITEMS.map((item, index) => ({
       ...item,
@@ -1884,6 +1950,81 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return `${filtered.slice(0, -1).join(', ')} и ${filtered[filtered.length - 1]}`;
   }
 
+  function normalizeStoryPreferences(raw) {
+    const base = raw && typeof raw === 'object' ? raw : {};
+    const rawAngles = Array.isArray(base.angles) ? base.angles : [];
+    const angles = rawAngles
+      .map((value) => String(value || '').trim().toLowerCase())
+      .filter((value, index, list) => value && STORY_ANGLE_OPTIONS.includes(value) && list.indexOf(value) === index);
+    return {
+      angles,
+      customPrompt: typeof base.customPrompt === 'string' ? base.customPrompt : ''
+    };
+  }
+
+  function readStoryPreferences() {
+    try {
+      const saved = localStorage.getItem(STORY_PREFERENCES_KEY);
+      if (!saved) {
+        return normalizeStoryPreferences(null);
+      }
+      return normalizeStoryPreferences(JSON.parse(saved));
+    } catch (error) {
+      return normalizeStoryPreferences(null);
+    }
+  }
+
+  function persistStoryPreferences(preferences) {
+    try {
+      localStorage.setItem(STORY_PREFERENCES_KEY, JSON.stringify(normalizeStoryPreferences(preferences)));
+    } catch (error) {
+      // Ignore local preference storage failures.
+    }
+  }
+
+  function toggleStoryAngle(angle) {
+    const preferences = readStoryPreferences();
+    const angles = preferences.angles.includes(angle)
+      ? preferences.angles.filter((item) => item !== angle)
+      : [...preferences.angles, angle];
+    persistStoryPreferences({
+      ...preferences,
+      angles
+    });
+    renderStoryControls();
+  }
+
+  function renderStoryControls() {
+    const grid = document.getElementById('generatedStoryAngleGrid');
+    const input = document.getElementById('generatedStoryPrompt');
+    const preferences = readStoryPreferences();
+    if (grid) {
+      grid.innerHTML = STORY_ANGLE_OPTIONS.map((angle) => `
+        <button class="generated-story-angle${preferences.angles.includes(angle) ? ' is-active' : ''}" type="button" data-angle="${angle}">${angle}</button>
+      `).join('');
+      grid.querySelectorAll('[data-angle]').forEach((button) => {
+        button.addEventListener('click', () => toggleStoryAngle(button.dataset.angle || ''));
+      });
+    }
+    if (input && input.value !== preferences.customPrompt) {
+      input.value = preferences.customPrompt;
+    }
+  }
+
+  function buildAngleFocusParagraph(angles) {
+    const map = {
+      'фокус': 'Сегодня мне важно услышать, что через этот день у меня собирается фокус и я перестаю распыляться.',
+      'энергия': 'Я хочу отдельно отметить, что такими шагами я возвращаю себе энергию и внутренний огонь.',
+      'тело': 'Мне важно почувствовать, что тело здесь не фон, а моя реальная опора и точка силы.',
+      'дисциплина': 'Хочу удержать мысль, что дисциплина в этом дне — не наказание, а форма любви и уважения к себе.',
+      'мягкость': 'Мне нравится, что я могу двигаться мягко, без жёсткости к себе, и всё равно не выпадать из процесса.',
+      'смелость': 'Я хочу видеть в этом дне свою смелость: не ждать идеального состояния, а всё равно выбирать движение.',
+      'радость': 'Для меня важно не только сделать, но и порадоваться себе, заметить живую радость от того, что получается.',
+      'контакт с собой': 'Больше всего мне хочется слышать, что через этот день я возвращаюсь в контакт с собой и яснее чувствую, что для меня важно.'
+    };
+    return angles.map((angle) => map[angle]).filter(Boolean).slice(0, 3).join(' ');
+  }
+
   function manifestoLead() {
     const text = String(state.manifesto || '').replace(/\s+/g, ' ').trim();
     if (!text) {
@@ -1902,6 +2043,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
   function buildStoryFromCurrentDay() {
+    const preferences = readStoryPreferences();
     const day = state.days[currentDay] || { name: `День ${currentDay + 1}`, items: [] };
     const items = Array.isArray(day.items) ? day.items : [];
     const checked = items.filter((item) => item && item.checked);
@@ -1924,11 +2066,15 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       ? `Особенно мне нравится, что в заметках дня уже есть мой живой след: ${joinHumanList(noteDetails)}. Именно такие детали делают день не абстрактным, а моим.`
       : 'В следующий раз я могу оставить здесь ещё пару коротких заметок, чтобы лучше увидеть не только структуру дня, но и своё состояние внутри него.';
     const manifesto = `И я слышу, как это связано с моим манифестом: «${manifestoSpark()}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
+    const angleFocus = buildAngleFocusParagraph(preferences.angles);
+    const promptLine = preferences.customPrompt.trim()
+      ? `И ещё я хочу удержать в этом рассказе вот такой мой акцент: ${cropText(preferences.customPrompt, 220)}.`
+      : '';
     const closing = checked.length >= 4
       ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
       : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
 
-    return [opening, progress, notes, manifesto, closing].filter(Boolean).join('\n\n');
+    return [opening, progress, notes, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\n\n');
   }
 
   function renderGeneratedStory(text) {
@@ -2127,6 +2273,13 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
   document.getElementById('regenerateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {
+    const preferences = readStoryPreferences();
+    persistStoryPreferences({
+      ...preferences,
+      customPrompt: event.target.value
+    });
+  });
 
   const materialsShell = document.getElementById('materialsShell');
   const materialsToggle = document.getElementById('materialsToggle');
@@ -2167,6 +2320,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     currentDay = 0;
     await loadSavedTracker();
     restoreLocalState();
+    renderStoryControls();
     renderManifestoBanner();
     renderWorkoutMaterialButtons();
     renderDayNav();
