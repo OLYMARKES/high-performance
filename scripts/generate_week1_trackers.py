@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v28"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v28"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v28"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v29"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v29"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v29"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v28"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v28#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v29"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v29#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -995,6 +995,16 @@ def build_runtime_script(name: str, slug: str) -> str:
     return angles.map((angle) => map[angle]).filter(Boolean).slice(0, 3).join(' ');
   }}
 
+  function storyPromptSignals() {{
+    const prompt = readStoryPreferences().customPrompt.trim().toLowerCase();
+    return {{
+      raw: prompt,
+      noSleepPraise: /не говори.*сон|убери.*сон|сон.*неправд|сон.*не хвали/.test(prompt),
+      noProgramNarrative: /не говори.*high performance|не говори.*хайпер|не додумывай|не говори.*процесс|убери.*high performance/.test(prompt),
+      hardDay: /день был ужасн|ужасный день|день ужасный/.test(prompt)
+    }};
+  }}
+
   function manifestoLead() {{
     const text = String(state.manifesto || '').replace(/\s+/g, ' ').trim();
     if (!text) {{
@@ -1116,14 +1126,18 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function buildOpeningParagraph(day, completedIds) {{
+    const signals = storyPromptSignals();
+    if (signals.hardDay) {{
+      return 'День был тяжёлым и местами рваным, но в нём всё равно остались отдельные собранные моменты, на которые можно опереться при разборе.';
+    }}
     if (completedIds.length >= 5) {{
-      return `Сегодня получился по-настоящему собранный ${{day.name.toLowerCase()}}. В дне было достаточно опорных действий, чтобы он ощущался цельным и устойчивым.`;
+      return `Сегодня получился по-настоящему собранный ${{day.name.toLowerCase()}}. В дне было достаточно отмеченных действий, чтобы он ощущался цельным и устойчивым.`;
     }}
     if (completedIds.length >= 3) {{
-      return 'Сегодня удалось удержать несколько важных опор, и это уже делает день более собранным. Неидеальный день тоже может быть хорошим, если в нём есть повторяемые поддерживающие действия.';
+      return 'Сегодня удалось удержать несколько важных вещей, и это уже делает день более собранным. Даже неидеальный день может держаться на нескольких повторяемых действиях.';
     }}
     if (completedIds.length >= 1) {{
-      return 'Сегодня в дне было немного отмеченных опор, но они всё равно задают ему структуру и помогают не выпадать из процесса.';
+      return 'Сегодня в дне было немного отмеченных пунктов, но они всё равно задают ему структуру и помогают видеть, за что день держался.';
     }}
     return 'Сегодня день больше про наблюдение, чем про выполнение. Это тоже полезный материал: по нему легче увидеть реальный ритм дня и понять, что стоит укрепить дальше.';
   }}
@@ -1148,7 +1162,7 @@ def build_runtime_script(name: str, slug: str) -> str:
 
     const parts = [];
     if (completed.length) {{
-      parts.push(`Опорными моментами дня были: ${{joinHumanList(completed)}}.`);
+      parts.push(`В течение дня были отмечены такие вещи: ${{joinHumanList(completed)}}.`);
     }}
     if (workoutNote) {{
       parts.push(`Из заметок особенно выделяется тренировка: ${{workoutNote}}`);
@@ -1163,6 +1177,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     const sleepItem = getDayItemById(day, 'sleep');
     const bedtimeItem = getDayItemById(day, 'bedtime');
     const sleepNote = getFilledValue(sleepItem);
+    const signals = storyPromptSignals();
 
     if (!sleepItem && !bedtimeItem) {{
       return '';
@@ -1170,7 +1185,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     if (sleepNote) {{
       return `По сну в заметках зафиксировано следующее: ${{sleepNote}}. Это помогает увидеть реальную картину дня и заметить, где сейчас особенно нужна опора.`;
     }}
-    if (sleepItem?.checked) {{
+    if (sleepItem?.checked && !signals.noSleepPraise) {{
       return 'Сон сегодня был одной из заметных опор дня. Такая база обычно помогает держать и энергию, и фокус, и более ровный ритм.';
     }}
     if (bedtimeItem?.checked) {{
@@ -1180,9 +1195,10 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function buildWinsParagraph(day, completedIds) {{
+    const signals = storyPromptSignals();
     const wins = [];
     const winMap = {{
-      sleep: 'не обесценила важность сна',
+      sleep: signals.noSleepPraise ? '' : 'сон всё-таки был отмечен в трекере',
       meditation: 'дала себе момент тишины и настройки',
       workout: 'выбрала движение и тело',
       breakfast: 'не оставила утро без еды',
@@ -1206,10 +1222,14 @@ def build_runtime_script(name: str, slug: str) -> str:
         ? `Из ценного в этом дне точно осталось вот это наблюдение: ${{journalNote}}`
         : '';
     }}
-    return `Отдельно хочется отметить вот эти опорные вещи: ${{joinHumanList(wins)}}. Именно из таких повторяемых шагов постепенно и собирается новая норма.`;
+    return `Из удачных моментов дня можно отметить вот это: ${{joinHumanList(wins)}}.`;
   }}
 
   function buildProgramLensParagraph(completedIds) {{
+    const signals = storyPromptSignals();
+    if (signals.noProgramNarrative) {{
+      return '';
+    }}
     if (completedIds.length >= 1) {{
       return 'Через такую оптику и работает High Performance: первая неделя здесь не про идеальность, а про базу. Шаг за шагом собираются тело, питание, ритм, внимание и ощущение большей опоры внутри дня.';
     }}
@@ -1228,14 +1248,11 @@ def build_runtime_script(name: str, slug: str) -> str:
     const programLens = buildProgramLensParagraph(completedIds);
     const manifesto = `И я слышу, как это связано с моим манифестом: «${{manifestoSpark()}}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const angleFocus = buildAngleFocusParagraph(preferences.angles);
-    const promptLine = preferences.customPrompt.trim()
-      ? `Дополнительный акцент для этой версии рассказа: ${{cropText(preferences.customPrompt, 220)}}.`
-      : '';
     const closing = completedIds.length >= 4
-      ? 'Итог дня: база постепенно собирается, а опорные действия уже начинают складываться в более устойчивый ритм.'
-      : 'Итог дня: даже небольшое количество отмеченных опор уже помогает удерживать процесс и видеть направление движения.';
+      ? 'Итог дня: в нём уже есть заметный каркас, на который можно опираться дальше.'
+      : 'Итог дня: даже небольшое количество отмеченных пунктов уже помогает увидеть структуру и направление движения.';
 
-    return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\\n\\n');
+    return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, closing].filter(Boolean).join('\\n\\n');
   }}
 
   function renderGeneratedStory(text) {{
