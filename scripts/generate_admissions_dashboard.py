@@ -15,7 +15,7 @@ OUTPUT_PATH = ROOT / "admissions-dashboard.html"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v22"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v23"
 COURSE_LABELS = {
     "care": "Care",
     "basics": "Basics",

@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v22"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v22"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v22"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v23"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v23"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v23"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v22"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v22#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v23"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v23#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -1177,6 +1177,16 @@ def build_runtime_script(name: str, slug: str) -> str:
     return `Самое классное сегодня — вот это: я ${{joinHumanList(wins)}}. Именно такие штуки и хочется праздновать, потому что из них и собирается моя новая норма.`;
   }}
 
+  function buildProgramLensParagraph(checked) {{
+    if (checked.length >= 4) {{
+      return 'И я очень чувствую, что именно ради этого и нужен High Performance: не чтобы героически вывозить всё сразу, а чтобы через понятные опоры собрать базу тела, питания, ритма и внимания. Когда у меня появляется такая база, жизнь становится не тяжелее, а легче и чище.';
+    }}
+    if (checked.length >= 1) {{
+      return 'И я вижу, как это встраивается в саму идею High Performance: первая неделя у нас не про идеальность, а про базу. Через такие маленькие шаги я снижаю хаос, убираю лишнюю когнитивную нагрузку и собираю для себя более устойчивый ритм.';
+    }}
+    return 'И даже такой день всё равно остаётся частью процесса. Здесь задача не в том, чтобы мгновенно стать идеальной версией себя, а в том, чтобы мягко войти в новый ритм и увидеть, какая база действительно помогает мне жить устойчивее.';
+  }}
+
   function buildStoryFromCurrentDay() {{
     const preferences = readStoryPreferences();
     const day = state.days[currentDay] || {{ name: `День ${{currentDay + 1}}`, items: [] }};
@@ -1193,16 +1203,17 @@ def build_runtime_script(name: str, slug: str) -> str:
     const sleep = buildSleepParagraph(day);
     const nutrition = buildNutritionParagraph(day);
     const wins = buildWinsParagraph(day, checked);
+    const programLens = buildProgramLensParagraph(checked);
     const manifesto = `И я слышу, как это связано с моим манифестом: «${{manifestoSpark()}}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const angleFocus = buildAngleFocusParagraph(preferences.angles);
     const promptLine = preferences.customPrompt.trim()
       ? `И ещё я хочу удержать в этом рассказе вот такой мой акцент: ${{cropText(preferences.customPrompt, 220)}}.`
       : '';
     const closing = checked.length >= 4
-      ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
-      : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
+      ? 'Я хочу запомнить это состояние: у меня уже получается входить в этот процесс без надрыва и собирать для себя сильную базу. Не через жёсткость, а через повторяемость, внимание к себе и уважение к тому ритму, который я действительно могу удерживать.'
+      : 'Мне не нужно впечатлять этот день, чтобы он был важным. Мне важно просто продолжать входить в процесс, замечать, что работает для меня, и шаг за шагом собирать ту базу, на которой потом держатся и энергия, и фокус, и ощущение внутренней силы.';
 
-    return [opening, dayFlow, sleep, nutrition, wins, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\\n\\n');
+    return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\\n\\n');
   }}
 
   function renderGeneratedStory(text) {{

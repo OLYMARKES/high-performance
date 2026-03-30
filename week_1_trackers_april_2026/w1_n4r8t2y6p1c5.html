@@ -1278,8 +1278,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v22" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v22" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v23" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v23" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1289,8 +1289,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v22" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v22" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v23" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v23" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1312,7 +1312,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v22" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v23" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -2228,6 +2228,16 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return `Самое классное сегодня — вот это: я ${joinHumanList(wins)}. Именно такие штуки и хочется праздновать, потому что из них и собирается моя новая норма.`;
   }
 
+  function buildProgramLensParagraph(checked) {
+    if (checked.length >= 4) {
+      return 'И я очень чувствую, что именно ради этого и нужен High Performance: не чтобы героически вывозить всё сразу, а чтобы через понятные опоры собрать базу тела, питания, ритма и внимания. Когда у меня появляется такая база, жизнь становится не тяжелее, а легче и чище.';
+    }
+    if (checked.length >= 1) {
+      return 'И я вижу, как это встраивается в саму идею High Performance: первая неделя у нас не про идеальность, а про базу. Через такие маленькие шаги я снижаю хаос, убираю лишнюю когнитивную нагрузку и собираю для себя более устойчивый ритм.';
+    }
+    return 'И даже такой день всё равно остаётся частью процесса. Здесь задача не в том, чтобы мгновенно стать идеальной версией себя, а в том, чтобы мягко войти в новый ритм и увидеть, какая база действительно помогает мне жить устойчивее.';
+  }
+
   function buildStoryFromCurrentDay() {
     const preferences = readStoryPreferences();
     const day = state.days[currentDay] || { name: `День ${currentDay + 1}`, items: [] };
@@ -2244,16 +2254,17 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     const sleep = buildSleepParagraph(day);
     const nutrition = buildNutritionParagraph(day);
     const wins = buildWinsParagraph(day, checked);
+    const programLens = buildProgramLensParagraph(checked);
     const manifesto = `И я слышу, как это связано с моим манифестом: «${manifestoSpark()}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const angleFocus = buildAngleFocusParagraph(preferences.angles);
     const promptLine = preferences.customPrompt.trim()
       ? `И ещё я хочу удержать в этом рассказе вот такой мой акцент: ${cropText(preferences.customPrompt, 220)}.`
       : '';
     const closing = checked.length >= 4
-      ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
-      : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
+      ? 'Я хочу запомнить это состояние: у меня уже получается входить в этот процесс без надрыва и собирать для себя сильную базу. Не через жёсткость, а через повторяемость, внимание к себе и уважение к тому ритму, который я действительно могу удерживать.'
+      : 'Мне не нужно впечатлять этот день, чтобы он был важным. Мне важно просто продолжать входить в процесс, замечать, что работает для меня, и шаг за шагом собирать ту базу, на которой потом держатся и энергия, и фокус, и ощущение внутренней силы.';
 
-    return [opening, dayFlow, sleep, nutrition, wins, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\n\n');
+    return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\n\n');
   }
 
   function renderGeneratedStory(text) {
