@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v16"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v16"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v16"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v17"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v17"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v17"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v16"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v16#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v17"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v17#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -374,6 +374,83 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   margin-top: 0;
   flex-shrink: 0;
 }
+.save-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.save-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 170px;
+  min-height: 56px;
+  padding: 12px 18px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generated-story-card {
+  margin-top: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  background: rgba(255, 253, 249, 0.92);
+}
+.generated-story-card[hidden] {
+  display: none;
+}
+.generated-story-kicker {
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 700;
+}
+.generated-story-head {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.generated-story-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.05;
+  color: var(--charcoal);
+}
+.generated-story-day {
+  color: var(--warm-gray);
+  font-size: 14px;
+}
+.generated-story-body {
+  margin-top: 16px;
+  color: var(--charcoal);
+  font-size: 16px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+.generated-story-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.generated-story-note {
+  margin-top: 12px;
+  color: var(--light-gray);
+  font-size: 13px;
+  line-height: 1.6;
+}
 
 /* ── Footer ── */""",
         1,
@@ -398,7 +475,14 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
     flex-direction: column;
     align-items: stretch;
   }
+  .save-panel-actions {
+    justify-content: stretch;
+  }
   .save-progress-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  .save-secondary-btn {
     width: 100%;
     min-width: 0;
   }
@@ -498,10 +582,27 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
       <div class="save-panel-inner">
         <div class="save-panel-copy">
           <div class="save-panel-title">Сохраняй прогресс</div>
-          <div class="save-panel-status" id="saveStatus">По этой ссылке всегда будет открываться актуальная сохранённая версия трекера.</div>
+          <div class="save-panel-status" id="saveStatus">По этой ссылке всегда будет открываться актуальная сохранённая версия трекера. Можно сразу собрать короткий рассказ по текущему дню.</div>
         </div>
-        <button class="manifesto-btn save-progress-btn" id="saveTrackerBtn" type="button">Сохранить трекер</button>
+        <div class="save-panel-actions">
+          <button class="manifesto-btn save-progress-btn" id="generateStoryBtn" type="button">Сгенерировать рассказ</button>
+          <button class="save-secondary-btn" id="saveTrackerBtn" type="button">Просто сохранить</button>
+        </div>
       </div>
+    </div>
+
+    <div class="generated-story-card reveal" id="generatedStoryCard" hidden>
+      <div class="generated-story-kicker">Тестовая версия</div>
+      <div class="generated-story-head">
+        <div class="generated-story-title">Рассказ о твоём дне</div>
+        <div class="generated-story-day" id="generatedStoryDay">День 1</div>
+      </div>
+      <div class="generated-story-body" id="generatedStoryBody"></div>
+      <div class="generated-story-actions">
+        <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
+        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Сгенерировать заново</button>
+      </div>
+      <div class="generated-story-note">Пока это локальная тестовая функция: трекер сначала сохраняется, а затем текст собирается прямо из текущего дня без изменения твоих данных.</div>
     </div>
 
   </div>
@@ -698,6 +799,120 @@ def build_runtime_script(name: str, slug: str) -> str:
     return JSON.parse(JSON.stringify(value));
   }}
 
+  function setButtonBusy(button, busy, busyLabel) {{
+    if (!button) {{
+      return;
+    }}
+    if (!button.dataset.defaultLabel) {{
+      button.dataset.defaultLabel = button.textContent || '';
+    }}
+    button.disabled = busy;
+    button.style.opacity = busy ? '0.7' : '1';
+    button.textContent = busy ? busyLabel : button.dataset.defaultLabel;
+  }}
+
+  function cropText(value, limit = 140) {{
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) {{
+      return '';
+    }}
+    return text.length > limit ? text.slice(0, limit - 1).trimEnd() + '…' : text;
+  }}
+
+  function joinHumanList(items) {{
+    const filtered = items.filter(Boolean);
+    if (!filtered.length) {{
+      return '';
+    }}
+    if (filtered.length === 1) {{
+      return filtered[0];
+    }}
+    if (filtered.length === 2) {{
+      return `${{filtered[0]}} и ${{filtered[1]}}`;
+    }}
+    return `${{filtered.slice(0, -1).join(', ')}} и ${{filtered[filtered.length - 1]}}`;
+  }}
+
+  function manifestoLead() {{
+    const text = String(state.manifesto || '').replace(/\s+/g, ' ').trim();
+    if (!text) {{
+      return '';
+    }}
+    const sentence = text.split(/[.!?]+/).map((part) => part.trim()).find(Boolean) || text;
+    return cropText(sentence, 140);
+  }}
+
+  function storyTone(done, total) {{
+    if (!total || done === 0) {{
+      return 'скорее днём наблюдения и настройки';
+    }}
+    const ratio = done / total;
+    if (ratio >= 0.75) {{
+      return 'собранным и очень опорным днём';
+    }}
+    if (ratio >= 0.45) {{
+      return 'ровным днём, где получилось удержать несколько важных опор';
+    }}
+    return 'днём возвращения к базе и мягкой сборки ритма';
+  }}
+
+  function buildStoryFromCurrentDay() {{
+    const day = state.days[currentDay] || {{ name: `День ${{currentDay + 1}}`, items: [] }};
+    const items = Array.isArray(day.items) ? day.items : [];
+    const checked = items.filter((item) => item && item.checked);
+    const noted = items.filter((item) => item && typeof item.inputValue === 'string' && item.inputValue.trim());
+    const noteDetails = noted
+      .slice(0, 2)
+      .map((item) => `${{item.title.toLowerCase()}}: ${{cropText(item.inputValue, 120)}}`);
+
+    const opening = `Сегодня у тебя ${{day.name.toLowerCase()}} получился ${{storyTone(checked.length, items.length)}}.`;
+    const progress = checked.length
+      ? `Из опорных пунктов ты отметила ${{checked.length}} из ${{items.length}}: ${{joinHumanList(checked.slice(0, 4).map((item) => item.title.toLowerCase()))}}.`
+      : 'Пока ни один пункт не отмечен как выполненный, и это тоже полезная точка честного контакта с собой.';
+    const notes = noteDetails.length
+      ? `По заметкам дня видно, что в фокусе были ${{joinHumanList(noteDetails)}}.`
+      : 'Если захочешь, в следующий раз можно оставить пару коротких заметок в полях трекера, чтобы рассказ получался ещё живее.';
+    const manifesto = manifestoLead()
+      ? `Через день считывается и твой манифест: «${{manifestoLead()}}».`
+      : '';
+    const closing = checked.length >= 4
+      ? 'Это выглядит как день, в котором ты не пыталась сделать идеально, а реально держала базу.'
+      : 'Главное здесь не идеальность, а то, что день уже виден и его можно продолжать собирать дальше.';
+
+    return [opening, progress, notes, manifesto, closing].filter(Boolean).join('\\n\\n');
+  }}
+
+  function renderGeneratedStory(text) {{
+    const card = document.getElementById('generatedStoryCard');
+    const body = document.getElementById('generatedStoryBody');
+    const dayLabel = document.getElementById('generatedStoryDay');
+    if (!card || !body || !dayLabel) {{
+      return;
+    }}
+    dayLabel.textContent = state.days[currentDay]?.name || `День ${{currentDay + 1}}`;
+    body.textContent = text;
+    card.hidden = false;
+  }}
+
+  async function copyGeneratedStory() {{
+    const body = document.getElementById('generatedStoryBody');
+    const copyButton = document.getElementById('copyGeneratedStoryBtn');
+    const text = body?.textContent || '';
+    if (!text || !copyButton) {{
+      return;
+    }}
+    const original = copyButton.textContent;
+    try {{
+      await navigator.clipboard.writeText(text);
+      copyButton.textContent = 'Скопировано';
+    }} catch (error) {{
+      copyButton.textContent = 'Не скопировалось';
+    }}
+    setTimeout(() => {{
+      copyButton.textContent = original;
+    }}, 1800);
+  }}
+
   function readMaterialsCollapsedState() {{
     try {{
       const saved = localStorage.getItem(MATERIALS_COLLAPSED_KEY);
@@ -798,12 +1013,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
   }}
 
-  async function saveTrackerToServer() {{
-    const button = document.getElementById('saveTrackerBtn');
-    if (!button) {{
-      return;
-    }}
-
+  async function persistTrackerSnapshot(triggerButton, pendingStatus = 'Сохраняю трекер...') {{
     const payload = {{
       kind: 'participant-week-tracker',
       participantName: PARTICIPANT_NAME,
@@ -815,9 +1025,11 @@ def build_runtime_script(name: str, slug: str) -> str:
       submittedAt: new Date().toISOString()
     }};
 
-    button.disabled = true;
-    button.style.opacity = '0.7';
-    setSaveStatus('Сохраняю трекер...');
+    const saveButton = document.getElementById('saveTrackerBtn');
+    const storyButton = document.getElementById('generateStoryBtn');
+    setButtonBusy(saveButton, true, 'Сохраняю...');
+    setButtonBusy(storyButton, true, 'Собираю...');
+    setSaveStatus(pendingStatus);
 
     try {{
       const response = await fetch(FORM_ENDPOINT, {{
@@ -835,16 +1047,37 @@ def build_runtime_script(name: str, slug: str) -> str:
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
       const savedText = new Date(payload.submittedAt).toLocaleString('ru-RU');
       setSaveStatus(`Сохранено ${{savedText}}. По этой ссылке всегда откроется актуальная версия трекера.`);
+      return true;
     }} catch (error) {{
       setSaveStatus('Не удалось сохранить серверную версию. Локальный черновик остался в браузере.');
       alert('Не удалось сохранить трекер. Попробуй ещё раз чуть позже.');
+      return false;
     }} finally {{
-      button.disabled = false;
-      button.style.opacity = '1';
+      setButtonBusy(saveButton, false, '');
+      setButtonBusy(storyButton, false, '');
     }}
   }}
 
+  async function saveTrackerToServer() {{
+    await persistTrackerSnapshot(document.getElementById('saveTrackerBtn'));
+  }}
+
+  async function generateStoryFlow() {{
+    const persisted = await persistTrackerSnapshot(
+      document.getElementById('generateStoryBtn'),
+      'Сохраняю трекер и собираю рассказ о дне...'
+    );
+    if (!persisted) {{
+      return;
+    }}
+    renderGeneratedStory(buildStoryFromCurrentDay());
+    setSaveStatus('Трекер сохранён, а короткий рассказ о текущем дне собран ниже.');
+  }}
+
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
+  document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
+  document.getElementById('regenerateStoryBtn')?.addEventListener('click', generateStoryFlow);
 
   const materialsShell = document.getElementById('materialsShell');
   const materialsToggle = document.getElementById('materialsToggle');
