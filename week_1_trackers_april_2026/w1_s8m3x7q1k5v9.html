@@ -1278,8 +1278,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v21" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v21" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v22" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v22" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1289,8 +1289,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v21" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v21" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v22" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v22" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1312,7 +1312,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v21" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v22" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -2048,29 +2048,202 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return 'Сегодня я выбираю ясность, фокус, смелость, энергию и огонь. Мои ценности важнее хаоса, а дисциплина — это форма заботы о себе';
   }
 
+  function getDayItemById(day, itemId) {
+    const items = Array.isArray(day?.items) ? day.items : [];
+    return items.find((item) => item && item.id === itemId) || null;
+  }
+
+  function getFilledValue(item) {
+    return cropText(item?.inputValue || '', 180);
+  }
+
+  function joinSentences(parts) {
+    return parts.filter(Boolean).join(' ');
+  }
+
+  function buildDayFlowParagraph(day) {
+    const flowMap = {
+      sleep: 'дала себе базу сна',
+      meditation: 'начала день с короткой медитации',
+      breakfast: 'собрала себе завтрак',
+      reading: 'выделила время на чтение',
+      journaling: 'оставила место для джорналинга',
+      workout: 'сделала тренировку',
+      lunch: 'не пропустила полноценный обед',
+      hardstop: 'поставила рамку работе',
+      qualitytime: 'побыла с близкими по-настоящему',
+      dinner: 'собрала ужин',
+      bedtime: 'подошла к вечеру с заботой о завтрашнем дне'
+    };
+    const morningIds = ['sleep', 'meditation', 'breakfast', 'reading'];
+    const dayIds = ['workout', 'lunch', 'hardstop', 'journaling'];
+    const eveningIds = ['qualitytime', 'dinner', 'bedtime'];
+    const collect = (ids) => ids
+      .map((id) => getDayItemById(day, id))
+      .filter((item) => item?.checked)
+      .map((item) => flowMap[item.id] || item.title?.toLowerCase());
+
+    const morning = collect(morningIds);
+    const daytime = collect(dayIds);
+    const evening = collect(eveningIds);
+    const paragraphs = [];
+
+    if (morning.length) {
+      paragraphs.push(`С утра я ${joinHumanList(morning)}, и это задало дню хороший тон.`);
+    }
+    if (daytime.length) {
+      paragraphs.push(`Днём у меня получилось ${joinHumanList(daytime)}, так что день не рассыпался, а держался на реальных действиях.`);
+    }
+    if (evening.length) {
+      paragraphs.push(`К вечеру я ${joinHumanList(evening)}, и в этом уже чувствуется не просто выполнение плана, а забота о своей устойчивости.`);
+    }
+
+    if (!paragraphs.length) {
+      return 'Сегодня день пока не сложился в чёткую структуру, но я всё равно смотрю на него честно и собираю из этого материал для следующего шага.';
+    }
+
+    return paragraphs.join(' ');
+  }
+
+  function buildSleepParagraph(day) {
+    const sleepItem = getDayItemById(day, 'sleep');
+    const bedtimeItem = getDayItemById(day, 'bedtime');
+    const sleepNote = getFilledValue(sleepItem);
+    const parts = [];
+
+    if (sleepItem?.checked) {
+      parts.push('По сну я дала себе базу: цель в 7 часов была выдержана, и это уже сильно влияет на то, как я держу фокус и энергию.');
+    } else if (sleepNote) {
+      parts.push(`По сну я пока не дотянула до своей цели, но уже вижу реальность дня без искажений: ${sleepNote}. Это не повод давить на себя, а полезная точка для калибровки.`);
+    } else {
+      parts.push('По сну я пока не дотянула до своей опоры в 7 часов, и мне важно это заметить спокойно: без драматизации, но и без попытки обесценить влияние сна на моё состояние.');
+    }
+
+    if (bedtimeItem?.checked) {
+      parts.push('При этом я всё равно стараюсь защитить следующий день и лечь вовремя, а это уже работает на меня в долгую.');
+    } else {
+      parts.push('Значит, мой следующий понятный шаг здесь — мягко вернуть себе вечернюю рамку, чтобы завтра было проще собрать энергию.');
+    }
+
+    return joinSentences(parts);
+  }
+
+  function analyzeMealText(text) {
+    const source = String(text || '').toLowerCase();
+    const proteinKeywords = ['яйц', 'кур', 'индейк', 'рыб', 'лосос', 'тун', 'творог', 'йогурт', 'кефир', 'сыр', 'моцарел', 'мяс', 'говяд', 'кревет', 'тофу', 'темпе', 'фасол', 'нут', 'чечев', 'протеин'];
+    const fiberKeywords = ['овощ', 'салат', 'зелень', 'огур', 'томат', 'брокк', 'капуст', 'кабач', 'морков', 'свекл', 'ягод', 'фрукт', 'яблок', 'груш', 'авокад', 'греч', 'овсян', 'киноа', 'чечев'];
+    const energyKeywords = ['рис', 'карто', 'паста', 'макарон', 'хлеб', 'лаваш', 'круп', 'каша', 'греч', 'булгур', 'киноа', 'банан', 'мюсли', 'гранола'];
+    const lightKeywords = ['кофе', 'чай', 'капуч', 'латте', 'печень', 'батончик', 'яблок', 'банан', 'йогурт', 'смузи'];
+
+    const hasKeyword = (keywords) => keywords.some((keyword) => source.includes(keyword));
+    return {
+      protein: hasKeyword(proteinKeywords),
+      fiber: hasKeyword(fiberKeywords),
+      energy: hasKeyword(energyKeywords),
+      light: hasKeyword(lightKeywords)
+    };
+  }
+
+  function buildNutritionParagraph(day) {
+    const mealIds = [
+      ['breakfast', 'завтрак'],
+      ['lunch', 'обед'],
+      ['dinner', 'ужин']
+    ];
+    const mealSummaries = [];
+    let proteinCount = 0;
+    let fiberCount = 0;
+    let energyCount = 0;
+    let lightCount = 0;
+    let checkedMeals = 0;
+
+    mealIds.forEach(([id, label]) => {
+      const item = getDayItemById(day, id);
+      if (!item?.checked && !getFilledValue(item)) {
+        return;
+      }
+      checkedMeals += item?.checked ? 1 : 0;
+      const note = getFilledValue(item);
+      if (note) {
+        mealSummaries.push(`на ${label} у меня было ${note}`);
+        const mealAnalysis = analyzeMealText(note);
+        proteinCount += mealAnalysis.protein ? 1 : 0;
+        fiberCount += mealAnalysis.fiber ? 1 : 0;
+        energyCount += mealAnalysis.energy ? 1 : 0;
+        lightCount += mealAnalysis.light ? 1 : 0;
+      } else {
+        mealSummaries.push(`${label} я не пропустила`);
+      }
+    });
+
+    if (!mealSummaries.length) {
+      return 'По еде я сегодня почти не оставила следов в трекере, так что в следующий заход мне полезно записать хотя бы пару слов про завтрак, обед или ужин: это сразу даст больше ясности про мой реальный ритм и опоры.';
+    }
+
+    const analysisParts = [];
+    if (proteinCount >= 2) {
+      analysisParts.push('По ощущению, сегодня в рационе уже была неплохая опора на белок.');
+    } else if (proteinCount === 1) {
+      analysisParts.push('Белок сегодня, скорее всего, был, но опора на него пока выглядит не очень устойчивой на протяжении дня.');
+    } else {
+      analysisParts.push('По записям кажется, что сегодня рациону не хватило явной опоры на белок.');
+    }
+
+    if (fiberCount >= 2) {
+      analysisParts.push('Плюс в еде уже заметна клетчатка, а это добавляет сытости и устойчивости.');
+    } else if (fiberCount === 0) {
+      analysisParts.push('Ещё я вижу пространство усилить рацион овощами, зеленью или другими источниками клетчатки.');
+    }
+
+    if (checkedMeals <= 1 || (energyCount === 0 && lightCount >= 1)) {
+      analysisParts.push('И по общему ощущению день по калориям мог получиться довольно лёгким, так что здесь важно не остаться на случайных перекусах.');
+    } else if (checkedMeals >= 2 && energyCount >= 1) {
+      analysisParts.push('По энергии день выглядит более собранным: в рационе были не только быстрые решения, но и еда, которая реально поддерживает меня дольше.');
+    }
+
+    return `По еде день выглядел так: ${joinHumanList(mealSummaries)}. ${analysisParts.join(' ')}`.trim();
+  }
+
+  function buildWinsParagraph(day, checked) {
+    const highlightMap = {
+      sleep: 'не обесценила сон как базу',
+      meditation: 'дала себе момент тишины и внутренней настройки',
+      workout: 'выбрала тело и движение, а не очередное «потом»',
+      breakfast: 'не оставила утро без нормальной еды',
+      lunch: 'поддержала себя полноценным обедом',
+      dinner: 'не забыла про ужин и завершение дня',
+      reading: 'вернула себе внимание через чтение',
+      journaling: 'оставила место для честного контакта с собой',
+      hardstop: 'поставила границу работе',
+      qualitytime: 'сохранила живое присутствие рядом с близкими',
+      bedtime: 'защитила свой следующий день'
+    };
+    const wins = checked
+      .map((item) => highlightMap[item.id] || item.title?.toLowerCase())
+      .filter(Boolean)
+      .slice(0, 4);
+    if (!wins.length) {
+      return 'И всё же даже сегодня у меня есть за что себя поддержать: я не отвернулась от себя и не спряталась от правды про день.';
+    }
+    return `Самое классное сегодня — вот это: я ${joinHumanList(wins)}. Именно такие штуки и хочется праздновать, потому что из них и собирается моя новая норма.`;
+  }
+
   function buildStoryFromCurrentDay() {
     const preferences = readStoryPreferences();
     const day = state.days[currentDay] || { name: `День ${currentDay + 1}`, items: [] };
     const items = Array.isArray(day.items) ? day.items : [];
     const checked = items.filter((item) => item && item.checked);
-    const noted = items.filter((item) => item && typeof item.inputValue === 'string' && item.inputValue.trim());
-    const completedTitles = checked.slice(0, 5).map((item) => item.title.toLowerCase());
-    const noteDetails = noted
-      .slice(0, 2)
-      .map((item) => `${item.title.toLowerCase()}: ${cropText(item.inputValue, 120)}`);
     const opening = checked.length >= 5
-      ? `Сегодня я правда собрала для себя очень сильный ${day.name.toLowerCase()}, и это хочется отпраздновать. Я не просто держалась за список, а реально выбрала себя, свой ритм и свои опоры.`
+      ? `Сегодня я правда собрала для себя очень сильный ${day.name.toLowerCase()}, и это хочется отпраздновать. Я не просто прошла по списку, а реально выбрала себя, свой ритм и свои опоры.`
       : checked.length >= 3
-        ? `Сегодня я удержала важные опоры дня, и это уже очень классный результат. Я двигаюсь не за счёт рывка, а за счёт повторяемости, и именно это даёт мне чувство внутренней силы.`
+        ? `Сегодня я удержала важные опоры дня, и это уже очень классный результат. Я двигаюсь не рывком, а повторяемостью, и именно это даёт мне чувство внутренней силы.`
         : checked.length >= 1
           ? `Сегодня я всё равно не выпала из контакта с собой. Даже несколько выполненных опор — это уже движение в сторону моей базы, и я хочу это отметить.`
           : `Сегодня я хотя бы посмотрела на свой день честно, а это уже начало опоры. Иногда мой главный шаг — не сделать идеально, а заметить, где я сейчас, и остаться рядом с собой.`;
-    const progress = checked.length
-      ? `Больше всего мне удалось вот это: ${joinHumanList(completedTitles)}. Из ${items.length} опорных пунктов я отметила ${checked.length}, и это даёт мне ощущение, что день не растворился, а реально сложился во что-то живое.`
-      : 'Сегодня в трекере пока нет отмеченных пунктов, но сам факт, что я вернулась сюда и вижу этот день, уже собирает меня и возвращает фокус.';
-    const notes = noteDetails.length
-      ? `Особенно мне нравится, что в заметках дня уже есть мой живой след: ${joinHumanList(noteDetails)}. Именно такие детали делают день не абстрактным, а моим.`
-      : 'В следующий раз я могу оставить здесь ещё пару коротких заметок, чтобы лучше увидеть не только структуру дня, но и своё состояние внутри него.';
+    const dayFlow = buildDayFlowParagraph(day);
+    const sleep = buildSleepParagraph(day);
+    const nutrition = buildNutritionParagraph(day);
+    const wins = buildWinsParagraph(day, checked);
     const manifesto = `И я слышу, как это связано с моим манифестом: «${manifestoSpark()}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const angleFocus = buildAngleFocusParagraph(preferences.angles);
     const promptLine = preferences.customPrompt.trim()
@@ -2080,7 +2253,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       ? 'Я хочу запомнить это состояние: у меня уже получается. Я могу держать фокус, собирать себя по кусочкам и усиливать то, что делает меня устойчивее, яснее и сильнее.'
       : 'Я не обязана впечатлять этот день, чтобы он был важным. Мне достаточно продолжать собирать свою жизнь в сторону ясности, фокуса и энергии, и именно из этого постепенно рождается большой результат.';
 
-    return [opening, progress, notes, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\n\n');
+    return [opening, dayFlow, sleep, nutrition, wins, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\n\n');
   }
 
   function renderGeneratedStory(text) {
