@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v24"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v24"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v24"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v25"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v25"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v25"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v24"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v24#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v25"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v25#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -1019,73 +1019,6 @@ def build_runtime_script(name: str, slug: str) -> str:
     return parts.filter(Boolean).join(' ');
   }}
 
-  function buildDayFlowParagraph(day) {{
-    const flowMap = {{
-      sleep: 'дала себе базу сна',
-      meditation: 'начала день с короткой медитации',
-      breakfast: 'собрала себе завтрак',
-      reading: 'выделила время на чтение',
-      journaling: 'оставила место для джорналинга',
-      workout: 'сделала тренировку',
-      lunch: 'не пропустила полноценный обед',
-      hardstop: 'поставила рамку работе',
-      qualitytime: 'побыла с близкими по-настоящему',
-      dinner: 'собрала ужин',
-      bedtime: 'подошла к вечеру с заботой о завтрашнем дне'
-    }};
-    const morningIds = ['sleep', 'meditation', 'breakfast', 'reading'];
-    const dayIds = ['workout', 'lunch', 'hardstop', 'journaling'];
-    const eveningIds = ['qualitytime', 'dinner', 'bedtime'];
-    const collect = (ids) => ids
-      .map((id) => getDayItemById(day, id))
-      .filter((item) => item?.checked)
-      .map((item) => flowMap[item.id] || item.title?.toLowerCase());
-
-    const morning = collect(morningIds);
-    const daytime = collect(dayIds);
-    const evening = collect(eveningIds);
-    const paragraphs = [];
-
-    if (morning.length) {{
-      paragraphs.push(`С утра я ${{joinHumanList(morning)}}, и это задало дню хороший тон.`);
-    }}
-    if (daytime.length) {{
-      paragraphs.push(`Днём у меня получилось ${{joinHumanList(daytime)}}, так что день не рассыпался, а держался на реальных действиях.`);
-    }}
-    if (evening.length) {{
-      paragraphs.push(`К вечеру я ${{joinHumanList(evening)}}, и в этом уже чувствуется не просто выполнение плана, а забота о своей устойчивости.`);
-    }}
-
-    if (!paragraphs.length) {{
-      return 'Сегодня день пока не сложился в чёткую структуру, но я всё равно смотрю на него честно и собираю из этого материал для следующего шага.';
-    }}
-
-    return paragraphs.join(' ');
-  }}
-
-  function buildSleepParagraph(day) {{
-    const sleepItem = getDayItemById(day, 'sleep');
-    const bedtimeItem = getDayItemById(day, 'bedtime');
-    const sleepNote = getFilledValue(sleepItem);
-    const parts = [];
-
-    if (sleepItem?.checked) {{
-      parts.push('По сну я дала себе базу: цель в 7 часов была выдержана, и это уже сильно влияет на то, как я держу фокус и энергию.');
-    }} else if (sleepNote) {{
-      parts.push(`По сну я пока не дотянула до своей цели, но уже вижу реальность дня без искажений: ${{sleepNote}}. Это не повод давить на себя, а полезная точка для калибровки.`);
-    }} else {{
-      parts.push('По сну я пока не дотянула до своей опоры в 7 часов, и мне важно это заметить спокойно: без драматизации, но и без попытки обесценить влияние сна на моё состояние.');
-    }}
-
-    if (bedtimeItem?.checked) {{
-      parts.push('При этом я всё равно стараюсь защитить следующий день и лечь вовремя, а это уже работает на меня в долгую.');
-    }} else {{
-      parts.push('Значит, мой следующий понятный шаг здесь — мягко вернуть себе вечернюю рамку, чтобы завтра было проще собрать энергию.');
-    }}
-
-    return joinSentences(parts);
-  }}
-
   function analyzeMealText(text) {{
     const source = String(text || '').toLowerCase();
     const proteinKeywords = ['яйц', 'кур', 'индейк', 'рыб', 'лосос', 'тун', 'творог', 'йогурт', 'кефир', 'сыр', 'моцарел', 'мяс', 'говяд', 'кревет', 'тофу', 'темпе', 'фасол', 'нут', 'чечев', 'протеин'];
@@ -1135,7 +1068,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     }});
 
     if (!mealSummaries.length) {{
-      return 'По еде я сегодня почти не оставила следов в трекере, так что в следующий заход мне полезно записать хотя бы пару слов про завтрак, обед или ужин: это сразу даст больше ясности про мой реальный ритм и опоры.';
+      return '';
     }}
 
     const analysisParts = [];
@@ -1159,68 +1092,133 @@ def build_runtime_script(name: str, slug: str) -> str:
       analysisParts.push('По энергии день выглядит более собранным: в рационе были не только быстрые решения, но и еда, которая реально поддерживает меня дольше.');
     }}
 
-    return `По еде день выглядел так: ${{joinHumanList(mealSummaries)}}. ${{analysisParts.join(' ')}}`.trim();
+    return `По еде я вижу такую картину: ${{joinHumanList(mealSummaries)}}. ${{analysisParts.join(' ')}}`.trim();
   }}
 
-  function buildWinsParagraph(day, checked) {{
-    const highlightMap = {{
-      sleep: 'не обесценила сон как базу',
-      meditation: 'дала себе момент тишины и внутренней настройки',
-      workout: 'выбрала тело и движение, а не очередное «потом»',
-      breakfast: 'не оставила утро без нормальной еды',
-      lunch: 'поддержала себя полноценным обедом',
-      dinner: 'не забыла про ужин и завершение дня',
+  function getCompletedStandardItems(day) {{
+    const items = Array.isArray(day?.items) ? day.items : [];
+    return items.filter((item) => item?.checked).map((item) => canonicalItemId(item.id));
+  }}
+
+  function buildOpeningParagraph(day, completedIds) {{
+    if (completedIds.length >= 5) {{
+      return `Сегодня у меня получился по-настоящему собранный ${{day.name.toLowerCase()}}. Я чувствую не просто галочки, а реальную опору: день держался на действиях, которые возвращают меня к себе.`;
+    }}
+    if (completedIds.length >= 3) {{
+      return `Сегодня у меня получилось удержать несколько важных опор, и это уже делает день живым и собранным. Я не пытаюсь сделать всё идеально, я просто шаг за шагом собираю для себя более сильную базу.`;
+    }}
+    if (completedIds.length >= 1) {{
+      return 'Сегодня день не был идеальным, но я всё равно осталась в процессе. Даже несколько выполненных опор уже возвращают меня к себе и напоминают, что база строится именно так.';
+    }}
+    return 'Сегодня день больше про наблюдение, чем про выполнение. Но и это важно: я всё равно остаюсь в контакте с собой и не выпадаю из процесса.';
+  }}
+
+  function buildDaySummaryParagraph(day, completedIds) {{
+    const phrases = {{
+      sleep: 'дала себе опору по сну',
+      meditation: 'начала день с медитации',
+      workout: 'сделала тренировку',
+      breakfast: 'собрала себе нормальный завтрак',
+      lunch: 'не пропустила обед',
+      dinner: 'собрала ужин',
       reading: 'вернула себе внимание через чтение',
-      journaling: 'оставила место для честного контакта с собой',
+      journaling: 'оставила место для джорналинга',
+      hardstop: 'поставила рамку работе',
+      qualitytime: 'побыла с близкими по-настоящему',
+      bedtime: 'подумала о завтрашнем дне уже сегодня'
+    }};
+    const completed = completedIds.map((id) => phrases[id]).filter(Boolean).slice(0, 5);
+    const workoutNote = getFilledValue(getDayItemById(day, 'workout'));
+    const journalNote = getFilledValue(getDayItemById(day, 'journaling'));
+
+    const parts = [];
+    if (completed.length) {{
+      parts.push(`Сегодня мой день держался на таких вещах: ${{joinHumanList(completed)}}.`);
+    }}
+    if (workoutNote) {{
+      parts.push(`Из того, что особенно запомнилось: ${{workoutNote}}`);
+    }} else if (journalNote) {{
+      parts.push(`Из живых деталей дня я бы сохранила вот это: ${{journalNote}}`);
+    }}
+
+    return parts.join(' ');
+  }}
+
+  function buildSleepParagraph(day) {{
+    const sleepItem = getDayItemById(day, 'sleep');
+    const bedtimeItem = getDayItemById(day, 'bedtime');
+    const sleepNote = getFilledValue(sleepItem);
+
+    if (!sleepItem && !bedtimeItem) {{
+      return '';
+    }}
+    if (sleepNote) {{
+      return `По сну я вижу реальность дня без прикрас: ${{sleepNote}}. Для меня это не повод ругать себя, а способ честно понять, где у меня сейчас проседает база и как мягко вернуть себе опору.`;
+    }}
+    if (sleepItem?.checked) {{
+      return 'Сон сегодня был одной из моих опор, и я хочу это отдельно отметить. Когда у меня есть хотя бы минимальная база по сну, мне гораздо легче держать и энергию, и фокус, и настроение в течение дня.';
+    }}
+    if (bedtimeItem?.checked) {{
+      return 'По сну ещё есть куда расти, но мне нравится, что я хотя бы думаю о вечерней рамке и о завтрашнем дне заранее. Для меня это уже движение в сторону более бережного ритма.';
+    }}
+    return '';
+  }}
+
+  function buildWinsParagraph(day, completedIds) {{
+    const wins = [];
+    const winMap = {{
+      sleep: 'не обесценила важность сна',
+      meditation: 'дала себе момент тишины и настройки',
+      workout: 'выбрала движение и тело',
+      breakfast: 'не оставила утро без еды',
+      lunch: 'поддержала себя обедом',
+      dinner: 'завершила день с заботой о себе',
+      reading: 'вернула себе внимание',
+      journaling: 'оставила место для себя',
       hardstop: 'поставила границу работе',
       qualitytime: 'сохранила живое присутствие рядом с близкими',
-      bedtime: 'защитила свой следующий день'
+      bedtime: 'подумала о завтрашнем себе'
     }};
-    const wins = checked
-      .map((item) => highlightMap[canonicalItemId(item.id)] || item.title?.toLowerCase())
-      .filter(Boolean)
-      .slice(0, 4);
+    completedIds.forEach((id) => {{
+      const phrase = winMap[id];
+      if (phrase && wins.length < 3) {{
+        wins.push(phrase);
+      }}
+    }});
     if (!wins.length) {{
-      return 'И всё же даже сегодня у меня есть за что себя поддержать: я не отвернулась от себя и не спряталась от правды про день.';
+      const journalNote = getFilledValue(getDayItemById(day, 'journaling'));
+      return journalNote
+        ? `Самое ценное сегодня для меня — то, что я всё-таки оставила след этого дня в трекере: ${{journalNote}}`
+        : '';
     }}
-    return `Самое классное сегодня — вот это: я ${{joinHumanList(wins)}}. Именно такие штуки и хочется праздновать, потому что из них и собирается моя новая норма.`;
+    return `Больше всего мне хочется отметить вот это: я ${{joinHumanList(wins)}}. Именно такие штуки я и хочу праздновать, потому что из них постепенно собирается новая норма моей жизни.`;
   }}
 
-  function buildProgramLensParagraph(checked) {{
-    if (checked.length >= 4) {{
-      return 'И я очень чувствую, что именно ради этого и нужен High Performance: не чтобы героически вывозить всё сразу, а чтобы через понятные опоры собрать базу тела, питания, ритма и внимания. Когда у меня появляется такая база, жизнь становится не тяжелее, а легче и чище.';
+  function buildProgramLensParagraph(completedIds) {{
+    if (completedIds.length >= 1) {{
+      return 'И я очень чувствую, зачем мне вообще этот процесс High Performance. Первая неделя здесь не про идеальность и не про самооценку через галочки. Она про то, чтобы шаг за шагом собрать базу: тело, питание, ритм, внимание и ощущение опоры внутри дня.';
     }}
-    if (checked.length >= 1) {{
-      return 'И я вижу, как это встраивается в саму идею High Performance: первая неделя у нас не про идеальность, а про базу. Через такие маленькие шаги я снижаю хаос, убираю лишнюю когнитивную нагрузку и собираю для себя более устойчивый ритм.';
-    }}
-    return 'И даже такой день всё равно остаётся частью процесса. Здесь задача не в том, чтобы мгновенно стать идеальной версией себя, а в том, чтобы мягко войти в новый ритм и увидеть, какая база действительно помогает мне жить устойчивее.';
+    return 'И даже такой день всё равно остаётся частью процесса High Performance. Здесь важнее не идеальная картинка, а честный контакт с собой и постепенная сборка той базы, на которой потом держится всё остальное.';
   }}
 
   function buildStoryFromCurrentDay() {{
     const preferences = readStoryPreferences();
     const day = state.days[currentDay] || {{ name: `День ${{currentDay + 1}}`, items: [] }};
-    const items = Array.isArray(day.items) ? day.items : [];
-    const checked = items.filter((item) => item && item.checked);
-    const opening = checked.length >= 5
-      ? `Сегодня я правда собрала для себя очень сильный ${{day.name.toLowerCase()}}, и это хочется отпраздновать. Я не просто прошла по списку, а реально выбрала себя, свой ритм и свои опоры.`
-      : checked.length >= 3
-        ? `Сегодня я удержала важные опоры дня, и это уже очень классный результат. Я двигаюсь не рывком, а повторяемостью, и именно это даёт мне чувство внутренней силы.`
-        : checked.length >= 1
-          ? `Сегодня я всё равно не выпала из контакта с собой. Даже несколько выполненных опор — это уже движение в сторону моей базы, и я хочу это отметить.`
-          : `Сегодня я хотя бы посмотрела на свой день честно, а это уже начало опоры. Иногда мой главный шаг — не сделать идеально, а заметить, где я сейчас, и остаться рядом с собой.`;
-    const dayFlow = buildDayFlowParagraph(day);
+    const completedIds = getCompletedStandardItems(day);
+    const opening = buildOpeningParagraph(day, completedIds);
+    const dayFlow = buildDaySummaryParagraph(day, completedIds);
     const sleep = buildSleepParagraph(day);
     const nutrition = buildNutritionParagraph(day);
-    const wins = buildWinsParagraph(day, checked);
-    const programLens = buildProgramLensParagraph(checked);
+    const wins = buildWinsParagraph(day, completedIds);
+    const programLens = buildProgramLensParagraph(completedIds);
     const manifesto = `И я слышу, как это связано с моим манифестом: «${{manifestoSpark()}}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
     const angleFocus = buildAngleFocusParagraph(preferences.angles);
     const promptLine = preferences.customPrompt.trim()
       ? `И ещё я хочу удержать в этом рассказе вот такой мой акцент: ${{cropText(preferences.customPrompt, 220)}}.`
       : '';
-    const closing = checked.length >= 4
-      ? 'Я хочу запомнить это состояние: у меня уже получается входить в этот процесс без надрыва и собирать для себя сильную базу. Не через жёсткость, а через повторяемость, внимание к себе и уважение к тому ритму, который я действительно могу удерживать.'
-      : 'Мне не нужно впечатлять этот день, чтобы он был важным. Мне важно просто продолжать входить в процесс, замечать, что работает для меня, и шаг за шагом собирать ту базу, на которой потом держатся и энергия, и фокус, и ощущение внутренней силы.';
+    const closing = completedIds.length >= 4
+      ? 'Я хочу запомнить именно это ощущение: у меня получается входить в процесс спокойно, без надрыва, и шаг за шагом собирать для себя сильную базу.'
+      : 'Мне важно не впечатлить этот день, а остаться в процессе. Если я продолжаю возвращаться к себе и замечать, что реально работает, база всё равно постепенно собирается.';
 
     return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, promptLine, closing].filter(Boolean).join('\\n\\n');
   }}
