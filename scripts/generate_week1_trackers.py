@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v23"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v23"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v23"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v24"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v24"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v24"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v23"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v23#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v24"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v24#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -997,9 +997,18 @@ def build_runtime_script(name: str, slug: str) -> str:
     return 'Сегодня я выбираю ясность, фокус, смелость, энергию и огонь. Мои ценности важнее хаоса, а дисциплина — это форма заботы о себе';
   }}
 
+  function canonicalItemId(value) {{
+    const raw = String(value || '').trim();
+    if (!raw) {{
+      return '';
+    }}
+    const base = raw.replace(/_\\d+$/, '');
+    return DEFAULT_ITEMS.some((item) => item.id === base) ? base : raw;
+  }}
+
   function getDayItemById(day, itemId) {{
     const items = Array.isArray(day?.items) ? day.items : [];
-    return items.find((item) => item && item.id === itemId) || null;
+    return items.find((item) => item && canonicalItemId(item.id) === itemId) || null;
   }}
 
   function getFilledValue(item) {{
@@ -1168,7 +1177,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       bedtime: 'защитила свой следующий день'
     }};
     const wins = checked
-      .map((item) => highlightMap[item.id] || item.title?.toLowerCase())
+      .map((item) => highlightMap[canonicalItemId(item.id)] || item.title?.toLowerCase())
       .filter(Boolean)
       .slice(0, 4);
     if (!wins.length) {{
