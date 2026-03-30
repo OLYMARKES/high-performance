@@ -1278,8 +1278,8 @@ body {
                 </div>
                 <p>Опорный лист на неделю: на что смотреть каждый день, как не распыляться и как держать повторяемость без идеальности.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v26" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v26" download="habit-sheet.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../habit-sheet.pdf?v=materials-pdf-v27" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=materials-pdf-v27" download="habit-sheet.pdf">Скачать на компьютер</a>
                 </div>
               </div>
               <div class="material-resource">
@@ -1289,8 +1289,8 @@ body {
                 </div>
                 <p>Краткая логика питания внутри программы: как собирать приёмы пищи, заранее упростить выбор и снизить хаос вокруг еды.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v26" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v26" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=materials-pdf-v27" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=materials-pdf-v27" download="nutrition-guide.pdf">Скачать на компьютер</a>
                 </div>
               </div>
             </div>
@@ -1312,7 +1312,7 @@ body {
             <p>Здесь лежат прямая ссылка на тренировку дня, PDF основной программы и бэкап-вариант в личном кабинете SektaSchool.ru.</p>
               <div class="material-actions" id="workoutDayButtons"></div>
             <div class="material-actions">
-              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v26" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
+              <a class="material-btn secondary" href="../main-program.pdf?v=materials-pdf-v27" download="main-program.pdf">Скачать PDF с тренировками основной программы</a>
               <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Ссылка на SektaSchool.ru с бэкап-программой</a>
             </div>
             <div class="material-meta">Сначала даю прямой вход в тренировку дня, затем основной PDF, а личный кабинет оставляю как запасной вариант доступа.</div>
@@ -2017,6 +2017,15 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     }
   }
 
+  function syncStoryPreferencesFromUI() {
+    const preferences = readStoryPreferences();
+    const input = document.getElementById('generatedStoryPrompt');
+    persistStoryPreferences({
+      ...preferences,
+      customPrompt: input ? input.value : preferences.customPrompt
+    });
+  }
+
   function buildAngleFocusParagraph(angles) {
     const map = {
       'фокус': 'Сегодня мне важно услышать, что через этот день у меня собирается фокус и я перестаю распыляться.',
@@ -2477,11 +2486,17 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     setSaveStatus('Трекер сохранён, а короткий рассказ о текущем дне собран ниже.');
   }
 
+  function applyStoryPreferences() {
+    syncStoryPreferencesFromUI();
+    renderGeneratedStory(buildStoryFromCurrentDay());
+    setSaveStatus('Рассказ пересобран с новыми акцентами.');
+  }
+
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
   document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
-  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', applyStoryPreferences);
   document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {
     const preferences = readStoryPreferences();
     persistStoryPreferences({

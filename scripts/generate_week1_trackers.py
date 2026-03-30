@@ -11,12 +11,12 @@ OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v26"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v26"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v26"
+TRACKER_VERSION_QUERY = "v=materials-pdf-v27"
+HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v27"
+NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v27"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v26"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v26#page=999"
+MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v27"
+MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v27#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 DAY_WORKOUT_LINKS = [
@@ -966,6 +966,15 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
   }}
 
+  function syncStoryPreferencesFromUI() {{
+    const preferences = readStoryPreferences();
+    const input = document.getElementById('generatedStoryPrompt');
+    persistStoryPreferences({{
+      ...preferences,
+      customPrompt: input ? input.value : preferences.customPrompt
+    }});
+  }}
+
   function buildAngleFocusParagraph(angles) {{
     const map = {{
       'фокус': 'Сегодня мне важно услышать, что через этот день у меня собирается фокус и я перестаю распыляться.',
@@ -1426,11 +1435,17 @@ def build_runtime_script(name: str, slug: str) -> str:
     setSaveStatus('Трекер сохранён, а короткий рассказ о текущем дне собран ниже.');
   }}
 
+  function applyStoryPreferences() {{
+    syncStoryPreferencesFromUI();
+    renderGeneratedStory(buildStoryFromCurrentDay());
+    setSaveStatus('Рассказ пересобран с новыми акцентами.');
+  }}
+
   document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
   document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
   document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
-  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', applyStoryPreferences);
   document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {{
     const preferences = readStoryPreferences();
     persistStoryPreferences({{
