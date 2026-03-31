@@ -26,10 +26,11 @@ RAW_PARTICIPANTS = [
     {"name": "Екатерина Прозорова", "public_name": "Екатерина", "contact": "@katia_paints", "issue": 6, "token": "z2m7v4k9p6c1"},
     {"name": "Таня", "public_name": "Таня", "contact": "@Tatiana_Apakhova", "issue": 33, "token": "m6p4t8k2v7q1"},
     {"name": "Алена Замесина", "public_name": "Алена", "contact": "@alenazamesina", "issue": 56, "token": "n7v3k8p2m5q4", "paid": True, "active": False},
-    {"name": "Севара", "public_name": "Севара", "contact": "@sevaragreene", "issue": 38, "token": "r4m8t2q6v1k9", "paid": True},
+    {"name": "Севара", "public_name": "Севара", "contact": "@sevaragreene", "issue": 38, "token": "j5j3l8h7s5y1", "slug_override": "sevara-v2", "paid": True},
     {"name": "Лена", "public_name": "Лена", "contact": "@barkovaquality", "issue": 35, "token": "c8p2m6v4k9t1", "paid": False, "active": False},
     {"name": "Полина Рэйтблат", "public_name": "Полина", "contact": "@paulina_raitblat", "issue": 34, "token": "y5k2m8q4v7p1", "paid": False},
     {"name": "Наташа", "public_name": "Наташа", "contact": "@natalytoomany", "issue": 28, "token": "h4v7m2k9p5q8", "paid": False},
+    {"name": "Дарья Харламова", "public_name": "Даша", "contact": "@dkkharlm", "issue": 105, "token": "x5h2s7n1p4j2", "paid": False},
 ]
 
 
@@ -112,7 +113,7 @@ def get_participants() -> list[dict[str, str]]:
     for raw in RAW_PARTICIPANTS:
         if raw.get("active", True) is False:
             continue
-        base_slug = slugify(raw["name"])
+        base_slug = str(raw.get("slug_override", "")).strip() or slugify(raw["name"])
         contact_slug = slugify(raw["contact"].replace("@", ""))
         slug = base_slug if base_slug not in used_slugs else f"{base_slug}-{contact_slug}"
         used_slugs.add(slug)
