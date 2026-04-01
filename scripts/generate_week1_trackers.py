@@ -19,6 +19,7 @@ MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v29"
 MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v29#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
+JOURNEY_LINK_URL = "../journey-link-meditation-journaling.html"
 DAY_WORKOUT_LINKS = [
     [
         {
@@ -101,6 +102,36 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
     html = html.replace(
         "Оля Маркес · High Performance · Трекер недели 1 · Апрель 2026",
         f"{name} · High Performance · Трекер недели 1 · Апрель 2026",
+        1,
+    )
+    html = html.replace(
+        """.tracker-subtitle {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.55;
+}
+
+/* Input fields inside tracker items */""",
+        """.tracker-subtitle {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.55;
+}
+.tracker-helper-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tracker-helper-link:hover {
+  color: var(--terracotta-light);
+}
+
+/* Input fields inside tracker items */""",
         1,
     )
     html = html.replace("'hp_week1_tracker'", f"'hp_week1_tracker_{slug}'", 2)
@@ -756,6 +787,70 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         1,
     )
     html = html.replace(
+        """function createTrackerItem(item, index) {
+  const el = document.createElement('div');
+  el.className = 'tracker-item' + (item.checked ? ' checked' : '');
+
+  let inputHTML = '';
+  if (item.hasInput) {
+    inputHTML = `<textarea class="tracker-input" placeholder="${item.inputPlaceholder || 'Запиши...'}"
+      data-index="${index}" rows="2">${item.inputValue || ''}</textarea>`;
+  }
+
+  el.innerHTML = `
+    <div class="tracker-check" data-index="${index}">
+      <svg viewBox="0 0 16 16"><polyline points="3 8 7 12 13 4"/></svg>
+    </div>
+    <div class="tracker-body">
+      <div class="tracker-top-row">
+        <span class="tracker-icon">${item.icon || ''}</span>
+        <span class="tracker-title">${item.title}</span>
+      </div>
+      ${item.subtitle ? `<div class="tracker-subtitle">${item.subtitle}</div>` : ''}
+      ${inputHTML}
+    </div>
+    <div class="tracker-actions">
+      <button class="tracker-action-btn edit" title="Редактировать" data-index="${index}">✎</button>
+      <button class="tracker-action-btn delete" title="Удалить" data-index="${index}">✕</button>
+    </div>
+  `;
+""",
+        f"""function createTrackerItem(item, index) {{
+  const el = document.createElement('div');
+  el.className = 'tracker-item' + (item.checked ? ' checked' : '');
+
+  let inputHTML = '';
+  if (item.hasInput) {{
+    inputHTML = `<textarea class="tracker-input" placeholder="${{item.inputPlaceholder || 'Запиши...'}}"
+      data-index="${{index}}" rows="2">${{item.inputValue || ''}}</textarea>`;
+  }}
+
+  const helperLinkHTML = ['meditation', 'journaling'].includes(item.id)
+    ? `<a class="tracker-helper-link" href="{JOURNEY_LINK_URL}" target="_blank" rel="noopener noreferrer">Открыть медитацию и джорналинг ↗</a>`
+    : '';
+
+  el.innerHTML = `
+    <div class="tracker-check" data-index="${{index}}">
+      <svg viewBox="0 0 16 16"><polyline points="3 8 7 12 13 4"/></svg>
+    </div>
+    <div class="tracker-body">
+      <div class="tracker-top-row">
+        <span class="tracker-icon">${{item.icon || ''}}</span>
+        <span class="tracker-title">${{item.title}}</span>
+      </div>
+      ${{item.subtitle ? `<div class="tracker-subtitle">${{item.subtitle}}</div>` : ''}}
+      ${{helperLinkHTML}}
+      ${{inputHTML}}
+    </div>
+    <div class="tracker-actions">
+      <button class="tracker-action-btn edit" title="Редактировать" data-index="${{index}}">✎</button>
+      <button class="tracker-action-btn delete" title="Удалить" data-index="${{index}}">✕</button>
+    </div>
+  `;
+""",
+        1,
+    )
+    html = html.replace(
         """function switchDay(index) {
   currentDay = index;
   renderDayNav();
@@ -790,6 +885,99 @@ if (!state.manifesto) {
 syncManifestoVisibility();""",
         1,
     )
+    html = html.replace(
+        """  el.querySelector('.tracker-action-btn.delete').addEventListener('click', () => {
+    if (confirm('Удалить этот пункт?')) {
+      state.days[currentDay].items.splice(index, 1);
+      saveState();
+      renderDayNav();
+      renderDay();
+    }
+  });""",
+        """  el.querySelector('.tracker-action-btn.delete').addEventListener('click', () => {
+    if (confirm('Удалить этот пункт?')) {
+      const removedItem = state.days[currentDay].items[index];
+      state.days[currentDay].items.splice(index, 1);
+      syncTrackerTemplateForward(currentDay, { removeItemId: removedItem?.id });
+      saveState();
+      renderDayNav();
+      renderDay();
+    }
+  });""",
+        1,
+    )
+    html = html.replace(
+        """document.getElementById('itemModalSave').addEventListener('click', () => {
+  const title = itemTitleInput.value.trim();
+  if (!title) return;
+
+  const itemData = {
+    id: 'custom_' + Date.now(),
+    icon: itemIconInput.value.trim() || '✦',
+    title: title,
+    subtitle: itemSubtitleInput.value.trim(),
+    hasInput: itemHasInput.checked,
+    inputPlaceholder: 'Запиши...',
+    category: itemCategoryInput.value.trim().toLowerCase() || 'focus',
+    checked: false,
+    inputValue: ''
+  };
+
+  if (editingItemIndex !== null) {
+    // Editing — preserve checked state and inputValue
+    const existing = state.days[editingDayIndex].items[editingItemIndex];
+    itemData.checked = existing.checked;
+    itemData.inputValue = existing.inputValue;
+    itemData.id = existing.id;
+    state.days[editingDayIndex].items[editingItemIndex] = itemData;
+  } else {
+    // Adding new
+    state.days[editingDayIndex].items.push(itemData);
+  }
+
+  saveState();
+  closeItemModal();
+  renderDayNav();
+  renderDay();
+});""",
+        """document.getElementById('itemModalSave').addEventListener('click', () => {
+  const title = itemTitleInput.value.trim();
+  if (!title) return;
+
+  const itemData = {
+    id: 'custom_' + Date.now(),
+    icon: itemIconInput.value.trim() || '✦',
+    title: title,
+    subtitle: itemSubtitleInput.value.trim(),
+    hasInput: itemHasInput.checked,
+    inputPlaceholder: 'Запиши...',
+    category: itemCategoryInput.value.trim().toLowerCase() || 'focus',
+    checked: false,
+    inputValue: ''
+  };
+
+  if (editingItemIndex !== null) {
+    // Editing — preserve checked state and inputValue
+    const existing = state.days[editingDayIndex].items[editingItemIndex];
+    itemData.checked = existing.checked;
+    itemData.inputValue = existing.inputValue;
+    itemData.id = existing.id;
+    state.days[editingDayIndex].items[editingItemIndex] = itemData;
+  } else {
+    // Adding new
+    state.days[editingDayIndex].items.push(itemData);
+  }
+
+  syncTrackerTemplateForward(editingDayIndex ?? currentDay, {
+    focusItemId: itemData.id
+  });
+  saveState();
+  closeItemModal();
+  renderDayNav();
+  renderDay();
+});""",
+        1,
+    )
     html = html.replace("{HABITS_PDF}", HABITS_PDF)
     html = html.replace("{NUTRITION_PDF}", NUTRITION_PDF)
     html = html.replace("{SEKTA_CABINET_URL}", SEKTA_CABINET_URL)
@@ -821,6 +1009,58 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}));
   }}
 
+  function normalizeTrackerItem(item, fallbackId = '') {{
+    const source = item && typeof item === 'object' ? item : {{}};
+    const rawId = typeof source.id === 'string' ? source.id.trim() : '';
+    const normalizedId = rawId || fallbackId || `item_${{Date.now()}}`;
+    return {{
+      ...source,
+      id: normalizedId,
+      icon: typeof source.icon === 'string' ? source.icon : '',
+      title: typeof source.title === 'string' ? source.title : '',
+      subtitle: typeof source.subtitle === 'string' ? source.subtitle : '',
+      hasInput: Boolean(source.hasInput),
+      inputPlaceholder: typeof source.inputPlaceholder === 'string' ? source.inputPlaceholder : 'Запиши...',
+      category: typeof source.category === 'string' && source.category.trim() ? source.category.trim().toLowerCase() : 'focus',
+      checked: Boolean(source.checked),
+      inputValue: typeof source.inputValue === 'string' ? source.inputValue : ''
+    }};
+  }}
+
+  function normalizeDayItems(items, fallbackToDefault = false) {{
+    if (!Array.isArray(items) || !items.length) {{
+      return fallbackToDefault ? getDefaultDayItems() : [];
+    }}
+
+    return items.map((item, index) => normalizeTrackerItem(item, `item_${{index}}`));
+  }}
+
+  function cloneItemTemplate(item, index) {{
+    const normalizedItem = normalizeTrackerItem(item, `item_${{index}}`);
+    return {{
+      ...normalizedItem,
+      checked: false,
+      inputValue: ''
+    }};
+  }}
+
+  function mergeDayItemsWithTemplate(templateItems, incomingItems) {{
+    const normalizedTemplate = normalizeDayItems(templateItems, true);
+    const normalizedIncoming = normalizeDayItems(incomingItems);
+    const incomingById = new Map(
+      normalizedIncoming.map((item) => [canonicalItemId(item.id) || item.id, item])
+    );
+    return normalizedTemplate.map((item, index) => {{
+      const key = canonicalItemId(item.id) || item.id;
+      const existing = incomingById.get(key);
+      return {{
+        ...cloneItemTemplate(item, index),
+        checked: Boolean(existing?.checked),
+        inputValue: typeof existing?.inputValue === 'string' ? existing.inputValue : ''
+      }};
+    }});
+  }}
+
   function normalizeTrackerState(rawState) {{
     const baseDays = DAY_NAMES.map((name) => ({{
       name,
@@ -835,6 +1075,9 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
 
     const rawDays = Array.isArray(rawState.days) ? rawState.days : [];
+    const templateItems = Array.isArray(rawDays[0]?.items) && rawDays[0].items.length
+      ? rawDays[0].items
+      : baseDays[0].items;
     const normalizedDays = baseDays.map((baseDay, dayIndex) => {{
       const incomingDay = rawDays[dayIndex] && typeof rawDays[dayIndex] === 'object'
         ? rawDays[dayIndex]
@@ -842,14 +1085,7 @@ def build_runtime_script(name: str, slug: str) -> str:
           ? rawDays[0]
           : null;
 
-      const normalizedItems = Array.isArray(incomingDay?.items)
-        ? incomingDay.items.map((item, index) => ({{
-            ...item,
-            id: item?.id || `item_${{dayIndex}}_${{index}}`,
-            checked: Boolean(item?.checked),
-            inputValue: typeof item?.inputValue === 'string' ? item.inputValue : ''
-          }}))
-        : baseDay.items;
+      const normalizedItems = mergeDayItemsWithTemplate(templateItems, incomingDay?.items || []);
 
       return {{
         ...baseDay,
@@ -875,6 +1111,41 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   function cloneState(value) {{
     return JSON.parse(JSON.stringify(value));
+  }}
+
+  function syncTrackerTemplateForward(startDayIndex = 0, options = {{}}) {{
+    const sourceDay = state.days[startDayIndex];
+    if (!sourceDay) {{
+      return;
+    }}
+
+    const templateItems = normalizeDayItems(sourceDay.items, true);
+    const removeKey = options.removeItemId ? canonicalItemId(options.removeItemId) || options.removeItemId : '';
+
+    state.days = state.days.map((day, dayIndex) => {{
+      if (dayIndex < startDayIndex) {{
+        return day;
+      }}
+
+      if (dayIndex === startDayIndex) {{
+        return {{
+          ...day,
+          name: DAY_NAMES[dayIndex] || day.name || `День ${{dayIndex + 1}}`,
+          items: templateItems.map((item, index) => normalizeTrackerItem(item, item.id || `item_${{index}}`))
+        }};
+      }}
+
+      const incomingItems = Array.isArray(day?.items) ? day.items : [];
+      const filteredIncomingItems = removeKey
+        ? incomingItems.filter((item) => (canonicalItemId(item?.id) || item?.id) !== removeKey)
+        : incomingItems;
+
+      return {{
+        ...day,
+        name: DAY_NAMES[dayIndex] || day?.name || `День ${{dayIndex + 1}}`,
+        items: mergeDayItemsWithTemplate(templateItems, filteredIncomingItems)
+      }};
+    }});
   }}
 
   function setButtonBusy(button, busy, busyLabel) {{
