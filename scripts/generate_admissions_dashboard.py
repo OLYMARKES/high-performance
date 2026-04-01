@@ -287,7 +287,7 @@ def build_rows() -> tuple[list[dict], str]:
                 ),
                 "questionnaireIssueNumber": issue.get("number", ""),
                 "questionnaireIssueUrl": issue.get("html_url", ""),
-                "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/q_{participant['token']}.html",
+                "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/{participant['filename']}",
                 "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
                 "email": resolved_email,
                 "updatedAt": resolved_updated_at,

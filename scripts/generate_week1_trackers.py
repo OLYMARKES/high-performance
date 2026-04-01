@@ -71,6 +71,44 @@ DAY_WORKOUT_LINKS = [
     ],
     [],
 ]
+CURATOR_TRACKER_PARTICIPANTS = [
+    {
+        "full_name": "Варя",
+        "public_name": "Варя",
+        "for_name": "Вари",
+        "display_name": "Варя",
+        "telegram_handle": "@va_rom",
+        "slug": "varya-curator",
+        "token": "k7v3m9q2t6p4",
+    },
+    {
+        "full_name": "Таня",
+        "public_name": "Таня",
+        "for_name": "Тани",
+        "display_name": "Таня",
+        "telegram_handle": "@tparam",
+        "slug": "tanya-curator",
+        "token": "p8m4k2v7q6t1",
+    },
+    {
+        "full_name": "Света",
+        "public_name": "Света",
+        "for_name": "Светы",
+        "display_name": "Света",
+        "telegram_handle": "@svetlana_saltykova",
+        "slug": "sveta-curator",
+        "token": "s4v8k2m7q1t5",
+    },
+    {
+        "full_name": "Настя",
+        "public_name": "Настя",
+        "for_name": "Насти",
+        "display_name": "Настя",
+        "telegram_handle": "@Nastia_Lee",
+        "slug": "nastya-curator",
+        "token": "n5t2v8k4q7m1",
+    },
+]
 
 
 def build_workout_day_buttons_shell() -> str:
@@ -79,6 +117,10 @@ def build_workout_day_buttons_shell() -> str:
 
 def quote_js(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
+
+
+def get_week1_tracker_participants() -> list[dict[str, str]]:
+    return [*get_participants(), *CURATOR_TRACKER_PARTICIPANTS]
 
 
 def add_personalization(template: str, name: str, for_name: str, slug: str) -> str:
@@ -996,10 +1038,16 @@ def build_runtime_script(name: str, slug: str) -> str:
   const PARTICIPANT_SLUG = {quote_js(slug)};
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
+  const LOCAL_UPDATED_AT_KEY = `${{LOCAL_KEY}}:updated-at`;
   const MATERIALS_COLLAPSED_KEY = `${{LOCAL_KEY}}:materials-collapsed`;
   const STORY_PREFERENCES_KEY = `${{LOCAL_KEY}}:story-preferences`;
+  const AUTOSAVE_DELAY_MS = 1600;
   const DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
   const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
+  let latestPersistedStateJson = '';
+  let latestPersistedAt = '';
+  let autosaveTimer = null;
+  let autosaveInFlight = false;
   function getDefaultDayItems() {{
     return DEFAULT_ITEMS.map((item, index) => ({{
       ...item,
@@ -1111,6 +1159,135 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   function cloneState(value) {{
     return JSON.parse(JSON.stringify(value));
+  }}
+
+  function stateSnapshotJson(value = state) {{
+    return JSON.stringify(cloneState(value));
+  }}
+
+  function rememberPersistedSnapshot(snapshotJson, submittedAt = '') {{
+    latestPersistedStateJson = snapshotJson;
+    latestPersistedAt = submittedAt || latestPersistedAt || '';
+  }}
+
+  function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {{
+    return snapshotJson !== latestPersistedStateJson;
+  }}
+
+  function clearAutosaveTimer() {{
+    if (autosaveTimer) {{
+      window.clearTimeout(autosaveTimer);
+      autosaveTimer = null;
+    }}
+  }}
+
+  function buildTrackerPayload(snapshotState = state, submittedAt = new Date().toISOString()) {{
+    return {{
+      kind: 'participant-week-tracker',
+      participantName: PARTICIPANT_NAME,
+      participantSlug: PARTICIPANT_SLUG,
+      weekKey: WEEK_KEY,
+      trackerState: cloneState(snapshotState),
+      pageUrl: window.location.href,
+      source: 'high-performance-week-1-tracker',
+      submittedAt
+    }};
+  }}
+
+  async function postTrackerSnapshot(payload, requestOptions = {{}}) {{
+    const response = await fetch(FORM_ENDPOINT, {{
+      method: 'POST',
+      headers: {{
+        'Content-Type': 'application/json'
+      }},
+      body: JSON.stringify(payload),
+      keepalive: Boolean(requestOptions.keepalive)
+    }});
+
+    if (!response.ok) {{
+      throw new Error('save_failed');
+    }}
+
+    return response;
+  }}
+
+  function queueAutosave(reason = 'change') {{
+    clearAutosaveTimer();
+    if (!hasUnsyncedServerChanges()) {{
+      return;
+    }}
+    autosaveTimer = window.setTimeout(() => {{
+      autosaveTimer = null;
+      void persistTrackerSnapshotInBackground(reason);
+    }}, AUTOSAVE_DELAY_MS);
+  }}
+
+  async function persistTrackerSnapshotInBackground(reason = 'change') {{
+    if (autosaveInFlight) {{
+      return false;
+    }}
+
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {{
+      return false;
+    }}
+
+    autosaveInFlight = true;
+    const payload = buildTrackerPayload(state);
+    setSaveStatus('Черновик сохранён локально. Догружаю серверную версию...');
+
+    try {{
+      await postTrackerSnapshot(payload);
+      localStorage.setItem(LOCAL_KEY, snapshotJson);
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, payload.submittedAt);
+      rememberPersistedSnapshot(snapshotJson, payload.submittedAt);
+      const savedText = new Date(payload.submittedAt).toLocaleString('ru-RU');
+      setSaveStatus(`Черновик автоматически сохранён ${{savedText}}. По этой ссылке откроется та же версия и в браузере, и в Telegram.`);
+      return true;
+    }} catch (error) {{
+      setSaveStatus('Не удалось автоматически синхронизировать серверную версию. Локальный черновик остался в браузере.');
+      return false;
+    }} finally {{
+      autosaveInFlight = false;
+      if (hasUnsyncedServerChanges()) {{
+        queueAutosave(reason === 'restore-local' ? 'restore-local-retry' : 'retry');
+      }}
+    }}
+  }}
+
+  function flushPendingTrackerSnapshot() {{
+    clearAutosaveTimer();
+    if (autosaveInFlight) {{
+      return;
+    }}
+
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {{
+      return;
+    }}
+
+    const payload = buildTrackerPayload(state);
+    const body = JSON.stringify(payload);
+    let sent = false;
+
+    try {{
+      if (navigator.sendBeacon) {{
+        sent = navigator.sendBeacon(FORM_ENDPOINT, new Blob([body], {{ type: 'application/json' }}));
+      }}
+    }} catch (error) {{
+      sent = false;
+    }}
+
+    if (!sent) {{
+      fetch(FORM_ENDPOINT, {{
+        method: 'POST',
+        headers: {{
+          'Content-Type': 'application/json'
+        }},
+        body,
+        keepalive: true
+      }}).catch(() => {{}});
+    }}
   }}
 
   function syncTrackerTemplateForward(startDayIndex = 0, options = {{}}) {{
@@ -1621,7 +1798,9 @@ def build_runtime_script(name: str, slug: str) -> str:
   function saveState() {{
     try {{
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
-      setSaveStatus('Есть локальные изменения в этом браузере. Нажми «Сохранить трекер», чтобы обновить серверную версию.');
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, new Date().toISOString());
+      setSaveStatus('Черновик сохранён в этом браузере. Синхронизирую серверную версию...');
+      queueAutosave();
     }} catch (error) {{
       setSaveStatus('Не удалось сохранить локальный черновик в браузере.');
     }}
@@ -1633,6 +1812,11 @@ def build_runtime_script(name: str, slug: str) -> str:
       if (!saved) {{
         return false;
       }}
+      const localUpdatedAt = localStorage.getItem(LOCAL_UPDATED_AT_KEY) || '';
+      if (latestPersistedAt && localUpdatedAt && localUpdatedAt <= latestPersistedAt) {{
+        return false;
+      }}
+
       state = normalizeTrackerState(JSON.parse(saved));
       currentDay = 0;
       renderManifestoBanner();
@@ -1640,10 +1824,12 @@ def build_runtime_script(name: str, slug: str) -> str:
       renderDayNav();
       renderDay();
       syncManifestoVisibility();
-      setSaveStatus('Восстановлен локальный черновик из этого браузера.');
+      setSaveStatus('Восстановлен локальный черновик из этого браузера. Сейчас догружу его на сервер.');
+      queueAutosave('restore-local');
       return true;
     }} catch (error) {{
       localStorage.removeItem(LOCAL_KEY);
+      localStorage.removeItem(LOCAL_UPDATED_AT_KEY);
       return false;
     }}
   }}
@@ -1664,14 +1850,15 @@ def build_runtime_script(name: str, slug: str) -> str:
 
       state = normalizeTrackerState(result.record.trackerState);
       currentDay = 0;
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      const snapshotJson = stateSnapshotJson();
+      const savedAt = result.record.submittedAt || result.updatedAt || '';
+      rememberPersistedSnapshot(snapshotJson, savedAt);
       renderManifestoBanner();
       renderWorkoutMaterialButtons();
       renderDayNav();
       renderDay();
       syncManifestoVisibility();
 
-      const savedAt = result.record.submittedAt || result.updatedAt || '';
       const savedText = savedAt ? new Date(savedAt).toLocaleString('ru-RU') : '';
       setSaveStatus(savedText ? `Открыта сохранённая версия от ${{savedText}}.` : 'Открыта последняя сохранённая версия трекера.');
       return true;
@@ -1682,17 +1869,9 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   async function persistTrackerSnapshot(triggerButton, pendingStatus = 'Сохраняю трекер...') {{
-    const payload = {{
-      kind: 'participant-week-tracker',
-      participantName: PARTICIPANT_NAME,
-      participantSlug: PARTICIPANT_SLUG,
-      weekKey: WEEK_KEY,
-      trackerState: cloneState(state),
-      pageUrl: window.location.href,
-      source: 'high-performance-week-1-tracker',
-      submittedAt: new Date().toISOString()
-    }};
-
+    clearAutosaveTimer();
+    const snapshotJson = stateSnapshotJson();
+    const payload = buildTrackerPayload(state);
     const saveButton = document.getElementById('saveTrackerBtn');
     const storyButton = document.getElementById('generateStoryBtn');
     setButtonBusy(saveButton, true, 'Сохраняю...');
@@ -1700,19 +1879,10 @@ def build_runtime_script(name: str, slug: str) -> str:
     setSaveStatus(pendingStatus);
 
     try {{
-      const response = await fetch(FORM_ENDPOINT, {{
-        method: 'POST',
-        headers: {{
-          'Content-Type': 'application/json'
-        }},
-        body: JSON.stringify(payload)
-      }});
-
-      if (!response.ok) {{
-        throw new Error('save_failed');
-      }}
-
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      await postTrackerSnapshot(payload);
+      localStorage.setItem(LOCAL_KEY, snapshotJson);
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, payload.submittedAt);
+      rememberPersistedSnapshot(snapshotJson, payload.submittedAt);
       const savedText = new Date(payload.submittedAt).toLocaleString('ru-RU');
       setSaveStatus(`Сохранено ${{savedText}}. По этой ссылке всегда откроется актуальная версия трекера.`);
       return true;
@@ -1760,6 +1930,12 @@ def build_runtime_script(name: str, slug: str) -> str:
       ...preferences,
       customPrompt: event.target.value
     }});
+  }});
+  window.addEventListener('pagehide', flushPendingTrackerSnapshot);
+  document.addEventListener('visibilitychange', () => {{
+    if (document.visibilityState === 'hidden') {{
+      flushPendingTrackerSnapshot();
+    }}
   }});
 
   const materialsShell = document.getElementById('materialsShell');
@@ -2071,7 +2247,7 @@ def build_telegram_messages(participants: list[dict[str, str]]) -> str:
 def main() -> None:
     template = SOURCE_TEMPLATE_PATH.read_text(encoding="utf-8")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    participants = get_participants()
+    participants = get_week1_tracker_participants()
 
     for old_file in OUTPUT_DIR.glob("w1_*.html"):
         old_file.unlink()

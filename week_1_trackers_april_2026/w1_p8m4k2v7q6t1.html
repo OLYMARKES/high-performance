@@ -1,11 +1,11 @@
-<!-- Generated from /Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html for Ксю from GitHub issue #16: https://github.com/OLYMARKES/high-performance-leads/issues/16 -->
+<!-- Generated from /Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html for Таня from manual roster update -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>Трекер недели 1 — Ксю</title>
+<title>Трекер недели 1 — Таня</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1234,9 +1234,9 @@ body {
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-tag">High Performance · Ксю · Неделя 1</div>
+    <div class="hero-tag">High Performance · Таня · Неделя 1</div>
     <h1>Неделя <em>1</em></h1>
-    <p class="hero-sub">Персональный трекер первой недели для Ксю. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>
+    <p class="hero-sub">Персональный трекер первой недели для Тани. Здесь один экран с манифестом и трекером дня, который можно сохранять и дополнять по этой же ссылке.</p>
   </div>
 </section>
 
@@ -1386,7 +1386,7 @@ body {
 </section>
 
 <footer class="footer">
-  Ксю · High Performance · Трекер недели 1 · Апрель 2026
+  Таня · High Performance · Трекер недели 1 · Апрель 2026
 </footer>
 
 <!-- ═══════ SCRIPTS ═══════ -->
@@ -1526,7 +1526,7 @@ function getDefaultState() {
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('hp_week1_tracker_ksu-matusevich');
+    const saved = localStorage.getItem('hp_week1_tracker_tanya-curator');
     if (saved) return JSON.parse(saved);
   } catch (e) {}
   return getDefaultState();
@@ -1534,7 +1534,7 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem('hp_week1_tracker_ksu-matusevich', JSON.stringify(state));
+    localStorage.setItem('hp_week1_tracker_tanya-curator', JSON.stringify(state));
   } catch (e) {}
 }
 
@@ -1877,9 +1877,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 <script>
   const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
-  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-week-tracker?slug=${encodeURIComponent("ksu-matusevich")}&weekKey=week-1`;
-  const PARTICIPANT_NAME = "Ксю";
-  const PARTICIPANT_SLUG = "ksu-matusevich";
+  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-week-tracker?slug=${encodeURIComponent("tanya-curator")}&weekKey=week-1`;
+  const PARTICIPANT_NAME = "Таня";
+  const PARTICIPANT_SLUG = "tanya-curator";
   const WEEK_KEY = 'week-1';
   const LOCAL_KEY = `hp_week1_tracker_${PARTICIPANT_SLUG}`;
   const LOCAL_UPDATED_AT_KEY = `${LOCAL_KEY}:updated-at`;
