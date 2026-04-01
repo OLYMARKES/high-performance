@@ -468,7 +468,7 @@ def build_rows() -> tuple[list[dict], str]:
             "leadIssueUrl": f"https://github.com/{PRIVATE_REPO}/issues/{participant['lead_issue']}" if participant.get("lead_issue") else "",
             "questionnaireIssueNumber": questionnaire_match["issue"]["number"] if questionnaire_match else "",
             "questionnaireIssueUrl": questionnaire_match["issue"]["html_url"] if questionnaire_match else "",
-            "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/q_{participant['token']}.html",
+            "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/{participant['filename']}",
             "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
             "hasQuestionnaire": bool(questionnaire_match),
             "matchedBy": questionnaire_match.get("matchedBy", "") if questionnaire_match else "",

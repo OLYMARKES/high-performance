@@ -73,13 +73,13 @@ def _score_questionnaire_match(
         best_score = 1000
         best_method = "lead-email"
 
+    if record_filename and filename and record_filename == filename and best_score < 400:
+        best_score = 400
+        best_method = "page-url"
+
     if record_slug and participant_slug and record_slug == participant_slug and best_score < 300:
         best_score = 300
         best_method = "slug"
-
-    if record_filename and filename and record_filename == filename and best_score < 200:
-        best_score = 200
-        best_method = "page-url"
 
     return best_score, best_method
 

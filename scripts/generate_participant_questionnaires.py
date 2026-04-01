@@ -1914,7 +1914,7 @@ def main() -> None:
 
     for participant in get_participants():
         participant_with_slug = participant
-        filename = f"q_{participant['token']}.html"
+        filename = participant["filename"]
         page_html = build_participant_page(template, participant_with_slug)
         (OUTPUT_DIR / filename).write_text(page_html, encoding="utf-8")
         entries.append({**participant, "filename": filename})
