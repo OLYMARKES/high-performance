@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Detox Saturday — Оля Маркес</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section {
+  padding: 80px 0;
+}
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 16px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--charcoal);
+}
+
+p {
+  color: var(--warm-gray);
+  margin-bottom: 20px;
+  line-height: 1.85;
+}
+
+p:last-child { margin-bottom: 0; }
+
+/* Reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero */
+.hero {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196, 112, 75, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122, 139, 111, 0.05) 0%, transparent 70%),
+    var(--cream);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-dark);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -100px;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  border: 1px solid var(--terracotta-pale);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-inner {
+  text-align: center;
+  max-width: 680px;
+  padding: 0 28px;
+}
+
+.hero-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  border: 1px solid var(--terracotta-pale);
+  padding: 8px 24px;
+  border-radius: 40px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeDown 0.8s 0.3s forwards;
+}
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeDown 0.8s 0.5s forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+.hero-sub {
+  font-size: 19px;
+  color: var(--warm-gray);
+  max-width: 560px;
+  margin: 0 auto;
+  opacity: 0;
+  animation: fadeDown 0.8s 0.7s forwards;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--sand);
+  margin: 0;
+}
+
+/* Quote / Highlight */
+.highlight {
+  border-left: 3px solid var(--terracotta);
+  padding: 20px 0 20px 28px;
+  margin: 36px 0;
+}
+
+.highlight p {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--charcoal);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Insight card */
+.insight-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 36px 28px;
+  margin: 36px 0;
+  box-shadow: 0 12px 40px rgba(58, 54, 50, 0.04);
+}
+
+.insight-card .label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--olive);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.insight-card p {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--charcoal);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Friend quote */
+.friend-quote {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 32px 0;
+  padding: 24px;
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  transition: transform 0.3s;
+}
+
+.friend-quote:hover { transform: translateX(4px); }
+
+.friend-quote .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--olive-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--olive);
+  flex-shrink: 0;
+}
+
+.friend-quote .quote-content {
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--charcoal);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.friend-quote .quote-name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--light-gray);
+  margin-top: 6px;
+}
+
+/* Steps */
+.steps-grid {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0 24px;
+  margin-top: 40px;
+}
+
+.process-step {
+  display: contents;
+}
+
+.process-step-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--terracotta);
+  background: var(--terracotta-pale);
+  position: relative;
+}
+
+.process-step-num::after {
+  content: '';
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: calc(100% + 8px);
+  background: var(--sand-dark);
+}
+
+.process-step:last-child .process-step-num::after {
+  display: none;
+}
+
+.process-step-body {
+  padding-bottom: 32px;
+}
+
+.process-step:last-child .process-step-body {
+  padding-bottom: 0;
+}
+
+.process-step-body h3 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding-top: 10px;
+}
+
+.process-step-body p {
+  font-size: 16px;
+  color: var(--warm-gray);
+  line-height: 1.75;
+  margin-bottom: 0;
+}
+
+/* Footer */
+.footer-section {
+  text-align: center;
+  padding: 80px 0 100px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(196, 112, 75, 0.05) 0%, transparent 70%),
+    var(--cream);
+}
+
+.footer-section p {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--warm-gray);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.footer-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  border: 1px solid var(--terracotta-pale);
+  padding: 8px 24px;
+  border-radius: 40px;
+  margin-top: 36px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .section { padding: 56px 0; }
+  .container { padding: 0 20px; }
+  .hero-inner { padding: 0 20px; }
+  .insight-card { padding: 28px 20px; }
+  .steps-grid { grid-template-columns: 40px 1fr; gap: 0 16px; }
+  .process-step-num { width: 40px; height: 40px; font-size: 17px; }
+  .process-step-num::after { top: 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Digital Detox</div>
+    <h1>Суббота<br>без <em>экранов</em></h1>
+    <p class="hero-sub">Каждую субботу я просыпаюсь и не беру в руки ни телефон, ни ноутбук, ни планшет — никаких гаджетов, никаких экранов, до утра воскресенья, а иногда и до середины воскресенья. Просто время, в котором я принадлежу себе и самым близким людям — детям, любимым, друзьям.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="section reveal">
+    <div class="section-label">01 — Начало</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Тревога, которую я не замечала</h2>
+    <p>Digital Detox — это часть моей истории в работе с тревогой.</p>
+    <p>В какой-то момент я обнаружила у себя базовую тревогу и поняла, что оказалась в каком-то коллапсе: я не могла долгосрочно фокусироваться на делах, постоянно брала телефон и отвлекалась. У меня не было пространства — вообще не было пространства, чтобы просто жить и смотреть на всё вокруг. Слишком много контента, слишком много работы, слишком много входящего, и от этого я не отдыхала. Попытки сократить время у экрана ничего не меняли, моё состояние оставалось прежним — перегруженным и уставшим.</p>
+    <p>А потом я начала наблюдать внимательнее и заметила, что все моменты, когда я беру телефон, — это следствие моей тревоги, желание получить инъекцию успокоения от тревоги, отвлекая внимание, и это очень затягивает. Рука тянется к экрану не потому что нужно, а потому что тревожно.</p>
+
+    <div class="highlight">
+      <p>И тогда я решила, что хочу работать с тревогой без телефона.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">02 — Открытие</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Самое большое открытие</h2>
+    <p>Самым лучшим решением было выбрать именно субботу как день Digital Detox и просто посмотреть на свою тревогу.</p>
+
+    <div class="insight-card">
+      <span class="label">Key insight</span>
+      <p>Телефон не успокаивает тревогу, он её создаёт. Ожидание ответа, что там напишут, кто ответит, что ещё придёт — всё это держит в постоянном напряжении, а надо просто проживать свою жизнь.</p>
+    </div>
+
+    <p>Когда в ту первую субботу я была без телефона, мои мысли стали спокойнее, и я как будто увидела свою жизнь с helicopter view — увидела, насколько я была постоянно на взводе, раздёргана, и без экрана это стало так очевидно.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">03 — Стратегия</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Почему не воскресенье</h2>
+    <p>Меня часто спрашивают, почему суббота, а не воскресенье, и тут всё просто — в понедельник у нас старт всех курсов и активные продажи во всех каналах. Мне нравится сделать паузу в субботу, замолчать везде, во всех соцсетях, а в воскресенье выйти не просто с контентом, а вложить все силы в поддержание своего продукта, своей компании. После субботы без экранов я возвращаюсь в воскресенье с чистой головой и энергией, и это совсем другое качество работы перед стартом новой недели.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">04 — Ощущения</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Как это ощущается</h2>
+    <p>Когда просыпаюсь в субботу, да, первые минут пятнадцать хочется взять телефон, а потом это растворяется, как будто бы всё отпускает. Я начинаю наслаждаться моментом, и если я продолжаю детокс до воскресенья, то уже вообще не тянет, телефон даже не хочется брать.</p>
+
+    <div class="highlight">
+      <p>Там другое небо, другие птицы, другое время — ощущение, что я попадаю в чудо.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">05 — Суббота</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Чем заняться в день без экранов</h2>
+    <p>Мне очень нравится планировать время с друзьями, и настолки — это то, что я по-настоящему полюбила в эти субботы. Собираемся, играем, разговариваем, и никто не смотрит в телефон, потому что у меня его просто нет.</p>
+    <p>Мои друзья говорят, что обожают встречаться со мной по субботам. Многие знают меня только в работе и на busy-вайбе, а вот так, без экранов, меня знают только старые друзья — например, Шапо, мы дружим ещё со школы.</p>
+
+    <div class="friend-quote">
+      <div class="avatar">Ш</div>
+      <div>
+        <div class="quote-content">«Не видел тебя такой уже лет 25»</div>
+        <div class="quote-name">Шапо, друг со школы</div>
+      </div>
+    </div>
+
+    <p>И именно в эти субботы я чувствую, что люди видят настоящую меня.</p>
+    <p>А ещё проще всего в эти дни играть с детьми — они вообще не замечают, что что-то изменилось, для них ты просто наконец-то полностью здесь. Можно гулять, готовить что-нибудь новое, читать бумажные книги, рисовать, просто сидеть с кофе и смотреть в окно — когда нет экрана, который подсказывает, чем заняться, ты сама находишь, и это всегда что-то живое.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">06 — Система</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Как это работает на практике</h2>
+    <p>Чтобы это получилось, я готовлю всё заранее. Вся моя рабочая команда знает, что в субботу я не на связи, близкие знают, что если нужно что-то посмотреть в телефоне — я его не возьму, это мои границы, и когда люди вокруг их понимают, становится намного проще.</p>
+    <p>Я планирую субботу в пятницу вечером — записываю всё, что хочу сделать: какие дела, чем хочу заняться, куда поехать. Без экранов ты не можешь на ходу загуглить маршрут, написать подруге «во сколько встречаемся?» или включить тренировку на YouTube, поэтому если хочу сделать тренировку по видео — нахожу и готовлю её заранее, если планирую поехать куда-то — продумываю маршрут накануне, если хочу встретиться с друзьями — договариваюсь о времени и месте в пятницу, если нужно что-то купить — составляю список на бумаге.</p>
+    <p>Это само по себе становится приятным ритуалом: вечер пятницы — время, когда я проектирую свои выходные без экранов.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section reveal">
+    <div class="section-label">07 — Твой план</div>
+    <h2 style="font-size: clamp(28px, 4vw, 38px); margin-bottom: 24px;">Как начать свой Digital Detox</h2>
+    <p>Если тебе откликается идея, вот простой путь, чтобы попробовать.</p>
+
+    <div class="steps-grid">
+      <div class="process-step">
+        <div class="process-step-num">1</div>
+        <div class="process-step-body">
+          <h3>Выбери день</h3>
+          <p>Суббота — удобный вариант, но подойдёт любой выходной, главное — день, когда у тебя нет критичных рабочих обязательств.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">2</div>
+        <div class="process-step-body">
+          <h3>Лучше мало, чем ничего, но попробуй сразу полный день</h3>
+          <p>Даже несколько часов без экрана — это уже что-то, но настоящий эффект чувствуешь, когда проживаешь весь день целиком, потому что именно тогда замечаешь влияние на сон и нервную систему.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">3</div>
+        <div class="process-step-body">
+          <h3>Подготовься накануне</h3>
+          <p>Вечером перед детокс-днём запиши план на завтра: чем хочешь заняться, куда сходить, что приготовить. Договорись о встречах с друзьями, скачай заранее всё, что может понадобиться, и предупреди близких и коллег, что ты будешь не на связи — когда все знают, тревоги нет ни у тебя, ни у них.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">4</div>
+        <div class="process-step-body">
+          <h3>Убери все гаджеты из поля зрения</h3>
+          <p>Телефон, планшет, ноутбук — положи в ящик, оставь в другой комнате, выключи, чем меньше соблазна — тем легче.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">5</div>
+        <div class="process-step-body">
+          <h3>Наблюдай за собой</h3>
+          <p>Первые пятнадцать минут может тянуть к телефону, и это нормально, оно проходит, а дальше начинается самое интересное.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">6</div>
+        <div class="process-step-body">
+          <h3>Если сорвалась — продолжай</h3>
+          <p>Взяла телефон, ничего страшного, положи обратно и продолжай, это эксперимент.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num">7</div>
+        <div class="process-step-body">
+          <h3>Запиши впечатления после</h3>
+          <p>Вечером или на следующий день запиши пару предложений о том, как прошёл день, что заметила, что удивило — это помогает закрепить практику.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-section reveal">
+  <div class="container">
+    <p>Это твоя практика, ты можешь адаптировать её под себя и делать в своём ритме, на своих условиях. Одна суббота в неделю, а иногда и кусочек воскресенья — попробуй и посмотри, что произойдёт.</p>
+    <div class="footer-tag">Saturday Digital Detox</div>
+  </div>
+</div>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+</script>
+
+</body>
+</html>
