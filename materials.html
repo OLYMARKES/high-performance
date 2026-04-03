@@ -280,6 +280,36 @@
       font-weight: 800;
     }
 
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(182, 96, 53, 0.18);
+      background: rgba(182, 96, 53, 0.08);
+      color: var(--accent-dark);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .quick-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(88, 52, 28, 0.1);
+      border-color: rgba(182, 96, 53, 0.28);
+    }
+
     .series-card {
       margin-top: 16px;
       padding: 22px;
@@ -545,6 +575,11 @@
           </p>
           <span class="card-cta">Открыть весь материал</span>
         </a>
+      </div>
+
+      <div class="quick-links">
+        <a class="quick-link" href="6-vidov-trevogi.html">Открыть 6 видов тревоги</a>
+        <a class="quick-link" href="12-postov-o-trevoge.html">Открыть 12 постов о тревоге</a>
       </div>
     </section>
 
