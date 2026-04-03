@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 видов тревоги — Неделя 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FBF7F2;
+            --warm-white: #FFFDF9;
+            --sand: #F0E8DC;
+            --sand-dark: #E2D5C3;
+            --terracotta: #C4704B;
+            --terracotta-light: #D4896A;
+            --terracotta-pale: #F2DDD2;
+            --olive: #7A8B6F;
+            --olive-light: #A3B396;
+            --olive-pale: #E8EDDF;
+            --charcoal: #3A3632;
+            --warm-gray: #7A746D;
+            --light-gray: #B5AFA7;
+            --accent-gold: #C6A96C;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito Sans', 'Segoe UI', sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            font-size: 17px;
+            line-height: 1.75;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 500;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 28px 60px;
+            background: var(--warm-white);
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to bottom, var(--warm-white), var(--cream));
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 22px;
+            border-radius: 50px;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            background: var(--terracotta-pale);
+            border: 1px solid rgba(196, 112, 75, 0.15);
+            margin-bottom: 40px;
+            animation: fadeDown 0.8s ease both;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 28px;
+            color: var(--charcoal);
+            animation: fadeDown 0.8s 0.15s ease both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--terracotta);
+        }
+
+        .hero-intro {
+            font-size: 1.05rem;
+            color: var(--warm-gray);
+            max-width: 580px;
+            margin-bottom: 40px;
+            line-height: 1.85;
+            animation: fadeDown 0.8s 0.3s ease both;
+        }
+
+        .hero-quote {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--warm-gray);
+            max-width: 500px;
+            margin-bottom: 56px;
+            padding: 28px 36px;
+            background: var(--cream);
+            border-radius: 20px;
+            border: 1px solid var(--sand);
+            animation: fadeDown 0.8s 0.45s ease both;
+        }
+
+        .hero-quote .author {
+            display: block;
+            margin-top: 14px;
+            font-family: 'Nunito Sans', sans-serif;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+        }
+
+        .scroll-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--light-gray);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            animation: fadeDown 0.8s 0.6s ease both;
+        }
+        .scroll-hint svg { width: 18px; height: 18px; animation: bounce 2.5s ease-in-out infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(6px); opacity: 1; }
+        }
+
+        .cards-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 28px 100px;
+        }
+
+        .card {
+            margin-bottom: 80px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--warm-white);
+            border: 1px solid var(--sand);
+            box-shadow: 0 6px 24px rgba(58, 54, 50, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 48px rgba(58, 54, 50, 0.08);
+        }
+
+        .card-accent { height: 4px; background: linear-gradient(90deg, var(--terracotta), var(--olive)); }
+
+        .card-inner { padding: 48px 44px; }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .card-icon {
+            flex-shrink: 0;
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--terracotta-pale);
+            color: var(--terracotta);
+        }
+
+        .card-number {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            margin-bottom: 4px;
+        }
+
+        .card h2 {
+            font-size: 1.7rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            line-height: 1.2;
+        }
+
+        .card-subtitle {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--warm-gray);
+            margin-top: 4px;
+        }
+
+        .card-body { margin-bottom: 28px; }
+        .card-body p { margin-bottom: 14px; color: var(--warm-gray); }
+        .card-body strong { color: var(--charcoal); font-weight: 600; }
+
+        .section-label {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .habit-loop {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            padding: 20px 22px;
+            border-radius: 18px;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+        }
+        .loop-step {
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--warm-white);
+            color: var(--charcoal);
+            border: 1px solid var(--sand-dark);
+        }
+        .loop-arrow { color: var(--terracotta-light); font-size: 1.1rem; font-weight: 300; }
+        .loop-label {
+            width: 100%;
+            text-align: center;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--olive);
+            margin-bottom: 6px;
+        }
+
+        .signs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+        .sign-tag {
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 400;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            color: var(--warm-gray);
+            transition: all 0.2s ease;
+        }
+        .sign-tag:hover {
+            background: var(--terracotta-pale);
+            border-color: var(--terracotta-light);
+            color: var(--terracotta);
+        }
+
+        .mechanism-block {
+            padding: 28px 32px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            color: var(--warm-gray);
+        }
+        .mechanism-block p { margin-bottom: 14px; }
+        .mechanism-block p:last-child { margin-bottom: 0; }
+        .mechanism-block strong { color: var(--charcoal); font-weight: 600; }
+
+        .recognise-block {
+            padding: 24px 28px;
+            border-radius: 18px;
+            margin-bottom: 28px;
+            background: var(--olive-pale);
+            border: 1px solid rgba(122, 139, 111, 0.15);
+            color: var(--warm-gray);
+        }
+        .recognise-block .section-label { color: var(--olive); }
+        .recognise-block ul { list-style: none; padding: 0; }
+        .recognise-block li {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 10px;
+            font-size: 0.93rem;
+        }
+        .recognise-block li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--olive-light);
+        }
+
+        .example-block {
+            padding: 28px 32px;
+            border-radius: 20px;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            margin-bottom: 24px;
+        }
+        .example-label {
+            display: inline-block;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: var(--terracotta-pale);
+            color: var(--terracotta);
+        }
+        .example-block .persona {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            margin-bottom: 10px;
+        }
+        .example-block .story {
+            color: var(--warm-gray);
+            font-size: 0.93rem;
+            font-style: italic;
+            line-height: 1.85;
+        }
+        .example-block .inner-voice {
+            display: block;
+            margin-top: 18px;
+            padding: 18px 22px;
+            border-radius: 14px;
+            background: var(--warm-white);
+            border-left: 3px solid var(--terracotta-pale);
+            font-style: normal;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--warm-gray);
+        }
+        .inner-voice-label {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--terracotta);
+        }
+
+        .curiosity-block {
+            padding: 28px 32px;
+            border-radius: 20px;
+            background: var(--warm-white);
+            border: 1px dashed var(--sand-dark);
+            color: var(--warm-gray);
+            line-height: 1.8;
+        }
+        .curiosity-block .curiosity-label {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+            color: var(--olive);
+        }
+        .curiosity-block em {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.05em;
+            color: var(--charcoal);
+            font-style: italic;
+        }
+
+        .card-divider {
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--terracotta), var(--olive));
+            border-radius: 3px;
+            margin: 0 auto 80px;
+            opacity: 0.4;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 60px 28px 100px;
+            color: var(--light-gray);
+        }
+        .footer-line {
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--terracotta), var(--olive));
+            margin: 0 auto 24px;
+            border-radius: 3px;
+        }
+        .footer p {
+            max-width: 440px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 0.9rem;
+        }
+        .footer .footer-brand {
+            margin-top: 20px;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--sand-dark);
+        }
+
+        @media (max-width: 640px) {
+            .card-inner { padding: 32px 24px; }
+            .card-header { flex-direction: column; gap: 10px; }
+            .mechanism-block, .example-block, .curiosity-block, .recognise-block { padding: 22px 20px; }
+            .habit-loop { gap: 6px; padding: 16px 14px; }
+            .loop-step { font-size: 0.75rem; padding: 6px 12px; }
+            .hero h1 { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-badge">Неделя 2 &middot; High Performance</div>
+    <h1>6 видов <em>тревоги</em></h1>
+    <p class="hero-intro">Тревога&nbsp;&mdash; это не поломка и не слабость. Это привычка, которой мозг когда-то научился, чтобы тебя защитить. Он повторяет этот паттерн снова и снова&nbsp;&mdash; даже когда реальной угрозы давно нет. Чтобы перестать подкармливать тревогу на автопилоте, нужно сначала увидеть, какую именно петлю ты крутишь.</p>
+    <div class="hero-quote">
+        &laquo;Тревога&nbsp;&mdash; это не то, что с тобой случилось. Это привычка, которой твой мозг научился. А раз научился&nbsp;&mdash; может и переучиться.&raquo;
+        <span class="author">Джадсон Брюер, Unwinding Anxiety</span>
+    </div>
+    <div class="scroll-hint">
+        <span>Листай вниз</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </div>
+</section>
+
+<section class="cards-section">
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#9889;</div>
+            <div>
+                <div class="card-number">Вид 1</div>
+                <h2>Ситуативная тревога</h2>
+                <div class="card-subtitle">Реактивная &middot; Конкретная &middot; Проходящая</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Есть конкретное событие&nbsp;&mdash; экзамен, собеседование, первое свидание, визит к врачу&nbsp;&mdash; и мозг запускает режим &laquo;подготовка к опасности&raquo;. Это самый &laquo;понятный&raquo; вид тревоги: у неё есть триггер, она мобилизует и должна проходить, когда ситуация разрешается.</p>
+            <p>Но вот что происходит по Брюеру: мозг выучил, что <strong>тревога = подготовка</strong>. И начинает подкармливать её мыслями: &laquo;если я не буду переживать&nbsp;&mdash; я не буду готов&raquo;. Тревога превращается в ритуал. Ритуал&nbsp;&mdash; в привычку. И вот ты уже готовишься к рабочему созвону так, будто идёшь на суд.</p>
+            <p>Ситуативная тревога&nbsp;&mdash; нормально. Проблема начинается, когда <strong>реакция перестаёт соответствовать угрозе</strong>, а петля крутится независимо от реального риска.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: событие впереди</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: прокручиваю сценарии</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: иллюзия контроля</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Учащённый пульс</span>
+            <span class="sign-tag">Потные ладони</span>
+            <span class="sign-tag">Бессонница накануне</span>
+            <span class="sign-tag">Прокручивание сценариев</span>
+            <span class="sign-tag">Перепроверка готовности</span>
+            <span class="sign-tag">&laquo;Всё, я не готов&raquo;</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Мозг воспринимает будущее событие как потенциальную угрозу и включает симпатическую нервную систему: пульс ускоряется, мышцы напрягаются, внимание сужается. Эволюционно правильная реакция&nbsp;&mdash; когда-то спасала жизнь.</p>
+            <p>Но в современном мире угрозы чаще социальные, не физические. Мозг не отличает саблезубого тигра от презентации перед начальством&nbsp;&mdash; и запускает <strong>тот же каскад</strong>. Тело напрягается &rarr; мозг считывает напряжение &rarr; думает, что угроза реальна &rarr; напрягается ещё сильнее.</p>
+            <p>Reward в этой петле&nbsp;&mdash; иллюзия контроля. &laquo;Я переживаю&nbsp;&mdash; значит, готовлюсь&raquo;. Но прокручивание сценариев не улучшает подготовку. Оно только истощает.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Готовишься к событию дольше и интенсивнее, чем оно требует</li>
+                <li>Не можешь уснуть накануне, хотя объективно всё готово</li>
+                <li>Думаешь: &laquo;Если не буду тревожиться&nbsp;&mdash; не буду готов&raquo;</li>
+                <li>После события&nbsp;&mdash; опустошение, несопоставимое с его масштабом</li>
+                <li>Тревога не отпускает, даже когда ты объективно подготовлен</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Марина, 29 лет, маркетолог</div>
+            <div class="story">
+                Через неделю&nbsp;&mdash; презентация перед клиентом. Марина знает материал, но каждый вечер перебирает слайды, представляя, как клиент задаёт &laquo;тот самый&raquo; вопрос. Спит по 5 часов. Мозг говорит: &laquo;Ты переживаешь, потому что тебе не всё равно&raquo;&nbsp;&mdash; и это звучит так разумно, что она продолжает крутить петлю. Презентация проходит отлично. Но через два дня запускается подготовка к следующей&nbsp;&mdash; и петля работает снова.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Надо ещё раз проверить. Если не проверю&nbsp;&mdash; точно облажаюсь. А если найду ошибку&nbsp;&mdash; значит, правильно, что не сплю. Ещё разок...&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: проверить reward value</span>
+            Заметь момент, когда мозг запускает прокрутку. Не борись&nbsp;&mdash; спроси с интересом: <em>&laquo;Что я сейчас получаю от этого беспокойства? Мне реально становится легче&nbsp;&mdash; или тяжелее? Я после прокрутки более готов&nbsp;&mdash; или более измотан?&raquo;</em> Брюер называет это &laquo;проверить reward value&raquo;&nbsp;&mdash; посмотреть, чем привычка тебя на самом деле &laquo;награждает&raquo;. Чаще всего&nbsp;&mdash; ничем, кроме бессонницы. Когда ты это видишь&nbsp;&mdash; петля начинает ослабевать.
+        </div>
+    </div>
+</div>
+
+<div class="card-divider reveal"></div>
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#127787;</div>
+            <div>
+                <div class="card-number">Вид 2</div>
+                <h2>Генерализованная тревога</h2>
+                <div class="card-subtitle">Фоновая &middot; Размытая &middot; Хроническая</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Постоянное беспокойство &laquo;обо всём и ни о чём&raquo;. Нет конкретного триггера&nbsp;&mdash; есть ощущение, что &laquo;что-то не так&raquo;, что вот-вот случится плохое. Как фоновый шум, к которому привыкаешь настолько, что забываешь: бывает и без него.</p>
+            <p>По Брюеру, это самая коварная петля, потому что <strong>триггером становится само ощущение тревоги</strong>. Тревога рождает мысль &rarr; мысль подкармливает тревогу &rarr; тревога ищет новую мысль. Конвейер 24/7.</p>
+            <p>Человек может не осознавать, что тревожится. &laquo;Просто я такой&raquo;, &laquo;характер беспокойный&raquo;, &laquo;я ответственный человек&raquo;. Тревога стала частью идентичности&nbsp;&mdash; он не помнит, как было иначе.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: ощущение тревоги</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: ищу, о чём тревожиться</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: &laquo;хотя бы я начеку&raquo;</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Постоянное напряжение</span>
+            <span class="sign-tag">Усталость без причины</span>
+            <span class="sign-tag">Трудности с концентрацией</span>
+            <span class="sign-tag">Раздражительность</span>
+            <span class="sign-tag">Мышечные зажимы</span>
+            <span class="sign-tag">Тревожный сон</span>
+            <span class="sign-tag">Проблемы с ЖКТ</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Здесь нет одного триггера. Мозг в режиме &laquo;постоянной бдительности&raquo;&nbsp;&mdash; угроза может прийти откуда угодно. Нервная система не возвращается в базу&nbsp;&mdash; застревает в fight or flight.</p>
+            <p>Мозг научился: <strong>беспокойство = безопасность</strong>. &laquo;Пока тревожусь&nbsp;&mdash; контролирую. Перестану&nbsp;&mdash; пропущу что-то важное.&raquo; Это не рациональное убеждение&nbsp;&mdash; автоматический паттерн, работающий глубже мышления.</p>
+            <p>Одно беспокойство заканчивается&nbsp;&mdash; мозг подставляет следующее. Не потому что у тебя много проблем. А потому что <strong>привычке нужен контент</strong>&nbsp;&mdash; она будет искать, к чему прицепиться.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Не можешь назвать конкретную причину беспокойства, но чувствуешь тяжесть</li>
+                <li>Одна проблема решается&nbsp;&mdash; тут же появляется новая</li>
+                <li>Чувствуешь вину или тревогу, когда расслабляешься</li>
+                <li>Окружающие говорят: &laquo;ты слишком много думаешь&raquo;</li>
+                <li>Мышцы шеи, челюсти или плеч зажаты&nbsp;&mdash; замечаешь случайно</li>
+                <li>Просыпаешься уставшим, хотя спал достаточно</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Дима, 34 года, IT-специалист</div>
+            <div class="story">
+                На работе стабильно, в семье порядок, здоровье в норме. Но Дима просыпается с тяжестью в груди. По дороге на работу тревожится о проекте. За обедом&nbsp;&mdash; о родителях. Вечером&nbsp;&mdash; о ребёнке. Одно беспокойство заканчивается&nbsp;&mdash; мозг подставляет следующее. Не Дима выбирает темы&nbsp;&mdash; привычка выбирает за него. Жена спрашивает, что не так&nbsp;&mdash; он не может ответить. По отдельности всё &laquo;нормально&raquo;. Но внутри&nbsp;&mdash; постоянный фоновый гул.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Что-то слишком хорошо... Наверняка скоро что-нибудь случится. Нельзя расслабляться. Если перестану тревожиться&nbsp;&mdash; точно пропущу что-то важное.&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: замечать без кормления</span>
+            Тревога&nbsp;&mdash; прежде всего ощущение в теле, не мысль. Мысли приходят потом, как объяснение. Поймай момент, когда фоновое напряжение начинает &laquo;искать&raquo; мысль. Скажи: <em>&laquo;Я чувствую тревогу. Она в теле&nbsp;&mdash; вот здесь. Но я не буду подкармливать её историями.&raquo;</em> Не гони тревогу&nbsp;&mdash; просто не давай ей контент. Побудь с самим ощущением. Непривычно. Но именно здесь петля теряет силу.
+        </div>
+    </div>
+</div>
+
+<div class="card-divider reveal"></div>
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#128065;</div>
+            <div>
+                <div class="card-number">Вид 3</div>
+                <h2>Социальная тревога</h2>
+                <div class="card-subtitle">Страх оценки &middot; Избегание &middot; Внутренний критик</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Страх быть осуждённым, показаться глупым, неуместным, &laquo;не таким&raquo;. Не стеснительность&nbsp;&mdash; постоянный внутренний мониторинг: &laquo;Как я выгляжу? Что обо мне подумают? Я сказал что-то не то?&raquo;</p>
+            <p>Reward здесь&nbsp;&mdash; <strong>избегание</strong>. Мозг научился: &laquo;промолчу&nbsp;&mdash; не будет стыдно&raquo;. Каждый раз, когда молчишь и не получаешь негатива, петля закрепляется. Избегание &laquo;работает&raquo;&nbsp;&mdash; но цена растёт. Мир становится меньше.</p>
+            <p>Особая жестокость: работает в обе стороны. Сначала не даёт говорить. Потом&nbsp;&mdash; <strong>наказывает за молчание</strong>. Вечером прокручиваешь, что сказал и чего не сказал. Двойная петля.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: внимание людей</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: молчу / избегаю</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: не опозорился</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Страх быть в центре внимания</span>
+            <span class="sign-tag">Избегание звонков</span>
+            <span class="sign-tag">Прокручивание диалогов</span>
+            <span class="sign-tag">Покраснение, дрожь</span>
+            <span class="sign-tag">Отказ от приглашений</span>
+            <span class="sign-tag">&laquo;Лучше напишу&raquo;</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Мозг гиперактивирует зоны социальной оценки. Каждый взгляд, каждая пауза&nbsp;&mdash; угроза. &laquo;Помолчал&nbsp;&mdash; думает, что я глупый. Улыбнулась&nbsp;&mdash; надо мной смеётся.&raquo;</p>
+            <p><strong>Двойной reward</strong>: избежал&nbsp;&mdash; не стало стыдно (краткосрочное облегчение). Вечерний разбор&nbsp;&mdash; &laquo;хорошо, что промолчал&raquo; (подкрепление привычки).</p>
+            <p>Каждое избегание <strong>обучает мозг</strong>, что ситуация опасна. В следующий раз нужно избежать ещё раньше. Порог срабатывания падает. Что раньше было &laquo;неловко&raquo;&nbsp;&mdash; становится &laquo;невозможно&raquo;.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Готовишь фразу так долго, что момент проходит</li>
+                <li>Вечером прокручиваешь разговоры&nbsp;&mdash; ищешь, где &laquo;облажался&raquo;</li>
+                <li>Предпочитаешь переписку звонкам, текст&nbsp;&mdash; голосовым</li>
+                <li>Избегаешь мероприятий с незнакомыми людьми</li>
+                <li>Злишься на себя после того, как промолчал</li>
+                <li>Думаешь: &laquo;Все видят, что я волнуюсь&raquo;</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Аня, 26 лет, дизайнер</div>
+            <div class="story">
+                На совещании есть классная идея. Формулирует фразу, корректирует, выбирает момент&nbsp;&mdash; момент проходит. Коллега говорит ровно то же самое, получает одобрение. Аня злится на себя. Вечером крутит каждое слово. Мозг: &laquo;Правильно, что промолчала. А то бы опозорилась.&raquo; И тут же: &laquo;Это была твоя идея. Ты опять слабачка.&raquo; Двойной удар. Петля замкнулась.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Все увидят, что я волнуюсь. Скажу ерунду&nbsp;&mdash; все подумают, что я некомпетентна. Лучше промолчу. ...Опять промолчала. Ну и тряпка.&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: обновить reward value</span>
+            После очередного избегания спроси: <em>&laquo;Что мне это реально дало? Стало легче&nbsp;&mdash; или чувствую злость? Как я себя чувствую прямо сейчас&nbsp;&mdash; в теле?&raquo;</em> Когда видишь, что &laquo;награда&raquo;&nbsp;&mdash; разочарование и сужение жизни, привычка теряет хватку. Не нужно заставлять себя выступать. Нужно увидеть реальную цену молчания&nbsp;&mdash; и дать мозгу обновить информацию.
+        </div>
+    </div>
+</div>
+
+<div class="card-divider reveal"></div>
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#127744;</div>
+            <div>
+                <div class="card-number">Вид 4</div>
+                <h2>Тревога будущего</h2>
+                <div class="card-subtitle">Антиципаторная &middot; &laquo;А что если...&raquo; &middot; Катастрофизация</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Мозг генерирует сценарии того, что может пойти не так. Каждый следующий хуже предыдущего. Ты проживаешь страдание от событий, которые не произошли&nbsp;&mdash; и, скорее всего, не произойдут. Но тело реагирует так, будто они уже случились.</p>
+            <p>Одна из самых <strong>&laquo;липких&raquo; петель</strong> по Брюеру: мозг путает планирование с беспокойством. Ему кажется, что прокрутив достаточно &laquo;а что если&raquo;, он будет готов. Готовность не приходит&nbsp;&mdash; приходит усталость и паралич.</p>
+            <p>Ты буквально уходишь из &laquo;сейчас&raquo; в пугающее &laquo;потом&raquo;. Каждую секунду, потраченную на &laquo;а что если&raquo;, ты не живёшь&nbsp;&mdash; ты тревожишься.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: неопределённость</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: цепочки &laquo;а что если&raquo;</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: иллюзия готовности</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Цепочки &laquo;а что если&raquo;</span>
+            <span class="sign-tag">Наихудшие сценарии</span>
+            <span class="sign-tag">Невозможность расслабиться</span>
+            <span class="sign-tag">Откладывание решений</span>
+            <span class="sign-tag">Бесконечный &laquo;анализ&raquo;</span>
+            <span class="sign-tag">&laquo;Ещё не время&raquo;</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Мозг эволюционно запрограммирован на прогнозирование. Но в овердрайве он генерирует <strong>бесконечные ветвления худших сценариев</strong>. Каждая &laquo;а что если&raquo;&nbsp;&mdash; следующий вагон поезда в темноту.</p>
+            <p>Мозг <strong>не отличает реальное планирование от тревожной прокрутки</strong>. Для него&nbsp;&mdash; &laquo;полезная работа&raquo;. Поэтому не останавливается. Ты думаешь: &laquo;ещё раз обдумаю и решу&raquo;&nbsp;&mdash; а на самом деле крутишь привычку.</p>
+            <p>Reward&nbsp;&mdash; откладывание. Пока &laquo;думаешь&raquo;, не нужно действовать. Не нужно рисковать. Отсрочка ощущается как облегчение&nbsp;&mdash; но именно она держит в плену.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Одна &laquo;а что если&raquo; тянет следующую&nbsp;&mdash; не можешь остановиться</li>
+                <li>Тело реагирует на события, которые не произошли</li>
+                <li>Откладываешь решения, потому что &laquo;надо подумать&raquo;</li>
+                <li>Путаешь тревогу с продуктивным анализом</li>
+                <li>Усталость от принятия даже мелких решений</li>
+                <li>Самые страшные сценарии почти не сбываются&nbsp;&mdash; но это не помогает</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Олег, 38 лет, предприниматель</div>
+            <div class="story">
+                Предложили партнёрство&nbsp;&mdash; хорошие условия, знакомая сфера. Вместо радости три ночи не спит. &laquo;А если рынок упадёт? А если партнёр кинет? А если потеряю всё?&raquo; Каждая мысль&nbsp;&mdash; следующий вагон. Мозг подсказывает: &laquo;Ты просто взвешиваешь за и против&raquo;. Но это не анализ&nbsp;&mdash; это привычка. Анализ заканчивается решением. Тревога&nbsp;&mdash; никогда.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Я не могу предусмотреть всё. Значит&nbsp;&mdash; нельзя рисковать. Ещё подумаю. Ещё прокручу. Когда буду уверен на 100%&nbsp;&mdash; тогда решу. А 100% не бывает.&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: отличить анализ от привычки</span>
+            Поймай запуск: <em>&laquo;Это планирование&nbsp;&mdash; или прокрутка? Есть конечная точка&nbsp;&mdash; или третий круг? После этого станет яснее&nbsp;&mdash; или тяжелее?&raquo;</em> Любопытство&nbsp;&mdash; bigger better offer для мозга. Вместо прокрутки будущего направь внимание на ощущения сейчас. Где напряжение? Что в теле? Это уже другая петля&nbsp;&mdash; более здоровая.
+        </div>
+    </div>
+</div>
+
+<div class="card-divider reveal"></div>
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#9881;</div>
+            <div>
+                <div class="card-number">Вид 5</div>
+                <h2>Тревога контроля</h2>
+                <div class="card-subtitle">Перфекционизм &middot; Гиперконтроль &middot; Самозванец</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Потребность держать всё под контролем&nbsp;&mdash; себя, других, процессы, результат. Ошибка&nbsp;&mdash; не просто неудача, а катастрофа. Доказательство &laquo;недостаточности&raquo;.</p>
+            <p>Одна из самых <strong>социально одобряемых петель</strong>. Окружающие хвалят за &laquo;ответственность&raquo;. Мозг получает двойной reward: внутреннее &laquo;я предусмотрел&raquo; + внешнее одобрение. Привычка маскируется под достоинство.</p>
+            <p>Рядом живёт синдром самозванца: <strong>&laquo;Пока контролирую&nbsp;&mdash; никто не заметит, что я недостаточно хорош&raquo;</strong>. Отпустить контроль = обнажить &laquo;несостоятельность&raquo;.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: что-то вне контроля</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: перепроверяю / контролирую</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: &laquo;пока держу&nbsp;&mdash; всё ок&raquo;</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Невозможность делегировать</span>
+            <span class="sign-tag">Двойные перепроверки</span>
+            <span class="sign-tag">Прокрастинация из-за страха ошибки</span>
+            <span class="sign-tag">Синдром самозванца</span>
+            <span class="sign-tag">&laquo;Никто не сделает как я&raquo;</span>
+            <span class="sign-tag">Выгорание</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Формула мозга: <strong>контроль = безопасность</strong>. Пока проверяю&nbsp;&mdash; ничего плохого не случится. Случится&nbsp;&mdash; значит, недостаточно контролировал.</p>
+            <p>Петля с <strong>нарастающей толерантностью</strong>. Раньше хватало проверить раз&nbsp;&mdash; теперь два. Раньше мог делегировать&nbsp;&mdash; теперь нет. Порог &laquo;достаточно хорошо&raquo; растёт, ощущение безопасности&nbsp;&mdash; падает.</p>
+            <p>Ирония: <strong>контроль не снижает тревогу&nbsp;&mdash; усиливает</strong>. Больше контролируешь &rarr; больше поводов &rarr; выше стандарты &rarr; страшнее ошибиться. Петля затягивается.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Переделываешь за другими: &laquo;быстрее, чем объяснять&raquo;</li>
+                <li>Не начинаешь проект&nbsp;&mdash; не уверен, что сделаешь идеально</li>
+                <li>Комплимент вызывает тревогу: &laquo;просто не заметили ошибку&raquo;</li>
+                <li>Чужая ошибка ощущается как твоя личная</li>
+                <li>Уходишь последним&nbsp;&mdash; и всё равно кажется, что мало</li>
+                <li>Расслабление вызывает вину, не отдых</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Катя, 31 год, руководитель отдела</div>
+            <div class="story">
+                Проверяет каждый отчёт дважды. Уходит последней. Предлагают повышение&nbsp;&mdash; думает: &laquo;Просто не заметили мои ошибки&raquo;. Стажёр допускает опечатку&nbsp;&mdash; сжимается грудь, это её вина. Мозг: &laquo;Если бы ты проверила&nbsp;&mdash; этого бы не было. Контролируй ещё больше.&raquo; Коллеги хвалят за ответственность. Не видят, что внутри&nbsp;&mdash; не ответственность, а страх.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Отпущу контроль&nbsp;&mdash; всё развалится. Никто не сделает как надо. Все поймут, что я не справляюсь. Что всегда не справлялась.&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: увидеть реальную цену</span>
+            Когда рука тянется перепроверить&nbsp;&mdash; замри. <em>&laquo;Что я получаю от этого контроля? Спокойствие&nbsp;&mdash; или больше напряжения? После проверки расслабляюсь&nbsp;&mdash; или ищу, что ещё проверить?&raquo;</em> Мозг держится за привычку, потому что когда-то она &laquo;работала&raquo;. Но reward value падает, а цена&nbsp;&mdash; выгорание, напряжение, одиночество&nbsp;&mdash; растёт. Увидеть разницу&nbsp;&mdash; уже shift.
+        </div>
+    </div>
+</div>
+
+<div class="card-divider reveal"></div>
+
+<div class="card reveal">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+        <div class="card-header">
+            <div class="card-icon">&#9978;</div>
+            <div>
+                <div class="card-number">Вид 6</div>
+                <h2>Экзистенциальная тревога</h2>
+                <div class="card-subtitle">Смысл &middot; Выбор &middot; Конечность &middot; Свобода</div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>Вопросы, от которых нельзя спрятаться: &laquo;Правильно ли я живу? Зачем всё это? Что останется после меня?&raquo; Обостряется в точках перехода: 30&ndash;35 лет, потеря близкого, смена карьеры, кризис.</p>
+            <p>Особый вид&nbsp;&mdash; <strong>триггер реальный</strong>. Жизнь конечна, выбор ограничен, время проходит. Нельзя &laquo;развинтить&raquo; полностью&nbsp;&mdash; вопросы настоящие.</p>
+            <p>Но можно перестать <strong>убегать</strong> в отвлечения: скроллинг, алкоголь, бесконечная занятость, сериалы до 3 ночи. Убегание&nbsp;&mdash; тоже петля. Reward&nbsp;&mdash; временное забытьё, за которым приходит ещё большая пустота.</p>
+        </div>
+
+        <div class="habit-loop">
+            <div class="loop-label">Петля привычки</div>
+            <div class="loop-step">Триггер: вопрос о смысле</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Поведение: отвлечение / оцепенение</div>
+            <div class="loop-arrow">&rarr;</div>
+            <div class="loop-step">Reward: временное забытьё</div>
+        </div>
+
+        <span class="section-label">Как это выглядит</span>
+        <div class="signs">
+            <span class="sign-tag">Кризис смысла</span>
+            <span class="sign-tag">Чувство пустоты</span>
+            <span class="sign-tag">Страх &laquo;не успеть&raquo;</span>
+            <span class="sign-tag">Сравнение с другими</span>
+            <span class="sign-tag">Оцепенение</span>
+            <span class="sign-tag">&laquo;Это всё?&raquo;</span>
+            <span class="sign-tag">Вина за &laquo;неблагодарность&raquo;</span>
+        </div>
+
+        <div class="mechanism-block">
+            <span class="section-label">Как работает механизм</span>
+            <p>Здесь угроза не ложная. Конечность, ограниченность, невозможность прожить все варианты&nbsp;&mdash; реально. Мозг это знает.</p>
+            <p>Проблема&nbsp;&mdash; <strong>что мы с ней делаем</strong>. Обычная реакция&nbsp;&mdash; бегство в отвлечения. Работает на 20 минут скроллинга. Потом вопрос возвращается с процентами: к нему добавляется вина &laquo;снова потратил вечер впустую&raquo;.</p>
+            <p>Другая реакция&nbsp;&mdash; оцепенение. &laquo;Не думать об этом.&raquo; Но мозг не умеет не думать&nbsp;&mdash; только подавлять. Подавленные вопросы возвращаются как бессонница, тревога, пустота.</p>
+            <p>Единственный вид тревоги, <strong>несущий ресурс</strong>. За ней стоит: тебе не всё равно, как ты живёшь. Это не поломка&nbsp;&mdash; это сигнал.</p>
+        </div>
+
+        <div class="recognise-block">
+            <span class="section-label">Как узнать в себе</span>
+            <ul>
+                <li>Накрывает &laquo;зачем я это делаю?&raquo;&nbsp;&mdash; без конкретного повода</li>
+                <li>Сравниваешь свою жизнь с чужой&nbsp;&mdash; кажется, что ты &laquo;не там&raquo;</li>
+                <li>&laquo;По всем меркам&raquo; хорошо&nbsp;&mdash; но чувствуешь пустоту</li>
+                <li>Вина за неспособность радоваться тому, что имеешь</li>
+                <li>Бежишь от тишины&nbsp;&mdash; всегда включён фон</li>
+                <li>Чувствуешь, что время уходит, но не знаешь, куда направить</li>
+            </ul>
+        </div>
+
+        <div class="example-block">
+            <div class="example-label">Пример</div>
+            <div class="persona">Сергей, 42 года, инженер</div>
+            <div class="story">
+                По всем меркам успешен. Но каждый вечер, укладывая детей: &laquo;Это всё? Вот так и будет?&raquo; Скучно&nbsp;&mdash; не от работы, а от предсказуемости. Вина за &laquo;неблагодарность&raquo;. Не может ни с кем об этом поговорить. Вместо того чтобы побыть с чувством&nbsp;&mdash; открывает ленту, наливает вино, работает допоздна. Мозг: &laquo;Не думай об этом.&raquo; Но вопрос возвращается каждый вечер.
+                <span class="inner-voice">
+                    <span class="inner-voice-label">Петля в голове</span>
+                    &laquo;Лучшие годы не на то. Менять поздно. Не поздно&nbsp;&mdash; рискуешь потерять то, что есть. Лучше не думать. Где пульт?&raquo;
+                </span>
+            </div>
+        </div>
+
+        <div class="curiosity-block">
+            <span class="curiosity-label">Что делать: побыть с вопросом</span>
+            Не &laquo;развинчивать&raquo;&nbsp;&mdash; перестать убегать. Когда приходит вопрос о смысле, вместо отвлечения: <em>&laquo;Ок, я чувствую это. Что в теле? Могу ли побыть с этим&nbsp;&mdash; без необходимости решать прямо сейчас? Без вины? Без бегства?&raquo;</em> Тревога о смысле&nbsp;&mdash; не поломка. Тебе не всё равно, как ты живёшь. И это &laquo;не всё равно&raquo;&nbsp;&mdash; уже компас.
+        </div>
+    </div>
+</div>
+
+</section>
+
+<footer class="footer">
+    <div class="footer-line"></div>
+    <p>Узнать свою тревогу&nbsp;&mdash; не значит её побороть. Это значит перестать подкармливать петлю на автопилоте. Заметить&nbsp;&mdash; уже shift.</p>
+    <div class="footer-brand">Неделя 2 &middot; Работа с тревогой &middot; High Performance</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
