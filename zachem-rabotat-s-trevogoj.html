@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зачем работать с тревогой — Неделя 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FBF7F2;
+            --warm-white: #FFFDF9;
+            --sand: #F0E8DC;
+            --sand-dark: #E2D5C3;
+            --terracotta: #C4704B;
+            --terracotta-light: #D4896A;
+            --terracotta-pale: #F2DDD2;
+            --olive: #7A8B6F;
+            --olive-light: #A3B396;
+            --olive-pale: #E8EDDF;
+            --charcoal: #3A3632;
+            --warm-gray: #7A746D;
+            --light-gray: #B5AFA7;
+            --accent-gold: #C6A96C;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito Sans', 'Segoe UI', sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            font-size: 17px;
+            line-height: 1.75;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 500;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 28px 60px;
+            background: var(--warm-white);
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 120px;
+            background: linear-gradient(to bottom, var(--warm-white), var(--cream));
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 22px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            background: var(--terracotta-pale);
+            border: 1px solid rgba(196,112,75,0.15);
+            margin-bottom: 40px;
+            animation: fadeDown 0.8s ease both;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.6rem, 7vw, 4.8rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 28px;
+            color: var(--charcoal);
+            animation: fadeDown 0.8s 0.15s ease both;
+        }
+        .hero h1 em { font-style: italic; color: var(--terracotta); }
+
+        .hero-intro {
+            font-size: 1.1rem;
+            color: var(--warm-gray);
+            max-width: 620px;
+            margin-bottom: 56px;
+            line-height: 1.85;
+            animation: fadeDown 0.8s 0.3s ease both;
+        }
+
+        .scroll-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--light-gray);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            animation: fadeDown 0.8s 0.45s ease both;
+        }
+        .scroll-hint svg { width: 18px; height: 18px; animation: bounce 2.5s ease-in-out infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(6px); opacity: 1; }
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 28px 100px;
+        }
+
+        .big-statement {
+            text-align: center;
+            padding: 60px 28px;
+            margin-bottom: 60px;
+        }
+        .big-statement h2 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 400;
+            line-height: 1.3;
+            color: var(--charcoal);
+            max-width: 640px;
+            margin: 0 auto 20px;
+        }
+        .big-statement h2 em { font-style: italic; color: var(--terracotta); }
+        .big-statement p {
+            color: var(--warm-gray);
+            max-width: 560px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        .impact-card {
+            background: var(--warm-white);
+            border: 1px solid var(--sand);
+            border-radius: 24px;
+            padding: 44px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 6px 24px rgba(58,54,50,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .impact-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 48px rgba(58,54,50,0.08);
+        }
+
+        .impact-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--terracotta-pale);
+            color: var(--terracotta);
+            margin-bottom: 20px;
+        }
+
+        .impact-card h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+        .impact-card .impact-sub {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-style: italic;
+            color: var(--terracotta);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .impact-card p {
+            color: var(--warm-gray);
+            margin-bottom: 14px;
+        }
+        .impact-card p:last-child { margin-bottom: 0; }
+        .impact-card strong { color: var(--charcoal); font-weight: 600; }
+
+        .loop-mini {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 16px 18px;
+            border-radius: 14px;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            margin: 20px 0;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+        .loop-mini span { color: var(--terracotta-light); }
+
+        .stat-block {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 10px;
+            background: var(--olive-pale);
+            border: 1px solid rgba(122,139,111,0.15);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--olive);
+            margin: 4px 4px 4px 0;
+        }
+
+        .quote-break {
+            text-align: center;
+            padding: 56px 28px;
+            margin-bottom: 40px;
+        }
+        .quote-break blockquote {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.35rem;
+            font-style: italic;
+            color: var(--warm-gray);
+            max-width: 520px;
+            margin: 0 auto 16px;
+            line-height: 1.6;
+        }
+        .quote-break .author {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+        .stat-card {
+            background: var(--warm-white);
+            border: 1px solid var(--sand);
+            border-radius: 20px;
+            padding: 32px 28px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-number {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2.4rem;
+            font-weight: 500;
+            color: var(--terracotta);
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 0.82rem;
+            color: var(--warm-gray);
+            line-height: 1.5;
+        }
+
+        .cta-section {
+            background: var(--warm-white);
+            border: 1px solid var(--sand);
+            border-radius: 24px;
+            padding: 56px 44px;
+            text-align: center;
+            margin-bottom: 60px;
+            box-shadow: 0 6px 24px rgba(58,54,50,0.04);
+        }
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: 20px;
+            line-height: 1.25;
+        }
+        .cta-section h2 em { font-style: italic; color: var(--terracotta); }
+        .cta-section p {
+            color: var(--warm-gray);
+            max-width: 520px;
+            margin: 0 auto 12px;
+        }
+
+        .divider {
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--terracotta), var(--olive));
+            border-radius: 3px;
+            margin: 0 auto 60px;
+            opacity: 0.4;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 48px 28px 80px;
+            color: var(--light-gray);
+        }
+        .footer-line {
+            width: 48px; height: 3px;
+            background: linear-gradient(90deg, var(--terracotta), var(--olive));
+            margin: 0 auto 24px; border-radius: 3px;
+        }
+        .footer p { max-width: 440px; margin: 0 auto; line-height: 1.8; font-size: 0.9rem; }
+        .footer .footer-brand {
+            margin-top: 20px;
+            font-size: 10px; font-weight: 700;
+            letter-spacing: 2.5px; text-transform: uppercase;
+            color: var(--sand-dark);
+        }
+
+        @media (max-width: 640px) {
+            .impact-card { padding: 32px 24px; }
+            .cta-section { padding: 40px 24px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-badge">Неделя 2 &middot; High Performance</div>
+    <h1>Зачем работать<br>с <em>тревогой</em></h1>
+    <p class="hero-intro">Тревога&nbsp;&mdash; это не просто неприятное чувство, которое &laquo;надо потерпеть&raquo;. Это корневой паттерн, который незаметно управляет тем, как ты ешь, спишь, работаешь, строишь отношения и принимаешь решения. Начать с тревоги&nbsp;&mdash; значит вытащить корень, а не обрывать листья.</p>
+    <div class="scroll-hint">
+        <span>Листай вниз</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </div>
+</section>
+
+<section class="content">
+
+<div class="big-statement reveal">
+    <h2>Ты думаешь, что у тебя проблема с едой, сном, прокрастинацией или мотивацией. А на самом деле у тебя <em>одна</em> проблема</h2>
+    <p>Джадсон Брюер, психиатр и нейроучёный из&nbsp;Брауна, 20&nbsp;лет исследовал зависимости&nbsp;&mdash; от&nbsp;никотина до&nbsp;переедания. И&nbsp;обнаружил, что за&nbsp;большинством из&nbsp;них стоит одна и&nbsp;та&nbsp;же петля: тревога.</p>
+</div>
+
+<div class="divider reveal"></div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#127860;</div>
+    <h3>Переедание</h3>
+    <div class="impact-sub">Когда за голодом стоит эмоция, а не потребность в еде</div>
+    <p>Эмоциональное переедание&nbsp;&mdash; это не вопрос дисциплины или силы воли. Брюер описывает его как <strong>привычку с чёткой петлёй</strong>: неприятная эмоция (тревога, скука, стресс) запускает желание поесть, еда приносит краткосрочное облегчение, и мозг закрепляет эту связь&nbsp;&mdash; запуская её снова и снова при каждом эпизоде дискомфорта.</p>
+    <div class="loop-mini">
+        Тревога / стресс <span>&rarr;</span> Еда на автопилоте <span>&rarr;</span> Краткое облегчение <span>&rarr;</span> Вина <span>&rarr;</span> Ещё больше тревоги
+    </div>
+    <p>В&nbsp;исследованиях Брюера участники, которые использовали осознанность вместо ограничений, показали <strong>снижение компульсивного переедания на&nbsp;40%</strong>&nbsp;&mdash; не&nbsp;через диету, а&nbsp;через то, что начали видеть: еда не&nbsp;решает тревогу, а&nbsp;подкармливает её.</p>
+    <p>Иными словами, попытки контролировать еду — это работа с симптомом. <strong>Когда снижается уровень фоновой тревоги, отношения с едой начинают меняться естественным образом.</strong></p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#9203;</div>
+    <h3>Прокрастинация</h3>
+    <div class="impact-sub">Механизм избегания дискомфорта, а не недостаток дисциплины</div>
+    <p>Брюер показывает, что <strong>хроническая прокрастинация — это не проблема тайм-менеджмента, а тревожная привычка</strong>. Мозг выработал стратегию защиты от дискомфорта: задача вызывает тревогу, мозг предлагает отвлечение (соцсети, уборку, ещё один кофе), тревога ненадолго отступает — и петля закрепляется.</p>
+    <div class="loop-mini">
+        Сложная задача <span>&rarr;</span> Тревога / дискомфорт <span>&rarr;</span> Отвлечение <span>&rarr;</span> Временное облегчение <span>&rarr;</span> Дедлайн ближе <span>&rarr;</span> Ещё больше тревоги
+    </div>
+    <p>Парадокс в том, что чем дольше задача откладывается, тем <strong>сильнее нарастает тревога</strong> и тем сильнее потребность в отвлечении. К этому часто добавляется самокритика за «лень», которая создаёт дополнительный слой стресса и усиливает всю спираль.</p>
+    <p><strong>Работа с тревогой в данном случае — это работа с корневой причиной прокрастинации, а не с её внешними проявлениями.</strong></p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#128640;</div>
+    <h3>Карьера и цели</h3>
+    <div class="impact-sub">Как тревога блокирует способность действовать</div>
+    <p>Как мы обсуждали в первой лекции: <strong>когда идея долго обдумывается в присутствии тревоги, мозг постепенно накапливает аргументы против действия — и в какой-то момент воспринимаемые риски перевешивают возможную пользу</strong>.</p>
+    <p>Тревога систематически подавляет способность к действию. Она превращает желание попробовать что-то новое в бесконечный анализ рисков. Человек не просит повышения, не запускает проект, не меняет работу — не потому что не способен, а потому что <strong>тревога блокирует переход от намерения к действию</strong>.</p>
+    <div class="loop-mini">
+        Идея / возможность <span>&rarr;</span> Тревога (&laquo;а что если&raquo;) <span>&rarr;</span> Паралич / откладывание <span>&rarr;</span> Упущенная возможность <span>&rarr;</span> Самокритика
+    </div>
+    <p><span class="stat-block">12 млрд рабочих дней</span> ежегодно теряется в мире из-за тревоги и депрессии (ВОЗ). Это <span class="stat-block">$1 трлн</span> потерянной продуктивности.</p>
+    <p>Но за статистикой стоят конкретные последствия: <strong>идеи, которые не были реализованы</strong>, проекты, которые были задуманы, но так и не начаты, возможности, которые были замечены, но не использованы.</p>
+</div>
+
+<div class="quote-break reveal">
+    <blockquote>&laquo;Никакое количество тревоги не изменит ничего из того, что произойдёт.&raquo;</blockquote>
+    <div class="author">Алан Уоттс</div>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#128241;</div>
+    <h3>Думскроллинг и телефон</h3>
+    <div class="impact-sub">Цифровая компульсия как форма эмоциональной регуляции</div>
+    <p>Брюер описывает думскроллинг как ещё одну тревожную привычку, построенную на <strong>том же самом механизме, что и переедание</strong>. Тревога запускает импульс взять телефон, мозг получает микродозу дофамина от новой информации, тревога ненадолго отступает — но возвращается, потому что ни одна реальная проблема не была решена.</p>
+    <div class="loop-mini">
+        Тревога / скука <span>&rarr;</span> Берёшь телефон <span>&rarr;</span> Дофаминовая микродоза <span>&rarr;</span> 40 минут пропали <span>&rarr;</span> Вина + тревога
+    </div>
+    <p>Здесь работает тот же механизм, что и с едой: <strong>попытка снять тревогу через скроллинг в итоге её усиливает</strong>. И чем чаще повторяется цикл, тем устойчивее становится привычка.</p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#127769;</div>
+    <h3>Бессонница</h3>
+    <div class="impact-sub">Тревожное мышление как главный враг засыпания</div>
+    <p>Тревога является одной из ведущих причин нарушений сна. Человек ложится физически уставшим, но в момент, когда внешние раздражители исчезают, мозг начинает генерировать тревожные сценарии — и засыпание откладывается на часы.</p>
+    <p>В этом случае <strong>тишина работает как триггер</strong>: в отсутствие отвлекающих стимулов нервная система переключается на внутренние источники беспокойства. Утром человек просыпается с пониженным ресурсом для регуляции эмоций, что усиливает тревогу следующего дня.</p>
+    <p>Формируется двусторонняя связь: недостаток сна повышает тревожность, а тревожность ухудшает качество сна. <strong>Выйти из этой спирали, работая только с гигиеной сна, невозможно</strong> — необходимо работать с тем, что разрушает сон изнутри.</p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#127863;</div>
+    <h3>Алкоголь и вещества</h3>
+    <div class="impact-sub">Самолечение тревоги через химическое расслабление</div>
+    <p>Бокал вина после работы «для расслабления», сигарета «чтобы успокоиться» — Брюер описывает это как классический пример самолечения тревоги через вещества. <strong>Это одна из наиболее устойчивых петель привычки</strong>, поскольку reward (ощущение расслабления) воспринимается мозгом как вполне реальный.</p>
+    <div class="loop-mini">
+        Тревога / напряжение <span>&rarr;</span> Алкоголь / сигарета <span>&rarr;</span> Расслабление <span>&rarr;</span> Привыкание <span>&rarr;</span> Нужно больше <span>&rarr;</span> Тревога растёт
+    </div>
+    <p>Но алкоголь не&nbsp;снимает тревогу&nbsp;&mdash; он&nbsp;на&nbsp;несколько часов маскирует её, а&nbsp;потом возвращает с процентами. Исследования показывают, что у людей с повышенной тревожностью алкоголь <strong>ухудшает качество сна</strong> и&nbsp;усиливает симптомы на&nbsp;следующий день.</p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#128148;</div>
+    <h3>Отношения</h3>
+    <div class="impact-sub">Как тревожные паттерны формируют стиль привязанности</div>
+    <p>Тревога существенно влияет на стиль коммуникации. Человек <strong>не озвучивает свои чувства</strong>, опасаясь негативной реакции, соглашается, когда хотел бы отказать, контролирует близких как способ справиться с внутренним беспокойством — или, напротив, эмоционально отдаляется, потому что близость ассоциируется с уязвимостью.</p>
+    <p>Избегание конфликтов, потребность в постоянном одобрении, ревность, гиперконтроль — всё это <strong>поведенческие стратегии, которые мозг выработал для управления тревогой</strong>. И именно эти стратегии зачастую разрушают отношения быстрее, чем любые разногласия по существу.</p>
+</div>
+
+<div class="impact-card reveal">
+    <div class="impact-icon">&#128481;</div>
+    <h3>Самокритика и самооценка</h3>
+    <div class="impact-sub">Механизм, при котором тревога принимает форму внутренней критики</div>
+    <p>Внутренний голос, который повторяет «ты не справляешься», «у тебя не получится», «ты недостаточно хорош» — это не объективная оценка реальности. <strong>Это привычка мозга подкармливать тревогу мыслями</strong>, превращая эмоциональный сигнал в когнитивную петлю.</p>
+    <p>Как мы разбирали в первой лекции, механизм выглядит так: возникает эмоция (тревога, страх, грусть), и мозг оформляет её в мысль — «я опять не смог», «жалко как-то это всё». <strong>Мысль усиливает эмоцию, эмоция порождает новую мысль — и формируется нисходящая спираль.</strong></p>
+    <p>Работа с тревогой позволяет замечать эту спираль на ранних этапах, прерывать автоматическое «подкармливание» мыслей — и постепенно менять характер внутреннего диалога.</p>
+</div>
+
+<div class="divider reveal"></div>
+
+<div class="big-statement reveal">
+    <h2>Масштаб: <em>это не только про тебя</em></h2>
+    <p>Тревога&nbsp;&mdash; самое распространённое расстройство психики в мире. Вот что говорят цифры.</p>
+</div>
+
+<div class="stats-grid reveal">
+    <div class="stat-card">
+        <div class="stat-number">301 млн</div>
+        <div class="stat-label">человек в мире живут с тревожными расстройствами (ВОЗ)</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">12 млрд</div>
+        <div class="stat-label">рабочих дней ежегодно теряется из-за тревоги и депрессии</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">$1 трлн</div>
+        <div class="stat-label">в год — потерянная продуктивность мировой экономики</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">80%</div>
+        <div class="stat-label">сотрудников отмечают &laquo;тревогу продуктивности&raquo; на работе</div>
+    </div>
+</div>
+
+<div class="divider reveal"></div>
+
+<div class="quote-break reveal">
+    <blockquote>&laquo;Тревога&nbsp;&mdash; это привычка. А привычки можно менять. Не силой воли, а через любопытство.&raquo;</blockquote>
+    <div class="author">Джадсон Брюер</div>
+</div>
+
+<div class="stats-grid reveal">
+    <div class="stat-card">
+        <div class="stat-number">67%</div>
+        <div class="stat-label">снижение симптомов тревоги в клинических исследованиях Брюера</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">40%</div>
+        <div class="stat-label">снижение компульсивного переедания через осознанность</div>
+    </div>
+</div>
+
+<div class="cta-section reveal">
+    <h2>Это <em>можно</em> изменить</h2>
+    <p>Современная наука о поведении показывает: тревожные реакции — это не черта характера и не признак слабости, а <strong>выученные привычки мозга</strong>, которые когда-то сформировались как способ справляться с дискомфортом.</p>
+    <p>А всё, что было выучено, может быть переучено — не через борьбу с собой и не через усилие воли, а через осознанное наблюдение за привычными петлями и постепенное снижение их reward value.</p>
+    <p style="margin-top: 24px; color: var(--charcoal); font-weight: 600;">Именно с этого мы начинаем вторую неделю.</p>
+</div>
+
+</section>
+
+<footer class="footer">
+    <div class="footer-line"></div>
+    <p>Начать с тревоги&nbsp;&mdash; значит вытащить корень, а не обрывать листья. Всё остальное меняется вслед за этим.</p>
+    <div class="footer-brand">Неделя 2 &middot; High Performance &middot; Оля Маркес</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
