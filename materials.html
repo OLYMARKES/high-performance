@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High Performance — Все материалы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Prata&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6efe6;
+      --bg-deep: #ead9c5;
+      --surface: rgba(255, 252, 247, 0.88);
+      --surface-strong: rgba(255, 255, 252, 0.94);
+      --surface-soft: rgba(252, 245, 236, 0.82);
+      --ink: #251e1a;
+      --muted: #6d5c50;
+      --line: rgba(101, 69, 46, 0.14);
+      --accent: #b66035;
+      --accent-dark: #7d3f23;
+      --olive: #5d6b49;
+      --olive-soft: rgba(93, 107, 73, 0.12);
+      --sand: #e8dbc8;
+      --warning: #a65234;
+      --shadow: 0 24px 80px rgba(79, 47, 22, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(182, 96, 53, 0.16), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(93, 107, 73, 0.11), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, #fcf8f3 48%, var(--bg-deep) 100%);
+      padding: 28px 16px 56px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: 42px 28px 36px;
+      background: linear-gradient(140deg, rgba(255, 252, 248, 0.98), rgba(246, 234, 220, 0.92));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -46px;
+      right: -42px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 1px solid rgba(182, 96, 53, 0.13);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(182, 96, 53, 0.08);
+      color: var(--accent-dark);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin-top: 18px;
+      font-family: "Prata", serif;
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 0.98;
+      font-weight: 400;
+    }
+
+    .hero-copy {
+      max-width: 860px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.85;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.48);
+    }
+
+    .stat-value {
+      font-family: "Prata", serif;
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .section {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--olive-soft);
+      color: var(--olive);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .section-title {
+      font-family: "Prata", serif;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.04;
+      font-weight: 400;
+    }
+
+    .section-note {
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 100%;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card.link-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 44px rgba(88, 52, 28, 0.12);
+      border-color: rgba(182, 96, 53, 0.22);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .badge.article {
+      background: rgba(182, 96, 53, 0.1);
+      color: var(--accent-dark);
+    }
+
+    .badge.practice {
+      background: var(--olive-soft);
+      color: var(--olive);
+    }
+
+    .badge.pdf {
+      background: rgba(37, 30, 26, 0.06);
+      color: var(--muted);
+    }
+
+    .badge.series {
+      background: rgba(166, 82, 52, 0.1);
+      color: var(--warning);
+    }
+
+    .card-title {
+      font-family: "Prata", serif;
+      font-size: 28px;
+      line-height: 1.08;
+      font-weight: 400;
+    }
+
+    .card-copy {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      flex: 1;
+    }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: rgba(182, 96, 53, 0.08);
+      color: var(--accent-dark);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .series-card {
+      margin-top: 16px;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 252, 248, 0.92), rgba(250, 242, 233, 0.96));
+    }
+
+    .series-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .series-title {
+      font-family: "Prata", serif;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.1;
+    }
+
+    .series-copy {
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .series-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      list-style: none;
+      margin-top: 18px;
+    }
+
+    .series-item {
+      display: flex;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 14px 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    .series-num {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(182, 96, 53, 0.1);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .series-text {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .footer {
+      margin-top: 22px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: rgba(255, 252, 248, 0.7);
+    }
+
+    @media (max-width: 960px) {
+      .hero-stats,
+      .card-grid,
+      .series-list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 18px 12px 40px;
+      }
+
+      .hero,
+      .section,
+      .footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .section-head,
+      .series-head {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .hero-stats,
+      .card-grid,
+      .series-list {
+        grid-template-columns: 1fr;
+      }
+
+      .card-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">High Performance · Материалы</div>
+      <h1>Все материалы программы на одной странице</h1>
+      <p class="hero-copy">
+        Здесь собраны ключевые статьи, практики и базовые PDF по неделям. Это не лендинг и не личный кабинет, а удобная точка входа, чтобы быстро открыть нужный материал без поиска по чату.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Недели уже собраны в навигатор</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Публичных материалов и практик по ссылкам</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Постов о тревоге добавлены как серия недели 2</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">1</div>
+          <div class="stat-label">Единая страница вместо разрозненных ссылок</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section" id="week-1">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Неделя 1</div>
+          <h2 class="section-title">База, ритм и мягкий вход</h2>
+        </div>
+        <p class="section-note">
+          Первая неделя про опору: не усложнять, а собрать базовый ритм тела, внимания и ежедневных действий. Здесь — стартовая лекция, практики и базовые PDF, к которым удобно возвращаться.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <a class="card link-card" href="lecture-1-getting-shit-done.html">
+          <div class="badge-row">
+            <span class="badge article">Лекция</span>
+            <span class="badge practice">Неделя 1</span>
+          </div>
+          <h3 class="card-title">Getting Shit Done</h3>
+          <p class="card-copy">
+            Конспект стартовой лекции: как входить в работу без распада на хаос, что делать с ритмом дня и как не превращать дисциплину в насилие над собой.
+          </p>
+          <span class="card-cta">Открыть материал</span>
+        </a>
+
+        <a class="card link-card" href="journey-link-meditation-journaling.html">
+          <div class="badge-row">
+            <span class="badge practice">Практика</span>
+            <span class="badge article">Ресурс</span>
+          </div>
+          <h3 class="card-title">Meditation + Journaling</h3>
+          <p class="card-copy">
+            Отдельная страница для медитации и journaling-практики. Удобно держать под рукой как ежедневный вход в состояние и способ разгрузить голову.
+          </p>
+          <span class="card-cta">Открыть практику</span>
+        </a>
+
+        <a class="card link-card" href="digital-detox-saturday.html">
+          <div class="badge-row">
+            <span class="badge article">Статья</span>
+            <span class="badge practice">Ритуал</span>
+          </div>
+          <h3 class="card-title">Digital Detox Saturday</h3>
+          <p class="card-copy">
+            Текст про субботу без экранов как способ выйти из постоянной тревожной стимуляции, вернуть себе внимание и почувствовать более живой ритм времени.
+          </p>
+          <span class="card-cta">Открыть статью</span>
+        </a>
+
+        <a class="card link-card" href="habit-sheet.pdf">
+          <div class="badge-row">
+            <span class="badge pdf">PDF</span>
+            <span class="badge practice">База</span>
+          </div>
+          <h3 class="card-title">Лист привычек</h3>
+          <p class="card-copy">
+            Опорный PDF на неделю: на что смотреть каждый день, как держать повторяемость без идеальности и возвращаться к простым действиям.
+          </p>
+          <span class="card-cta">Открыть PDF</span>
+        </a>
+
+        <a class="card link-card" href="nutrition-guide.pdf">
+          <div class="badge-row">
+            <span class="badge pdf">PDF</span>
+            <span class="badge article">Питание</span>
+          </div>
+          <h3 class="card-title">Nutrition Guide</h3>
+          <p class="card-copy">
+            Базовый гид по питанию: как упростить себе решения, собрать опору в еде и не жить в бесконечном внутреннем споре про «правильно или неправильно».
+          </p>
+          <span class="card-cta">Открыть PDF</span>
+        </a>
+
+        <a class="card link-card" href="workouts.pdf">
+          <div class="badge-row">
+            <span class="badge pdf">PDF</span>
+            <span class="badge practice">Тренировки</span>
+          </div>
+          <h3 class="card-title">Workout Plan</h3>
+          <p class="card-copy">
+            Базовый тренировочный план недели: чтобы не искать, что делать сегодня, а просто открыть и выполнить то, что уже собрано в одну систему.
+          </p>
+          <span class="card-cta">Открыть PDF</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="week-2">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Неделя 2</div>
+          <h2 class="section-title">Работа с тревогой</h2>
+        </div>
+        <p class="section-note">
+          Вторая неделя уже более сфокусирована: мы не просто замечаем тревогу, а начинаем различать её виды, видеть петли привычки и связывать тревогу со своими ценностями.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <a class="card link-card" href="6-vidov-trevogi.html">
+          <div class="badge-row">
+            <span class="badge article">Материал 1</span>
+            <span class="badge practice">Неделя 2</span>
+          </div>
+          <h3 class="card-title">6 видов тревоги</h3>
+          <p class="card-copy">
+            Большой материал по шести типам тревоги с примерами, внутренними монологами и практическими разворотами. Это основная точка входа в тему недели.
+          </p>
+          <span class="card-cta">Открыть материал</span>
+        </a>
+      </div>
+
+      <div class="series-card">
+        <div class="series-head">
+          <div>
+            <div class="badge-row" style="margin-bottom:10px;">
+              <span class="badge series">Серия</span>
+              <span class="badge article">12 постов</span>
+            </div>
+            <h3 class="series-title">12 постов о тревоге</h3>
+          </div>
+          <p class="series-copy">
+            Серия по книге Judson Brewer <em>Unwinding Anxiety</em>. Здесь она добавлена как отдельный блок внутри второй недели: можно использовать как последовательное чтение, как дополнительные тексты к основной теме недели и как отдельный список идей для контента.
+          </p>
+        </div>
+
+        <ol class="series-list">
+          <li class="series-item"><span class="series-num">1</span><span class="series-text">Тревога — мастер маскировки</span></li>
+          <li class="series-item"><span class="series-num">2</span><span class="series-text">Парадокс: чем богаче страна — тем больше в ней тревоги</span></li>
+          <li class="series-item"><span class="series-num">3</span><span class="series-text">Как рождается тревога: формула, которую полезно запомнить</span></li>
+          <li class="series-item"><span class="series-num">4</span><span class="series-text">Вы зависимы. И это не преувеличение</span></li>
+          <li class="series-item"><span class="series-num">5</span><span class="series-text">Как мозг пещерного человека формирует все ваши привычки</span></li>
+          <li class="series-item"><span class="series-num">6</span><span class="series-text">Два усилителя зависимости, о которых вы не знали</span></li>
+          <li class="series-item"><span class="series-num">7</span><span class="series-text">Тревога — это привычка. И вот как работает её петля</span></li>
+          <li class="series-item"><span class="series-num">8</span><span class="series-text">Беспокойство — доктор Джекил и мистер Хайд</span></li>
+          <li class="series-item"><span class="series-num">9</span><span class="series-text">«Без тревоги я бы ничего не достиг» — самый опасный миф</span></li>
+          <li class="series-item"><span class="series-num">10</span><span class="series-text">Почему сила воли предаёт вас в самый нужный момент</span></li>
+          <li class="series-item"><span class="series-num">11</span><span class="series-text">Почему не работает ни подмена, ни «правильная среда»</span></li>
+          <li class="series-item"><span class="series-num">12</span><span class="series-text">Осознанность — не тишина в голове, а другой способ слышать</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Это рабочая карта материалов High Performance. Её можно расширять по мере появления новых недель, не ломая уже существующие ссылки и не собирая всё заново каждый раз.
+    </footer>
+  </div>
+</body>
+</html>
