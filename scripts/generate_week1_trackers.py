@@ -1042,12 +1042,14 @@ def build_runtime_script(name: str, slug: str) -> str:
   const MATERIALS_COLLAPSED_KEY = `${{LOCAL_KEY}}:materials-collapsed`;
   const STORY_PREFERENCES_KEY = `${{LOCAL_KEY}}:story-preferences`;
   const AUTOSAVE_DELAY_MS = 1600;
+  const AUTOSAVE_MAX_WAIT_MS = 8000;
   const DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
   const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   let latestPersistedStateJson = '';
   let latestPersistedAt = '';
   let autosaveTimer = null;
   let autosaveInFlight = false;
+  let autosaveDirtySince = 0;
   function getDefaultDayItems() {{
     return DEFAULT_ITEMS.map((item, index) => ({{
       ...item,
@@ -1168,6 +1170,7 @@ def build_runtime_script(name: str, slug: str) -> str:
   function rememberPersistedSnapshot(snapshotJson, submittedAt = '') {{
     latestPersistedStateJson = snapshotJson;
     latestPersistedAt = submittedAt || latestPersistedAt || '';
+    autosaveDirtySince = 0;
   }}
 
   function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {{
@@ -1213,13 +1216,25 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   function queueAutosave(reason = 'change') {{
     clearAutosaveTimer();
-    if (!hasUnsyncedServerChanges()) {{
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {{
+      autosaveDirtySince = 0;
       return;
     }}
+
+    const isRetry = reason.includes('retry');
+    if (!autosaveDirtySince || isRetry) {{
+      autosaveDirtySince = Date.now();
+    }}
+
+    const elapsed = Date.now() - autosaveDirtySince;
+    const maxWaitRemaining = Math.max(0, AUTOSAVE_MAX_WAIT_MS - elapsed);
+    const delay = isRetry ? AUTOSAVE_DELAY_MS : Math.min(AUTOSAVE_DELAY_MS, maxWaitRemaining);
+
     autosaveTimer = window.setTimeout(() => {{
       autosaveTimer = null;
       void persistTrackerSnapshotInBackground(reason);
-    }}, AUTOSAVE_DELAY_MS);
+    }}, delay);
   }}
 
   async function persistTrackerSnapshotInBackground(reason = 'change') {{

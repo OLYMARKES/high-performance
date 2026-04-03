@@ -1886,12 +1886,14 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   const MATERIALS_COLLAPSED_KEY = `${LOCAL_KEY}:materials-collapsed`;
   const STORY_PREFERENCES_KEY = `${LOCAL_KEY}:story-preferences`;
   const AUTOSAVE_DELAY_MS = 1600;
+  const AUTOSAVE_MAX_WAIT_MS = 8000;
   const DAY_WORKOUT_LINKS = [[{"label": "Тренировка дня", "url": "https://kinescope.io/6PmxVSfi4BYsarEmW2XRrZ"}], [{"label": "Тренировка утра", "url": "https://kinescope.io/vfoVu9d7q1wSYKdK5qpo2t"}, {"label": "Основная тренировка", "url": "https://kinescope.io/k3554A5VX2cGM2p2NzBXgp"}], [{"label": "Тренировка дня", "url": "https://kinescope.io/4k83NSdtZyhTWaKEcYGY6f"}], [{"label": "Тренировка 1", "url": "https://kinescope.io/dJuYS7wUg6jLdC7Wn4WHEe"}, {"label": "Тренировка 2", "url": "https://kinescope.io/bnyKxZVoQBBgRdd9a6v5be"}], [{"label": "Тренировка дня", "url": "https://kinescope.io/dg41DeFZiV3bestR5vsgNT"}], [{"label": "Тренировка 1", "url": "https://kinescope.io/8bNzN33rMMc5F289UnjDYn"}, {"label": "Тренировка 2", "url": "https://kinescope.io/et2qFrFvqZ5oohxazHhCHn"}], []];
   const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   let latestPersistedStateJson = '';
   let latestPersistedAt = '';
   let autosaveTimer = null;
   let autosaveInFlight = false;
+  let autosaveDirtySince = 0;
   function getDefaultDayItems() {
     return DEFAULT_ITEMS.map((item, index) => ({
       ...item,
@@ -2012,6 +2014,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   function rememberPersistedSnapshot(snapshotJson, submittedAt = '') {
     latestPersistedStateJson = snapshotJson;
     latestPersistedAt = submittedAt || latestPersistedAt || '';
+    autosaveDirtySince = 0;
   }
 
   function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {
@@ -2057,13 +2060,25 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   function queueAutosave(reason = 'change') {
     clearAutosaveTimer();
-    if (!hasUnsyncedServerChanges()) {
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {
+      autosaveDirtySince = 0;
       return;
     }
+
+    const isRetry = reason.includes('retry');
+    if (!autosaveDirtySince || isRetry) {
+      autosaveDirtySince = Date.now();
+    }
+
+    const elapsed = Date.now() - autosaveDirtySince;
+    const maxWaitRemaining = Math.max(0, AUTOSAVE_MAX_WAIT_MS - elapsed);
+    const delay = isRetry ? AUTOSAVE_DELAY_MS : Math.min(AUTOSAVE_DELAY_MS, maxWaitRemaining);
+
     autosaveTimer = window.setTimeout(() => {
       autosaveTimer = null;
       void persistTrackerSnapshotInBackground(reason);
-    }, AUTOSAVE_DELAY_MS);
+    }, delay);
   }
 
   async function persistTrackerSnapshotInBackground(reason = 'change') {
