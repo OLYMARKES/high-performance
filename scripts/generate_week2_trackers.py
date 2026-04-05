@@ -12,9 +12,10 @@ SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High per
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week2-vault-m3q8t4k1v6p2"
-TRACKER_VERSION_QUERY = "v=week2-materials-v33"
+TRACKER_VERSION_QUERY = "v=week2-pdf-v34"
 HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
 NUTRITION_PDF = f"../nutrition-guide.pdf?{TRACKER_VERSION_QUERY}"
+WEEK2_WORKOUTS_PDF = f"../week-2-workouts.pdf?{TRACKER_VERSION_QUERY}"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 JOURNEY_LINK_URL = "../journey-link-meditation-journaling.html"
@@ -947,7 +948,10 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
             <h3>Тренировки недели 2</h3>
             <p>Здесь остаются только тренировки текущего дня. Если на день запланированы две тренировки, появятся две отдельные кнопки.</p>
 {WORKOUT_DAY_BUTTONS_SHELL}
-            <div class="material-meta">В этом блоке больше нет резервных ссылок на PDF или кабинет: только актуальные тренировки дня по текущему расписанию.</div>
+            <div class="material-actions">
+              <a class="material-btn secondary" href="{WEEK2_WORKOUTS_PDF}" download="week-2-workouts.pdf">Сохранить PDF недели 2</a>
+            </div>
+            <div class="material-meta">Здесь остаются актуальные тренировки дня и отдельная ссылка, чтобы при желании сохранить PDF второй недели на устройство.</div>
           </article>
         </div>
 
@@ -1271,6 +1275,7 @@ if (!state.manifesto) {
     html = html.replace("{ANXIETY_TYPES_URL}", ANXIETY_TYPES_URL)
     html = html.replace("{ANXIETY_POSTS_URL}", ANXIETY_POSTS_URL)
     html = html.replace("{WEEK1_TRACKER_URL}", f"../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}")
+    html = html.replace("{WEEK2_WORKOUTS_PDF}", WEEK2_WORKOUTS_PDF)
     html = html.replace("{WORKOUT_DAY_BUTTONS_SHELL}", build_workout_day_buttons_shell())
     return html
 
