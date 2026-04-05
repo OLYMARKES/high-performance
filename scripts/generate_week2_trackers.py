@@ -12,7 +12,7 @@ SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High per
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week2-vault-m3q8t4k1v6p2"
-TRACKER_VERSION_QUERY = "v=week2-workouts-v31"
+TRACKER_VERSION_QUERY = "v=week2-contrast-v32"
 HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
 NUTRITION_PDF = f"../nutrition-guide.pdf?{TRACKER_VERSION_QUERY}"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
@@ -182,9 +182,9 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
   --olive: #6f879d;
   --olive-light: #96aec2;
   --olive-pale: #e4edf4;
-  --charcoal: #24313e;
-  --warm-gray: #667688;
-  --light-gray: #a5b4c2;
+  --charcoal: #111111;
+  --warm-gray: #111111;
+  --light-gray: #384859;
   --accent-gold: #8aa9c6;
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
@@ -268,7 +268,30 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
       <div class="week2-quote-meta">— Jud Brewer, <em>Unwinding Anxiety</em></div>
     </div>
     <p class="modal-desc">Во второй неделе мы замечаем тревогу раньше и не даём ей превращаться в мысли, нарративы и автоматические привычки, которые захватывают весь день. Когда мы начинаем работать с тревогой, меняются не только мысли, но и еда, фокус, прокрастинация, скроллинг и отношения с собой.</p>
-    <p class="modal-desc" style="margin-top:8px;margin-bottom:24px;color:var(--terracotta);font-weight:400;">Обнови манифест: добавь, как ты будешь замечать тревогу в теле, как распознаешь свои паттерны и как вернёшь себя в ясность, действие и контакт с собой. Сохранить можно и с тем же текстом, но лучше усилить его под вторую неделю.</p>""",
+    <p class="modal-desc" style="margin-top:8px;margin-bottom:24px;color:var(--terracotta);font-weight:500;">Твой личный манифест из недели 1 уже перенесён сюда. Мы только предлагаем его усилить под вторую неделю: добавить, как ты замечаешь тревогу в теле, распознаёшь паттерны и возвращаешь себя в ясность и действие.</p>""",
+        1,
+    )
+    html = html.replace(
+        """    <div style="background:var(--cream);border:1px solid var(--sand);border-radius:14px;padding:22px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:14px;">Пример манифеста</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Мои ценности</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:16px;">Жить свою жизнь на максимум во всём. Тело — лучшее из возможных для меня. Энергия максимальная. Ясность и фокус на своих проектах. Качественный отдых. Качественное время с близкими. Я это хочу, я это могу, я это делаю и я буду это делать.</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Мой коммитмент</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:16px;">НОЛЬ времени и пространства негативным мыслям, самокритике, страху и сомнениям. Я не отдаю ни капли пространства этим паразитам — от них никакой пользы. Я останавливаю это.<br><br>Я даю внимание своей тревоге как ощущению в теле. Я знаю её природу и истоки. Я чувствую её и сижу с ней, не давая превратиться в мысли и нарративы. Я даю ей место, и она не захватывает меня.</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Я знаю своих врагов</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:8px;">Время в телефоне как способ убежать от тревоги и страха, что у меня не получится. Сравнение себя с другими, которое приводит к фрустрации. Расфокус. Выпадение из процессов. Желание убежать и отвлечься. Невозможность остановить работу. Засиживание допоздна — я хочу всё это изменить и я сделаю это.</div>
+
+      <div style="font-family:var(--font-display);font-size:19px;font-style:italic;font-weight:500;color:var(--terracotta);margin-top:14px;">Я могу и делаю!</div>
+    </div>
+""",
+        """    <div style="background:var(--warm-white);border:1px solid rgba(88, 126, 166, 0.18);border-radius:14px;padding:18px 20px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:10px;">Твой текст уже внутри</div>
+      <div style="font-size:15px;line-height:1.65;color:var(--charcoal);">Поле ниже уже заполнено твоим личным манифестом из первой недели. Можешь оставить его как есть или добавить одну-две строки про то, как ты замечаешь тревогу и не позволяешь ей управлять днём.</div>
+    </div>
+""",
         1,
     )
     html = html.replace(
