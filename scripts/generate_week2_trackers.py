@@ -24,6 +24,7 @@ JOURNEY_LINK_URL = "../journey-link-meditation-journaling.html"
 ANXIETY_WHY_URL = "../zachem-rabotat-s-trevogoj.html?v=20260403-1"
 ANXIETY_TYPES_URL = "../6-vidov-trevogi.html"
 ANXIETY_POSTS_URL = "../12-postov-o-trevoge.html"
+UNWINDING_ANXIETY_QUOTE = "You have to know how your mind works, before you can work with it."
 DAY_WORKOUT_LINKS = [
     [
         {
@@ -152,6 +153,45 @@ def get_week1_tracker_participants() -> list[dict[str, str]]:
 def add_personalization(template: str, name: str, for_name: str, slug: str, token: str) -> str:
     html = template
     html = html.replace(
+        """:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}""",
+        """:root {
+  --cream: #edf3f8;
+  --warm-white: #f9fcff;
+  --sand: #dde6f0;
+  --sand-dark: #c8d6e5;
+  --terracotta: #587ea6;
+  --terracotta-light: #7ea5ce;
+  --terracotta-pale: #dce8f5;
+  --olive: #6f879d;
+  --olive-light: #96aec2;
+  --olive-pale: #e4edf4;
+  --charcoal: #24313e;
+  --warm-gray: #667688;
+  --light-gray: #a5b4c2;
+  --accent-gold: #8aa9c6;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}""",
+        1,
+    )
+    html = html.replace(
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="robots" content="noindex, nofollow, noarchive">',
         1,
@@ -165,6 +205,80 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
     html = html.replace(
         '<p class="hero-sub">Твой ежедневный трекер привычек. Отмечай, наблюдай, двигайся вперёд.</p>',
         f'<p class="hero-sub">Персональный трекер второй недели для {for_name}. Здесь остаётся ежедневный трекер, а сверху уже собраны материалы недели 2 и продублированы опоры по привычкам и питанию.</p>',
+        1,
+    )
+    html = html.replace(
+        """.manifesto-modal .modal-desc {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+
+.manifesto-textarea {""",
+        """.manifesto-modal .modal-desc {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+.week2-quote {
+  background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(220, 232, 245, 0.92));
+  border: 1px solid rgba(88, 126, 166, 0.18);
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.week2-quote-copy {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.22;
+  color: var(--charcoal);
+}
+.week2-quote-meta {
+  margin-top: 10px;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.manifesto-textarea {""",
+        1,
+    )
+    html = html.replace(
+        '<div class="modal-tag">Твой манифест</div>',
+        '<div class="modal-tag">Неделя 2 · обновление манифеста</div>',
+        1,
+    )
+    html = html.replace(
+        '<h2>Ясные ценности <em>&gt; ясные цели</em></h2>',
+        '<h2>Замечаю тревогу <em>и не отдаю ей управление</em></h2>',
+        1,
+    )
+    html = html.replace(
+        """    <div style="background:var(--cream);border-left:3px solid var(--terracotta);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-family:var(--font-display);font-size:17px;font-style:italic;font-weight:400;line-height:1.6;color:var(--charcoal);">&laquo;Ценности — это не то же самое, что цели. Цель — конкретная, конечная вещь. Когда ты её достигаешь — это конечная точка. Ценности нельзя завершить. Ценности — это то, как ты хочешь жить, каким человеком хочешь быть и за какие принципы готова стоять.&raquo;</div>
+      <div style="font-size:13px;font-weight:400;color:var(--terracotta);margin-top:10px;">— Доктор Джулия Смит, «Why Has Nobody Told Me This Before?»</div>
+    </div>
+    <p class="modal-desc">Когда ты каждый день соединяешься со своими ценностями, дисциплина перестаёт быть насилием — она становится выбором. Напиши свои ценности, свой коммитмент и то, что ты больше не готова терпеть.</p>
+    <p class="modal-desc" style="margin-top:8px;margin-bottom:24px;color:var(--terracotta);font-weight:400;">Первые два предложения — самые важные. Именно их ты будешь видеть каждый день при открытии трекера.</p>""",
+        f"""    <div class="week2-quote">
+      <div class="week2-quote-copy">&laquo;{UNWINDING_ANXIETY_QUOTE}&raquo;</div>
+      <div class="week2-quote-meta">— Jud Brewer, <em>Unwinding Anxiety</em></div>
+    </div>
+    <p class="modal-desc">Во второй неделе мы замечаем тревогу раньше и не даём ей превращаться в мысли, нарративы и автоматические привычки, которые захватывают весь день. Когда мы начинаем работать с тревогой, меняются не только мысли, но и еда, фокус, прокрастинация, скроллинг и отношения с собой.</p>
+    <p class="modal-desc" style="margin-top:8px;margin-bottom:24px;color:var(--terracotta);font-weight:400;">Обнови манифест: добавь, как ты будешь замечать тревогу в теле, как распознаешь свои паттерны и как вернёшь себя в ясность, действие и контакт с собой. Сохранить можно и с тем же текстом, но лучше усилить его под вторую неделю.</p>""",
+        1,
+    )
+    html = html.replace(
+        '<textarea class="manifesto-textarea" id="manifestoInput" placeholder="Мои ценности: ...&#10;&#10;Мой коммитмент: ...&#10;&#10;Я знаю своих врагов: ..."></textarea>',
+        '<textarea class="manifesto-textarea" id="manifestoInput" placeholder="Мои ценности: ...&#10;&#10;Когда тревога поднимается, я сначала замечаю: ...&#10;&#10;Мой коммитмент на неделю 2: ...&#10;&#10;Я не даю тревоге превращаться в: ..."></textarea>',
+        1,
+    )
+    html = html.replace(
+        '<button class="manifesto-btn" id="manifestoSave">Начать неделю</button>',
+        '<button class="manifesto-btn" id="manifestoSave">Обновить манифест и войти в неделю 2</button>',
         1,
     )
     html = html.replace(
@@ -1047,16 +1161,20 @@ if (!state.manifesto) {
 }""",
         """function syncManifestoVisibility() {
   if (!state.manifesto) {
-    setTimeout(() => {
-      if (!state.manifesto) overlay.classList.add('active');
-    }, 600);
-  } else {
     renderManifestoBanner();
-    overlay.classList.remove('active');
+    return;
   }
-}
-
-syncManifestoVisibility();""",
+  renderManifestoBanner();
+}""",
+        1,
+    )
+    html = html.replace(
+        """overlay.addEventListener('click', (e) => {
+  if (e.target === overlay && state.manifesto) closeManifesto();
+});""",
+        """overlay.addEventListener('click', (e) => {
+  if (e.target === overlay && state.manifesto && !window.__week2ForceManifestoRefresh) closeManifesto();
+});""",
         1,
     )
     html = html.replace(
@@ -1169,24 +1287,44 @@ def build_runtime_script(name: str, slug: str) -> str:
 <script>
   const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
   const LOAD_ENDPOINT = `${{FORM_ENDPOINT}}/participant-week-tracker?slug=${{encodeURIComponent({quote_js(slug)})}}&weekKey=week-2`;
+  const WEEK1_LOAD_ENDPOINT = `${{FORM_ENDPOINT}}/participant-week-tracker?slug=${{encodeURIComponent({quote_js(slug)})}}&weekKey=week-1`;
   const PARTICIPANT_NAME = {quote_js(name)};
   const PARTICIPANT_SLUG = {quote_js(slug)};
   const WEEK_KEY = 'week-2';
   const LOCAL_KEY = `hp_week2_tracker_${{PARTICIPANT_SLUG}}`;
+  const WEEK1_LOCAL_KEY = `hp_week1_tracker_${{PARTICIPANT_SLUG}}`;
   const LOCAL_UPDATED_AT_KEY = `${{LOCAL_KEY}}:updated-at`;
   const MATERIALS_COLLAPSED_KEY = `${{LOCAL_KEY}}:materials-collapsed`;
   const STORY_PREFERENCES_KEY = `${{LOCAL_KEY}}:story-preferences`;
+  const MANIFESTO_REFRESH_SEEN_KEY = `${{LOCAL_KEY}}:manifesto-refresh-seen`;
   const AUTOSAVE_DELAY_MS = 1600;
   const AUTOSAVE_MAX_WAIT_MS = 8000;
   const DAY_WORKOUT_LINKS = {quote_js(DAY_WORKOUT_LINKS)};
+  const WEEK2_EXTRA_ITEMS = [
+    {{
+      id: 'anxietypattern',
+      icon: '🌀',
+      title: 'Заметила и разобрала хотя бы один паттерн тревоги',
+      subtitle: 'Хотя бы один раз увидела, как тревога запускает мысль, привычку или автоматическую реакцию',
+      hasInput: false,
+      inputPlaceholder: '',
+      category: 'mind'
+    }}
+  ];
+  const KNOWN_DEFAULT_ITEM_IDS = [...DEFAULT_ITEMS.map((item) => item.id), ...WEEK2_EXTRA_ITEMS.map((item) => item.id)];
   const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   let latestPersistedStateJson = '';
   let latestPersistedAt = '';
   let autosaveTimer = null;
   let autosaveInFlight = false;
   let autosaveDirtySince = 0;
+  window.__week2ForceManifestoRefresh = false;
+  function getWeek2TemplateItems() {{
+    return [...DEFAULT_ITEMS, ...WEEK2_EXTRA_ITEMS];
+  }}
+
   function getDefaultDayItems() {{
-    return DEFAULT_ITEMS.map((item, index) => ({{
+    return getWeek2TemplateItems().map((item, index) => ({{
       ...item,
       id: item.id + '_' + index,
       checked: false,
@@ -1246,6 +1384,32 @@ def build_runtime_script(name: str, slug: str) -> str:
     }});
   }}
 
+  function enrichTemplateWithWeek2Items(templateItems) {{
+    const normalizedTemplate = normalizeDayItems(templateItems, true);
+    const templateById = new Map(
+      normalizedTemplate.map((item) => [canonicalItemId(item.id) || item.id, item])
+    );
+    const mergedDefaults = getWeek2TemplateItems().map((item, index) => {{
+      const defaultItem = normalizeTrackerItem(item, item.id || `item_${{index}}`);
+      const key = canonicalItemId(defaultItem.id) || defaultItem.id;
+      const existing = templateById.get(key);
+      return existing
+        ? {{
+            ...defaultItem,
+            ...existing,
+            id: existing.id || defaultItem.id,
+          }}
+        : defaultItem;
+    }});
+
+    const customItems = normalizedTemplate.filter((item) => {{
+      const key = canonicalItemId(item.id) || item.id;
+      return !KNOWN_DEFAULT_ITEM_IDS.includes(key);
+    }});
+
+    return [...mergedDefaults, ...customItems];
+  }}
+
   function normalizeTrackerState(rawState) {{
     const baseDays = DAY_NAMES.map((name) => ({{
       name,
@@ -1260,9 +1424,10 @@ def build_runtime_script(name: str, slug: str) -> str:
     }}
 
     const rawDays = Array.isArray(rawState.days) ? rawState.days : [];
-    const templateItems = Array.isArray(rawDays[0]?.items) && rawDays[0].items.length
+    const importedTemplateItems = Array.isArray(rawDays[0]?.items) && rawDays[0].items.length
       ? rawDays[0].items
       : baseDays[0].items;
+    const templateItems = enrichTemplateWithWeek2Items(importedTemplateItems);
     const normalizedDays = baseDays.map((baseDay, dayIndex) => {{
       const incomingDay = rawDays[dayIndex] && typeof rawDays[dayIndex] === 'object'
         ? rawDays[dayIndex]
@@ -1310,6 +1475,57 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {{
     return snapshotJson !== latestPersistedStateJson;
+  }}
+
+  function shouldForceManifestoRefresh() {{
+    try {{
+      return localStorage.getItem(MANIFESTO_REFRESH_SEEN_KEY) !== 'true';
+    }} catch (error) {{
+      return true;
+    }}
+  }}
+
+  function markManifestoRefreshSeen() {{
+    window.__week2ForceManifestoRefresh = false;
+    try {{
+      localStorage.setItem(MANIFESTO_REFRESH_SEEN_KEY, 'true');
+    }} catch (error) {{
+      // Ignore local preference storage failures.
+    }}
+  }}
+
+  function buildWeek2StateFromWeek1(rawState) {{
+    const source = rawState && typeof rawState === 'object' ? rawState : {{}};
+    const rawDays = Array.isArray(source.days) ? source.days : [];
+    const templateItems = enrichTemplateWithWeek2Items(
+      Array.isArray(rawDays[0]?.items) && rawDays[0].items.length ? rawDays[0].items : getWeek2TemplateItems()
+    );
+    return {{
+      manifesto: typeof source.manifesto === 'string' ? source.manifesto : '',
+      days: DAY_NAMES.map((name) => ({{
+        name,
+        items: templateItems.map((item, index) => cloneItemTemplate(item, index))
+      }}))
+    }};
+  }}
+
+  async function loadTrackerRecord(endpoint) {{
+    try {{
+      const response = await fetch(endpoint);
+      if (!response.ok) {{
+        throw new Error('load_failed');
+      }}
+      const result = await response.json();
+      if (!result.ok || !result.found || !result.record?.trackerState) {{
+        return null;
+      }}
+      return {{
+        trackerState: result.record.trackerState,
+        submittedAt: result.record.submittedAt || result.updatedAt || ''
+      }};
+    }} catch (error) {{
+      return null;
+    }}
   }}
 
   function clearAutosaveTimer() {{
@@ -1626,7 +1842,7 @@ def build_runtime_script(name: str, slug: str) -> str:
       return '';
     }}
     const base = raw.replace(/_\\d+$/, '');
-    return DEFAULT_ITEMS.some((item) => item.id === base) ? base : raw;
+    return KNOWN_DEFAULT_ITEM_IDS.includes(base) ? base : raw;
   }}
 
   function getDayItemById(day, itemId) {{
@@ -1948,6 +2164,70 @@ def build_runtime_script(name: str, slug: str) -> str:
     `).join('');
   }}
 
+  function syncManifestoVisibility() {{
+    const forceRefresh = shouldForceManifestoRefresh();
+    window.__week2ForceManifestoRefresh = forceRefresh;
+    if (manifestoInput) {{
+      manifestoInput.value = state.manifesto || '';
+    }}
+    renderManifestoBanner();
+
+    if (!state.manifesto || forceRefresh) {{
+      window.setTimeout(() => {{
+        if (!state.manifesto || shouldForceManifestoRefresh()) {{
+          overlay.classList.add('active');
+        }}
+      }}, forceRefresh ? 180 : 600);
+      return;
+    }}
+
+    overlay.classList.remove('active');
+  }}
+
+  async function importWeek1StateIfNeeded() {{
+    const hasLocalWeek2 = (() => {{
+      try {{
+        return Boolean(localStorage.getItem(LOCAL_KEY));
+      }} catch (error) {{
+        return false;
+      }}
+    }})();
+
+    if (hasLocalWeek2 || latestPersistedStateJson) {{
+      return false;
+    }}
+
+    const week1ServerRecord = await loadTrackerRecord(WEEK1_LOAD_ENDPOINT);
+    let week1State = week1ServerRecord?.trackerState || null;
+
+    if (!week1State) {{
+      try {{
+        const savedWeek1 = localStorage.getItem(WEEK1_LOCAL_KEY);
+        week1State = savedWeek1 ? JSON.parse(savedWeek1) : null;
+      }} catch (error) {{
+        week1State = null;
+      }}
+    }}
+
+    if (!week1State) {{
+      return false;
+    }}
+
+    state = buildWeek2StateFromWeek1(week1State);
+    currentDay = 0;
+    const snapshotJson = stateSnapshotJson();
+    try {{
+      localStorage.setItem(LOCAL_KEY, snapshotJson);
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, new Date().toISOString());
+      localStorage.removeItem(MANIFESTO_REFRESH_SEEN_KEY);
+    }} catch (error) {{
+      // Ignore local storage failures and continue with in-memory state.
+    }}
+    setSaveStatus('Перенесла манифест и персональные пункты из недели 1. Перед стартом обнови манифест под тему тревоги.');
+    queueAutosave('import-week1');
+    return true;
+  }}
+
   function saveState() {{
     try {{
       localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
@@ -1990,21 +2270,16 @@ def build_runtime_script(name: str, slug: str) -> str:
   async function loadSavedTracker() {{
     setSaveStatus('Загружаю сохранённую версию трекера...');
     try {{
-      const response = await fetch(LOAD_ENDPOINT);
-      if (!response.ok) {{
-        throw new Error('load_failed');
-      }}
-
-      const result = await response.json();
-      if (!result.ok || !result.found || !result.record?.trackerState) {{
+      const record = await loadTrackerRecord(LOAD_ENDPOINT);
+      if (!record?.trackerState) {{
         setSaveStatus('Пока нет сохранённой версии. Можно заполнить трекер и сохранить его по этой же ссылке.');
         return false;
       }}
 
-      state = normalizeTrackerState(result.record.trackerState);
+      state = normalizeTrackerState(record.trackerState);
       currentDay = 0;
       const snapshotJson = stateSnapshotJson();
-      const savedAt = result.record.submittedAt || result.updatedAt || '';
+      const savedAt = record.submittedAt || '';
       rememberPersistedSnapshot(snapshotJson, savedAt);
       renderManifestoBanner();
       renderWorkoutMaterialButtons();
@@ -2077,6 +2352,10 @@ def build_runtime_script(name: str, slug: str) -> str:
   document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
   document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
   document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', applyStoryPreferences);
+  document.getElementById('manifestoSave')?.addEventListener('click', () => {{
+    markManifestoRefreshSeen();
+    setSaveStatus('Манифест обновлён под вторую неделю. Теперь тревогу можно замечать раньше и не отдавать ей весь день.');
+  }});
   document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {{
     const preferences = readStoryPreferences();
     persistStoryPreferences({{
@@ -2128,8 +2407,11 @@ def build_runtime_script(name: str, slug: str) -> str:
     applyMaterialsCollapsedState(readMaterialsCollapsedState());
     state = normalizeTrackerState(state);
     currentDay = 0;
-    await loadSavedTracker();
-    restoreLocalState();
+    const loadedWeek2 = await loadSavedTracker();
+    const restoredLocal = restoreLocalState();
+    if (!loadedWeek2 && !restoredLocal) {{
+      await importWeek1StateIfNeeded();
+    }}
     renderStoryControls();
     toggleStoryControls(false);
     renderManifestoBanner();

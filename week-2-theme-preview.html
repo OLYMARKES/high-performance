@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 2 Theme Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page-bg: #ede7df;
+      --page-text: #2b2622;
+      --page-muted: #766e66;
+      --card-bg: rgba(255, 252, 247, 0.78);
+      --card-border: rgba(78, 63, 51, 0.12);
+      --shadow: 0 20px 48px rgba(38, 29, 21, 0.08);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Manrope", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.42), transparent 28%),
+        linear-gradient(180deg, #f5f0e8 0%, var(--page-bg) 100%);
+      color: var(--page-text);
+      font-family: var(--font-body);
+      padding: 40px 20px 72px;
+    }
+
+    .page {
+      max-width: 1420px;
+      margin: 0 auto;
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto 36px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 251, 246, 0.88);
+      border: 1px solid rgba(78, 63, 51, 0.08);
+      color: #8a5a42;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: 0.95;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .intro p {
+      margin: 16px auto 0;
+      max-width: 680px;
+      color: var(--page-muted);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .theme-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .theme-summary {
+      padding: 14px 12px 18px;
+    }
+
+    .theme-topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .theme-label {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .theme-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .theme-card h2 {
+      margin: 14px 0 6px;
+      font-family: var(--font-display);
+      font-size: 38px;
+      line-height: 0.98;
+      font-weight: 500;
+    }
+
+    .theme-card h2 span {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .theme-summary p {
+      margin: 0;
+      color: var(--theme-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.25);
+    }
+
+    .mockup {
+      overflow: hidden;
+      border-radius: calc(var(--radius-xl) - 6px);
+      border: 1px solid rgba(0,0,0,0.06);
+      background: var(--theme-bg);
+      color: var(--theme-text);
+    }
+
+    .mockup-hero {
+      padding: 28px 24px 24px;
+      background:
+        radial-gradient(circle at top left, var(--hero-glow), transparent 34%),
+        linear-gradient(180deg, var(--hero-top), var(--hero-bottom));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mockup-hero::after {
+      content: "";
+      position: absolute;
+      top: -70px;
+      right: -50px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.28);
+      opacity: 0.6;
+    }
+
+    .mockup-kicker {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .mockup-hero h3 {
+      margin: 10px 0 10px;
+      font-family: var(--font-display);
+      font-size: 44px;
+      line-height: 0.92;
+      font-weight: 500;
+      max-width: 280px;
+    }
+
+    .mockup-hero h3 em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .mockup-hero p {
+      margin: 0;
+      max-width: 320px;
+      color: var(--theme-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--pill-border);
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .toggle-pill.is-active {
+      background: var(--pill-active-bg);
+      border-color: var(--pill-active-bg);
+      color: var(--pill-active-text);
+    }
+
+    .mockup-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .material-shell {
+      background: var(--shell-bg);
+      border: 1px solid var(--shell-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .material-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .material-title strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .material-note {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--note-bg);
+      color: var(--accent);
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .material-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .material-item,
+    .tracker-item {
+      border-radius: var(--radius-md);
+      padding: 14px 15px;
+      border: 1px solid var(--item-border);
+      background: var(--item-bg);
+    }
+
+    .material-item-title,
+    .tracker-item-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--theme-text);
+    }
+
+    .material-item p,
+    .tracker-item p {
+      margin: 6px 0 0;
+      color: var(--theme-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .tracker-shell {
+      background: var(--tracker-shell-bg);
+      border: 1px solid var(--shell-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .tracker-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .tracker-day {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .tracker-chip {
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--chip-bg);
+      color: var(--chip-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tracker-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tracker-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .tracker-check {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      margin-top: 2px;
+      border-radius: 8px;
+      border: 1.5px solid var(--check-border);
+      background: var(--check-bg);
+    }
+
+    .tracker-item.is-complete .tracker-check {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,0.85);
+    }
+
+    .tracker-cta {
+      margin-top: 12px;
+      width: 100%;
+      min-height: 46px;
+      border: none;
+      border-radius: 16px;
+      background: var(--button-bg);
+      color: var(--button-text);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .theme-footer {
+      padding: 14px 12px 2px;
+      color: var(--theme-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .theme-footer strong {
+      color: var(--theme-text);
+    }
+
+    .theme-card.theme-sage {
+      --accent: #6f7f57;
+      --accent-soft: rgba(111, 127, 87, 0.12);
+      --theme-bg: #edf1e8;
+      --theme-text: #2d3329;
+      --theme-muted: #667162;
+      --hero-top: #eef5ea;
+      --hero-bottom: #e1e9db;
+      --hero-glow: rgba(196, 170, 109, 0.18);
+      --pill-bg: rgba(255,255,255,0.64);
+      --pill-border: rgba(111, 127, 87, 0.16);
+      --pill-text: #5e6752;
+      --pill-active-bg: #2f372b;
+      --pill-active-text: #f6f7f2;
+      --shell-bg: rgba(255, 252, 246, 0.76);
+      --shell-border: rgba(111, 127, 87, 0.14);
+      --note-bg: rgba(111, 127, 87, 0.1);
+      --item-bg: rgba(255,255,255,0.74);
+      --item-border: rgba(111, 127, 87, 0.12);
+      --tracker-shell-bg: rgba(249, 246, 240, 0.84);
+      --chip-bg: rgba(111, 127, 87, 0.12);
+      --chip-text: #5a684a;
+      --check-bg: rgba(255,255,255,0.85);
+      --check-border: rgba(111, 127, 87, 0.32);
+      --button-bg: #2f372b;
+      --button-text: #f3f4ee;
+    }
+
+    .theme-card.theme-blue {
+      --accent: #587ea6;
+      --accent-soft: rgba(88, 126, 166, 0.12);
+      --theme-bg: #e8eef4;
+      --theme-text: #24313e;
+      --theme-muted: #617082;
+      --hero-top: #eff4fb;
+      --hero-bottom: #d9e3ef;
+      --hero-glow: rgba(88, 126, 166, 0.18);
+      --pill-bg: rgba(255,255,255,0.64);
+      --pill-border: rgba(88, 126, 166, 0.16);
+      --pill-text: #5b6f83;
+      --pill-active-bg: #24313e;
+      --pill-active-text: #f4f7fb;
+      --shell-bg: rgba(251, 253, 255, 0.78);
+      --shell-border: rgba(88, 126, 166, 0.14);
+      --note-bg: rgba(88, 126, 166, 0.1);
+      --item-bg: rgba(255,255,255,0.78);
+      --item-border: rgba(88, 126, 166, 0.12);
+      --tracker-shell-bg: rgba(246, 249, 252, 0.88);
+      --chip-bg: rgba(88, 126, 166, 0.12);
+      --chip-text: #4a6887;
+      --check-bg: rgba(255,255,255,0.88);
+      --check-border: rgba(88, 126, 166, 0.34);
+      --button-bg: #24313e;
+      --button-text: #f3f7fb;
+    }
+
+    .theme-card.theme-bordeaux {
+      --accent: #8e4f55;
+      --accent-soft: rgba(142, 79, 85, 0.12);
+      --theme-bg: #f2e8e4;
+      --theme-text: #37282a;
+      --theme-muted: #7a6668;
+      --hero-top: #f8efed;
+      --hero-bottom: #ecdedd;
+      --hero-glow: rgba(193, 153, 112, 0.18);
+      --pill-bg: rgba(255,255,255,0.64);
+      --pill-border: rgba(142, 79, 85, 0.16);
+      --pill-text: #7b5b60;
+      --pill-active-bg: #37282a;
+      --pill-active-text: #fbf5f3;
+      --shell-bg: rgba(255, 250, 248, 0.78);
+      --shell-border: rgba(142, 79, 85, 0.14);
+      --note-bg: rgba(142, 79, 85, 0.1);
+      --item-bg: rgba(255,255,255,0.8);
+      --item-border: rgba(142, 79, 85, 0.12);
+      --tracker-shell-bg: rgba(251, 246, 244, 0.88);
+      --chip-bg: rgba(142, 79, 85, 0.12);
+      --chip-text: #8a5359;
+      --check-bg: rgba(255,255,255,0.88);
+      --check-border: rgba(142, 79, 85, 0.34);
+      --button-bg: #37282a;
+      --button-text: #fbf4f1;
+    }
+
+    @media (max-width: 1120px) {
+      .theme-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div class="eyebrow">High Performance · Week 2 · Theme Direction</div>
+      <h1>Варианты цвета для <em>Недели 2</em></h1>
+      <p>Все три варианта держат ту же структуру трекера, но меняют эмоциональный тон недели. Смотрим не только на “красиво”, а на то, как тема тревоги ощущается: мягко и устойчиво, ясно и собранно или глубоко и напряжённо.</p>
+    </section>
+
+    <section class="theme-grid">
+      <article class="theme-card theme-sage">
+        <div class="theme-summary">
+          <div class="theme-topline">
+            <div class="theme-label">Вариант 1</div>
+            <div class="theme-badge">Рекомендую</div>
+          </div>
+          <h2>Quiet <span>Sage</span></h2>
+          <p>Спокойный шалфей и тёплый светлый фон. Неделя 2 здесь выглядит не “тревожной”, а собранной: мы замечаем тревогу, но не драматизируем её.</p>
+          <div class="swatches">
+            <div class="swatch" style="background:#eef5ea;"></div>
+            <div class="swatch" style="background:#6f7f57;"></div>
+            <div class="swatch" style="background:#2f372b;"></div>
+            <div class="swatch" style="background:#c4aa6d;"></div>
+          </div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-hero">
+            <div class="mockup-kicker">High Performance · Аня · Неделя 2</div>
+            <h3>Неделя <em>2</em></h3>
+            <p>Работа с тревогой, возвращение к телу и обновление внутренней опоры без жёсткости к себе.</p>
+            <div class="toggle-row">
+              <div class="toggle-pill">Неделя 1</div>
+              <div class="toggle-pill is-active">Неделя 2</div>
+            </div>
+          </div>
+          <div class="mockup-body">
+            <div class="material-shell">
+              <div class="material-title">
+                <strong>Материалы внутри трекера</strong>
+                <div class="material-note">Тема недели: тревога</div>
+              </div>
+              <div class="material-grid">
+                <div class="material-item">
+                  <div class="material-item-title">Работа с тревогой</div>
+                  <p>6 видов тревоги, петли привычки, как не отдавать дню управление мыслям.</p>
+                </div>
+                <div class="material-item">
+                  <div class="material-item-title">Привычки и питание</div>
+                  <p>База не пропадает: сон, еда, ритм, движение и повторяемые опоры всё ещё рядом.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tracker-shell">
+              <div class="tracker-head">
+                <div class="tracker-day">Вторник</div>
+                <div class="tracker-chip">День 2</div>
+              </div>
+              <div class="tracker-list">
+                <div class="tracker-item is-complete">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Утренняя тренировка</div>
+                    <p>Мягкий вход в день и переключение из фонового напряжения в действие.</p>
+                  </div>
+                </div>
+                <div class="tracker-item">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Замечаю тревогу в теле</div>
+                    <p>Не даю ей сразу становиться историей в голове.</p>
+                  </div>
+                </div>
+              </div>
+              <button class="tracker-cta">Сохранить прогресс</button>
+            </div>
+          </div>
+        </div>
+        <div class="theme-footer"><strong>Эффект:</strong> самый устойчивый и “взрослый” вариант. Лучше всего подходит, если хотим ощущение глубины без тяжести.</div>
+      </article>
+
+      <article class="theme-card theme-blue">
+        <div class="theme-summary">
+          <div class="theme-topline">
+            <div class="theme-label">Вариант 2</div>
+            <div class="theme-badge">Холоднее</div>
+          </div>
+          <h2>Storm <span>Blue</span></h2>
+          <p>Пыльный синий и графит. Этот вариант делает тему недели более аналитичной и ясной: тревогу как будто удобнее разбирать, видеть паттерны и дистанцию.</p>
+          <div class="swatches">
+            <div class="swatch" style="background:#eff4fb;"></div>
+            <div class="swatch" style="background:#587ea6;"></div>
+            <div class="swatch" style="background:#24313e;"></div>
+            <div class="swatch" style="background:#d9e3ef;"></div>
+          </div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-hero">
+            <div class="mockup-kicker">High Performance · Аня · Неделя 2</div>
+            <h3>Неделя <em>2</em></h3>
+            <p>Больше ясности, меньше внутреннего шума. Мы различаем тревогу, а не растворяемся в ней.</p>
+            <div class="toggle-row">
+              <div class="toggle-pill">Неделя 1</div>
+              <div class="toggle-pill is-active">Неделя 2</div>
+            </div>
+          </div>
+          <div class="mockup-body">
+            <div class="material-shell">
+              <div class="material-title">
+                <strong>Материалы внутри трекера</strong>
+                <div class="material-note">Фокус на распознавании</div>
+              </div>
+              <div class="material-grid">
+                <div class="material-item">
+                  <div class="material-item-title">Зачем работать с тревогой</div>
+                  <p>Разворачиваем прокрастинацию, думскроллинг и перегруз обратно к источнику.</p>
+                </div>
+                <div class="material-item">
+                  <div class="material-item-title">Тренировки недели 2</div>
+                  <p>Кнопки по дням недели остаются рядом, без лишней навигации.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tracker-shell">
+              <div class="tracker-head">
+                <div class="tracker-day">Среда</div>
+                <div class="tracker-chip">День 3</div>
+              </div>
+              <div class="tracker-list">
+                <div class="tracker-item">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Основная тренировка</div>
+                    <p>Возвращаю себе собранность через действие, а не через внутренний прессинг.</p>
+                  </div>
+                </div>
+                <div class="tracker-item">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Не превращаю тревогу в нарратив</div>
+                    <p>Сначала чувствую тело, только потом выбираю следующий шаг.</p>
+                  </div>
+                </div>
+              </div>
+              <button class="tracker-cta">Сохранить прогресс</button>
+            </div>
+          </div>
+        </div>
+        <div class="theme-footer"><strong>Эффект:</strong> более интеллектуальный и “собранный” трекер. Хорош, если хочется, чтобы неделя 2 выглядела как новая фаза программы.</div>
+      </article>
+
+      <article class="theme-card theme-bordeaux">
+        <div class="theme-summary">
+          <div class="theme-topline">
+            <div class="theme-label">Вариант 3</div>
+            <div class="theme-badge">Теплее</div>
+          </div>
+          <h2>Deep <span>Bordeaux</span></h2>
+          <p>Крем и приглушённый бордо. Здесь есть ощущение глубины, нервной системы и внутренней интенсивности. Самый эмоциональный вариант из трёх.</p>
+          <div class="swatches">
+            <div class="swatch" style="background:#f8efed;"></div>
+            <div class="swatch" style="background:#8e4f55;"></div>
+            <div class="swatch" style="background:#37282a;"></div>
+            <div class="swatch" style="background:#ecdedd;"></div>
+          </div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-hero">
+            <div class="mockup-kicker">High Performance · Аня · Неделя 2</div>
+            <h3>Неделя <em>2</em></h3>
+            <p>Тревога как энергия, которую мы перестаём отдавать мыслям и возвращаем обратно в присутствие.</p>
+            <div class="toggle-row">
+              <div class="toggle-pill">Неделя 1</div>
+              <div class="toggle-pill is-active">Неделя 2</div>
+            </div>
+          </div>
+          <div class="mockup-body">
+            <div class="material-shell">
+              <div class="material-title">
+                <strong>Материалы внутри трекера</strong>
+                <div class="material-note">Больше глубины</div>
+              </div>
+              <div class="material-grid">
+                <div class="material-item">
+                  <div class="material-item-title">6 видов тревоги</div>
+                  <p>Смотрим, какая именно тревога включается и в какие привычки она пытается убежать.</p>
+                </div>
+                <div class="material-item">
+                  <div class="material-item-title">Привычки и питание</div>
+                  <p>Чтобы тревога не управляла ритмом, база всё ещё лежит рядом на одном экране.</p>
+                </div>
+              </div>
+            </div>
+            <div class="tracker-shell">
+              <div class="tracker-head">
+                <div class="tracker-day">Суббота</div>
+                <div class="tracker-chip">День 6</div>
+              </div>
+              <div class="tracker-list">
+                <div class="tracker-item is-complete">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Массаж пресса</div>
+                    <p>Не ускоряюсь через напряжение, а возвращаю телу контакт и мягкость.</p>
+                  </div>
+                </div>
+                <div class="tracker-item">
+                  <div class="tracker-check"></div>
+                  <div>
+                    <div class="tracker-item-title">Обновляю манифест</div>
+                    <p>Добавляю, как я замечаю тревогу и не даю ей становиться мыслью.</p>
+                  </div>
+                </div>
+              </div>
+              <button class="tracker-cta">Сохранить прогресс</button>
+            </div>
+          </div>
+        </div>
+        <div class="theme-footer"><strong>Эффект:</strong> самый характерный вариант. Подходит, если хотим, чтобы вторая неделя ощущалась более психологически насыщенной.</div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
