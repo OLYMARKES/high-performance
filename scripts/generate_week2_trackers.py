@@ -935,41 +935,11 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
           <article class="material-card">
             <div class="material-kicker">Опоры</div>
             <h3>Привычки и питание</h3>
-            <p>Эти PDF перенесены и сюда, чтобы базовые опоры не терялись при переходе на вторую неделю. Их удобно держать прямо рядом с текущим трекером.</p>
-            <div class="material-resource-list">
-              <div class="material-resource">
-                <div class="material-resource-head">
-                  <div class="material-resource-title">Лист привычек</div>
-                  <div class="material-resource-type">PDF</div>
-                </div>
-                <p>Опорный лист на неделю: минимум действий, повторяемость, устойчивость и возвращение к базе без гонки за идеальностью.</p>
-                <div class="material-link-row">
-                  <a class="material-btn" href="{HABITS_PDF}" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="{HABITS_PDF}" download="habit-sheet.pdf">Скачать на компьютер</a>
-                </div>
-              </div>
-              <div class="material-resource">
-                <div class="material-resource-head">
-                  <div class="material-resource-title">Питание</div>
-                  <div class="material-resource-type">PDF</div>
-                </div>
-                <p>Краткая логика питания внутри программы: как заранее упростить решения вокруг еды и сохранить устойчивость по энергии.</p>
-                <div class="material-link-row">
-                  <a class="material-btn" href="{NUTRITION_PDF}" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
-                  <a class="material-btn secondary" href="{NUTRITION_PDF}" download="nutrition-guide.pdf">Скачать на компьютер</a>
-                </div>
-              </div>
-            </div>
+            <p>Рекомендации по привычкам и питанию остаются прежними. Если захочешь к ним вернуться, они уже лежат в твоей первой неделе.</p>
             <div class="material-actions">
-              <button class="material-btn secondary" id="summaryToggle" type="button" aria-expanded="false" aria-controls="nutritionSummary">Открыть краткое содержание</button>
+              <a class="material-btn secondary" href="{WEEK1_TRACKER_URL}">Открыть неделю 1</a>
             </div>
-            <div class="summary-snippet" id="nutritionSummary">
-              <div class="summary-snippet-title">Коротко, что внутри</div>
-              <p><strong>Лист привычек:</strong> опоры на день, минимум действий, повторяемость и возвращение к ритму, когда начинаешь выпадать.</p>
-              <p><strong>Питание:</strong> логика тарелки, регулярность и понятные решения, которые снижают хаос, импульсивные перекусы и скачки энергии.</p>
-              <p><strong>Смысл переноса в неделю 2:</strong> тема тревоги не отменяет базу. Сон, еда, движение и повторяемые привычки всё ещё держат систему.</p>
-            </div>
-            <div class="material-meta">Эти материалы дублируются во второй неделе специально, чтобы не гонять участницу обратно в предыдущий трекер.</div>
+            <div class="material-meta">Здесь мы не дублируем большой блок заново, чтобы неделя 2 оставалась компактной и фокус держался на теме тревоги и тренировках дня.</div>
           </article>
 
           <article class="material-card">
@@ -1300,6 +1270,7 @@ if (!state.manifesto) {
     html = html.replace("{ANXIETY_WHY_URL}", ANXIETY_WHY_URL)
     html = html.replace("{ANXIETY_TYPES_URL}", ANXIETY_TYPES_URL)
     html = html.replace("{ANXIETY_POSTS_URL}", ANXIETY_POSTS_URL)
+    html = html.replace("{WEEK1_TRACKER_URL}", f"../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}")
     html = html.replace("{WORKOUT_DAY_BUTTONS_SHELL}", build_workout_day_buttons_shell())
     return html
 
@@ -2395,8 +2366,6 @@ def build_runtime_script(name: str, slug: str) -> str:
   const materialsShell = document.getElementById('materialsShell');
   const materialsToggle = document.getElementById('materialsToggle');
   const materialsToggleText = document.getElementById('materialsToggleText');
-  const summaryToggle = document.getElementById('summaryToggle');
-  const nutritionSummary = document.getElementById('nutritionSummary');
 
   function applyMaterialsCollapsedState(collapsed) {{
     if (!materialsShell || !materialsToggle || !materialsToggleText) {{
@@ -2415,15 +2384,6 @@ def build_runtime_script(name: str, slug: str) -> str:
     applyMaterialsCollapsedState(collapsed);
     persistMaterialsCollapsedState(collapsed);
   }});
-
-    summaryToggle?.addEventListener('click', () => {{
-      if (!nutritionSummary) {{
-        return;
-      }}
-      const isOpen = nutritionSummary.classList.toggle('is-open');
-      summaryToggle.setAttribute('aria-expanded', String(isOpen));
-      summaryToggle.textContent = isOpen ? 'Скрыть краткое содержание' : 'Открыть краткое содержание';
-    }});
 
   (async () => {{
     applyMaterialsCollapsedState(readMaterialsCollapsedState());
