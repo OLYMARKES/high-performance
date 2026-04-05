@@ -13,6 +13,9 @@ OUTPUT_DIR = ROOT / "participant_questionnaires_april_2026"
 ISSUES_SNAPSHOT_PATH = ROOT / "scripts" / "admin_issues_snapshot.json"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/anketa.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
+WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
+WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=week2-workouts-v31"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 
 TEAM_PAGE_TOKEN = "team-vault-7m4k9p2x6c8q"
@@ -125,6 +128,8 @@ def build_admin_snapshot(entries: list[dict[str, str]]) -> tuple[list[dict[str, 
                 "displayName": entry["display_name"],
                 "telegramHandle": entry["telegram_handle"],
                 "questionnaireUrl": f"{PUBLIC_BASE_URL}/{entry['filename']}",
+                "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{entry['token']}.html?{TRACKER_VERSION_QUERY}",
+                "week2TrackerUrl": f"{WEEK2_TRACKER_BASE_URL}/w2_{entry['token']}.html?{TRACKER_VERSION_QUERY}",
                 "leadIssueNumber": entry.get("lead_issue"),
                 "leadIssueUrl": f"https://github.com/{PRIVATE_REPO}/issues/{entry['lead_issue']}" if entry.get("lead_issue") else "",
                 "issueUrl": issue.get("html_url", ""),
@@ -1797,6 +1802,8 @@ def build_admin_page(snapshot_rows: list[dict[str, object]], snapshot_generated_
               <span class="participant-meta">${{escapeHtml(row.telegramHandle)}}</span>
               <div class="link-list">
                 <a class="inline-link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>
+                <a class="inline-link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер W1</a>
+                <a class="inline-link" href="${{row.week2TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер W2</a>
               </div>
             </td>
             <td><span class="pill ${{row.statusKey}}">${{escapeHtml(row.statusLabel)}}</span></td>
@@ -1825,7 +1832,7 @@ def build_admin_page(snapshot_rows: list[dict[str, object]], snapshot_generated_
       const summary = row.summary || {{}};
       const body = [
         sectionHtml('Идентификация', paragraph([row.displayName, row.telegramHandle].join('\\n'))),
-        sectionHtml('Ссылки', paragraph([row.questionnaireUrl].filter(Boolean).join('\\n'))),
+        sectionHtml('Ссылки', paragraph([row.questionnaireUrl, row.week1TrackerUrl, row.week2TrackerUrl].filter(Boolean).join('\\n'))),
         sectionHtml('Статус', paragraph([row.statusLabel, row.actionTitle, row.actionNote].join('\\n'))),
         sectionHtml('Выбранный путь', paragraph(row.selectedPathLabel)),
         sectionHtml('Выбранный курс', paragraph(row.selectedCourseLabel)),

@@ -15,7 +15,8 @@ OUTPUT_PATH = ROOT / "admissions-dashboard.html"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v29"
+WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=week2-workouts-v31"
 COURSE_LABELS = {
     "care": "Care",
     "basics": "Basics",
@@ -289,6 +290,7 @@ def build_rows() -> tuple[list[dict], str]:
                 "questionnaireIssueUrl": issue.get("html_url", ""),
                 "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/{participant['filename']}",
                 "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
+                "week2TrackerUrl": f"{WEEK2_TRACKER_BASE_URL}/w2_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
                 "email": resolved_email,
                 "updatedAt": resolved_updated_at,
                 "updatedAtLabel": format_timestamp(resolved_updated_at),
@@ -338,6 +340,7 @@ def build_rows() -> tuple[list[dict], str]:
                 "questionnaireIssueUrl": "",
                 "questionnaireUrl": "",
                 "week1TrackerUrl": "",
+                "week2TrackerUrl": "",
                 "email": lead["email"],
                 "updatedAt": lead["submittedAt"],
                 "updatedAtLabel": lead["submittedAtLabel"],
@@ -1010,7 +1013,8 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
     function quickLinksHtmlVariant(row, compact = false) {{
       const links = [
         row.questionnaireUrl ? `<a class="link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">анкета</a>` : '',
-        row.week1TrackerUrl ? `<a class="link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер</a>` : '',
+        row.week1TrackerUrl ? `<a class="link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер W1</a>` : '',
+        row.week2TrackerUrl ? `<a class="link" href="${{row.week2TrackerUrl}}" target="_blank" rel="noopener noreferrer">трекер W2</a>` : '',
         row.telegramUrl ? `<a class="link" href="${{row.telegramUrl}}" target="_blank" rel="noopener noreferrer">написать в Telegram</a>` : '',
       ].filter(Boolean);
 

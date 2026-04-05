@@ -10,13 +10,14 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "week_1_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
+WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v29"
-HABITS_PDF = "../habit-sheet.pdf?v=materials-pdf-v29"
-NUTRITION_PDF = "../nutrition-guide.pdf?v=materials-pdf-v29"
+TRACKER_VERSION_QUERY = "v=week2-workouts-v31"
+HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
+NUTRITION_PDF = f"../nutrition-guide.pdf?{TRACKER_VERSION_QUERY}"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = "../main-program.pdf?v=materials-pdf-v29"
-MAIN_PROGRAM_PDF_OPEN = "../main-program.pdf?v=materials-pdf-v29#page=999"
+MAIN_PROGRAM_PDF = f"../main-program.pdf?{TRACKER_VERSION_QUERY}"
+MAIN_PROGRAM_PDF_OPEN = f"../main-program.pdf?{TRACKER_VERSION_QUERY}#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 JOURNEY_LINK_URL = "../journey-link-meditation-journaling.html"
@@ -112,18 +113,28 @@ CURATOR_TRACKER_PARTICIPANTS = [
 
 
 def build_workout_day_buttons_shell() -> str:
-    return """              <div class="material-actions" id="workoutDayButtons"></div>"""
+    return """              <div class="material-actions" id="workoutDayButtons"></div>
+              <div class="material-empty-state" id="workoutEmptyState">Тренировки для этой недели появятся здесь отдельными кнопками. Пока можно вернуться позже по этой же ссылке.</div>"""
 
 
 def quote_js(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def build_week_switch_markup(token: str, active_week: int) -> str:
+    week1_class = " is-active" if active_week == 1 else ""
+    week2_class = " is-active" if active_week == 2 else ""
+    return f"""    <nav class="week-switch reveal" aria-label="Переключение недели">
+      <a class="week-switch-btn{week1_class}" href="../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 1</a>
+      <a class="week-switch-btn{week2_class}" href="../week_2_trackers_april_2026/w2_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 2</a>
+    </nav>"""
+
+
 def get_week1_tracker_participants() -> list[dict[str, str]]:
     return [*get_participants(), *CURATOR_TRACKER_PARTICIPANTS]
 
 
-def add_personalization(template: str, name: str, for_name: str, slug: str) -> str:
+def add_personalization(template: str, name: str, for_name: str, slug: str, token: str) -> str:
     html = template
     html = html.replace(
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
@@ -142,8 +153,70 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
         1,
     )
     html = html.replace(
+        """.hero-sub {
+  font-size: 17px;
+  color: var(--warm-gray);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ══════════════════════════════════
+   DAY NAV
+   ══════════════════════════════════ */""",
+        """.hero-sub {
+  font-size: 17px;
+  color: var(--warm-gray);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.week-switch {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.week-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 116, 109, 0.18);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--warm-gray);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.24s ease;
+}
+.week-switch-btn:hover {
+  color: var(--terracotta);
+  border-color: rgba(196, 112, 75, 0.34);
+}
+.week-switch-btn.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+
+/* ══════════════════════════════════
+   DAY NAV
+   ══════════════════════════════════ */""",
+        1,
+    )
+    html = html.replace(
         "Оля Маркес · High Performance · Трекер недели 1 · Апрель 2026",
         f"{name} · High Performance · Трекер недели 1 · Апрель 2026",
+        1,
+    )
+    html = html.replace(
+        "    <!-- Day navigation -->",
+        f"{build_week_switch_markup(token, 1)}\n\n    <!-- Day navigation -->",
         1,
     )
     html = html.replace(
@@ -372,6 +445,20 @@ def add_personalization(template: str, name: str, for_name: str, slug: str) -> s
   background: transparent;
   color: var(--charcoal);
   border-color: rgba(122, 116, 109, 0.22);
+}
+.material-empty-state {
+  display: none;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(122, 116, 109, 0.28);
+  background: rgba(255, 253, 249, 0.7);
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.material-empty-state.is-visible {
+  display: block;
 }
 .summary-snippet {
   display: none;
@@ -1795,6 +1882,7 @@ def build_runtime_script(name: str, slug: str) -> str:
 
   function renderWorkoutMaterialButtons() {{
     const container = document.getElementById('workoutDayButtons');
+    const emptyState = document.getElementById('workoutEmptyState');
     if (!container) {{
       return;
     }}
@@ -1802,9 +1890,11 @@ def build_runtime_script(name: str, slug: str) -> str:
     const links = Array.isArray(DAY_WORKOUT_LINKS[currentDay]) ? DAY_WORKOUT_LINKS[currentDay] : [];
     if (!links.length) {{
       container.innerHTML = '';
+      emptyState?.classList.add('is-visible');
       return;
     }}
 
+    emptyState?.classList.remove('is-visible');
     container.innerHTML = links.map((link, index) => `
       <a class="material-btn${{index === 0 ? '' : ' secondary'}}" href="${{link.url}}" target="_blank" rel="noopener noreferrer">${{link.label}}</a>
     `).join('');
@@ -2006,7 +2096,7 @@ def build_runtime_script(name: str, slug: str) -> str:
 
 def build_participant_page(template: str, participant: dict[str, str]) -> str:
     slug = participant["slug"]
-    html = add_personalization(template, participant["public_name"], participant["for_name"], slug)
+    html = add_personalization(template, participant["public_name"], participant["for_name"], slug, participant["token"])
     html = html.replace("</body>\n</html>", f"{build_runtime_script(participant['public_name'], slug)}\n</body>\n</html>", 1)
     if participant.get("issue"):
         source_comment = (

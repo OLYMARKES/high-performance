@@ -1,0 +1,2935 @@
+<!-- Generated from /Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html for Наташа from GitHub issue #28: https://github.com/OLYMARKES/high-performance-leads/issues/28 -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Трекер недели 2 — Наташа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── Reveal animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
+              transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════
+   MANIFESTO OVERLAY
+   ══════════════════════════════════ */
+.manifesto-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(58,54,50,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.manifesto-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.manifesto-modal {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 24px;
+  width: 92%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 48px 40px;
+  position: relative;
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+  box-shadow: 0 32px 80px rgba(58,54,50,0.12);
+}
+.manifesto-overlay.active .manifesto-modal {
+  transform: translateY(0) scale(1);
+}
+
+.manifesto-modal .modal-tag {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 12px;
+}
+
+.manifesto-modal h2 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--charcoal);
+}
+
+.manifesto-modal h2 em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+.manifesto-modal .modal-desc {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+
+.manifesto-textarea {
+  width: 100%;
+  min-height: 180px;
+  border: 1px solid var(--sand-dark);
+  border-radius: 16px;
+  padding: 20px 24px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--charcoal);
+  background: var(--cream);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.manifesto-textarea::placeholder {
+  color: var(--light-gray);
+  font-style: italic;
+}
+.manifesto-textarea:focus {
+  border-color: var(--terracotta-light);
+  box-shadow: 0 0 0 3px rgba(196,112,75,0.1);
+}
+
+.manifesto-btn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.manifesto-btn:hover { background: #4E4A45; transform: translateY(-1px); }
+.manifesto-btn:active { transform: translateY(0); }
+
+/* ══════════════════════════════════
+   MANIFESTO BANNER (inline, under hero)
+   ══════════════════════════════════ */
+.manifesto-banner {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 32px 36px;
+  margin-bottom: 48px;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+  position: relative;
+}
+.manifesto-banner:hover {
+  box-shadow: 0 8px 32px rgba(58,54,50,0.06);
+  transform: translateY(-2px);
+}
+.manifesto-banner .banner-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.manifesto-banner .banner-label .edit-hint {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--light-gray);
+  font-weight: 400;
+  text-transform: none;
+  margin-left: auto;
+}
+.manifesto-banner .manifesto-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--charcoal);
+  white-space: pre-wrap;
+}
+.manifesto-banner .manifesto-full {
+  font-size: 18px;
+  color: var(--warm-gray);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sand);
+}
+.manifesto-expand-row {
+  margin-top: 14px;
+  text-align: center;
+}
+.manifesto-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  color: var(--terracotta);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.manifesto-expand-btn:hover {
+  background: var(--terracotta-pale);
+}
+.manifesto-banner .banner-label .edit-hint {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.manifesto-banner .banner-label .edit-hint:hover {
+  color: var(--terracotta);
+}
+
+/* ══════════════════════════════════
+   HERO
+   ══════════════════════════════════ */
+.hero {
+  min-height: 42vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196,112,75,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122,139,111,0.05) 0%, transparent 70%),
+    var(--cream);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -80px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-dark);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.hero-inner {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 64px 28px 48px;
+}
+.hero-tag {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 8vw, 60px);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+  color: var(--charcoal);
+}
+.hero h1 em { font-style: italic; color: var(--terracotta); }
+.hero-sub {
+  font-size: 17px;
+  color: var(--warm-gray);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.week-switch {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.week-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 116, 109, 0.18);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--warm-gray);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.24s ease;
+}
+.week-switch-btn:hover {
+  color: var(--terracotta);
+  border-color: rgba(196, 112, 75, 0.34);
+}
+.week-switch-btn.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+
+/* ══════════════════════════════════
+   DAY NAV
+   ══════════════════════════════════ */
+.day-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.day-nav-btn {
+  width: 48px; height: 48px;
+  border: 1px solid var(--sand-dark);
+  border-radius: 14px;
+  background: var(--warm-white);
+  color: var(--warm-gray);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.day-nav-btn:hover { border-color: var(--terracotta-light); color: var(--terracotta); }
+.day-nav-btn.active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+.day-nav-btn .completion-dot {
+  position: absolute;
+  bottom: -4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--olive);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.day-nav-btn .completion-dot.show { opacity: 1; }
+
+/* ══════════════════════════════════
+   DAY TRACKER CARD
+   ══════════════════════════════════ */
+.day-section {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.day-section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.day-header {
+  margin-bottom: 32px;
+}
+.day-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 500;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+.day-header .day-date {
+  font-size: 14px;
+  color: var(--warm-gray);
+}
+.day-progress {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.day-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--sand);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.day-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--terracotta), var(--olive));
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+  width: 0%;
+}
+.day-progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--warm-gray);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Tracker Items ── */
+.tracker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tracker-item {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  position: relative;
+}
+.tracker-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(58,54,50,0.04);
+}
+.tracker-item.checked {
+  border-color: var(--olive-pale);
+  background: linear-gradient(135deg, var(--warm-white), rgba(232,237,223,0.3));
+}
+.tracker-item.checked .tracker-title { color: var(--olive); }
+
+/* Checkbox */
+.tracker-check {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border: 2px solid var(--sand-dark);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  margin-top: 2px;
+}
+.tracker-check:hover { border-color: var(--olive-light); }
+.tracker-item.checked .tracker-check {
+  background: var(--olive);
+  border-color: var(--olive);
+}
+.tracker-check svg {
+  width: 16px; height: 16px;
+  stroke: var(--warm-white);
+  stroke-width: 3;
+  fill: none;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.tracker-item.checked .tracker-check svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tracker-body { flex: 1; min-width: 0; }
+
+.tracker-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.tracker-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.tracker-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--charcoal);
+  transition: color 0.3s;
+}
+
+.tracker-subtitle {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.55;
+}
+.tracker-helper-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tracker-helper-link:hover {
+  color: var(--terracotta-light);
+}
+
+/* Input fields inside tracker items */
+.tracker-input {
+  margin-top: 10px;
+  width: 100%;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--charcoal);
+  background: var(--cream);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
+}
+.tracker-input::placeholder { color: var(--light-gray); }
+.tracker-input:focus {
+  border-color: var(--terracotta-light);
+  box-shadow: 0 0 0 3px rgba(196,112,75,0.08);
+}
+
+/* Item actions (edit/delete) */
+.tracker-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tracker-item:hover .tracker-actions { opacity: 1; }
+.tracker-action-btn {
+  width: 28px; height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--light-gray);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  font-size: 14px;
+}
+.tracker-action-btn:hover { background: var(--sand); color: var(--warm-gray); }
+.tracker-action-btn.delete:hover { background: #F8E0E0; color: #B85C5C; }
+
+/* Add item button */
+.add-item-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  margin-top: 16px;
+  border: 2px dashed var(--sand-dark);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--warm-gray);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.add-item-btn:hover {
+  border-color: var(--terracotta-light);
+  color: var(--terracotta);
+  background: rgba(196,112,75,0.03);
+}
+
+/* ── Add/Edit item modal ── */
+.item-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(58,54,50,0.45);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.item-modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.item-modal {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 36px 32px;
+  width: 92%;
+  max-width: 480px;
+  transform: translateY(16px);
+  transition: transform 0.3s;
+}
+.item-modal-overlay.active .item-modal { transform: translateY(0); }
+.item-modal h3 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: var(--charcoal);
+}
+.item-modal label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+.item-modal label:first-of-type { margin-top: 0; }
+.item-modal input,
+.item-modal textarea {
+  width: 100%;
+  border: 1px solid var(--sand-dark);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--charcoal);
+  background: var(--cream);
+  outline: none;
+  transition: border-color 0.3s;
+}
+.item-modal input:focus,
+.item-modal textarea:focus { border-color: var(--terracotta-light); }
+.item-modal textarea { min-height: 60px; resize: vertical; }
+
+.item-modal-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.item-modal-row > * { flex: 1; }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.modal-btn-save {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn-save:hover { background: #4E4A45; }
+.modal-btn-cancel {
+  padding: 14px 24px;
+  border: 1px solid var(--sand-dark);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--warm-gray);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn-cancel:hover { background: var(--sand); }
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.checkbox-row input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--terracotta);
+}
+.checkbox-row span {
+  font-size: 14px;
+  color: var(--warm-gray);
+}
+
+/* ── Materials block ── */
+.materials-shell {
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.98) 0%, rgba(250, 244, 238, 0.92) 100%);
+  border: 1px solid var(--sand);
+  border-radius: 24px;
+  padding: 34px 32px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 18px 44px rgba(58, 54, 50, 0.06);
+  position: relative;
+  z-index: 4;
+}
+.materials-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.materials-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 42px);
+  font-weight: 500;
+  line-height: 1.05;
+}
+.materials-title em {
+  color: var(--terracotta);
+  font-style: italic;
+}
+.materials-note {
+  max-width: 250px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(196, 112, 75, 0.08);
+  color: var(--terracotta);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.materials-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--charcoal);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+.materials-toggle svg {
+  transition: transform 0.25s ease;
+}
+.materials-shell.is-collapsed .materials-toggle svg {
+  transform: rotate(-180deg);
+}
+.materials-intro {
+  max-width: 640px;
+  color: var(--warm-gray);
+  margin-bottom: 24px;
+}
+.materials-collapsed-note {
+  display: none;
+  margin-top: 8px;
+  color: var(--warm-gray);
+  font-size: 14px;
+}
+.materials-shell.is-collapsed .materials-collapsed-note {
+  display: block;
+}
+.materials-content {
+  display: block;
+  position: relative;
+  z-index: 5;
+}
+.materials-shell.is-collapsed .materials-content {
+  display: none;
+}
+.materials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.material-card {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  border-radius: 20px;
+  padding: 22px 20px 20px;
+  min-height: 100%;
+  position: relative;
+  z-index: 6;
+}
+.material-kicker {
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.material-card h3 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.05;
+  margin-bottom: 10px;
+}
+.material-card p {
+  color: var(--warm-gray);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.material-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 7;
+}
+.material-resource-list {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.material-resource {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 253, 249, 0.84);
+}
+.material-resource-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.material-resource-title {
+  color: var(--charcoal);
+  font-size: 16px;
+  font-weight: 700;
+}
+.material-resource-type {
+  color: var(--light-gray);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.material-resource p {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.material-link-row {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  z-index: 7;
+}
+.material-link-row .material-btn {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 180px;
+}
+.material-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--charcoal);
+  background: var(--charcoal);
+  color: var(--warm-white);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  position: relative;
+  z-index: 8;
+  pointer-events: auto;
+}
+.material-btn.secondary {
+  background: transparent;
+  color: var(--charcoal);
+  border-color: rgba(122, 116, 109, 0.22);
+}
+.material-empty-state {
+  display: none;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(122, 116, 109, 0.28);
+  background: rgba(255, 253, 249, 0.7);
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.material-empty-state.is-visible {
+  display: block;
+}
+.summary-snippet {
+  display: none;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.9);
+  border: 1px solid rgba(226, 213, 195, 0.8);
+}
+.summary-snippet.is-open {
+  display: block;
+}
+.summary-snippet-title {
+  margin-bottom: 10px;
+  color: var(--charcoal);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.summary-snippet p + p {
+  margin-top: 10px;
+}
+.material-meta {
+  margin-top: 16px;
+  color: var(--light-gray);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.duplication-note {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(122, 139, 111, 0.08);
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ── Save panel ── */
+.save-panel {
+  margin-top: 40px;
+  margin-bottom: 12px;
+}
+.save-panel-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  background: var(--warm-white);
+}
+.save-panel-copy {
+  min-width: 0;
+}
+.save-panel-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+.save-panel-status {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.6;
+}
+.save-progress-btn {
+  width: auto;
+  min-width: 230px;
+  margin-top: 0;
+  flex-shrink: 0;
+}
+.save-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.save-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 170px;
+  min-height: 56px;
+  padding: 12px 18px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generated-story-card {
+  margin-top: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  background: rgba(255, 253, 249, 0.92);
+  transition: box-shadow 0.32s ease, border-color 0.32s ease, transform 0.32s ease;
+}
+.generated-story-card[hidden] {
+  display: none;
+}
+.generated-story-card.is-refreshed {
+  border-color: rgba(196, 112, 75, 0.55);
+  box-shadow: 0 0 0 4px rgba(196, 112, 75, 0.12), 0 16px 36px rgba(58, 54, 50, 0.08);
+  transform: translateY(-2px);
+}
+.generated-story-kicker {
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 700;
+}
+.generated-story-head {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.generated-story-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.05;
+  color: var(--charcoal);
+}
+.generated-story-day {
+  color: var(--warm-gray);
+  font-size: 14px;
+}
+.generated-story-controls {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 213, 195, 0.9);
+  background: rgba(255, 255, 255, 0.56);
+}
+.generated-story-controls[hidden] {
+  display: none;
+}
+.generated-story-controls-title {
+  color: var(--charcoal);
+  font-size: 14px;
+  font-weight: 700;
+}
+.generated-story-controls-copy {
+  margin-top: 6px;
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.generated-story-angle-grid {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.generated-story-angle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generated-story-angle.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+  border-color: var(--charcoal);
+}
+.generated-story-input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 116, 109, 0.22);
+  background: rgba(255, 253, 249, 0.96);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 96px;
+}
+.generated-story-body {
+  margin-top: 16px;
+  color: var(--charcoal);
+  font-size: 16px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+.generated-story-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.generated-story-note {
+  margin-top: 12px;
+  color: var(--light-gray);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px 28px;
+  font-size: 13px;
+  color: var(--light-gray);
+  border-top: 1px solid var(--sand);
+  margin-top: 64px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .materials-shell {
+    padding: 24px 20px 18px;
+  }
+  .materials-topline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .materials-note {
+    max-width: none;
+  }
+  .materials-grid {
+    grid-template-columns: 1fr;
+  }
+  .save-panel-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .save-panel-actions {
+    justify-content: stretch;
+  }
+  .save-progress-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  .save-secondary-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  .hero { min-height: 36vh; }
+  .hero h1 { font-size: 36px; }
+  .manifesto-modal { padding: 32px 24px; }
+  .manifesto-textarea { font-size: 17px; }
+  .tracker-item { padding: 16px 18px; gap: 12px; }
+  .tracker-title { font-size: 18px; }
+  .manifesto-banner { padding: 24px 24px; }
+  .manifesto-banner .manifesto-text { font-size: 18px; }
+  .day-nav-btn { width: 42px; height: 42px; font-size: 17px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ MANIFESTO OVERLAY ═══════ -->
+<div class="manifesto-overlay" id="manifestoOverlay">
+  <div class="manifesto-modal">
+    <div class="modal-tag">Твой манифест</div>
+    <h2>Ясные ценности <em>&gt; ясные цели</em></h2>
+    <div style="background:var(--cream);border-left:3px solid var(--terracotta);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-family:var(--font-display);font-size:17px;font-style:italic;font-weight:400;line-height:1.6;color:var(--charcoal);">&laquo;Ценности — это не то же самое, что цели. Цель — конкретная, конечная вещь. Когда ты её достигаешь — это конечная точка. Ценности нельзя завершить. Ценности — это то, как ты хочешь жить, каким человеком хочешь быть и за какие принципы готова стоять.&raquo;</div>
+      <div style="font-size:13px;font-weight:400;color:var(--terracotta);margin-top:10px;">— Доктор Джулия Смит, «Why Has Nobody Told Me This Before?»</div>
+    </div>
+    <p class="modal-desc">Когда ты каждый день соединяешься со своими ценностями, дисциплина перестаёт быть насилием — она становится выбором. Напиши свои ценности, свой коммитмент и то, что ты больше не готова терпеть.</p>
+    <p class="modal-desc" style="margin-top:8px;margin-bottom:24px;color:var(--terracotta);font-weight:400;">Первые два предложения — самые важные. Именно их ты будешь видеть каждый день при открытии трекера.</p>
+
+    <div style="background:var(--cream);border:1px solid var(--sand);border-radius:14px;padding:22px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:14px;">Пример манифеста</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Мои ценности</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:16px;">Жить свою жизнь на максимум во всём. Тело — лучшее из возможных для меня. Энергия максимальная. Ясность и фокус на своих проектах. Качественный отдых. Качественное время с близкими. Я это хочу, я это могу, я это делаю и я буду это делать.</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Мой коммитмент</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:16px;">НОЛЬ времени и пространства негативным мыслям, самокритике, страху и сомнениям. Я не отдаю ни капли пространства этим паразитам — от них никакой пользы. Я останавливаю это.<br><br>Я даю внимание своей тревоге как ощущению в теле. Я знаю её природу и истоки. Я чувствую её и сижу с ней, не давая превратиться в мысли и нарративы. Я даю ей место, и она не захватывает меня.</div>
+
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--charcoal);margin-bottom:6px;">Я знаю своих врагов</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:300;line-height:1.7;color:var(--warm-gray);margin-bottom:8px;">Время в телефоне как способ убежать от тревоги и страха, что у меня не получится. Сравнение себя с другими, которое приводит к фрустрации. Расфокус. Выпадение из процессов. Желание убежать и отвлечься. Невозможность остановить работу. Засиживание допоздна — я хочу всё это изменить и я сделаю это.</div>
+
+      <div style="font-family:var(--font-display);font-size:19px;font-style:italic;font-weight:500;color:var(--terracotta);margin-top:14px;">Я могу и делаю!</div>
+    </div>
+
+    <textarea class="manifesto-textarea" id="manifestoInput" placeholder="Мои ценности: ...&#10;&#10;Мой коммитмент: ...&#10;&#10;Я знаю своих врагов: ..."></textarea>
+    <button class="manifesto-btn" id="manifestoSave">Начать неделю</button>
+  </div>
+</div>
+
+<!-- ═══════ ADD/EDIT ITEM MODAL ═══════ -->
+<div class="item-modal-overlay" id="itemModalOverlay">
+  <div class="item-modal">
+    <h3 id="itemModalTitle">Новый пункт</h3>
+    <label>Название</label>
+    <input type="text" id="itemTitleInput" placeholder="Например: Прогулка 30 минут">
+    <label>Описание (необязательно)</label>
+    <textarea id="itemSubtitleInput" placeholder="Короткое пояснение..."></textarea>
+    <div class="item-modal-row">
+      <div>
+        <label>Иконка</label>
+        <input type="text" id="itemIconInput" placeholder="Emoji" maxlength="4">
+      </div>
+      <div>
+        <label>Категория</label>
+        <input type="text" id="itemCategoryInput" placeholder="Тело / Ум / Фокус">
+      </div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="itemHasInput">
+      <span>Добавить поле для заметки</span>
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn-cancel" id="itemModalCancel">Отмена</button>
+      <button class="modal-btn-save" id="itemModalSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">High Performance · Наташа · Неделя 2</div>
+    <h1>Неделя <em>2</em></h1>
+    <p class="hero-sub">Персональный трекер второй недели для Наташи. Здесь остаётся ежедневный трекер, а сверху уже собраны материалы недели 2 и продублированы опоры по привычкам и питанию.</p>
+  </div>
+</section>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<section style="padding: 48px 0 0;">
+  <div class="container">
+
+    <!-- Manifesto banner (visible after saving) -->
+    <div class="manifesto-banner reveal" id="manifestoBanner" style="display:none;">
+      <div class="banner-label">
+        Мой манифест
+        <span class="edit-hint" id="bannerEditBtn" onclick="event.stopPropagation(); openManifesto();">редактировать</span>
+      </div>
+      <div class="manifesto-text" id="manifestoPreview"></div>
+      <div class="manifesto-text manifesto-full" id="manifestoFull" style="display:none;"></div>
+      <div class="manifesto-expand-row">
+        <button class="manifesto-expand-btn" id="expandBtn" onclick="toggleManifesto()">
+          <span id="expandText">Развернуть полностью</span>
+          <svg id="expandArrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.3s;"><polyline points="4 6 8 10 12 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <nav class="week-switch reveal" aria-label="Переключение недели">
+      <a class="week-switch-btn" href="../week_1_trackers_april_2026/w1_h4v7m2k9p5q8.html?v=week2-workouts-v31">Неделя 1</a>
+      <a class="week-switch-btn is-active" href="../week_2_trackers_april_2026/w2_h4v7m2k9p5q8.html?v=week2-workouts-v31">Неделя 2</a>
+    </nav>
+
+    <!-- Day navigation -->
+    <div class="day-nav reveal" id="dayNav"></div>
+
+    <!-- Day sections will be generated by JS -->
+    <section class="materials-shell reveal is-collapsed" id="materialsShell">
+      <div class="materials-topline">
+        <div>
+          <h2 class="materials-title">Материалы <em>внутри трекера</em></h2>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+          <div class="materials-note">Здесь лежат общие материалы программы: рекомендации и тренировочный план. Их не нужно искать в чате.</div>
+          <button class="materials-toggle" id="materialsToggle" type="button" aria-expanded="false" aria-controls="materialsContent">
+            <span id="materialsToggleText">Развернуть материалы</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 10 8 6 12 10"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="materials-collapsed-note" id="materialsCollapsedNote">Материалы недели 2 скрыты. Нажми «Развернуть материалы», чтобы снова увидеть тему недели, питание, привычки и будущие тренировки.</div>
+
+      <div class="materials-content" id="materialsContent">
+        <p class="materials-intro">Здесь собран слой второй недели: основные материалы про тревогу, плюс те же рабочие опоры по привычкам и питанию. Персональная часть остаётся ниже по этой же ссылке.</p>
+
+        <div class="materials-grid">
+          <article class="material-card">
+            <div class="material-kicker">Неделя 2</div>
+            <h3>Работа с тревогой</h3>
+            <p>Основные материалы недели уже лежат здесь, чтобы не искать их отдельно: вводный текст, разбор шести типов тревоги и вся серия постов.</p>
+            <div class="material-resource-list">
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">Зачем работать с тревогой</div>
+                  <div class="material-resource-type">Материал</div>
+                </div>
+                <p>Вход в тему недели: как тревога связана с перееданием, прокрастинацией, думскроллингом, бессонницей и выпадением из жизни.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../zachem-rabotat-s-trevogoj.html?v=20260403-1" target="_blank" rel="noopener noreferrer">Открыть материал</a>
+                </div>
+              </div>
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">6 видов тревоги</div>
+                  <div class="material-resource-type">Материал</div>
+                </div>
+                <p>Большой разбор шести типов тревоги с внутренними монологами, ловушками и практическими разворотами.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../6-vidov-trevogi.html" target="_blank" rel="noopener noreferrer">Открыть разбор</a>
+                  <a class="material-btn secondary" href="../12-postov-o-trevoge.html" target="_blank" rel="noopener noreferrer">Открыть 12 постов</a>
+                </div>
+              </div>
+            </div>
+            <div class="material-meta">Это основной контент недели 2: сначала понять природу тревоги, потом научиться отличать её формы и замечать свои петли привычки.</div>
+          </article>
+
+          <article class="material-card">
+            <div class="material-kicker">Опоры</div>
+            <h3>Привычки и питание</h3>
+            <p>Эти PDF перенесены и сюда, чтобы базовые опоры не терялись при переходе на вторую неделю. Их удобно держать прямо рядом с текущим трекером.</p>
+            <div class="material-resource-list">
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">Лист привычек</div>
+                  <div class="material-resource-type">PDF</div>
+                </div>
+                <p>Опорный лист на неделю: минимум действий, повторяемость, устойчивость и возвращение к базе без гонки за идеальностью.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../habit-sheet.pdf?v=week2-workouts-v31" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../habit-sheet.pdf?v=week2-workouts-v31" download="habit-sheet.pdf">Скачать на компьютер</a>
+                </div>
+              </div>
+              <div class="material-resource">
+                <div class="material-resource-head">
+                  <div class="material-resource-title">Питание</div>
+                  <div class="material-resource-type">PDF</div>
+                </div>
+                <p>Краткая логика питания внутри программы: как заранее упростить решения вокруг еды и сохранить устойчивость по энергии.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="../nutrition-guide.pdf?v=week2-workouts-v31" target="_blank" rel="noopener noreferrer">Открыть PDF</a>
+                  <a class="material-btn secondary" href="../nutrition-guide.pdf?v=week2-workouts-v31" download="nutrition-guide.pdf">Скачать на компьютер</a>
+                </div>
+              </div>
+            </div>
+            <div class="material-actions">
+              <button class="material-btn secondary" id="summaryToggle" type="button" aria-expanded="false" aria-controls="nutritionSummary">Открыть краткое содержание</button>
+            </div>
+            <div class="summary-snippet" id="nutritionSummary">
+              <div class="summary-snippet-title">Коротко, что внутри</div>
+              <p><strong>Лист привычек:</strong> опоры на день, минимум действий, повторяемость и возвращение к ритму, когда начинаешь выпадать.</p>
+              <p><strong>Питание:</strong> логика тарелки, регулярность и понятные решения, которые снижают хаос, импульсивные перекусы и скачки энергии.</p>
+              <p><strong>Смысл переноса в неделю 2:</strong> тема тревоги не отменяет базу. Сон, еда, движение и повторяемые привычки всё ещё держат систему.</p>
+            </div>
+            <div class="material-meta">Эти материалы дублируются во второй неделе специально, чтобы не гонять участницу обратно в предыдущий трекер.</div>
+          </article>
+
+          <article class="material-card">
+            <div class="material-kicker">Практика</div>
+            <h3>Тренировки недели 2</h3>
+            <p>Этот блок уже подготовлен под отдельные кнопки тренировок. Как только появятся новые ссылки, они отобразятся здесь по дням недели.</p>
+              <div class="material-actions" id="workoutDayButtons"></div>
+              <div class="material-empty-state" id="workoutEmptyState">Тренировки для этой недели появятся здесь отдельными кнопками. Пока можно вернуться позже по этой же ссылке.</div>
+            <div class="material-actions">
+              <a class="material-btn secondary" href="../main-program.pdf?v=week2-workouts-v31" download="main-program.pdf">Скачать текущий PDF основной программы</a>
+              <a class="material-btn secondary" href="https://sektaschool.ru" target="_blank" rel="noopener noreferrer">Открыть SektaSchool.ru</a>
+            </div>
+            <div class="material-meta">Пока свежие тренировки не подставлены, здесь остаётся базовый PDF и резервный вход в кабинет. Кнопки по дням можно добавить позже без смены ссылки.</div>
+          </article>
+        </div>
+
+        <div class="duplication-note">
+          <strong>Логика доступа:</strong> неделя 2 живёт на отдельной персональной странице, но базовые материалы дублируются здесь специально, чтобы не заставлять участницу прыгать между неделями ради привычек и питания.
+        </div>
+      </div>
+    </section>
+
+    <div id="daysContainer"></div>
+
+    <div class="save-panel reveal" id="savePanel">
+      <div class="save-panel-inner">
+        <div class="save-panel-copy">
+          <div class="save-panel-title">Сохраняй прогресс</div>
+          <div class="save-panel-status" id="saveStatus">По этой ссылке всегда будет открываться актуальная сохранённая версия трекера. Можно сразу собрать короткий рассказ по текущему дню.</div>
+        </div>
+        <div class="save-panel-actions">
+          <button class="manifesto-btn save-progress-btn" id="generateStoryBtn" type="button">Сгенерировать рассказ</button>
+          <button class="save-secondary-btn" id="saveTrackerBtn" type="button">Просто сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="generated-story-card reveal" id="generatedStoryCard" hidden>
+      <div class="generated-story-kicker">Тестовая версия</div>
+      <div class="generated-story-head">
+        <div class="generated-story-title">Рассказ о твоём дне</div>
+        <div class="generated-story-day" id="generatedStoryDay">День 1</div>
+      </div>
+      <div class="generated-story-body" id="generatedStoryBody"></div>
+      <div class="generated-story-controls" id="generatedStoryControls" hidden>
+        <div class="generated-story-controls-title">Перед «Уточнить рассказ» можно подсветить важные углы</div>
+        <div class="generated-story-controls-copy">Отметь, что особенно хочется услышать в тексте, или добавь свои правки. Тогда рассказ перестроится уже с этим акцентом.</div>
+        <div class="generated-story-angle-grid" id="generatedStoryAngleGrid"></div>
+        <textarea class="generated-story-input" id="generatedStoryPrompt" placeholder="Например: хочу, чтобы сильнее прозвучали дисциплина, радость и связь с телом. Или: добавь больше мотивации и ощущение прорыва."></textarea>
+        <div class="generated-story-actions">
+          <button class="manifesto-btn" id="applyStoryPreferencesBtn" type="button">Пересобрать рассказ</button>
+        </div>
+      </div>
+      <div class="generated-story-actions">
+        <button class="manifesto-btn" id="copyGeneratedStoryBtn" type="button">Скопировать текст</button>
+        <button class="save-secondary-btn" id="regenerateStoryBtn" type="button">Уточнить рассказ</button>
+      </div>
+      <div class="generated-story-note">Пока это локальная тестовая функция: трекер сначала сохраняется, а затем текст собирается прямо из текущего дня без изменения твоих данных.</div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  Наташа · High Performance · Трекер недели 2 · Апрель 2026
+</footer>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+/* ──────────────────────────────────
+   DATA MODEL
+   ────────────────────────────────── */
+
+const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+
+// Default tracker items template — each day starts with this
+const DEFAULT_ITEMS = [
+  {
+    id: 'sleep',
+    icon: '🌙',
+    title: 'Минимум 7 часов сна',
+    subtitle: 'Качественный сон — основа всего',
+    hasInput: false,
+    inputPlaceholder: '',
+    category: 'body'
+  },
+  {
+    id: 'meditation',
+    icon: '🧘',
+    title: 'Утренняя медитация',
+    subtitle: '5–12 минут тишины и внимания к себе',
+    hasInput: false,
+    inputPlaceholder: '',
+    category: 'mind'
+  },
+  {
+    id: 'workout',
+    icon: '💪',
+    title: 'Тренировка',
+    subtitle: 'По программе. Регулярность важнее интенсивности',
+    hasInput: false,
+    inputPlaceholder: '',
+    category: 'body'
+  },
+  {
+    id: 'breakfast',
+    icon: '🥄',
+    title: 'Здоровый завтрак',
+    subtitle: 'Достаточно белка и сытности',
+    hasInput: true,
+    inputPlaceholder: 'Что ел(а)? Необязательно, но можно записать состав...',
+    category: 'body'
+  },
+  {
+    id: 'reading',
+    icon: '📖',
+    title: 'Внимательное чтение',
+    subtitle: 'Укажи количество страниц и книгу',
+    hasInput: true,
+    inputPlaceholder: 'Книга и количество страниц...',
+    category: 'mind'
+  },
+  {
+    id: 'journaling',
+    icon: '✍',
+    title: 'Джорналинг',
+    subtitle: 'Минимум 10 минут наедине с собой — опиши своё состояние',
+    hasInput: true,
+    inputPlaceholder: 'Что на душе сегодня...',
+    category: 'mind'
+  },
+  {
+    id: 'lunch',
+    icon: '🍽',
+    title: 'Полноценный обед',
+    subtitle: 'По плану питания, достаточно нутриентов',
+    hasInput: true,
+    inputPlaceholder: 'Что ел(а)? Необязательно, но можно записать состав...',
+    category: 'body'
+  },
+  {
+    id: 'hardstop',
+    icon: '🛑',
+    title: 'Хардстоп: работа до X часов',
+    subtitle: 'Фиксированное время окончания работы — без исключений',
+    hasInput: true,
+    inputPlaceholder: 'Во сколько закончил(а) работу...',
+    category: 'focus'
+  },
+  {
+    id: 'qualitytime',
+    icon: '❤️',
+    title: '1,5–2 часа quality time с близкими',
+    subtitle: 'Настоящее присутствие рядом с теми, кто важен',
+    hasInput: true,
+    inputPlaceholder: 'Как прошло это время, что удалось сделать...',
+    category: 'mind'
+  },
+  {
+    id: 'dinner',
+    icon: '🥗',
+    title: 'Полноценный ужин',
+    subtitle: 'Достаточно белка и клетчатки',
+    hasInput: true,
+    inputPlaceholder: 'Что ел(а)? Необязательно, но можно записать состав...',
+    category: 'body'
+  },
+  {
+    id: 'bedtime',
+    icon: '😴',
+    title: 'Отбой вовремя',
+    subtitle: 'Лечь в запланированное время — защитить завтрашний день',
+    hasInput: false,
+    inputPlaceholder: '',
+    category: 'body'
+  }
+];
+
+/* ──────────────────────────────────
+   STATE
+   ────────────────────────────────── */
+
+let state = loadState();
+let currentDay = 0;
+let editingItemIndex = null; // null = adding new, number = editing existing
+let editingDayIndex = null;
+
+function getDefaultState() {
+  return {
+    manifesto: '',
+    days: DAY_NAMES.map((name, i) => ({
+      name: name,
+      items: DEFAULT_ITEMS.map(item => ({
+        ...item,
+        id: item.id + '_' + i,
+        checked: false,
+        inputValue: ''
+      }))
+    }))
+  };
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('hp_week2_tracker_natasha');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return getDefaultState();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('hp_week2_tracker_natasha', JSON.stringify(state));
+  } catch (e) {}
+}
+
+/* ──────────────────────────────────
+   MANIFESTO
+   ────────────────────────────────── */
+
+const overlay = document.getElementById('manifestoOverlay');
+const manifestoInput = document.getElementById('manifestoInput');
+const manifestoBanner = document.getElementById('manifestoBanner');
+const manifestoPreview = document.getElementById('manifestoPreview');
+const manifestoFull = document.getElementById('manifestoFull');
+const expandBtn = document.getElementById('expandBtn');
+const expandText = document.getElementById('expandText');
+const expandArrow = document.getElementById('expandArrow');
+let manifestoExpanded = false;
+
+// Extract first 2 sentences from text
+function getFirstSentences(text, count) {
+  // Split by sentence-ending punctuation followed by space or newline
+  const sentences = text.match(/[^.!?…]*[.!?…]+/g);
+  if (!sentences) return { preview: text, rest: '' };
+  const first = sentences.slice(0, count).join('').trim();
+  const rest = sentences.slice(count).join('').trim();
+  // Also grab any remaining text after matched sentences
+  const matched = sentences.join('');
+  const remainder = text.slice(matched.length).trim();
+  return {
+    preview: first,
+    rest: (rest + (remainder ? '\n' + remainder : '')).trim()
+  };
+}
+
+function openManifesto() {
+  manifestoInput.value = state.manifesto || '';
+  overlay.classList.add('active');
+  setTimeout(() => manifestoInput.focus(), 400);
+}
+
+function closeManifesto() {
+  overlay.classList.remove('active');
+}
+
+function toggleManifesto() {
+  manifestoExpanded = !manifestoExpanded;
+  if (manifestoExpanded) {
+    // Show full text, hide preview
+    manifestoPreview.style.display = 'none';
+    manifestoFull.style.display = 'block';
+    manifestoFull.textContent = state.manifesto;
+  } else {
+    // Show preview, hide full
+    manifestoPreview.style.display = 'block';
+    manifestoFull.style.display = 'none';
+  }
+  expandText.textContent = manifestoExpanded ? 'Свернуть' : 'Развернуть полностью';
+  expandArrow.style.transform = manifestoExpanded ? 'rotate(180deg)' : 'rotate(0)';
+}
+
+document.getElementById('manifestoSave').addEventListener('click', () => {
+  state.manifesto = manifestoInput.value.trim();
+  saveState();
+  renderManifestoBanner();
+  closeManifesto();
+});
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay && state.manifesto) closeManifesto();
+});
+
+function renderManifestoBanner() {
+  if (state.manifesto) {
+    manifestoBanner.style.display = 'block';
+    const { preview, rest } = getFirstSentences(state.manifesto, 2);
+    manifestoPreview.textContent = preview;
+    manifestoPreview.style.display = 'block';
+    // Show expand button only if there's more text beyond 2 sentences
+    expandBtn.style.display = rest ? 'inline-flex' : 'none';
+    // Reset to collapsed state
+    manifestoExpanded = false;
+    manifestoFull.style.display = 'none';
+    expandText.textContent = 'Развернуть полностью';
+    expandArrow.style.transform = 'rotate(0)';
+  } else {
+    manifestoBanner.style.display = 'none';
+  }
+}
+
+function syncManifestoVisibility() {
+  if (!state.manifesto) {
+    setTimeout(() => {
+      if (!state.manifesto) overlay.classList.add('active');
+    }, 600);
+  } else {
+    renderManifestoBanner();
+    overlay.classList.remove('active');
+  }
+}
+
+syncManifestoVisibility();
+
+/* ──────────────────────────────────
+   DAY NAVIGATION
+   ────────────────────────────────── */
+
+const dayNav = document.getElementById('dayNav');
+const daysContainer = document.getElementById('daysContainer');
+
+function renderDayNav() {
+  dayNav.innerHTML = '';
+  state.days.forEach((day, i) => {
+    const total = day.items.length;
+    const done = day.items.filter(it => it.checked).length;
+    const allDone = total > 0 && done === total;
+
+    const btn = document.createElement('button');
+    btn.className = 'day-nav-btn' + (i === currentDay ? ' active' : '');
+    btn.innerHTML = `${i + 1}<span class="completion-dot ${allDone ? 'show' : ''}"></span>`;
+    btn.title = day.name;
+    btn.addEventListener('click', () => switchDay(i));
+    dayNav.appendChild(btn);
+  });
+}
+
+function switchDay(index) {
+  currentDay = index;
+  renderWorkoutMaterialButtons();
+  renderDayNav();
+  renderDay();
+}
+
+/* ──────────────────────────────────
+   RENDER DAY
+   ────────────────────────────────── */
+
+function renderDay() {
+  const day = state.days[currentDay];
+  const total = day.items.length;
+  const done = day.items.filter(it => it.checked).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  daysContainer.innerHTML = `
+    <div class="day-section active">
+      <div class="day-header">
+        <h2>${day.name}</h2>
+        <div class="day-date">День ${currentDay + 1} из 7</div>
+        <div class="day-progress">
+          <div class="day-progress-bar">
+            <div class="day-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="day-progress-text">${pct}%</div>
+        </div>
+      </div>
+      <div class="tracker-list" id="trackerList"></div>
+      <button class="add-item-btn" onclick="openAddItem()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/></svg>
+        Добавить пункт
+      </button>
+    </div>
+  `;
+
+  const list = document.getElementById('trackerList');
+  day.items.forEach((item, idx) => {
+    list.appendChild(createTrackerItem(item, idx));
+  });
+}
+
+function createTrackerItem(item, index) {
+  const el = document.createElement('div');
+  el.className = 'tracker-item' + (item.checked ? ' checked' : '');
+
+  let inputHTML = '';
+  if (item.hasInput) {
+    inputHTML = `<textarea class="tracker-input" placeholder="${item.inputPlaceholder || 'Запиши...'}"
+      data-index="${index}" rows="2">${item.inputValue || ''}</textarea>`;
+  }
+
+  const helperLinkHTML = ['meditation', 'journaling'].includes(item.id)
+    ? `<a class="tracker-helper-link" href="../journey-link-meditation-journaling.html" target="_blank" rel="noopener noreferrer">Открыть медитацию и джорналинг ↗</a>`
+    : '';
+
+  el.innerHTML = `
+    <div class="tracker-check" data-index="${index}">
+      <svg viewBox="0 0 16 16"><polyline points="3 8 7 12 13 4"/></svg>
+    </div>
+    <div class="tracker-body">
+      <div class="tracker-top-row">
+        <span class="tracker-icon">${item.icon || ''}</span>
+        <span class="tracker-title">${item.title}</span>
+      </div>
+      ${item.subtitle ? `<div class="tracker-subtitle">${item.subtitle}</div>` : ''}
+      ${helperLinkHTML}
+      ${inputHTML}
+    </div>
+    <div class="tracker-actions">
+      <button class="tracker-action-btn edit" title="Редактировать" data-index="${index}">✎</button>
+      <button class="tracker-action-btn delete" title="Удалить" data-index="${index}">✕</button>
+    </div>
+  `;
+
+  // Checkbox toggle
+  el.querySelector('.tracker-check').addEventListener('click', () => {
+    state.days[currentDay].items[index].checked = !state.days[currentDay].items[index].checked;
+    saveState();
+    renderDayNav();
+    renderDay();
+  });
+
+  // Input change
+  const textarea = el.querySelector('.tracker-input');
+  if (textarea) {
+    textarea.addEventListener('input', (e) => {
+      state.days[currentDay].items[index].inputValue = e.target.value;
+      saveState();
+    });
+  }
+
+  // Edit button
+  el.querySelector('.tracker-action-btn.edit').addEventListener('click', () => {
+    openEditItem(index);
+  });
+
+  // Delete button
+  el.querySelector('.tracker-action-btn.delete').addEventListener('click', () => {
+    if (confirm('Удалить этот пункт?')) {
+      const removedItem = state.days[currentDay].items[index];
+      state.days[currentDay].items.splice(index, 1);
+      syncTrackerTemplateForward(currentDay, { removeItemId: removedItem?.id });
+      saveState();
+      renderDayNav();
+      renderDay();
+    }
+  });
+
+  return el;
+}
+
+/* ──────────────────────────────────
+   ADD / EDIT ITEM MODAL
+   ────────────────────────────────── */
+
+const itemModalOverlay = document.getElementById('itemModalOverlay');
+const itemModalTitle = document.getElementById('itemModalTitle');
+const itemTitleInput = document.getElementById('itemTitleInput');
+const itemSubtitleInput = document.getElementById('itemSubtitleInput');
+const itemIconInput = document.getElementById('itemIconInput');
+const itemCategoryInput = document.getElementById('itemCategoryInput');
+const itemHasInput = document.getElementById('itemHasInput');
+
+function openAddItem() {
+  editingItemIndex = null;
+  editingDayIndex = currentDay;
+  itemModalTitle.textContent = 'Новый пункт';
+  itemTitleInput.value = '';
+  itemSubtitleInput.value = '';
+  itemIconInput.value = '';
+  itemCategoryInput.value = '';
+  itemHasInput.checked = false;
+  itemModalOverlay.classList.add('active');
+  setTimeout(() => itemTitleInput.focus(), 300);
+}
+
+function openEditItem(index) {
+  editingItemIndex = index;
+  editingDayIndex = currentDay;
+  const item = state.days[currentDay].items[index];
+  itemModalTitle.textContent = 'Редактировать';
+  itemTitleInput.value = item.title || '';
+  itemSubtitleInput.value = item.subtitle || '';
+  itemIconInput.value = item.icon || '';
+  itemCategoryInput.value = item.category || '';
+  itemHasInput.checked = item.hasInput || false;
+  itemModalOverlay.classList.add('active');
+  setTimeout(() => itemTitleInput.focus(), 300);
+}
+
+function closeItemModal() {
+  itemModalOverlay.classList.remove('active');
+  editingItemIndex = null;
+}
+
+document.getElementById('itemModalSave').addEventListener('click', () => {
+  const title = itemTitleInput.value.trim();
+  if (!title) return;
+
+  const itemData = {
+    id: 'custom_' + Date.now(),
+    icon: itemIconInput.value.trim() || '✦',
+    title: title,
+    subtitle: itemSubtitleInput.value.trim(),
+    hasInput: itemHasInput.checked,
+    inputPlaceholder: 'Запиши...',
+    category: itemCategoryInput.value.trim().toLowerCase() || 'focus',
+    checked: false,
+    inputValue: ''
+  };
+
+  if (editingItemIndex !== null) {
+    // Editing — preserve checked state and inputValue
+    const existing = state.days[editingDayIndex].items[editingItemIndex];
+    itemData.checked = existing.checked;
+    itemData.inputValue = existing.inputValue;
+    itemData.id = existing.id;
+    state.days[editingDayIndex].items[editingItemIndex] = itemData;
+  } else {
+    // Adding new
+    state.days[editingDayIndex].items.push(itemData);
+  }
+
+  syncTrackerTemplateForward(editingDayIndex ?? currentDay, {
+    focusItemId: itemData.id
+  });
+  saveState();
+  closeItemModal();
+  renderDayNav();
+  renderDay();
+});
+
+document.getElementById('itemModalCancel').addEventListener('click', closeItemModal);
+itemModalOverlay.addEventListener('click', (e) => {
+  if (e.target === itemModalOverlay) closeItemModal();
+});
+
+/* ──────────────────────────────────
+   INIT
+   ────────────────────────────────── */
+
+renderDayNav();
+renderDay();
+
+// Reveal animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+
+<script>
+  const FORM_ENDPOINT = 'https://high-performance-leads.markesbootcamp.workers.dev';
+  const LOAD_ENDPOINT = `${FORM_ENDPOINT}/participant-week-tracker?slug=${encodeURIComponent("natasha")}&weekKey=week-2`;
+  const PARTICIPANT_NAME = "Наташа";
+  const PARTICIPANT_SLUG = "natasha";
+  const WEEK_KEY = 'week-2';
+  const LOCAL_KEY = `hp_week2_tracker_${PARTICIPANT_SLUG}`;
+  const LOCAL_UPDATED_AT_KEY = `${LOCAL_KEY}:updated-at`;
+  const MATERIALS_COLLAPSED_KEY = `${LOCAL_KEY}:materials-collapsed`;
+  const STORY_PREFERENCES_KEY = `${LOCAL_KEY}:story-preferences`;
+  const AUTOSAVE_DELAY_MS = 1600;
+  const AUTOSAVE_MAX_WAIT_MS = 8000;
+  const DAY_WORKOUT_LINKS = [[{"label": "Основная тренировка · 24 мин", "url": "https://kinescope.io/woU5ouQr7kiQEnycQPYXEX"}], [{"label": "Утренняя тренировка · 6:33", "url": "https://kinescope.io/uaz5nixLrRduo5AmzvoXhW"}, {"label": "Основная тренировка · 16 мин", "url": "https://kinescope.io/uXu1PEQTWt2sCbKB858GZF"}, {"label": "Массаж пресса", "url": "https://kinescope.io/5PFiKiBJriPtoZ7ReCqyf5"}], [{"label": "Основная тренировка · 38 мин", "url": "https://kinescope.io/2HkhvcayLsmVNpgR9jrMbK"}, {"label": "Массаж пресса", "url": "https://kinescope.io/5PFiKiBJriPtoZ7ReCqyf5"}], [{"label": "Утренняя тренировка · 10 мин", "url": "https://kinescope.io/ow9ewbHa69dcm4AWvx2XCz"}, {"label": "Основная тренировка · 15 мин", "url": "https://kinescope.io/qp8RLa4QH6wNXf9whu4q4r"}], [{"label": "Основная тренировка · 33:48", "url": "https://kinescope.io/58nwQikeU2a2ogVNUH4k6z"}], [{"label": "Утренняя тренировка · 8:34", "url": "https://kinescope.io/bjFtvWtjjzbFx6Brso3Au3"}, {"label": "Основная тренировка · 18:17", "url": "https://kinescope.io/6TGpUpaVWmGAKFWHRyythM"}, {"label": "Массаж пресса", "url": "https://kinescope.io/5PFiKiBJriPtoZ7ReCqyf5"}], []];
+  const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
+  let latestPersistedStateJson = '';
+  let latestPersistedAt = '';
+  let autosaveTimer = null;
+  let autosaveInFlight = false;
+  let autosaveDirtySince = 0;
+  function getDefaultDayItems() {
+    return DEFAULT_ITEMS.map((item, index) => ({
+      ...item,
+      id: item.id + '_' + index,
+      checked: false,
+      inputValue: ''
+    }));
+  }
+
+  function normalizeTrackerItem(item, fallbackId = '') {
+    const source = item && typeof item === 'object' ? item : {};
+    const rawId = typeof source.id === 'string' ? source.id.trim() : '';
+    const normalizedId = rawId || fallbackId || `item_${Date.now()}`;
+    return {
+      ...source,
+      id: normalizedId,
+      icon: typeof source.icon === 'string' ? source.icon : '',
+      title: typeof source.title === 'string' ? source.title : '',
+      subtitle: typeof source.subtitle === 'string' ? source.subtitle : '',
+      hasInput: Boolean(source.hasInput),
+      inputPlaceholder: typeof source.inputPlaceholder === 'string' ? source.inputPlaceholder : 'Запиши...',
+      category: typeof source.category === 'string' && source.category.trim() ? source.category.trim().toLowerCase() : 'focus',
+      checked: Boolean(source.checked),
+      inputValue: typeof source.inputValue === 'string' ? source.inputValue : ''
+    };
+  }
+
+  function normalizeDayItems(items, fallbackToDefault = false) {
+    if (!Array.isArray(items) || !items.length) {
+      return fallbackToDefault ? getDefaultDayItems() : [];
+    }
+
+    return items.map((item, index) => normalizeTrackerItem(item, `item_${index}`));
+  }
+
+  function cloneItemTemplate(item, index) {
+    const normalizedItem = normalizeTrackerItem(item, `item_${index}`);
+    return {
+      ...normalizedItem,
+      checked: false,
+      inputValue: ''
+    };
+  }
+
+  function mergeDayItemsWithTemplate(templateItems, incomingItems) {
+    const normalizedTemplate = normalizeDayItems(templateItems, true);
+    const normalizedIncoming = normalizeDayItems(incomingItems);
+    const incomingById = new Map(
+      normalizedIncoming.map((item) => [canonicalItemId(item.id) || item.id, item])
+    );
+    return normalizedTemplate.map((item, index) => {
+      const key = canonicalItemId(item.id) || item.id;
+      const existing = incomingById.get(key);
+      return {
+        ...cloneItemTemplate(item, index),
+        checked: Boolean(existing?.checked),
+        inputValue: typeof existing?.inputValue === 'string' ? existing.inputValue : ''
+      };
+    });
+  }
+
+  function normalizeTrackerState(rawState) {
+    const baseDays = DAY_NAMES.map((name) => ({
+      name,
+      items: getDefaultDayItems()
+    }));
+
+    if (!rawState || typeof rawState !== 'object') {
+      return {
+        manifesto: '',
+        days: baseDays
+      };
+    }
+
+    const rawDays = Array.isArray(rawState.days) ? rawState.days : [];
+    const templateItems = Array.isArray(rawDays[0]?.items) && rawDays[0].items.length
+      ? rawDays[0].items
+      : baseDays[0].items;
+    const normalizedDays = baseDays.map((baseDay, dayIndex) => {
+      const incomingDay = rawDays[dayIndex] && typeof rawDays[dayIndex] === 'object'
+        ? rawDays[dayIndex]
+        : dayIndex === 0 && rawDays[0] && typeof rawDays[0] === 'object'
+          ? rawDays[0]
+          : null;
+
+      const normalizedItems = mergeDayItemsWithTemplate(templateItems, incomingDay?.items || []);
+
+      return {
+        ...baseDay,
+        ...incomingDay,
+        name: baseDay.name,
+        items: normalizedItems
+      };
+    });
+
+    return {
+      ...rawState,
+      manifesto: typeof rawState.manifesto === 'string' ? rawState.manifesto : '',
+      days: normalizedDays
+    };
+  }
+
+  function setSaveStatus(message) {
+    const status = document.getElementById('saveStatus');
+    if (status) {
+      status.textContent = message;
+    }
+  }
+
+  function cloneState(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function stateSnapshotJson(value = state) {
+    return JSON.stringify(cloneState(value));
+  }
+
+  function rememberPersistedSnapshot(snapshotJson, submittedAt = '') {
+    latestPersistedStateJson = snapshotJson;
+    latestPersistedAt = submittedAt || latestPersistedAt || '';
+    autosaveDirtySince = 0;
+  }
+
+  function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {
+    return snapshotJson !== latestPersistedStateJson;
+  }
+
+  function clearAutosaveTimer() {
+    if (autosaveTimer) {
+      window.clearTimeout(autosaveTimer);
+      autosaveTimer = null;
+    }
+  }
+
+  function buildTrackerPayload(snapshotState = state, submittedAt = new Date().toISOString()) {
+    return {
+      kind: 'participant-week-tracker',
+      participantName: PARTICIPANT_NAME,
+      participantSlug: PARTICIPANT_SLUG,
+      weekKey: WEEK_KEY,
+      trackerState: cloneState(snapshotState),
+      pageUrl: window.location.href,
+      source: 'high-performance-week-2-tracker',
+      submittedAt
+    };
+  }
+
+  async function postTrackerSnapshot(payload, requestOptions = {}) {
+    const response = await fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      keepalive: Boolean(requestOptions.keepalive)
+    });
+
+    if (!response.ok) {
+      throw new Error('save_failed');
+    }
+
+    return response;
+  }
+
+  function queueAutosave(reason = 'change') {
+    clearAutosaveTimer();
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {
+      autosaveDirtySince = 0;
+      return;
+    }
+
+    const isRetry = reason.includes('retry');
+    if (!autosaveDirtySince || isRetry) {
+      autosaveDirtySince = Date.now();
+    }
+
+    const elapsed = Date.now() - autosaveDirtySince;
+    const maxWaitRemaining = Math.max(0, AUTOSAVE_MAX_WAIT_MS - elapsed);
+    const delay = isRetry ? AUTOSAVE_DELAY_MS : Math.min(AUTOSAVE_DELAY_MS, maxWaitRemaining);
+
+    autosaveTimer = window.setTimeout(() => {
+      autosaveTimer = null;
+      void persistTrackerSnapshotInBackground(reason);
+    }, delay);
+  }
+
+  async function persistTrackerSnapshotInBackground(reason = 'change') {
+    if (autosaveInFlight) {
+      return false;
+    }
+
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {
+      return false;
+    }
+
+    autosaveInFlight = true;
+    const payload = buildTrackerPayload(state);
+    setSaveStatus('Черновик сохранён локально. Догружаю серверную версию...');
+
+    try {
+      await postTrackerSnapshot(payload);
+      localStorage.setItem(LOCAL_KEY, snapshotJson);
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, payload.submittedAt);
+      rememberPersistedSnapshot(snapshotJson, payload.submittedAt);
+      const savedText = new Date(payload.submittedAt).toLocaleString('ru-RU');
+      setSaveStatus(`Черновик автоматически сохранён ${savedText}. По этой ссылке откроется та же версия и в браузере, и в Telegram.`);
+      return true;
+    } catch (error) {
+      setSaveStatus('Не удалось автоматически синхронизировать серверную версию. Локальный черновик остался в браузере.');
+      return false;
+    } finally {
+      autosaveInFlight = false;
+      if (hasUnsyncedServerChanges()) {
+        queueAutosave(reason === 'restore-local' ? 'restore-local-retry' : 'retry');
+      }
+    }
+  }
+
+  function flushPendingTrackerSnapshot() {
+    clearAutosaveTimer();
+    if (autosaveInFlight) {
+      return;
+    }
+
+    const snapshotJson = stateSnapshotJson();
+    if (!hasUnsyncedServerChanges(snapshotJson)) {
+      return;
+    }
+
+    const payload = buildTrackerPayload(state);
+    const body = JSON.stringify(payload);
+    let sent = false;
+
+    try {
+      if (navigator.sendBeacon) {
+        sent = navigator.sendBeacon(FORM_ENDPOINT, new Blob([body], { type: 'application/json' }));
+      }
+    } catch (error) {
+      sent = false;
+    }
+
+    if (!sent) {
+      fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body,
+        keepalive: true
+      }).catch(() => {});
+    }
+  }
+
+  function syncTrackerTemplateForward(startDayIndex = 0, options = {}) {
+    const sourceDay = state.days[startDayIndex];
+    if (!sourceDay) {
+      return;
+    }
+
+    const templateItems = normalizeDayItems(sourceDay.items, true);
+    const removeKey = options.removeItemId ? canonicalItemId(options.removeItemId) || options.removeItemId : '';
+
+    state.days = state.days.map((day, dayIndex) => {
+      if (dayIndex < startDayIndex) {
+        return day;
+      }
+
+      if (dayIndex === startDayIndex) {
+        return {
+          ...day,
+          name: DAY_NAMES[dayIndex] || day.name || `День ${dayIndex + 1}`,
+          items: templateItems.map((item, index) => normalizeTrackerItem(item, item.id || `item_${index}`))
+        };
+      }
+
+      const incomingItems = Array.isArray(day?.items) ? day.items : [];
+      const filteredIncomingItems = removeKey
+        ? incomingItems.filter((item) => (canonicalItemId(item?.id) || item?.id) !== removeKey)
+        : incomingItems;
+
+      return {
+        ...day,
+        name: DAY_NAMES[dayIndex] || day?.name || `День ${dayIndex + 1}`,
+        items: mergeDayItemsWithTemplate(templateItems, filteredIncomingItems)
+      };
+    });
+  }
+
+  function setButtonBusy(button, busy, busyLabel) {
+    if (!button) {
+      return;
+    }
+    if (!button.dataset.defaultLabel) {
+      button.dataset.defaultLabel = button.textContent || '';
+    }
+    button.disabled = busy;
+    button.style.opacity = busy ? '0.7' : '1';
+    button.textContent = busy ? busyLabel : button.dataset.defaultLabel;
+  }
+
+  function cropText(value, limit = 140) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) {
+      return '';
+    }
+    return text.length > limit ? text.slice(0, limit - 1).trimEnd() + '…' : text;
+  }
+
+  function joinHumanList(items) {
+    const filtered = items.filter(Boolean);
+    if (!filtered.length) {
+      return '';
+    }
+    if (filtered.length === 1) {
+      return filtered[0];
+    }
+    if (filtered.length === 2) {
+      return `${filtered[0]} и ${filtered[1]}`;
+    }
+    return `${filtered.slice(0, -1).join(', ')} и ${filtered[filtered.length - 1]}`;
+  }
+
+  function normalizeStoryPreferences(raw) {
+    const base = raw && typeof raw === 'object' ? raw : {};
+    const rawAngles = Array.isArray(base.angles) ? base.angles : [];
+    const angles = rawAngles
+      .map((value) => String(value || '').trim().toLowerCase())
+      .filter((value, index, list) => value && STORY_ANGLE_OPTIONS.includes(value) && list.indexOf(value) === index);
+    return {
+      angles,
+      customPrompt: typeof base.customPrompt === 'string' ? base.customPrompt : ''
+    };
+  }
+
+  function readStoryPreferences() {
+    try {
+      const saved = localStorage.getItem(STORY_PREFERENCES_KEY);
+      if (!saved) {
+        return normalizeStoryPreferences(null);
+      }
+      return normalizeStoryPreferences(JSON.parse(saved));
+    } catch (error) {
+      return normalizeStoryPreferences(null);
+    }
+  }
+
+  function persistStoryPreferences(preferences) {
+    try {
+      localStorage.setItem(STORY_PREFERENCES_KEY, JSON.stringify(normalizeStoryPreferences(preferences)));
+    } catch (error) {
+      // Ignore local preference storage failures.
+    }
+  }
+
+  function toggleStoryAngle(angle) {
+    const preferences = readStoryPreferences();
+    const angles = preferences.angles.includes(angle)
+      ? preferences.angles.filter((item) => item !== angle)
+      : [...preferences.angles, angle];
+    persistStoryPreferences({
+      ...preferences,
+      angles
+    });
+    renderStoryControls();
+  }
+
+  function renderStoryControls() {
+    const grid = document.getElementById('generatedStoryAngleGrid');
+    const input = document.getElementById('generatedStoryPrompt');
+    const preferences = readStoryPreferences();
+    if (grid) {
+      grid.innerHTML = STORY_ANGLE_OPTIONS.map((angle) => `
+        <button class="generated-story-angle${preferences.angles.includes(angle) ? ' is-active' : ''}" type="button" data-angle="${angle}">${angle}</button>
+      `).join('');
+      grid.querySelectorAll('[data-angle]').forEach((button) => {
+        button.addEventListener('click', () => toggleStoryAngle(button.dataset.angle || ''));
+      });
+    }
+    if (input && input.value !== preferences.customPrompt) {
+      input.value = preferences.customPrompt;
+    }
+  }
+
+  function syncStoryPreferencesFromUI() {
+    const preferences = readStoryPreferences();
+    const input = document.getElementById('generatedStoryPrompt');
+    persistStoryPreferences({
+      ...preferences,
+      customPrompt: input ? input.value : preferences.customPrompt
+    });
+  }
+
+  function buildAngleFocusParagraph(angles) {
+    const map = {
+      'фокус': 'Сегодня мне важно услышать, что через этот день у меня собирается фокус и я перестаю распыляться.',
+      'энергия': 'Я хочу отдельно отметить, что такими шагами я возвращаю себе энергию и внутренний огонь.',
+      'тело': 'Мне важно почувствовать, что тело здесь не фон, а моя реальная опора и точка силы.',
+      'дисциплина': 'Хочу удержать мысль, что дисциплина в этом дне — не наказание, а форма любви и уважения к себе.',
+      'мягкость': 'Мне нравится, что я могу двигаться мягко, без жёсткости к себе, и всё равно не выпадать из процесса.',
+      'смелость': 'Я хочу видеть в этом дне свою смелость: не ждать идеального состояния, а всё равно выбирать движение.',
+      'радость': 'Для меня важно не только сделать, но и порадоваться себе, заметить живую радость от того, что получается.',
+      'контакт с собой': 'Больше всего мне хочется слышать, что через этот день я возвращаюсь в контакт с собой и яснее чувствую, что для меня важно.'
+    };
+    return angles.map((angle) => map[angle]).filter(Boolean).slice(0, 3).join(' ');
+  }
+
+  function storyPromptSignals() {
+    const prompt = readStoryPreferences().customPrompt.trim().toLowerCase();
+    return {
+      raw: prompt,
+      noSleepPraise: /не говори.*сон|убери.*сон|сон.*неправд|сон.*не хвали/.test(prompt),
+      noProgramNarrative: /не говори.*high performance|не говори.*хайпер|не додумывай|не говори.*процесс|убери.*high performance/.test(prompt),
+      hardDay: /день был ужасн|ужасный день|день ужасный/.test(prompt)
+    };
+  }
+
+  function manifestoLead() {
+    const text = String(state.manifesto || '').replace(/\s+/g, ' ').trim();
+    if (!text) {
+      return '';
+    }
+    const sentence = text.split(/[.!?]+/).map((part) => part.trim()).find(Boolean) || text;
+    return cropText(sentence, 140);
+  }
+
+  function manifestoSpark() {
+    const current = manifestoLead();
+    if (current) {
+      return current;
+    }
+    return 'Сегодня я выбираю ясность, фокус, смелость, энергию и огонь. Мои ценности важнее хаоса, а дисциплина — это форма заботы о себе';
+  }
+
+  function canonicalItemId(value) {
+    const raw = String(value || '').trim();
+    if (!raw) {
+      return '';
+    }
+    const base = raw.replace(/_\d+$/, '');
+    return DEFAULT_ITEMS.some((item) => item.id === base) ? base : raw;
+  }
+
+  function getDayItemById(day, itemId) {
+    const items = Array.isArray(day?.items) ? day.items : [];
+    return items.find((item) => item && canonicalItemId(item.id) === itemId) || null;
+  }
+
+  function getFilledValue(item) {
+    return cropText(item?.inputValue || '', 180);
+  }
+
+  function joinSentences(parts) {
+    return parts.filter(Boolean).join(' ');
+  }
+
+  function analyzeMealText(text) {
+    const source = String(text || '').toLowerCase();
+    const proteinKeywords = ['яйц', 'кур', 'индейк', 'рыб', 'лосос', 'тун', 'творог', 'йогурт', 'кефир', 'сыр', 'моцарел', 'мяс', 'говяд', 'кревет', 'тофу', 'темпе', 'фасол', 'нут', 'чечев', 'протеин'];
+    const fiberKeywords = ['овощ', 'салат', 'зелень', 'огур', 'томат', 'брокк', 'капуст', 'кабач', 'морков', 'свекл', 'ягод', 'фрукт', 'яблок', 'груш', 'авокад', 'греч', 'овсян', 'киноа', 'чечев'];
+    const energyKeywords = ['рис', 'карто', 'паста', 'макарон', 'хлеб', 'лаваш', 'круп', 'каша', 'греч', 'булгур', 'киноа', 'банан', 'мюсли', 'гранола'];
+    const lightKeywords = ['кофе', 'чай', 'капуч', 'латте', 'печень', 'батончик', 'яблок', 'банан', 'йогурт', 'смузи'];
+
+    const hasKeyword = (keywords) => keywords.some((keyword) => source.includes(keyword));
+    return {
+      protein: hasKeyword(proteinKeywords),
+      fiber: hasKeyword(fiberKeywords),
+      energy: hasKeyword(energyKeywords),
+      light: hasKeyword(lightKeywords)
+    };
+  }
+
+  function buildNutritionParagraph(day) {
+    const mealIds = [
+      ['breakfast', 'завтрак'],
+      ['lunch', 'обед'],
+      ['dinner', 'ужин']
+    ];
+    const mealSummaries = [];
+    let proteinCount = 0;
+    let fiberCount = 0;
+    let energyCount = 0;
+    let lightCount = 0;
+    let checkedMeals = 0;
+
+    mealIds.forEach(([id, label]) => {
+      const item = getDayItemById(day, id);
+      if (!item?.checked && !getFilledValue(item)) {
+        return;
+      }
+      checkedMeals += item?.checked ? 1 : 0;
+      const note = getFilledValue(item);
+      if (note) {
+        mealSummaries.push(`на ${label} у меня было ${note}`);
+        const mealAnalysis = analyzeMealText(note);
+        proteinCount += mealAnalysis.protein ? 1 : 0;
+        fiberCount += mealAnalysis.fiber ? 1 : 0;
+        energyCount += mealAnalysis.energy ? 1 : 0;
+        lightCount += mealAnalysis.light ? 1 : 0;
+      } else {
+        mealSummaries.push(`${label} я не пропустила`);
+      }
+    });
+
+    if (!mealSummaries.length) {
+      return '';
+    }
+
+    const analysisParts = [];
+    if (proteinCount >= 2) {
+      analysisParts.push('По записям видно, что в рационе была неплохая опора на белок.');
+    } else if (proteinCount === 1) {
+      analysisParts.push('Белок в рационе был, но опора на него в течение дня пока выглядит не очень устойчивой.');
+    } else {
+      analysisParts.push('По записям рациону, похоже, не хватило явной опоры на белок.');
+    }
+
+    if (fiberCount >= 2) {
+      analysisParts.push('Также в еде уже заметна клетчатка, а это добавляет сытости и устойчивости.');
+    } else if (fiberCount === 0) {
+      analysisParts.push('Овощей, зелени или других источников клетчатки в записях пока немного.');
+    }
+
+    if (checkedMeals <= 1 || (energyCount === 0 && lightCount >= 1)) {
+      analysisParts.push('По общему ощущению день по калориям мог получиться довольно лёгким.');
+    } else if (checkedMeals >= 2 && energyCount >= 1) {
+      analysisParts.push('По энергии день выглядит более собранным: в рационе были не только быстрые решения, но и поддерживающая еда.');
+    }
+
+    return `По еде в записях есть такая картина: ${joinHumanList(mealSummaries)}. ${analysisParts.join(' ')}`.trim();
+  }
+
+  function getCompletedStandardItems(day) {
+    const items = Array.isArray(day?.items) ? day.items : [];
+    return items.filter((item) => item?.checked).map((item) => canonicalItemId(item.id));
+  }
+
+  function buildOpeningParagraph(day, completedIds) {
+    const signals = storyPromptSignals();
+    if (signals.hardDay) {
+      return 'День был тяжёлым и местами рваным, но в нём всё равно остались отдельные собранные моменты, на которые можно опереться при разборе.';
+    }
+    if (completedIds.length >= 5) {
+      return `Сегодня получился по-настоящему собранный ${day.name.toLowerCase()}. В дне было достаточно отмеченных действий, чтобы он ощущался цельным и устойчивым.`;
+    }
+    if (completedIds.length >= 3) {
+      return 'Сегодня удалось удержать несколько важных вещей, и это уже делает день более собранным. Даже неидеальный день может держаться на нескольких повторяемых действиях.';
+    }
+    if (completedIds.length >= 1) {
+      return 'Сегодня в дне было немного отмеченных пунктов, но они всё равно задают ему структуру и помогают видеть, за что день держался.';
+    }
+    return 'Сегодня день больше про наблюдение, чем про выполнение. Это тоже полезный материал: по нему легче увидеть реальный ритм дня и понять, что стоит укрепить дальше.';
+  }
+
+  function buildDaySummaryParagraph(day, completedIds) {
+    const phrases = {
+      sleep: 'дала себе опору по сну',
+      meditation: 'начала день с медитации',
+      workout: 'сделала тренировку',
+      breakfast: 'собрала себе нормальный завтрак',
+      lunch: 'не пропустила обед',
+      dinner: 'собрала ужин',
+      reading: 'вернула себе внимание через чтение',
+      journaling: 'оставила место для джорналинга',
+      hardstop: 'поставила рамку работе',
+      qualitytime: 'побыла с близкими по-настоящему',
+      bedtime: 'подумала о завтрашнем дне уже сегодня'
+    };
+    const completed = completedIds.map((id) => phrases[id]).filter(Boolean).slice(0, 5);
+    const workoutNote = getFilledValue(getDayItemById(day, 'workout'));
+    const journalNote = getFilledValue(getDayItemById(day, 'journaling'));
+
+    const parts = [];
+    if (completed.length) {
+      parts.push(`В течение дня были отмечены такие вещи: ${joinHumanList(completed)}.`);
+    }
+    if (workoutNote) {
+      parts.push(`Из заметок особенно выделяется тренировка: ${workoutNote}`);
+    } else if (journalNote) {
+      parts.push(`Из заметок дня сохранилась такая деталь: ${journalNote}`);
+    }
+
+    return parts.join(' ');
+  }
+
+  function buildSleepParagraph(day) {
+    const sleepItem = getDayItemById(day, 'sleep');
+    const bedtimeItem = getDayItemById(day, 'bedtime');
+    const sleepNote = getFilledValue(sleepItem);
+    const signals = storyPromptSignals();
+
+    if (!sleepItem && !bedtimeItem) {
+      return '';
+    }
+    if (sleepNote) {
+      return `По сну в заметках зафиксировано следующее: ${sleepNote}. Это помогает увидеть реальную картину дня и заметить, где сейчас особенно нужна опора.`;
+    }
+    if (sleepItem?.checked && !signals.noSleepPraise) {
+      return 'Сон сегодня был одной из заметных опор дня. Такая база обычно помогает держать и энергию, и фокус, и более ровный ритм.';
+    }
+    if (bedtimeItem?.checked) {
+      return 'По сну ещё есть куда расти, но вечерняя рамка уже намечена, и это хороший шаг в сторону более бережного ритма.';
+    }
+    return '';
+  }
+
+  function buildWinsParagraph(day, completedIds) {
+    const signals = storyPromptSignals();
+    const wins = [];
+    const winMap = {
+      sleep: signals.noSleepPraise ? '' : 'сон всё-таки был отмечен в трекере',
+      meditation: 'дала себе момент тишины и настройки',
+      workout: 'выбрала движение и тело',
+      breakfast: 'не оставила утро без еды',
+      lunch: 'поддержала себя обедом',
+      dinner: 'завершила день с заботой о себе',
+      reading: 'вернула себе внимание',
+      journaling: 'оставила место для себя',
+      hardstop: 'поставила границу работе',
+      qualitytime: 'сохранила живое присутствие рядом с близкими',
+      bedtime: 'подумала о завтрашнем себе'
+    };
+    completedIds.forEach((id) => {
+      const phrase = winMap[id];
+      if (phrase && wins.length < 3) {
+        wins.push(phrase);
+      }
+    });
+    if (!wins.length) {
+      const journalNote = getFilledValue(getDayItemById(day, 'journaling'));
+      return journalNote
+        ? `Из ценного в этом дне точно осталось вот это наблюдение: ${journalNote}`
+        : '';
+    }
+    return `Из удачных моментов дня можно отметить вот это: ${joinHumanList(wins)}.`;
+  }
+
+  function buildProgramLensParagraph(completedIds) {
+    const signals = storyPromptSignals();
+    if (signals.noProgramNarrative) {
+      return '';
+    }
+    if (completedIds.length >= 1) {
+      return 'Через такую оптику и работает High Performance: первая неделя здесь не про идеальность, а про базу. Шаг за шагом собираются тело, питание, ритм, внимание и ощущение большей опоры внутри дня.';
+    }
+    return 'Даже такой день остаётся частью процесса High Performance. Здесь важнее не идеальная картинка, а честная фиксация реальности и постепенная сборка базы, на которой потом держится всё остальное.';
+  }
+
+  function buildStoryFromCurrentDay() {
+    const preferences = readStoryPreferences();
+    const day = state.days[currentDay] || { name: `День ${currentDay + 1}`, items: [] };
+    const completedIds = getCompletedStandardItems(day);
+    const opening = buildOpeningParagraph(day, completedIds);
+    const dayFlow = buildDaySummaryParagraph(day, completedIds);
+    const sleep = buildSleepParagraph(day);
+    const nutrition = buildNutritionParagraph(day);
+    const wins = buildWinsParagraph(day, completedIds);
+    const programLens = buildProgramLensParagraph(completedIds);
+    const manifesto = `И я слышу, как это связано с моим манифестом: «${manifestoSpark()}». Когда я выбираю даже маленькие действия в его сторону, мои ценности перестают быть красивыми словами и становятся тем, как я реально проживаю день.`;
+    const angleFocus = buildAngleFocusParagraph(preferences.angles);
+    const closing = completedIds.length >= 4
+      ? 'Итог дня: в нём уже есть заметный каркас, на который можно опираться дальше.'
+      : 'Итог дня: даже небольшое количество отмеченных пунктов уже помогает увидеть структуру и направление движения.';
+
+    return [opening, dayFlow, sleep, nutrition, wins, programLens, manifesto, angleFocus, closing].filter(Boolean).join('\n\n');
+  }
+
+  function renderGeneratedStory(text) {
+    const card = document.getElementById('generatedStoryCard');
+    const body = document.getElementById('generatedStoryBody');
+    const dayLabel = document.getElementById('generatedStoryDay');
+    if (!card || !body || !dayLabel) {
+      return;
+    }
+    dayLabel.textContent = state.days[currentDay]?.name || `День ${currentDay + 1}`;
+    body.textContent = text;
+    card.hidden = false;
+  }
+
+  function flashGeneratedStoryCard() {
+    const card = document.getElementById('generatedStoryCard');
+    if (!card || card.hidden) {
+      return;
+    }
+    card.classList.remove('is-refreshed');
+    void card.offsetWidth;
+    card.classList.add('is-refreshed');
+    window.setTimeout(() => {
+      card.classList.remove('is-refreshed');
+    }, 1400);
+  }
+
+  function toggleStoryControls(forceOpen = null) {
+    const controls = document.getElementById('generatedStoryControls');
+    const trigger = document.getElementById('regenerateStoryBtn');
+    if (!controls || !trigger) {
+      return;
+    }
+    const shouldOpen = forceOpen === null ? controls.hidden : !forceOpen ? false : true;
+    controls.hidden = !shouldOpen;
+    trigger.textContent = shouldOpen ? 'Скрыть настройки пересборки' : 'Уточнить рассказ';
+  }
+
+  async function copyGeneratedStory() {
+    const body = document.getElementById('generatedStoryBody');
+    const copyButton = document.getElementById('copyGeneratedStoryBtn');
+    const text = body?.textContent || '';
+    if (!text || !copyButton) {
+      return;
+    }
+    const original = copyButton.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      copyButton.textContent = 'Скопировано';
+    } catch (error) {
+      copyButton.textContent = 'Не скопировалось';
+    }
+    setTimeout(() => {
+      copyButton.textContent = original;
+    }, 1800);
+  }
+
+  function readMaterialsCollapsedState() {
+    try {
+      const saved = localStorage.getItem(MATERIALS_COLLAPSED_KEY);
+      if (saved === null) {
+        return true;
+      }
+      return saved !== 'false';
+    } catch (error) {
+      return true;
+    }
+  }
+
+  function persistMaterialsCollapsedState(collapsed) {
+    try {
+      localStorage.setItem(MATERIALS_COLLAPSED_KEY, collapsed ? 'true' : 'false');
+    } catch (error) {
+      // Ignore preference storage failures and keep the UI usable.
+    }
+  }
+
+  function renderWorkoutMaterialButtons() {
+    const container = document.getElementById('workoutDayButtons');
+    const emptyState = document.getElementById('workoutEmptyState');
+    if (!container) {
+      return;
+    }
+
+    const links = Array.isArray(DAY_WORKOUT_LINKS[currentDay]) ? DAY_WORKOUT_LINKS[currentDay] : [];
+    if (!links.length) {
+      container.innerHTML = '';
+      emptyState?.classList.add('is-visible');
+      return;
+    }
+
+    emptyState?.classList.remove('is-visible');
+    container.innerHTML = links.map((link, index) => `
+      <a class="material-btn${index === 0 ? '' : ' secondary'}" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>
+    `).join('');
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, new Date().toISOString());
+      setSaveStatus('Черновик сохранён в этом браузере. Синхронизирую серверную версию...');
+      queueAutosave();
+    } catch (error) {
+      setSaveStatus('Не удалось сохранить локальный черновик в браузере.');
+    }
+  }
+
+  function restoreLocalState() {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY);
+      if (!saved) {
+        return false;
+      }
+      const localUpdatedAt = localStorage.getItem(LOCAL_UPDATED_AT_KEY) || '';
+      if (latestPersistedAt && localUpdatedAt && localUpdatedAt <= latestPersistedAt) {
+        return false;
+      }
+
+      state = normalizeTrackerState(JSON.parse(saved));
+      currentDay = 0;
+      renderManifestoBanner();
+      renderWorkoutMaterialButtons();
+      renderDayNav();
+      renderDay();
+      syncManifestoVisibility();
+      setSaveStatus('Восстановлен локальный черновик из этого браузера. Сейчас догружу его на сервер.');
+      queueAutosave('restore-local');
+      return true;
+    } catch (error) {
+      localStorage.removeItem(LOCAL_KEY);
+      localStorage.removeItem(LOCAL_UPDATED_AT_KEY);
+      return false;
+    }
+  }
+
+  async function loadSavedTracker() {
+    setSaveStatus('Загружаю сохранённую версию трекера...');
+    try {
+      const response = await fetch(LOAD_ENDPOINT);
+      if (!response.ok) {
+        throw new Error('load_failed');
+      }
+
+      const result = await response.json();
+      if (!result.ok || !result.found || !result.record?.trackerState) {
+        setSaveStatus('Пока нет сохранённой версии. Можно заполнить трекер и сохранить его по этой же ссылке.');
+        return false;
+      }
+
+      state = normalizeTrackerState(result.record.trackerState);
+      currentDay = 0;
+      const snapshotJson = stateSnapshotJson();
+      const savedAt = result.record.submittedAt || result.updatedAt || '';
+      rememberPersistedSnapshot(snapshotJson, savedAt);
+      renderManifestoBanner();
+      renderWorkoutMaterialButtons();
+      renderDayNav();
+      renderDay();
+      syncManifestoVisibility();
+
+      const savedText = savedAt ? new Date(savedAt).toLocaleString('ru-RU') : '';
+      setSaveStatus(savedText ? `Открыта сохранённая версия от ${savedText}.` : 'Открыта последняя сохранённая версия трекера.');
+      return true;
+    } catch (error) {
+      setSaveStatus('Не удалось загрузить сохранённую версию. Можно продолжить с локальным черновиком.');
+      return false;
+    }
+  }
+
+  async function persistTrackerSnapshot(triggerButton, pendingStatus = 'Сохраняю трекер...') {
+    clearAutosaveTimer();
+    const snapshotJson = stateSnapshotJson();
+    const payload = buildTrackerPayload(state);
+    const saveButton = document.getElementById('saveTrackerBtn');
+    const storyButton = document.getElementById('generateStoryBtn');
+    setButtonBusy(saveButton, true, 'Сохраняю...');
+    setButtonBusy(storyButton, true, 'Собираю...');
+    setSaveStatus(pendingStatus);
+
+    try {
+      await postTrackerSnapshot(payload);
+      localStorage.setItem(LOCAL_KEY, snapshotJson);
+      localStorage.setItem(LOCAL_UPDATED_AT_KEY, payload.submittedAt);
+      rememberPersistedSnapshot(snapshotJson, payload.submittedAt);
+      const savedText = new Date(payload.submittedAt).toLocaleString('ru-RU');
+      setSaveStatus(`Сохранено ${savedText}. По этой ссылке всегда откроется актуальная версия трекера.`);
+      return true;
+    } catch (error) {
+      setSaveStatus('Не удалось сохранить серверную версию. Локальный черновик остался в браузере.');
+      alert('Не удалось сохранить трекер. Попробуй ещё раз чуть позже.');
+      return false;
+    } finally {
+      setButtonBusy(saveButton, false, '');
+      setButtonBusy(storyButton, false, '');
+    }
+  }
+
+  async function saveTrackerToServer() {
+    await persistTrackerSnapshot(document.getElementById('saveTrackerBtn'));
+  }
+
+  async function generateStoryFlow() {
+    const persisted = await persistTrackerSnapshot(
+      document.getElementById('generateStoryBtn'),
+      'Сохраняю трекер и собираю рассказ о дне...'
+    );
+    if (!persisted) {
+      return;
+    }
+    renderGeneratedStory(buildStoryFromCurrentDay());
+    setSaveStatus('Трекер сохранён, а короткий рассказ о текущем дне собран ниже.');
+  }
+
+  function applyStoryPreferences() {
+    syncStoryPreferencesFromUI();
+    renderGeneratedStory(buildStoryFromCurrentDay());
+    flashGeneratedStoryCard();
+    setSaveStatus('Рассказ пересобран с новыми акцентами.');
+  }
+
+  document.getElementById('saveTrackerBtn')?.addEventListener('click', saveTrackerToServer);
+  document.getElementById('generateStoryBtn')?.addEventListener('click', generateStoryFlow);
+  document.getElementById('copyGeneratedStoryBtn')?.addEventListener('click', copyGeneratedStory);
+  document.getElementById('regenerateStoryBtn')?.addEventListener('click', () => toggleStoryControls());
+  document.getElementById('applyStoryPreferencesBtn')?.addEventListener('click', applyStoryPreferences);
+  document.getElementById('generatedStoryPrompt')?.addEventListener('input', (event) => {
+    const preferences = readStoryPreferences();
+    persistStoryPreferences({
+      ...preferences,
+      customPrompt: event.target.value
+    });
+  });
+  window.addEventListener('pagehide', flushPendingTrackerSnapshot);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      flushPendingTrackerSnapshot();
+    }
+  });
+
+  const materialsShell = document.getElementById('materialsShell');
+  const materialsToggle = document.getElementById('materialsToggle');
+  const materialsToggleText = document.getElementById('materialsToggleText');
+  const summaryToggle = document.getElementById('summaryToggle');
+  const nutritionSummary = document.getElementById('nutritionSummary');
+
+  function applyMaterialsCollapsedState(collapsed) {
+    if (!materialsShell || !materialsToggle || !materialsToggleText) {
+      return;
+    }
+    materialsShell.classList.toggle('is-collapsed', collapsed);
+    materialsToggle.setAttribute('aria-expanded', String(!collapsed));
+    materialsToggleText.textContent = collapsed ? 'Развернуть материалы' : 'Свернуть материалы';
+  }
+
+  materialsToggle?.addEventListener('click', () => {
+    if (!materialsShell || !materialsToggleText) {
+      return;
+    }
+    const collapsed = !materialsShell.classList.contains('is-collapsed');
+    applyMaterialsCollapsedState(collapsed);
+    persistMaterialsCollapsedState(collapsed);
+  });
+
+    summaryToggle?.addEventListener('click', () => {
+      if (!nutritionSummary) {
+        return;
+      }
+      const isOpen = nutritionSummary.classList.toggle('is-open');
+      summaryToggle.setAttribute('aria-expanded', String(isOpen));
+      summaryToggle.textContent = isOpen ? 'Скрыть краткое содержание' : 'Открыть краткое содержание';
+    });
+
+  (async () => {
+    applyMaterialsCollapsedState(readMaterialsCollapsedState());
+    state = normalizeTrackerState(state);
+    currentDay = 0;
+    await loadSavedTracker();
+    restoreLocalState();
+    renderStoryControls();
+    toggleStoryControls(false);
+    renderManifestoBanner();
+    renderWorkoutMaterialButtons();
+    renderDayNav();
+    renderDay();
+    syncManifestoVisibility();
+  })();
+</script>
+
+</body>
+</html>

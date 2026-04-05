@@ -14,7 +14,8 @@ SNAPSHOT_PATH = ROOT / "scripts" / "admin_issues_snapshot.json"
 OUTPUT_PATH = ROOT / "participant-stories.html"
 QUESTIONNAIRE_BASE_URL = "https://olymarkes.github.io/high-performance/participant_questionnaires_april_2026"
 WEEK1_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
-TRACKER_VERSION_QUERY = "v=materials-pdf-v29"
+WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
+TRACKER_VERSION_QUERY = "v=week2-workouts-v31"
 PRIVATE_REPO = "OLYMARKES/high-performance-leads"
 COURSE_LABELS = {
     "care": "Care",
@@ -470,6 +471,7 @@ def build_rows() -> tuple[list[dict], str]:
             "questionnaireIssueUrl": questionnaire_match["issue"]["html_url"] if questionnaire_match else "",
             "questionnaireUrl": f"{QUESTIONNAIRE_BASE_URL}/{participant['filename']}",
             "week1TrackerUrl": f"{WEEK1_TRACKER_BASE_URL}/w1_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
+            "week2TrackerUrl": f"{WEEK2_TRACKER_BASE_URL}/w2_{participant['token']}.html?{TRACKER_VERSION_QUERY}",
             "hasQuestionnaire": bool(questionnaire_match),
             "matchedBy": questionnaire_match.get("matchedBy", "") if questionnaire_match else "",
             "submittedAt": hydrated_record.get("submittedAt") or (questionnaire_match["issue"].get("updated_at") if questionnaire_match else "") or "",
@@ -915,6 +917,7 @@ def build_html(rows: list[dict], snapshot_time: str) -> str:
             <div class="story-links">
               <a class="story-link" href="${{row.questionnaireUrl}}" target="_blank" rel="noopener noreferrer">Открыть анкету</a>
               <a class="story-link" href="${{row.week1TrackerUrl}}" target="_blank" rel="noopener noreferrer">Week 1 tracker</a>
+              <a class="story-link" href="${{row.week2TrackerUrl}}" target="_blank" rel="noopener noreferrer">Week 2 tracker</a>
               ${{row.questionnaireIssueUrl ? `<a class="story-link" href="${{row.questionnaireIssueUrl}}" target="_blank" rel="noopener noreferrer">GitHub issue</a>` : ''}}
             </div>
           </div>
