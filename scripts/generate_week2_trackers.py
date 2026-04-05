@@ -12,12 +12,9 @@ SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High per
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week2-vault-m3q8t4k1v6p2"
-TRACKER_VERSION_QUERY = "v=week2-contrast-v32"
+TRACKER_VERSION_QUERY = "v=week2-materials-v33"
 HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
 NUTRITION_PDF = f"../nutrition-guide.pdf?{TRACKER_VERSION_QUERY}"
-SEKTA_CABINET_URL = "https://sektaschool.ru"
-MAIN_PROGRAM_PDF = f"../main-program.pdf?{TRACKER_VERSION_QUERY}"
-MAIN_PROGRAM_PDF_OPEN = f"../main-program.pdf?{TRACKER_VERSION_QUERY}#page=999"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 LOOM_URL = "https://www.loom.com/share/7c09b8ca1c0f44708bcda671c35a15d3"
 JOURNEY_LINK_URL = "../journey-link-meditation-journaling.html"
@@ -881,7 +878,7 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
           <h2 class="materials-title">Материалы <em>внутри трекера</em></h2>
         </div>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
-          <div class="materials-note">Здесь лежат общие материалы программы: рекомендации и тренировочный план. Их не нужно искать в чате.</div>
+          <div class="materials-note">Здесь лежат материалы недели 2, плюс привычки, питание и тренировки дня. Их не нужно искать в чате.</div>
           <button class="materials-toggle" id="materialsToggle" type="button" aria-expanded="false" aria-controls="materialsContent">
             <span id="materialsToggleText">Развернуть материалы</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
@@ -890,16 +887,16 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
           </button>
         </div>
       </div>
-      <div class="materials-collapsed-note" id="materialsCollapsedNote">Материалы недели 2 скрыты. Нажми «Развернуть материалы», чтобы снова увидеть тему недели, питание, привычки и будущие тренировки.</div>
+      <div class="materials-collapsed-note" id="materialsCollapsedNote">Материалы недели 2 скрыты. Нажми «Развернуть материалы», чтобы снова увидеть тему недели, питание, привычки и тренировки дня.</div>
 
       <div class="materials-content" id="materialsContent">
-        <p class="materials-intro">Здесь собран слой второй недели: основные материалы про тревогу, плюс те же рабочие опоры по привычкам и питанию. Персональная часть остаётся ниже по этой же ссылке.</p>
+        <p class="materials-intro">Здесь собран слой второй недели: основные материалы про тревогу, прежние PDF по привычкам и питанию и тренировки текущего дня. Персональная часть остаётся ниже по этой же ссылке.</p>
 
         <div class="materials-grid">
           <article class="material-card">
             <div class="material-kicker">Неделя 2</div>
             <h3>Работа с тревогой</h3>
-            <p>Основные материалы недели уже лежат здесь, чтобы не искать их отдельно: вводный текст, разбор шести типов тревоги и вся серия постов.</p>
+            <p>Основные материалы недели уже лежат здесь в нужном порядке: сначала зачем работать с тревогой, потом базовая теория и в конце разбор шести видов тревоги.</p>
             <div class="material-resource-list">
               <div class="material-resource">
                 <div class="material-resource-head">
@@ -913,13 +910,22 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
               </div>
               <div class="material-resource">
                 <div class="material-resource-head">
+                  <div class="material-resource-title">12 постов о тревоге</div>
+                  <div class="material-resource-type">Материал</div>
+                </div>
+                <p>Базовая теория недели: собранный цикл постов, чтобы понять механику тревоги, её петли и привычные реакции.</p>
+                <div class="material-link-row">
+                  <a class="material-btn" href="{ANXIETY_POSTS_URL}" target="_blank" rel="noopener noreferrer">Открыть базовую теорию</a>
+                </div>
+              </div>
+              <div class="material-resource">
+                <div class="material-resource-head">
                   <div class="material-resource-title">6 видов тревоги</div>
                   <div class="material-resource-type">Материал</div>
                 </div>
-                <p>Большой разбор шести типов тревоги с внутренними монологами, ловушками и практическими разворотами.</p>
+                <p>Финальный разбор шести типов тревоги с внутренними монологами, ловушками и практическими разворотами.</p>
                 <div class="material-link-row">
-                  <a class="material-btn" href="{ANXIETY_TYPES_URL}" target="_blank" rel="noopener noreferrer">Открыть разбор</a>
-                  <a class="material-btn secondary" href="{ANXIETY_POSTS_URL}" target="_blank" rel="noopener noreferrer">Открыть 12 постов</a>
+                  <a class="material-btn" href="{ANXIETY_TYPES_URL}" target="_blank" rel="noopener noreferrer">Открыть 6 видов тревоги</a>
                 </div>
               </div>
             </div>
@@ -969,13 +975,9 @@ def add_personalization(template: str, name: str, for_name: str, slug: str, toke
           <article class="material-card">
             <div class="material-kicker">Практика</div>
             <h3>Тренировки недели 2</h3>
-            <p>Этот блок уже подготовлен под отдельные кнопки тренировок. Как только появятся новые ссылки, они отобразятся здесь по дням недели.</p>
+            <p>Здесь остаются только тренировки текущего дня. Если на день запланированы две тренировки, появятся две отдельные кнопки.</p>
 {WORKOUT_DAY_BUTTONS_SHELL}
-            <div class="material-actions">
-              <a class="material-btn secondary" href="{MAIN_PROGRAM_PDF}" download="main-program.pdf">Скачать текущий PDF основной программы</a>
-              <a class="material-btn secondary" href="{SEKTA_CABINET_URL}" target="_blank" rel="noopener noreferrer">Открыть SektaSchool.ru</a>
-            </div>
-            <div class="material-meta">Пока свежие тренировки не подставлены, здесь остаётся базовый PDF и резервный вход в кабинет. Кнопки по дням можно добавить позже без смены ссылки.</div>
+            <div class="material-meta">В этом блоке больше нет резервных ссылок на PDF или кабинет: только актуальные тренировки дня по текущему расписанию.</div>
           </article>
         </div>
 
@@ -1298,9 +1300,6 @@ if (!state.manifesto) {
     html = html.replace("{ANXIETY_WHY_URL}", ANXIETY_WHY_URL)
     html = html.replace("{ANXIETY_TYPES_URL}", ANXIETY_TYPES_URL)
     html = html.replace("{ANXIETY_POSTS_URL}", ANXIETY_POSTS_URL)
-    html = html.replace("{SEKTA_CABINET_URL}", SEKTA_CABINET_URL)
-    html = html.replace("{MAIN_PROGRAM_PDF}", MAIN_PROGRAM_PDF)
-    html = html.replace("{MAIN_PROGRAM_PDF_OPEN}", MAIN_PROGRAM_PDF_OPEN)
     html = html.replace("{WORKOUT_DAY_BUTTONS_SHELL}", build_workout_day_buttons_shell())
     return html
 

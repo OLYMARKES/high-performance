@@ -12,7 +12,7 @@ SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High per
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_1_trackers_april_2026"
 WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 TEAM_PAGE_TOKEN = "week1-vault-t8m4q2c7k9p5"
-TRACKER_VERSION_QUERY = "v=week2-contrast-v32"
+TRACKER_VERSION_QUERY = "v=week2-materials-v33"
 HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
 NUTRITION_PDF = f"../nutrition-guide.pdf?{TRACKER_VERSION_QUERY}"
 SEKTA_CABINET_URL = "https://sektaschool.ru"
