@@ -1981,6 +1981,27 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return items.map((item, index) => normalizeTrackerItem(item, `item_${index}`));
   }
 
+  function normalizeCompactTemplateItems(items) {
+    if (!Array.isArray(items) || !items.length) {
+      return [];
+    }
+
+    return items.map((item, index) =>
+      normalizeTrackerItem(
+        {
+          id: item?.i,
+          icon: item?.o,
+          title: item?.t,
+          subtitle: item?.s,
+          hasInput: Boolean(item?.h),
+          inputPlaceholder: typeof item?.p === 'string' ? item.p : 'Запиши...',
+          category: typeof item?.c === 'string' ? item.c : 'focus'
+        },
+        `item_${index}`
+      )
+    );
+  }
+
   function cloneItemTemplate(item, index) {
     const normalizedItem = normalizeTrackerItem(item, `item_${index}`);
     return {
@@ -2007,7 +2028,97 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     });
   }
 
+  function expandStoredTrackerState(rawState) {
+    if (
+      !rawState ||
+      typeof rawState !== 'object' ||
+      rawState.sv !== 2 ||
+      !Array.isArray(rawState.t) ||
+      !Array.isArray(rawState.d)
+    ) {
+      return rawState;
+    }
+
+    const templateItems = normalizeCompactTemplateItems(rawState.t);
+    const days = DAY_NAMES.map((name, dayIndex) => {
+      const values = Array.isArray(rawState.d[dayIndex]) ? rawState.d[dayIndex] : [];
+      const valuesById = new Map(
+        values
+          .filter((item) => item && typeof item === 'object')
+          .map((item) => [canonicalItemId(item.i) || item.i, item])
+      );
+
+      return {
+        name,
+        items: templateItems.map((templateItem, itemIndex) => {
+          const itemKey = canonicalItemId(templateItem.id) || templateItem.id;
+          const saved = valuesById.get(itemKey);
+          return {
+            ...cloneItemTemplate(templateItem, itemIndex),
+            checked: Boolean(saved?.x),
+            inputValue: typeof saved?.v === 'string' ? saved.v : ''
+          };
+        })
+      };
+    });
+
+    return {
+      manifesto: typeof rawState.m === 'string' ? rawState.m : '',
+      days
+    };
+  }
+
+  function compactTrackerStateForStorage(rawState = state) {
+    const normalizedState = normalizeTrackerState(rawState);
+    const templateItems = normalizeDayItems(normalizedState.days?.[0]?.items, true);
+
+    return {
+      sv: 2,
+      m: normalizedState.manifesto || '',
+      t: templateItems.map((item) => {
+        const compactItem = {
+          i: item.id,
+          o: item.icon || '',
+          t: item.title || ''
+        };
+        if (item.subtitle) {
+          compactItem.s = item.subtitle;
+        }
+        if (item.hasInput) {
+          compactItem.h = 1;
+          if (item.inputPlaceholder && item.inputPlaceholder !== 'Запиши...') {
+            compactItem.p = item.inputPlaceholder;
+          }
+        }
+        if (item.category && item.category !== 'focus') {
+          compactItem.c = item.category;
+        }
+        return compactItem;
+      }),
+      d: normalizedState.days.map((day) =>
+        normalizeDayItems(day.items).reduce((entries, item) => {
+          if (!item.checked && !item.inputValue) {
+            return entries;
+          }
+
+          const compactItem = {
+            i: canonicalItemId(item.id) || item.id
+          };
+          if (item.checked) {
+            compactItem.x = 1;
+          }
+          if (item.inputValue) {
+            compactItem.v = item.inputValue;
+          }
+          entries.push(compactItem);
+          return entries;
+        }, [])
+      )
+    };
+  }
+
   function normalizeTrackerState(rawState) {
+    rawState = expandStoredTrackerState(rawState);
     const baseDays = DAY_NAMES.map((name) => ({
       name,
       items: getDefaultDayItems()
@@ -2086,11 +2197,25 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       participantName: PARTICIPANT_NAME,
       participantSlug: PARTICIPANT_SLUG,
       weekKey: WEEK_KEY,
-      trackerState: cloneState(snapshotState),
+      trackerState: compactTrackerStateForStorage(snapshotState),
       pageUrl: window.location.href,
       source: 'high-performance-week-1-tracker',
       submittedAt
     };
+  }
+
+  function formatTrackerSaveError(error) {
+    const detail = String(error?.message || '');
+    if (detail.includes('github_request_failed:503')) {
+      return 'Сервер сохранения временно перегружен. Данные остались в этом браузере, попробуй ещё раз через 10-20 секунд.';
+    }
+    if (detail.includes('origin_not_allowed')) {
+      return 'Ссылка открыта в режиме, где сервер не принимает сохранение. Лучше открыть тот же трекер в обычном браузере или Telegram и попробовать снова.';
+    }
+    if (detail.includes('missing_required_fields')) {
+      return 'В трекере пока нечего сохранять на сервер. Заполни хотя бы один пункт или манифест и попробуй снова.';
+    }
+    return 'Не удалось сохранить серверную версию. Локальный черновик остался в этом браузере.';
   }
 
   async function postTrackerSnapshot(payload, requestOptions = {}) {
@@ -2104,7 +2229,18 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     });
 
     if (!response.ok) {
-      throw new Error('save_failed');
+      let detail = `http_${response.status}`;
+      try {
+        const payload = await response.json();
+        detail = payload?.detail || payload?.error || detail;
+      } catch (error) {
+        try {
+          detail = await response.text();
+        } catch (nestedError) {
+          detail = detail;
+        }
+      }
+      throw new Error(detail);
     }
 
     return response;
@@ -2156,7 +2292,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       setSaveStatus(`Черновик автоматически сохранён ${savedText}. По этой ссылке откроется та же версия и в браузере, и в Telegram.`);
       return true;
     } catch (error) {
-      setSaveStatus('Не удалось автоматически синхронизировать серверную версию. Локальный черновик остался в браузере.');
+      setSaveStatus(formatTrackerSaveError(error));
       return false;
     } finally {
       autosaveInFlight = false;
@@ -2801,8 +2937,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       setSaveStatus(`Сохранено ${savedText}. По этой ссылке всегда откроется актуальная версия трекера.`);
       return true;
     } catch (error) {
-      setSaveStatus('Не удалось сохранить серверную версию. Локальный черновик остался в браузере.');
-      alert('Не удалось сохранить трекер. Попробуй ещё раз чуть позже.');
+      const message = formatTrackerSaveError(error);
+      setSaveStatus(message);
+      alert(message);
       return false;
     } finally {
       setButtonBusy(saveButton, false, '');
