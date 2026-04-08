@@ -1313,6 +1313,7 @@ def build_runtime_script(name: str, slug: str) -> str:
   const STORY_ANGLE_OPTIONS = ['фокус', 'энергия', 'тело', 'дисциплина', 'мягкость', 'смелость', 'радость', 'контакт с собой'];
   let latestPersistedStateJson = '';
   let latestPersistedAt = '';
+  let initialServerHydrationComplete = false;
   let autosaveTimer = null;
   let autosaveInFlight = false;
   let autosaveDirtySince = 0;
@@ -1465,6 +1466,35 @@ def build_runtime_script(name: str, slug: str) -> str:
     return JSON.stringify(cloneState(value));
   }}
 
+  function templateSignature(items) {{
+    return normalizeDayItems(items, true).map((item) => JSON.stringify({{
+      id: canonicalItemId(item.id) || item.id,
+      icon: item.icon || '',
+      title: item.title || '',
+      subtitle: item.subtitle || '',
+      hasInput: Boolean(item.hasInput),
+      inputPlaceholder: item.inputPlaceholder || 'Запиши...',
+      category: item.category || 'focus'
+    }})).join('|');
+  }}
+
+  function hasMeaningfulTrackerContent(snapshotState = state) {{
+    const normalizedState = normalizeTrackerState(snapshotState);
+    if (String(normalizedState.manifesto || '').trim()) {{
+      return true;
+    }}
+
+    const currentTemplate = templateSignature(normalizedState.days?.[0]?.items || []);
+    const defaultTemplate = templateSignature(getDefaultDayItems());
+    if (currentTemplate !== defaultTemplate) {{
+      return true;
+    }}
+
+    return normalizedState.days.some((day) =>
+      normalizeDayItems(day.items).some((item) => item.checked || String(item.inputValue || '').trim())
+    );
+  }}
+
   function rememberPersistedSnapshot(snapshotJson, submittedAt = '') {{
     latestPersistedStateJson = snapshotJson;
     latestPersistedAt = submittedAt || latestPersistedAt || '';
@@ -1472,6 +1502,12 @@ def build_runtime_script(name: str, slug: str) -> str:
   }}
 
   function hasUnsyncedServerChanges(snapshotJson = stateSnapshotJson()) {{
+    if (!initialServerHydrationComplete) {{
+      return false;
+    }}
+    if (!latestPersistedStateJson && !hasMeaningfulTrackerContent()) {{
+      return false;
+    }}
     return snapshotJson !== latestPersistedStateJson;
   }}
 
@@ -2222,7 +2258,6 @@ def build_runtime_script(name: str, slug: str) -> str:
       // Ignore local storage failures and continue with in-memory state.
     }}
     setSaveStatus('Перенесла манифест и персональные пункты из недели 1. Перед стартом обнови манифест под тему тревоги.');
-    queueAutosave('import-week1');
     return true;
   }}
 
@@ -2248,7 +2283,12 @@ def build_runtime_script(name: str, slug: str) -> str:
         return false;
       }}
 
-      state = normalizeTrackerState(JSON.parse(saved));
+      const restoredState = normalizeTrackerState(JSON.parse(saved));
+      if (latestPersistedStateJson && !hasMeaningfulTrackerContent(restoredState)) {{
+        return false;
+      }}
+
+      state = restoredState;
       currentDay = 0;
       renderManifestoBanner();
       renderWorkoutMaterialButtons();
@@ -2256,7 +2296,6 @@ def build_runtime_script(name: str, slug: str) -> str:
       renderDay();
       syncManifestoVisibility();
       setSaveStatus('Восстановлен локальный черновик из этого браузера. Сейчас догружу его на сервер.');
-      queueAutosave('restore-local');
       return true;
     }} catch (error) {{
       localStorage.removeItem(LOCAL_KEY);
@@ -2396,8 +2435,15 @@ def build_runtime_script(name: str, slug: str) -> str:
     currentDay = 0;
     const loadedWeek2 = await loadSavedTracker();
     const restoredLocal = restoreLocalState();
+    initialServerHydrationComplete = true;
+    if (restoredLocal && hasUnsyncedServerChanges()) {{
+      queueAutosave('restore-local');
+    }}
     if (!loadedWeek2 && !restoredLocal) {{
-      await importWeek1StateIfNeeded();
+      const importedWeek1 = await importWeek1StateIfNeeded();
+      if (importedWeek1 && hasUnsyncedServerChanges()) {{
+        queueAutosave('import-week1');
+      }}
     }}
     renderStoryControls();
     toggleStoryControls(false);
