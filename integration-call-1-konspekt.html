@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integration Call #1 — High Performance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --surface-3: #2e2e2e;
+    --accent: #c8a2ff;
+    --accent-dim: #9b6fdb;
+    --accent-glow: rgba(200,162,255,0.12);
+    --warm: #ffb088;
+    --warm-dim: #d4845c;
+    --mint: #7dd3b8;
+    --coral: #ff7a7a;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --text-muted: #666;
+    --border: #333;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(200,162,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(255,176,136,0.05) 0%, transparent 50%),
+                var(--bg);
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 500px;
+    margin-bottom: 48px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    color: var(--text-muted);
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ── Navigation ── */
+  .nav-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,15,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+    padding: 8px 0;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { background: var(--surface); color: var(--text); }
+  .nav-btn.active { background: var(--accent-glow); color: var(--accent); }
+
+  /* ── Container ── */
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Sections ── */
+  section {
+    padding: 80px 0 40px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .section-intro {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin-bottom: 40px;
+  }
+
+  /* ── Progress tracker ── */
+  .progress-track {
+    display: flex;
+    gap: 4px;
+    margin: 40px 0;
+    padding: 20px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow-x: auto;
+  }
+
+  .day-dot {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .day-dot.done { background: var(--accent-dim); color: white; }
+  .day-dot.today { background: var(--accent); color: var(--bg); box-shadow: 0 0 16px rgba(200,162,255,0.4); }
+  .day-dot.future { background: var(--surface-3); color: var(--text-muted); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+  }
+
+  .card:hover { border-color: rgba(200,162,255,0.2); }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .card p, .card li {
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* ── Practice grid ── */
+  .practice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .practice-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    cursor: default;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .practice-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent-dim);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .practice-item:hover::before { opacity: 1; }
+  .practice-item:hover { border-color: rgba(200,162,255,0.15); }
+
+  .practice-item .label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .practice-item .desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Habit loop ── */
+  .loop-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .loop-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px 16px;
+    text-align: center;
+    position: relative;
+  }
+
+  .loop-step .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .loop-step .step-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .loop-step .step-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Anxiety types ── */
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .type-card:hover { border-color: rgba(200,162,255,0.2); transform: translateY(-2px); }
+
+  .type-card .type-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .type-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .type-card p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Collapsible / Accordion ── */
+  .accordion {
+    margin: 24px 0;
+  }
+
+  .acc-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .acc-item:hover { border-color: rgba(200,162,255,0.15); }
+
+  .acc-header {
+    padding: 18px 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    font-weight: 600;
+    font-size: 15px;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .acc-header:hover { background: var(--surface-2); }
+
+  .acc-arrow {
+    font-size: 18px;
+    transition: transform 0.3s;
+    color: var(--text-muted);
+  }
+
+  .acc-item.open .acc-arrow { transform: rotate(180deg); }
+
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: var(--surface);
+  }
+
+  .acc-item.open .acc-body {
+    max-height: 2000px;
+  }
+
+  .acc-content {
+    padding: 0 22px 22px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* ── Comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  .compare-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .old-way { color: var(--coral); }
+  .new-way { color: var(--mint); }
+
+  /* ── Swap cards ── */
+  .swap-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    margin: 12px 0;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+  }
+
+  .swap-from {
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  .swap-arrow {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .swap-to {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mint);
+  }
+
+  /* ── Quotes ── */
+  .quote-block {
+    border-left: 3px solid var(--accent);
+    padding: 24px 28px;
+    margin: 32px 0;
+    background: var(--accent-glow);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .quote-block .q-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .quote-block .q-author {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    padding: 20px 24px;
+    border-radius: var(--radius-sm);
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .callout.insight { background: rgba(200,162,255,0.08); border-left: 3px solid var(--accent); }
+  .callout.warning { background: rgba(255,122,122,0.08); border-left: 3px solid var(--coral); }
+  .callout.action { background: rgba(125,211,184,0.08); border-left: 3px solid var(--mint); }
+
+  .callout strong { color: var(--text); }
+
+  /* ── Roadmap ── */
+  .roadmap {
+    display: grid;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .roadmap-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .roadmap-week {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+  }
+
+  .roadmap-week .wk-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .roadmap-week .wk-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .roadmap-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+  }
+
+  .roadmap-content h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .roadmap-content p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .roadmap-item.current .roadmap-week { border-color: var(--accent); }
+  .roadmap-item.current .roadmap-content { border-color: var(--accent); box-shadow: 0 0 20px rgba(200,162,255,0.08); }
+
+  /* ── Steps ── */
+  .steps {
+    margin: 24px 0;
+    counter-reset: step;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .step-body h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ── Body scan ── */
+  .body-scan {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin: 32px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .body-scan::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(200,162,255,0.04) 0%, transparent 50%);
+    animation: pulse-bg 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-bg {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .body-scan .scan-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .body-scan h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .body-scan p {
+    color: var(--text-dim);
+    font-size: 14px;
+    position: relative;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer .big-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  /* ── Stories ── */
+  .story {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .story:hover { border-color: rgba(200,162,255,0.15); }
+
+  .story-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .story-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .story-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .story-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 100px;
+    margin-top: 2px;
+  }
+
+  .story p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .story .highlight {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .story .win {
+    display: inline-block;
+    background: rgba(125,211,184,0.1);
+    color: var(--mint);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+
+  .story .struggle {
+    display: inline-block;
+    background: rgba(255,176,136,0.1);
+    color: var(--warm);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+
+  .coach-note {
+    background: var(--accent-glow);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 18px 22px;
+    margin: -4px 0 20px 56px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .coach-note strong { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .coach-note { margin-left: 0; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .practice-grid { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+    .loop-flow { grid-template-columns: repeat(2, 1fr); }
+    .swap-grid { grid-template-columns: 1fr; gap: 4px; text-align: left; }
+    .swap-from { text-align: left; }
+    .swap-arrow { display: none; }
+    .swap-to::before { content: '→ '; color: var(--accent); }
+    section { padding: 60px 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║              HERO SCREEN                 ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="hero">
+  <span class="hero-badge">High Performance · Апрель 2026</span>
+  <h1>Integration Call #1</h1>
+  <p class="hero-sub">Getting Shit Done — итоги первой недели, тело как база и глубокий разбор тревоги</p>
+  <div class="hero-meta">
+    <span>&#128197; 5 апреля 2026</span>
+    <span>&#9202; ~70 мин</span>
+    <span>&#127919; День 5 из 30</span>
+  </div>
+  <div class="scroll-hint">
+    <span>&#8595;</span>
+    <span>листай вниз</span>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║            STICKY NAV                    ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<nav class="nav-sticky">
+  <div class="nav-inner">
+    <button class="nav-btn" onclick="scrollTo('#progress')">Где мы</button>
+    <button class="nav-btn" onclick="scrollTo('#week1')">Неделя 1</button>
+    <button class="nav-btn" onclick="scrollTo('#reflection')">Рефлексия</button>
+    <button class="nav-btn" onclick="scrollTo('#stories')">Истории</button>
+    <button class="nav-btn" onclick="scrollTo('#roadmap')">Дорожная карта</button>
+    <button class="nav-btn" onclick="scrollTo('#why-anxiety')">Зачем тревога</button>
+    <button class="nav-btn" onclick="scrollTo('#what-anxiety')">Что такое тревога</button>
+    <button class="nav-btn" onclick="scrollTo('#loops')">Петли привычки</button>
+    <button class="nav-btn" onclick="scrollTo('#types')">6 видов</button>
+    <button class="nav-btn" onclick="scrollTo('#tools')">Инструменты</button>
+    <button class="nav-btn" onclick="scrollTo('#week2-task')">Задание</button>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ПРОГРЕСС: ГДЕ МЫ СЕЙЧАС          ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="progress">
+  <div class="section-label">День 5 из 30</div>
+  <h2 class="section-title">Мы здесь. Начало пути.</h2>
+  <p class="section-intro">Пять дней позади. Самая сложная фаза — от 0 до 1 — запущена. Всё непривычно, ресурс тратится на каждое действие. И это нормально.</p>
+
+  <div class="progress-track">
+    <div class="day-dot done">1</div><div class="day-dot done">2</div><div class="day-dot done">3</div><div class="day-dot done">4</div><div class="day-dot today">5</div>
+    <div class="day-dot future">6</div><div class="day-dot future">7</div><div class="day-dot future">8</div><div class="day-dot future">9</div><div class="day-dot future">10</div>
+    <div class="day-dot future">11</div><div class="day-dot future">12</div><div class="day-dot future">13</div><div class="day-dot future">14</div><div class="day-dot future">15</div>
+    <div class="day-dot future">16</div><div class="day-dot future">17</div><div class="day-dot future">18</div><div class="day-dot future">19</div><div class="day-dot future">20</div>
+    <div class="day-dot future">21</div><div class="day-dot future">22</div><div class="day-dot future">23</div><div class="day-dot future">24</div><div class="day-dot future">25</div>
+    <div class="day-dot future">26</div><div class="day-dot future">27</div><div class="day-dot future">28</div><div class="day-dot future">29</div><div class="day-dot future">30</div>
+  </div>
+
+  <div class="callout insight">
+    <strong>Фаза от 0 до 1 — самая сложная.</strong> Всё непривычно, мозг защищает старый режим (и это нормально!), результата ещё нет, а усилия уже есть. Внутренний перфекционизм давит ожиданиями. Дофаминовая яма — на максимуме. Это не про вас. Это про фазу.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        НЕДЕЛЯ 1: ЧТО ПРАКТИКОВАЛИ       ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="week1">
+  <div class="section-label">Неделя 1</div>
+  <h2 class="section-title">Getting Shit Done</h2>
+  <p class="section-intro">9 практик первой недели — импульс к действию, дисциплина без драмы, хитрый взгляд вместо силы воли.</p>
+
+  <div class="practice-grid">
+    <div class="practice-item">
+      <div class="label">Bouncing back from failure</div>
+      <div class="desc">Празднуем промахи и возвращение после них</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Хитрый взгляд vs сила воли</div>
+      <div class="desc">«Как использовать ситуацию себе на пользу?»</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Добрый разговор с собой</div>
+      <div class="desc">Хвалим вместо обесценивания</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Наблюдатель за паттернами</div>
+      <div class="desc">Fixed mindset: видеть и выключать</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Импульс → действие</div>
+      <div class="desc">Не думать — делать. Откусить от слона</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Запрещаю себе думать</div>
+      <div class="desc">Три шага вперёд, потом рефлексия</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Дисциплина без драмы</div>
+      <div class="desc">Система вместо драматичных целей</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Дофаминовая яма</div>
+      <div class="desc">Действуем в минусе, не ждём мотивацию</div>
+    </div>
+    <div class="practice-item">
+      <div class="label">Тело как база</div>
+      <div class="desc">В каждом повторе — вселенная</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        РЕФЛЕКСИЯ                         ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="reflection">
+  <div class="section-label">Рефлексия</div>
+  <h2 class="section-title">Что получилось? Что — нет?</h2>
+  <p class="section-intro">Вопросы, которые мы обсуждали на звонке. Пройдитесь по ним честно — для себя.</p>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>1. За что себя хвалите?</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          Вспомните моменты за эту неделю, когда вы сделали что-то — даже маленькое — и это было шагом вперёд. Не обесценивайте: любое действие, сделанное вопреки инерции, заслуживает признания. Привычка хвалить себя — это тренировка, а не эго. Мозг учится повторять то, за что получает позитивную обратную связь.
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>2. Где встретили дофаминовую яму — и как обошлись?</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          Дофаминовая яма — это когда усилия уже есть, а результата ещё нет. Мозг кричит «брось». Заметили ли вы этот момент? Что помогло не бросить? Может, помогла система, или «откусить от слона», или просто — продолжить без ожидания мотивации. Само осознание ямы — уже половина победы.
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>3. На какой мысли поймали себя?</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          Fixed mindset любит маскироваться: «У меня не получится», «Это не для меня», «Надо сделать идеально или никак». Какие автоматические мысли вы заметили? Наблюдатель за паттернами — это не про борьбу с мыслями, а про их распознавание. Увидел — уже вышел из автопилота.
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>4. Где включили хитрый взгляд вместо силы воли?</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          Сила воли — конечный ресурс. Хитрый взгляд — это когда вместо «заставить себя» вы думаете: «Как использовать это себе на пользу?». Это может быть изменение обстановки, якорение привычки к чему-то приятному, или просто — другой угол зрения на задачу. Сработало?
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║     ИСТОРИИ УЧАСТНИЦ СО ЗВОНКА          ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="stories">
+  <div class="section-label">Живой звонок</div>
+  <h2 class="section-title">Истории участниц</h2>
+  <p class="section-intro">Что получилось, что — нет, и что стало открытием за первую неделю. Живые голоса со звонка.</p>
+
+  <!-- ── Оля (ведущая) — личный опыт ── -->
+  <div class="story">
+    <div class="story-header">
+      <div class="story-avatar" style="background: rgba(200,162,255,0.2); color: var(--accent);">О</div>
+      <div>
+        <div class="story-name">Оля <span style="color: var(--text-muted); font-weight: 400; font-size: 13px;">· ведущая</span></div>
+        <div class="story-tag" style="background: rgba(200,162,255,0.12); color: var(--accent);">Личный пример</div>
+      </div>
+    </div>
+    <p>На этой неделе стало ещё жёстче со временем. Я люблю жить расслабленно — не ставлю звонки в календарь, не люблю дедлайны. Но поняла: <span class="highlight">без системы я начинаю работать по ночам, и качество моих идей падает — всё на поверхности, а глубокой работы нет.</span></p>
+    <p>Когда ограничила время гаджетов после 8 вечера — впервые в жизни могу сказать, что мой мозг работает на другом уровне. Нервная система отдохнула, я никогда так спокойно не засыпала.</p>
+    <p><span class="highlight">Я к этому шла пять лет.</span> С первого раза не получилось, не получилось и со второго. Но я хочу это отпраздновать — и не просто отпраздновать. Это произошло во многом благодаря нашему проекту, фокусу и включённости.</p>
+    <span class="win">Мозг отдохнувший — впервые спокойный сон без скроллинга</span>
+  </div>
+
+  <div class="coach-note">
+    <strong>Про день без гаджетов:</strong> начинается с вечера — договариваешься с собой, готовишься. Лучше убрать телефон после обеда, чтобы успеть почувствовать нервную систему — как ты смотришь на облака, слышишь птиц, слышишь людей. Мы 15 лет живём с интернетом, а настоящий контакт с реальным миром не дополучаем.
+  </div>
+
+  <!-- ── Алёна ── -->
+  <div class="story">
+    <div class="story-header">
+      <div class="story-avatar" style="background: rgba(255,176,136,0.2); color: var(--warm);">А</div>
+      <div>
+        <div class="story-name">Алёна</div>
+        <div class="story-tag" style="background: rgba(255,176,136,0.12); color: var(--warm);">Болезнь + рифрейминг</div>
+      </div>
+    </div>
+    <p>Зашла в программу в болезни — не сделала пока ни одной тренировки. И конечно, хотелось себя за это как следует отругать. Привычный паттерн: <span class="highlight">как следует себя отпиздить.</span></p>
+    <p>Но вспомнила образ червячка с прошлой встречи — и подумала: «Нет. Я на это не поведусь.» Получился рифрейминг: нет подходящего коврика для медитации? <span class="highlight">Это нормальный рифрейм — можно просто найти нормальный коврик.</span> Убрала лишнее сопротивление.</p>
+    <p>Зайдя на эту программу, увидела: <span class="highlight">я работаю из тревоги.</span> Фигачу на кортизоле. Всю неделю отслеживала, как можно по-другому. Проработала всего три часа — и не отругала себя. Фреймворки ложатся как пазлики.</p>
+    <span class="win">Поняла: можно работать не на тревоге, а по-другому</span><br>
+    <span class="struggle">Без телефона пока не получается — но попытки продолжаются (3 года зависимости)</span>
+  </div>
+
+  <div class="coach-note">
+    <strong>Комментарий Оли:</strong> Мысль, что жизнь — это дорога с кочками, ямками и остановками, а не прямая к результату. Если рядом ребёнок, чей путь вас тревожит — <strong>материнская вера в ребёнка, что у него всё получится, может дать больше, чем любая воспитательная мера.</strong> Это сложная задача — выращивать эту веру внутри себя. Но она того стоит.
+  </div>
+
+  <!-- ── Алиса ── -->
+  <div class="story">
+    <div class="story-header">
+      <div class="story-avatar" style="background: rgba(125,211,184,0.2); color: var(--mint);">А</div>
+      <div>
+        <div class="story-name">Алиса</div>
+        <div class="story-tag" style="background: rgba(125,211,184,0.12); color: var(--mint);">Критик-садист vs червячок</div>
+      </div>
+    </div>
+    <p>Открытие недели: <span class="highlight">оказывается, критик никуда не делся.</span> Я 4 года работала с внутренним критиком-садистом — когда что-то сделала не так, и голос говорит: «Покурила сигарету? Ну тогда пачку докуривай, тварь.»</p>
+    <p>С этим справилась. Но обнаружила другого: <span class="highlight">тихий червячок.</span> Невинные мысли типа «могла бы сделать лучше», «отчёт не подтянула». Признала: это тоже критик, просто более чилловый.</p>
+    <p>Когда критик стихает — я могу взять и сделать. <span class="highlight">От внутреннего критика меня парализует, я превращаюсь в ребёнка, который ничего не может делать.</span> А если говорю себе «ОК, просто иди и сделай тренировку» — тревога и оцепенение спадают, и я могу действовать.</p>
+    <span class="win">Разделила критика на два типа — увидела тихого червячка</span>
+  </div>
+
+  <!-- ── Участница (компульсивное переедание) ── -->
+  <div class="story">
+    <div class="story-header">
+      <div class="story-avatar" style="background: rgba(255,122,122,0.2); color: var(--coral);">У</div>
+      <div>
+        <div class="story-name">Участница</div>
+        <div class="story-tag" style="background: rgba(255,122,122,0.12); color: var(--coral);">Раздвоение + наблюдение</div>
+      </div>
+    </div>
+    <p>Приехала к друзьям — и свалилась в старый паттерн. Компульсивное переедание сладким: <span class="highlight">съела конфеты с чаем, и была жёсткая война с сопротивлением.</span> Но — наблюдала за этим почти как медитацию.</p>
+    <p>Ощущение раздвоения: есть «я», которая устойчива и адаптирует систему под свою жизнь. И есть часть, которая <span class="highlight">жёстко подвержена внешнему социальному стыду</span> — не свой стыд перед собой, а перед чем-то внешним.</p>
+    <p>Много качественного времени провела с дочерью — не целый день без гаджетов, но много времени без телефона с детьми. <span class="highlight">Это тоже форма адаптации практики.</span></p>
+    <span class="win">Больше хвалила себя, чем ругала — впервые</span><br>
+    <span class="struggle">Сладкое при стрессе — наблюдаю, но пока не могу остановить</span>
+  </div>
+
+  <!-- ── Участница (достигательство + нервная система) ── -->
+  <div class="story">
+    <div class="story-header">
+      <div class="story-avatar" style="background: rgba(200,162,255,0.2); color: var(--accent);">У</div>
+      <div>
+        <div class="story-name">Участница</div>
+        <div class="story-tag" style="background: rgba(200,162,255,0.12); color: var(--accent);">Достигательство + чувствительная НС</div>
+      </div>
+    </div>
+    <p>Всегда стесняюсь, сейчас в зоне дискомфорта. У меня классическая моя история: <span class="highlight">врываюсь, делаю всё на максималках, не учитываю своих особенностей.</span> Чувствительная нервная система, последние 2-3 года не подходят никакие высокоинтенсивные тренировки.</p>
+    <p>Я об этом знаю, стараюсь заботиться о себе. Но <span class="highlight">всё равно ушла в достигательство</span> — и расстроилась: «мне же всего 38, почему я не могу сделать высокоинтенсивную тренировку?»</p>
+    <p>Сегодня вернулась к приятному состоянию. Классно получилось с чтением — впервые 6 дней подряд каждый день читаю. <span class="highlight">Это очень классно влияет на всё.</span></p>
+    <span class="win">6 дней чтения подряд — новый рекорд</span><br>
+    <span class="struggle">Досада: «мне 38, а я не могу...» — но уже рифрейминг</span>
+  </div>
+
+  <div class="coach-note">
+    <strong>Оля — про 12 часов без телефона:</strong> «Я сегодня столько всего успела — погладить вещи, которые месяцами лежат неглаженные. Мощный заряд. Первое, что открою в 12 — тренировка. К одной привычке прицепила другую.»
+  </div>
+
+  <!-- ── Ведущая — живые комментарии по ходу лекции ── -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Живые заметки Оли по ходу лекции</h3>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про тревогу и карьеру — личный опыт</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Карьера — сто процентов. Любая история: предпринимательство — ты должен делать что-то новое, проявляться, занимать место, выходить из конфликтов. Одна сплошная тревога. Заменится ли искусственный интеллект, стоит ли вообще работать и думать — не хочется, потому что слишком тревожно. Но моя мотивация — это работа, я люблю работать. <strong>А тревога меня настолько останавливает.</strong>»</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про антихрупкость в стрессе</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Для меня это как утяжелители на ноги во время тренировки. Если у тебя сейчас экстра-стресс — ты тренируешься взаимодействовать со стрессом. <strong>Талебовская антихрупкость тренируется только когда тебе тяжело.</strong> То, что ты работаешь с этим сейчас — это реально потом раскроется.»</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про любопытство — это не рациональная история</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Когда я говорю "посмотри на это с другого угла" — кажется, что это рациональная история. Но это эмоциональная. Из привычной точки мы катастрофизируем, мы жестоки к себе, мы испуганы. <strong>Испуганному человеку не может быть любопытно.</strong> Тот, кто катастрофизирует, не может быть любопытным. Смещая себя в точку любопытства — ты больше не жертва обстоятельств. Ты наблюдатель. И это точка силы.»</p>
+          <p style="margin-top: 8px;">«Попробуйте вырастить своего внутреннего Далай-ламу. Все эти мудрецы удивительно относятся к жизни с лёгкостью и юмором — и это прикольное состояние.»</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про руминацию — запомните это слово</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Руминация — это когда мысли прокручиваются по кругу. Я помню, как была в руминации: спланировала всю стратегию шортс-видео, а потом решила — я к этому не буду даже приступать, это не то, что я на самом деле хочу. <strong>Всё, что из тревоги придумывается и прокручивается в голове — скорее всего, всё равно не пригодится.</strong> Поэтому иногда очень просто это остановить. Теперь, когда поймаете себя: "О, это руминация! Так, я остановлю это."»</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про тревогу утром — личный паттерн</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Я просыпаюсь всегда с тревогой. Всегда. Это мой мозг подгружает с утра картину: сколько всего мне надо сделать. 5-10 минут — просто мозг загружается. И это нормально. <strong>Слои тревоги:</strong> первый слой — физический (в теле), второй — виды тревоги, третий — конкретные истории. Задача — поймать на первом слое и спуститься туда: "Стоп. Это просто тревога. Посижу с ней."»</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>Про переедание — «я живу один раз»</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>«Если я буду всё время себе запрещать — буду всегда хотеть. У людей с расстройством пищевого поведения всегда есть период "закупки" — мороженое в холодильнике, сладкое, которое всегда себе запрещали. Съедают столько, сколько могут — и потом виноваты. <strong>Другой способ:</strong> через понимание, что каждый раз когда переедаешь — потом ничего хорошего не чувствуешь. Это не про запрет, а про наблюдение за reward value.»</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ДОРОЖНАЯ КАРТА                    ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="roadmap">
+  <div class="section-label">Дорожная карта</div>
+  <h2 class="section-title">Что впереди</h2>
+  <p class="section-intro">Ничего не бросаем. Слой за слоем — добавляем новое к уже работающему.</p>
+
+  <div class="roadmap">
+    <div class="roadmap-item">
+      <div class="roadmap-week">
+        <div class="wk-num">1</div>
+        <div class="wk-label">Нед.</div>
+      </div>
+      <div class="roadmap-content">
+        <h4>Getting Shit Done &#10003;</h4>
+        <p>9 практик: импульс к действию, дисциплина без драмы, bouncing back from failure.</p>
+      </div>
+    </div>
+    <div class="roadmap-item current">
+      <div class="roadmap-week">
+        <div class="wk-num">2</div>
+        <div class="wk-label">Нед.</div>
+      </div>
+      <div class="roadmap-content">
+        <h4>Тело как база + Работа с тревогой &#8594;</h4>
+        <p>Движение, нервная система, мэппинг тревожных петель, наблюдение в журнале. Все практики недели 1 продолжаем.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-week">
+        <div class="wk-num">3–4</div>
+        <div class="wk-label">Нед.</div>
+      </div>
+      <div class="roadmap-content">
+        <h4>Компас: ценности и цели</h4>
+        <p>Свои ценности как компас, connection to bigger goals, строим жизнь вокруг того, что важно.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout action">
+    <strong>К концу следующей недели — 12 апреля — половина пути.</strong> Пн–Вс, все практики продолжаем + добавляем наблюдение за тревогой.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ЗАЧЕМ РАБОТАТЬ С ТРЕВОГОЙ         ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="why-anxiety">
+  <div class="section-label">Зачем</div>
+  <h2 class="section-title">Тревога — корень того, что мешает действовать</h2>
+  <p class="section-intro">Ты думаешь, у тебя проблема с едой, сном, прокрастинацией или мотивацией. На самом деле у тебя одна проблема.</p>
+
+  <div class="quote-block">
+    <div class="q-text">«Тревога — это привычка. А привычки можно менять. Не силой воли, а через любопытство»</div>
+    <div class="q-author">— Джадсон Брюер, психиатр, нейроучёный, 20 лет исследований зависимостей</div>
+  </div>
+
+  <div class="card" style="margin-top: 32px;">
+    <div class="card-title">
+      <div class="card-icon" style="background: rgba(255,176,136,0.15);">&#128172;</div>
+      Пример
+    </div>
+    <p>Хочу написать пост в Instagram. Но мозг сразу: «а вдруг не зайдёт», «а что подумают», «зря потрачу время». Тревога нарастает — и я просто не делаю. <strong>Не потому что лень. Потому что тревога сожрала ресурс ещё до старта.</strong></p>
+  </div>
+
+  <p style="margin-top: 24px; color: var(--text-dim); font-size: 15px;">Где тревога останавливает до того, как вы начали?</p>
+
+  <div class="practice-grid" style="margin-top: 12px;">
+    <div class="practice-item"><div class="label">Написать кому-то первым</div></div>
+    <div class="practice-item"><div class="label">Попросить повышение</div></div>
+    <div class="practice-item"><div class="label">Начать проект</div></div>
+    <div class="practice-item"><div class="label">Сказать «нет»</div></div>
+    <div class="practice-item"><div class="label">Записать видео</div></div>
+    <div class="practice-item"><div class="label">Выложить работу</div></div>
+  </div>
+
+  <!-- Подробный разбор: как тревога проявляется -->
+  <div class="accordion" style="margin-top: 40px;">
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>&#127837; Переедание</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>Эмоциональное переедание — не про силу воли. Это чёткая петля привычки:</p>
+          <p style="margin: 12px 0; color: var(--warm); font-weight: 500;">Тревога / стресс → Еда на автопилоте → Краткое облегчение → Вина → Больше тревоги</p>
+          <p>Участники исследований Брюера использовали осознанность вместо ограничений — и снизили компульсивное переедание на <strong>40%</strong>. Не через диету — через то, что начали видеть: еда не решает тревогу, а подкармливает её.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>&#9203; Прокрастинация</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>Это не проблема тайм-менеджмента. Это привычка избегания дискомфорта.</p>
+          <p style="margin: 12px 0; color: var(--warm); font-weight: 500;">Задача → Дискомфорт → Отвлечение → Облегчение → Петля закрепляется</p>
+          <p>Парадокс: чем дольше откладываешь — тем сильнее тревога, тем сильнее потребность в отвлечении. Добавь самокритику за «лень» — получи ещё один слой стресса, который усиливает всю спираль.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>&#128241; Думскроллинг</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>Тот же механизм, что с едой. Дофаминовая микродоза от новой информации.</p>
+          <p style="margin: 12px 0; color: var(--warm); font-weight: 500;">Тревога → Телефон → Дофамин → 40 минут → Вина + тревога</p>
+          <p>Пытаться снять тревогу скроллингом — всё равно что тушить огонь бензином. Ни одна реальная проблема не решается. Привычка только усиливается с каждым повтором.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>&#127769; Сон и тревога</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>Двусторонняя связь: недостаток сна повышает тревожность, а тревожность ухудшает качество сна.</p>
+          <p style="margin-top: 12px;">Тишина — триггер. Без отвлекающих стимулов нервная система переключается на внутренние источники беспокойства. <strong>Выйти из спирали, работая только с гигиеной сна, невозможно.</strong> Необходимо работать с тем, что разрушает сон изнутри.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <span>&#128640; Карьера и цели</span>
+        <span class="acc-arrow">&#8964;</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <p>Тревога блокирует переход от намерения к действию. Когда идея существует в присутствии тревоги, мозг копит аргументы <em>против</em> действия. Риски перевешивают возможности.</p>
+          <p style="margin-top: 12px;">Не просишь повышение. Не запускаешь проект. Не меняешь работу. Не говоришь «нет». <strong>Не из-за неспособности — из-за тревоги, которая жрёт ресурс на этапе решения.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ЧТО ТАКОЕ ТРЕВОГА                ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="what-anxiety">
+  <div class="section-label">Что такое тревога</div>
+  <h2 class="section-title">Система безопасности мозга</h2>
+  <p class="section-intro">Тревога — нормально. Проблема — когда она застревает.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0;">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon" style="background: rgba(125,211,184,0.15);">&#9989;</div>
+        Зачем она нужна
+      </div>
+      <p>Эволюционный сигнал: «внимание, опасность». Мобилизует тело — пульс, мышцы, внимание. Когда-то спасала жизнь. Без неё мы бы не выжили.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon" style="background: rgba(255,122,122,0.15);">&#9888;</div>
+        В чём проблема сейчас
+      </div>
+      <p>Угрозы реальные — новости, война, неопределённость. Но мозг реагирует на ВСЕ одинаково: fight or flight. И не выключается — новая угроза приходит раньше, чем закончилась старая.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        КАК ТРЕВОГА СТАНОВИТСЯ ПРИВЫЧКОЙ  ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="loops">
+  <div class="section-label">Механизм</div>
+  <h2 class="section-title">Как тревога становится привычкой</h2>
+
+  <div class="loop-flow">
+    <div class="loop-step">
+      <div class="num">1</div>
+      <div class="step-title">Сигнал</div>
+      <div class="step-desc">Мозг считывает угрозу (реальную или мнимую)</div>
+    </div>
+    <div class="loop-step">
+      <div class="num">2</div>
+      <div class="step-title">Реакция</div>
+      <div class="step-desc">Тело напрягается. Мозг подкармливает тревогу мыслями.</div>
+    </div>
+    <div class="loop-step">
+      <div class="num">3</div>
+      <div class="step-title">Облегчение</div>
+      <div class="step-desc">Избегание, еда, скроллинг — краткое облегчение.</div>
+    </div>
+    <div class="loop-step">
+      <div class="num">4</div>
+      <div class="step-title">Привычка</div>
+      <div class="step-desc">Мозг запоминает. Петля закрепляется. Запускается без реальной угрозы.</div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <strong>Тревожные реакции — не дефект характера.</strong> Это выученные привычки. А всё выученное можно переучить. Не через борьбу — через осознанное наблюдение за петлями.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        6 ВИДОВ ТРЕВОГИ                  ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="types">
+  <div class="section-label">Фреймворк Джадсона Брюера</div>
+  <h2 class="section-title">6 видов тревоги</h2>
+  <p class="section-intro">У каждого вида — своя петля привычки, свой триггер, свой reward.</p>
+
+  <div class="type-grid">
+    <div class="type-card">
+      <div class="type-icon">&#9889;</div>
+      <h4>Ситуативная</h4>
+      <p>Есть конкретный триггер. Экзамен, встреча, дедлайн. Тревога приходит и уходит вместе с событием.</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon">&#127787;</div>
+      <h4>Генерализованная</h4>
+      <p>Фоновый шум 24/7. Нет конкретной причины, но внутри — постоянное напряжение и ожидание плохого.</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon">&#128101;</div>
+      <h4>Социальная</h4>
+      <p>Страх оценки. «Что обо мне подумают?» Перед звонком, постом, выступлением — парализующая тревога.</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon">&#128302;</div>
+      <h4>Тревога будущего</h4>
+      <p>«А что если...» Бесконечная прокрутка сценариев. Мозг готовится к тому, что ещё не произошло.</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon">&#127919;</div>
+      <h4>Тревога контроля</h4>
+      <p>Перфекционизм + самозванец. «Надо всё проконтролировать, иначе случится плохое.»</p>
+    </div>
+    <div class="type-card">
+      <div class="type-icon">&#127756;</div>
+      <h4>Экзистенциальная</h4>
+      <p>Смысл, конечность, выбор. Большие вопросы без ответов, которые вызывают глубокое беспокойство.</p>
+    </div>
+  </div>
+
+  <div class="callout action">
+    <strong>Подробный разбор каждого вида</strong> — в материалах для чтения. На этой неделе задача — определить, какие виды тревоги присутствуют у вас.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ИНСТРУМЕНТЫ                       ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="tools">
+  <div class="section-label">Инструменты</div>
+  <h2 class="section-title">Мэппинг привычки</h2>
+  <p class="section-intro">Тревога — это не чувство. Это привычка. А привычки можно менять — не силой воли, а через любопытство. По фреймворку Джадсона Брюера, Unwinding Anxiety.</p>
+
+  <!-- Триггер → Поведение → Reward -->
+  <div class="loop-flow" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="loop-step">
+      <div class="num">1</div>
+      <div class="step-title">Триггер</div>
+      <div class="step-desc">Что запускает? Ситуация, мысль, ощущение в теле</div>
+    </div>
+    <div class="loop-step">
+      <div class="num">2</div>
+      <div class="step-title">Поведение</div>
+      <div class="step-desc">Что делаю в ответ? Еда, телефон, прокрастинация, контроль</div>
+    </div>
+    <div class="loop-step">
+      <div class="num">3</div>
+      <div class="step-title">Reward</div>
+      <div class="step-desc">Что получаю? Облегчение? Или только иллюзию?</div>
+    </div>
+  </div>
+
+  <!-- Шаг 1: Заметь -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Шаг 1: Заметь</h3>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">Не борись с тревогой. Заметь её.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">?</div>
+      <div class="step-body">
+        <h4>Что я сейчас чувствую?</h4>
+        <p>Назови: тревога, раздражение, страх, скука...</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">&#9898;</div>
+      <div class="step-body">
+        <h4>Где в теле?</h4>
+        <p>Грудь, горло, живот, плечи, челюсть</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">!</div>
+      <div class="step-body">
+        <h4>Что запустило?</h4>
+        <p>Мысль? Сообщение? Ощущение неопределённости?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="q-text">«Anxiety is the brain's alarm signal — often a false alarm»</div>
+    <div class="q-author">— Dr. Julie Smith</div>
+  </div>
+
+  <!-- Шаг 2: Проверь reward value -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Шаг 2: Проверь reward value</h3>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">Тревога обещает контроль и безопасность. Что она реально даёт?</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Что обещает</th>
+        <th>Что даёт реально</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="old-way">«Переживаю — значит готовлюсь»</td>
+        <td class="new-way" style="color: var(--coral);">Бессонница</td>
+      </tr>
+      <tr>
+        <td class="old-way">«Контролирую — значит безопасно»</td>
+        <td class="new-way" style="color: var(--coral);">Истощение</td>
+      </tr>
+      <tr>
+        <td class="old-way">«Ещё раз обдумаю — и решу»</td>
+        <td class="new-way" style="color: var(--coral);">Паралич. Ничего не решено — и хуже</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout insight">
+    <strong>Когда ты это видишь — петля начинает ослабевать.</strong> Мозг обновляет информацию. Reward value падает.
+  </div>
+
+  <!-- Шаг 3: Любопытство -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Шаг 3: Любопытство</h3>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">Антидот тревоги — не контроль, а любопытство.</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Старая реакция</th>
+        <th>Любопытство</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="old-way">«Когда это пройдёт?»</td>
+        <td class="new-way">«Что сейчас происходит?»</td>
+      </tr>
+      <tr>
+        <td class="old-way">«Что со мной не так?»</td>
+        <td class="new-way">«Как это ощущается в теле?»</td>
+      </tr>
+      <tr>
+        <td class="old-way">«Надо это остановить»</td>
+        <td class="new-way">«Что будет, если просто побуду?»</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout action">
+    <strong>30 секунд. Много раз в день.</strong> Не одна длинная медитация — короткие моменты внимания. Когда наблюдаешь — ты уже не внутри петли. Ты наблюдатель, не жертва.
+  </div>
+
+  <!-- Bigger Better Offer -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Bigger Better Offer</h3>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">Мозг идёт туда, где выше reward. Дай ему что-то лучше тревоги.</p>
+
+  <div class="quote-block" style="margin-bottom: 24px;">
+    <div class="q-text">«Любопытство — bigger better offer для мозга. Вместо прокрутки будущего — внимание на ощущения сейчас.»</div>
+    <div class="q-author">— Джадсон Брюер</div>
+  </div>
+
+  <div class="swap-grid">
+    <div class="swap-from">Тревога → Еда</div>
+    <div class="swap-arrow">→</div>
+    <div class="swap-to">Тревога → «Что я чувствую?»</div>
+  </div>
+  <div class="swap-grid">
+    <div class="swap-from">Скука → Телефон</div>
+    <div class="swap-arrow">→</div>
+    <div class="swap-to">Скука → Одно осознанное действие</div>
+  </div>
+  <div class="swap-grid">
+    <div class="swap-from">Страх → Контроль</div>
+    <div class="swap-arrow">→</div>
+    <div class="swap-to">Страх → «Где в теле? Побуду.»</div>
+  </div>
+  <div class="swap-grid">
+    <div class="swap-from">Неопределённость → Прокрутка</div>
+    <div class="swap-arrow">→</div>
+    <div class="swap-to">Неопределённость → «Это анализ или привычка?»</div>
+  </div>
+
+  <!-- Сломай руминацию -->
+  <h3 style="margin: 40px 0 16px; font-size: 1.2rem;">Сломай руминацию</h3>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">Dr. Julie Smith — Why Has Nobody Told Me This Before?</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon" style="background: rgba(255,176,136,0.15);">&#128170;</div>
+        Физически
+      </div>
+      <p>Встань. Двинься с места. Скажи «стоп» вслух. Тело меняет состояние мозга быстрее, чем мысль.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon" style="background: rgba(200,162,255,0.15);">&#129504;</div>
+        Когнитивно
+      </div>
+      <p>«Что бы я сделал в лучшей версии себя?» Не «как перестать тревожиться», а «что бы я сделал, если бы не тревожился».</p>
+    </div>
+  </div>
+
+  <div class="quote-block" style="margin-top: 24px;">
+    <div class="q-text">«Overthinking is not a personality trait — it's a habit that happens more when stress is high.»</div>
+    <div class="q-author">— Dr. Julie Smith</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ЗАДАНИЕ НА НЕДЕЛЮ 2              ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="week2-task">
+  <div class="section-label">Неделя 2 · Задание</div>
+  <h2 class="section-title">Паттерн бобра</h2>
+  <p class="section-intro">Мы не добавляем новый инструмент. Мы учимся замечать то, что уже происходит. Просто данные. Без оценок. Без «надо исправить». Только наблюдение.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Заметил тревогу</h4>
+        <p>Записал в журнал</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Что триггерит?</h4>
+        <p>Записал</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Где в теле?</h4>
+        <p>Записал</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Что делаю в ответ?</h4>
+        <p>Записал</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Что получаю?</h4>
+        <p>Записал</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>Не пытайся ничего исправить.</strong> Задача — собрать данные. Mapping по паттерну: что триггерит, где в теле, что делаю в ответ. Просто отмечай тревогу в журнале.
+  </div>
+
+  <!-- Сканирование тела -->
+  <div class="body-scan">
+    <div class="scan-icon">&#129504;</div>
+    <h3>Сканирование тела</h3>
+    <p>Закройте глаза. Где сейчас напряжение?<br>Это тревога — она в теле, не в голове.<br>Просто заметьте.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║        ЦИТАТЫ                           ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<section id="quotes" style="padding-bottom: 60px;">
+  <div class="section-label">На вынос</div>
+  <h2 class="section-title">Три мысли</h2>
+
+  <div class="quote-block" style="margin-bottom: 20px;">
+    <div class="q-text">«Никакое количество тревоги не изменит ничего из того, что произойдёт»</div>
+    <div class="q-author">— Алан Уоттс</div>
+  </div>
+
+  <div class="quote-block" style="margin-bottom: 20px; border-left-color: var(--warm);">
+    <div class="q-text">«Тревога — это привычка. А привычки можно менять. Не силой воли, а через любопытство»</div>
+    <div class="q-author">— Джадсон Брюер</div>
+  </div>
+
+  <div class="quote-block" style="border-left-color: var(--mint);">
+    <div class="q-text">«Смелые люди не лишены страха. Они со страхом на «ты»»</div>
+    <div class="q-author">— Пема Чодрон</div>
+  </div>
+</section>
+
+</div><!-- /.container -->
+
+<div class="footer">
+  <div class="big-text">С чем уходишь?</div>
+  <p>High Performance · Integration Call #1 · 5 апреля 2026</p>
+</div>
+
+<script>
+// Smooth scroll
+function scrollTo(selector) {
+  document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Accordion
+document.querySelectorAll('.acc-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const item = header.parentElement;
+    item.classList.toggle('open');
+  });
+});
+
+// Active nav on scroll
+const sections = document.querySelectorAll('section[id]');
+const navBtns = document.querySelectorAll('.nav-btn');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(id));
+      });
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
