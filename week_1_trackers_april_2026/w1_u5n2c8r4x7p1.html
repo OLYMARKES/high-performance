@@ -2033,7 +2033,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     if (
       !rawState ||
       typeof rawState !== 'object' ||
-      rawState.sv !== 2 ||
+      String(rawState.sv || '') !== '2' ||
       !Array.isArray(rawState.t) ||
       !Array.isArray(rawState.d)
     ) {

@@ -2067,7 +2067,69 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return [...mergedDefaults, ...customItems];
   }
 
+  function normalizeCompactTemplateItems(items) {
+    if (!Array.isArray(items) || !items.length) {
+      return getWeek2TemplateItems();
+    }
+
+    return items.map((item, index) =>
+      normalizeTrackerItem(
+        {
+          id: item?.i,
+          icon: item?.o,
+          title: item?.t,
+          subtitle: item?.s,
+          hasInput: Boolean(item?.h),
+          inputPlaceholder: typeof item?.p === 'string' ? item.p : 'Запиши...',
+          category: typeof item?.c === 'string' ? item.c : 'focus'
+        },
+        `item_${index}`
+      )
+    );
+  }
+
+  function expandStoredTrackerState(rawState) {
+    if (
+      !rawState ||
+      typeof rawState !== 'object' ||
+      String(rawState.sv || '') !== '2' ||
+      !Array.isArray(rawState.t) ||
+      !Array.isArray(rawState.d)
+    ) {
+      return rawState;
+    }
+
+    const templateItems = enrichTemplateWithWeek2Items(normalizeCompactTemplateItems(rawState.t));
+    const days = DAY_NAMES.map((name, dayIndex) => {
+      const values = Array.isArray(rawState.d[dayIndex]) ? rawState.d[dayIndex] : [];
+      const valuesById = new Map(
+        values
+          .filter((item) => item && typeof item === 'object')
+          .map((item) => [canonicalItemId(item.i) || item.i, item])
+      );
+
+      return {
+        name,
+        items: templateItems.map((templateItem, itemIndex) => {
+          const itemKey = canonicalItemId(templateItem.id) || templateItem.id;
+          const saved = valuesById.get(itemKey);
+          return {
+            ...cloneItemTemplate(templateItem, itemIndex),
+            checked: Boolean(saved?.x),
+            inputValue: typeof saved?.v === 'string' ? saved.v : ''
+          };
+        })
+      };
+    });
+
+    return {
+      manifesto: typeof rawState.m === 'string' ? rawState.m : '',
+      days
+    };
+  }
+
   function normalizeTrackerState(rawState) {
+    rawState = expandStoredTrackerState(rawState);
     const baseDays = DAY_NAMES.map((name) => ({
       name,
       items: getDefaultDayItems()
@@ -2187,7 +2249,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
   function buildWeek2StateFromWeek1(rawState) {
-    const source = rawState && typeof rawState === 'object' ? rawState : {};
+    const source = expandStoredTrackerState(rawState && typeof rawState === 'object' ? rawState : {});
     const rawDays = Array.isArray(source.days) ? source.days : [];
     const templateItems = enrichTemplateWithWeek2Items(
       Array.isArray(rawDays[0]?.items) && rawDays[0].items.length ? rawDays[0].items : getWeek2TemplateItems()

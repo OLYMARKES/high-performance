@@ -1224,7 +1224,7 @@ def build_runtime_script(name: str, slug: str) -> str:
     if (
       !rawState ||
       typeof rawState !== 'object' ||
-      rawState.sv !== 2 ||
+      String(rawState.sv || '') !== '2' ||
       !Array.isArray(rawState.t) ||
       !Array.isArray(rawState.d)
     ) {{
