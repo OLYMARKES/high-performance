@@ -384,8 +384,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
       <h3>Твои ценности</h3>
       <div id="resultContent"></div>
       <div class="result-actions">
-        <a class="fw-btn" href="week-3-tracker.html">Вернуться в трекер</a>
-        <a class="fw-btn secondary" href="week-3-framework-values.html">Продолжить редактировать</a>
+        <a class="fw-btn" id="returnToTrackerBtn" href="week-3-tracker.html">Вернуться в трекер</a>
+        <a class="fw-btn secondary" id="continueEditingBtn" href="week-3-framework-values.html">Продолжить редактировать</a>
       </div>
     </div>
 
@@ -400,12 +400,12 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
 <section class="personal-links-shell">
   <div class="container">
     <div class="personal-links">
-      <a class="personal-link" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
+      <a class="personal-link" data-personal-link="tracker" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
       <a class="personal-link" href="materials.html" target="_blank" rel="noopener">Все мои материалы</a>
-      <a class="personal-link" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
-      <a class="personal-link" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
-      <a class="personal-link" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
-      <a class="personal-link" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
+      <a class="personal-link" data-personal-link="week3" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
+      <a class="personal-link" data-personal-link="values" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
+      <a class="personal-link" data-personal-link="identity" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
+      <a class="personal-link" data-personal-link="prophecy" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
     </div>
   </div>
 </section>
@@ -419,7 +419,37 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-const FRAMEWORK_STORAGE_KEY = 'hp_week3_values_framework';
+const personalParams = new URLSearchParams(window.location.search);
+const personalParticipant = personalParams.get('participant') || '';
+const trackerUrl = personalParams.get('tracker') || 'week-3-tracker.html';
+const personalQuery = personalParams.toString();
+const personalPaths = {
+  tracker: trackerUrl,
+  week3: 'week-3.html',
+  values: 'week-3-framework-values.html',
+  identity: 'week-3-framework-identity.html',
+  prophecy: 'week-3-framework-prophecy.html'
+};
+
+document.querySelectorAll('[data-personal-link]').forEach((link) => {
+  const key = link.getAttribute('data-personal-link');
+  const base = personalPaths[key];
+  if (!base) return;
+  if (key === 'tracker') {
+    link.href = trackerUrl;
+    return;
+  }
+  link.href = personalQuery ? `${base}?${personalQuery}` : base;
+});
+
+const returnToTrackerBtn = document.getElementById('returnToTrackerBtn');
+if (returnToTrackerBtn) returnToTrackerBtn.href = trackerUrl;
+const continueEditingBtn = document.getElementById('continueEditingBtn');
+if (continueEditingBtn) continueEditingBtn.href = personalQuery ? `week-3-framework-values.html?${personalQuery}` : 'week-3-framework-values.html';
+
+const FRAMEWORK_STORAGE_KEY = personalParticipant
+  ? `hp_week3_values_framework_${personalParticipant}`
+  : 'hp_week3_values_framework';
 
 function extractFrameworkLines(text) {
   return text
