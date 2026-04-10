@@ -1080,6 +1080,12 @@ body {
 
 const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
+const DEFAULT_MANIFESTO = {
+  values: 'Я выбираю опираться на честность с собой, внутреннее достоинство, заботу о теле и на ту жизнь, в которой мои действия совпадают с моими ценностями.',
+  identity: 'Я человек, который держит слово перед собой, умеет возвращаться к себе и строит свою реальность не из тревоги, а из ясности.',
+  prophecy: 'Чем больше я выбираю себя и свои ценности каждый день, тем устойчивее, свободнее и сильнее становится моя жизнь.'
+};
+
 const WEEKLY_WORKOUT = {
   label: 'Доп. практика: вакуум',
   url: 'https://kinescope.io/mfv5qpeuGUyPnJzRhWcwP2'
@@ -1250,9 +1256,9 @@ let editingDayIndex = null;
 
 function getDefaultState() {
   return {
-    values: '',
-    identity: '',
-    prophecy: '',
+    values: DEFAULT_MANIFESTO.values,
+    identity: DEFAULT_MANIFESTO.identity,
+    prophecy: DEFAULT_MANIFESTO.prophecy,
     days: DAY_NAMES.map((name, i) => ({
       name: name,
       items: DEFAULT_ITEMS.map(item => ({
@@ -1265,10 +1271,21 @@ function getDefaultState() {
   };
 }
 
+function normalizeManifestoState(data) {
+  return {
+    ...data,
+    values: (data && data.values && data.values.trim()) || DEFAULT_MANIFESTO.values,
+    identity: (data && data.identity && data.identity.trim()) || DEFAULT_MANIFESTO.identity,
+    prophecy: (data && data.prophecy && data.prophecy.trim()) || DEFAULT_MANIFESTO.prophecy
+  };
+}
+
 function loadState() {
   try {
     const saved = localStorage.getItem('hp_week3_tracker');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      return normalizeManifestoState(JSON.parse(saved));
+    }
   } catch (e) {}
   return getDefaultState();
 }
@@ -1303,9 +1320,9 @@ function hasManifesto() {
 }
 
 function openManifesto() {
-  valuesInput.value = state.values || '';
-  identityInput.value = state.identity || '';
-  prophecyInput.value = state.prophecy || '';
+  valuesInput.value = state.values || DEFAULT_MANIFESTO.values;
+  identityInput.value = state.identity || DEFAULT_MANIFESTO.identity;
+  prophecyInput.value = state.prophecy || DEFAULT_MANIFESTO.prophecy;
   overlay.classList.add('active');
   setTimeout(() => valuesInput.focus(), 400);
 }
@@ -1322,9 +1339,12 @@ function toggleBanner() {
 }
 
 document.getElementById('manifestoSave').addEventListener('click', () => {
-  state.values = valuesInput.value.trim();
-  state.identity = identityInput.value.trim();
-  state.prophecy = prophecyInput.value.trim();
+  state = {
+    ...state,
+    values: valuesInput.value.trim() || DEFAULT_MANIFESTO.values,
+    identity: identityInput.value.trim() || DEFAULT_MANIFESTO.identity,
+    prophecy: prophecyInput.value.trim() || DEFAULT_MANIFESTO.prophecy
+  };
   saveState();
   renderBanner();
   closeManifesto();
