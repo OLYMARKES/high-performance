@@ -337,6 +337,128 @@ body {
 }
 
 /* ══════════════════════════════════
+   WORKOUT SECTION
+   ══════════════════════════════════ */
+.workout-section {
+  margin-bottom: 28px;
+}
+.workout-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 24px 24px 22px;
+  box-shadow: 0 8px 28px rgba(58,54,50,0.04);
+}
+.workout-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.workout-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+}
+.workout-day {
+  font-size: 13px;
+  color: var(--warm-gray);
+}
+.workout-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+.workout-copy {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+.workout-primary-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.workout-primary-link:hover {
+  background: #4E4A45;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(58,54,50,0.14);
+}
+.workout-primary-link svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+.workout-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.workout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(122,139,111,0.2);
+  background: var(--olive-pale);
+  color: var(--olive);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, transform 0.2s, border-color 0.2s;
+}
+.workout-chip:hover {
+  background: var(--olive);
+  color: var(--warm-white);
+  transform: translateY(-1px);
+}
+.workout-chip.is-main {
+  background: var(--accent-gold-pale);
+  border-color: rgba(198,169,108,0.28);
+  color: var(--charcoal);
+}
+.workout-chip.is-main:hover {
+  background: var(--accent-gold);
+  color: var(--warm-white);
+}
+.workout-chip.is-weekly {
+  background: var(--terracotta-pale);
+  border-color: rgba(196,112,75,0.22);
+  color: var(--terracotta);
+}
+.workout-chip.is-weekly:hover {
+  background: var(--terracotta);
+  color: var(--warm-white);
+}
+.workout-empty {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--cream);
+  border: 1px dashed var(--sand-dark);
+  color: var(--warm-gray);
+  font-size: 13px;
+}
+
+/* ══════════════════════════════════
    MATERIALS SECTION
    ══════════════════════════════════ */
 .materials-section {
@@ -1058,6 +1180,8 @@ body {
       </div>
     </div>
 
+    <div class="workout-section reveal" id="workoutSection"></div>
+
     <!-- Materials section -->
     <div class="materials-section reveal">
       <div class="materials-label">Материалы недели 3</div>
@@ -1084,10 +1208,9 @@ body {
         </a>
       </div>
       <div class="materials-nav-row">
-        <a class="materials-nav-link" href="https://kinescope.io/mfv5qpeuGUyPnJzRhWcwP2" target="_blank" rel="noopener">Вакуум на всю неделю</a>
-        <a class="materials-nav-link" href="materials.html">Все материалы программы</a>
-        <a class="materials-nav-link" href="materials.html#week-1">Неделя 1</a>
-        <a class="materials-nav-link" href="materials.html#week-2">Неделя 2</a>
+        <a class="materials-nav-link" href="materials.html" target="_blank" rel="noopener">Все материалы программы</a>
+        <a class="materials-nav-link" href="materials.html#week-1" target="_blank" rel="noopener">Неделя 1</a>
+        <a class="materials-nav-link" href="materials.html#week-2" target="_blank" rel="noopener">Неделя 2</a>
       </div>
     </div>
 
@@ -1345,6 +1468,7 @@ const bannerFull = document.getElementById('bannerFull');
 const expandBtn = document.getElementById('expandBtn');
 const expandText = document.getElementById('expandText');
 const expandArrow = document.getElementById('expandArrow');
+const workoutSection = document.getElementById('workoutSection');
 let bannerExpanded = false;
 
 function hasManifesto() {
@@ -1457,6 +1581,7 @@ function renderDay() {
   const total = day.items.length;
   const done = day.items.filter(it => it.checked).length;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  renderWorkoutSection();
 
   daysContainer.innerHTML = `
     <div class="day-section active">
@@ -1485,21 +1610,43 @@ function renderDay() {
 }
 
 function getWorkoutLinksForDay(dayIndex) {
-  const dayLinks = (WORKOUT_LINKS[dayIndex] || [])
-    .filter(link => link && link.url && link.url !== '#')
-    .map((link, index) => ({
-      ...link,
-      variant: index === 0 ? 'primary' : 'secondary'
-    }));
+  return (WORKOUT_LINKS[dayIndex] || []).filter(link => link && link.url && link.url !== '#');
+}
 
-  if (WEEKLY_WORKOUT.url && WEEKLY_WORKOUT.url !== '#') {
-    dayLinks.push({
-      ...WEEKLY_WORKOUT,
-      variant: 'weekly'
-    });
-  }
+function getWorkoutByType(dayIndex, type) {
+  const links = getWorkoutLinksForDay(dayIndex);
+  if (type === 'morning') return links.find(link => link.label.toLowerCase().includes('утро')) || null;
+  if (type === 'main') return links.find(link => link.label.toLowerCase().includes('основ')) || null;
+  return null;
+}
 
-  return dayLinks;
+function renderWorkoutSection() {
+  const dayName = DAY_NAMES[currentDay];
+  const morningWorkout = getWorkoutByType(currentDay, 'morning');
+  const mainWorkout = getWorkoutByType(currentDay, 'main');
+  const dailyWorkout = mainWorkout || morningWorkout || getWorkoutLinksForDay(currentDay)[0] || null;
+
+  workoutSection.innerHTML = `
+    <div class="workout-card">
+      <div class="workout-topline">
+        <div class="workout-kicker">Тренировки недели</div>
+        <div class="workout-day">${dayName}</div>
+      </div>
+      <div class="workout-title">Тренировка дня</div>
+      <div class="workout-copy">Здесь собраны все персональные ссылки на сегодняшний день: открывай сразу нужную практику и не ищи её внутри чеклиста.</div>
+      ${dailyWorkout ? `
+        <a class="workout-primary-link" href="${dailyWorkout.url}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+          Открыть тренировку дня
+        </a>
+      ` : `<div class="workout-empty">На этот день отдельная тренировка пока не добавлена.</div>`}
+      <div class="workout-links-row">
+        ${morningWorkout ? `<a class="workout-chip" href="${morningWorkout.url}" target="_blank" rel="noopener">Утренняя тренировка</a>` : ''}
+        ${mainWorkout ? `<a class="workout-chip is-main" href="${mainWorkout.url}" target="_blank" rel="noopener">Основная тренировка</a>` : ''}
+        ${WEEKLY_WORKOUT.url && WEEKLY_WORKOUT.url !== '#' ? `<a class="workout-chip is-weekly" href="${WEEKLY_WORKOUT.url}" target="_blank" rel="noopener">Вакуум на всю неделю</a>` : ''}
+      </div>
+    </div>
+  `;
 }
 
 function createTrackerItem(item, index) {
@@ -1512,29 +1659,6 @@ function createTrackerItem(item, index) {
       data-index="${index}" rows="2">${item.inputValue || ''}</textarea>`;
   }
 
-  // Workout link — only for the workout item, per day
-  let workoutLinkHTML = '';
-  if (item.id && item.id.startsWith('workout_')) {
-    const links = getWorkoutLinksForDay(currentDay);
-    if (links.length) {
-      workoutLinkHTML = `
-        <div class="tracker-workout-links">
-          ${links.map(link => `
-            <a class="tracker-workout-link${link.variant === 'secondary' ? ' is-secondary' : ''}${link.variant === 'weekly' ? ' is-weekly' : ''}" href="${link.url}" target="_blank" rel="noopener">
-              <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-              ${link.label}
-            </a>
-          `).join('')}
-        </div>`;
-    } else {
-      workoutLinkHTML = `
-        <a class="tracker-workout-link" href="#" onclick="event.preventDefault();" style="opacity:0.55;cursor:not-allowed;">
-          <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          Ссылка появится позже
-        </a>`;
-    }
-  }
-
   el.innerHTML = `
     <div class="tracker-check" data-index="${index}">
       <svg viewBox="0 0 16 16"><polyline points="3 8 7 12 13 4"/></svg>
@@ -1545,7 +1669,6 @@ function createTrackerItem(item, index) {
         <span class="tracker-title">${item.title}</span>
       </div>
       ${item.subtitle ? `<div class="tracker-subtitle">${item.subtitle}</div>` : ''}
-      ${workoutLinkHTML}
       ${inputHTML}
     </div>
     <div class="tracker-actions">

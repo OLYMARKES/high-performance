@@ -389,6 +389,33 @@ h1, h2, h3 {
   color: var(--light-gray);
   border-top: 1px solid var(--sand);
 }
+.personal-links-shell {
+  padding: 0 0 28px;
+}
+.personal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.personal-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--sand-dark);
+  background: var(--warm-white);
+  color: var(--warm-gray);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.personal-link:hover {
+  border-color: var(--terracotta);
+  color: var(--terracotta);
+  background: rgba(196,112,75,0.05);
+}
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
@@ -537,6 +564,19 @@ h1, h2, h3 {
 <!-- ═══════ CLOSING ═══════ -->
 <section class="closing">
   <p class="closing-quote reveal">Ценности работают, когда ты соединяешься с ними каждый день. И каждое маленькое действие в их сторону укрепляет человека, которым ты уже становишься.</p>
+</section>
+
+<section class="personal-links-shell">
+  <div class="container">
+    <div class="personal-links">
+      <a class="personal-link" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
+      <a class="personal-link" href="materials.html" target="_blank" rel="noopener">Все мои материалы</a>
+      <a class="personal-link" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
+      <a class="personal-link" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
+      <a class="personal-link" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
+      <a class="personal-link" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
+    </div>
+  </div>
 </section>
 
 <!-- ═══════ FOOTER ═══════ -->
