@@ -80,22 +80,65 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
 .step-card p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 14px; }
 .step-card p:last-of-type { margin-bottom: 0; }
 
-/* ── Value chips (selectable) ── */
-.values-pool {
-  display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0;
+/* ── Matrix example ── */
+.matrix-intro {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-bottom: 22px;
 }
-.value-chip {
-  padding: 10px 18px; border-radius: 100px; border: 1px solid var(--sand-dark);
-  background: var(--cream); color: var(--warm-gray); font-size: 15px;
-  cursor: pointer; transition: all 0.25s; user-select: none;
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
 }
-.value-chip:hover { border-color: var(--terracotta-light); color: var(--charcoal); }
-.value-chip.selected {
-  background: var(--terracotta); color: var(--warm-white); border-color: var(--terracotta);
+.matrix-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  padding: 24px 22px;
 }
-.value-chip.selected:hover { background: var(--terracotta-light); }
-.selected-count {
-  font-size: 13px; color: var(--terracotta); font-weight: 600; letter-spacing: 1px; margin-top: 12px;
+.matrix-card.full {
+  grid-column: 1 / -1;
+}
+.matrix-sub {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 14px;
+}
+.matrix-list {
+  display: grid;
+  gap: 10px;
+}
+.matrix-item {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+}
+.matrix-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--terracotta-light);
+}
+.matrix-note {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(196,112,75,0.08);
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 /* ── Textarea ── */
@@ -153,7 +196,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
   .section { padding: 56px 0; }
   .step-card { padding: 28px 24px; }
   .step-card h3 { font-size: 20px; }
-  .value-chip { padding: 8px 14px; font-size: 14px; }
+  .matrix-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -178,61 +221,89 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
     <!-- STEP 1 -->
     <div class="step-card reveal">
       <div class="step-num">1</div>
-      <h3>Выбери то, что резонирует</h3>
-      <p>Ниже — список ценностей из разных областей жизни. Не думай долго. Нажимай на те, которые вызывают отклик — ощущение «да, это моё». Выбери от 7 до 12 штук, потом мы сузим.</p>
+      <h3>Посмотри на примерную матрицу</h3>
+      <p class="matrix-intro">Это не “правильный” список и не то, что нужно повторять слово в слово. Это пример того, как ценности могут звучать сразу фразами. Здесь можно оставить то, что отзывается, переписать формулировки под себя, убрать лишнее и дописать своё.</p>
 
-      <div class="values-pool" id="valuesPool">
-        <span class="value-chip" data-v="health">Здоровье</span>
-        <span class="value-chip" data-v="growth">Рост</span>
-        <span class="value-chip" data-v="freedom">Свобода</span>
-        <span class="value-chip" data-v="love">Любовь</span>
-        <span class="value-chip" data-v="creativity">Творчество</span>
-        <span class="value-chip" data-v="courage">Смелость</span>
-        <span class="value-chip" data-v="honesty">Честность</span>
-        <span class="value-chip" data-v="discipline">Дисциплина</span>
-        <span class="value-chip" data-v="family">Семья</span>
-        <span class="value-chip" data-v="adventure">Приключения</span>
-        <span class="value-chip" data-v="kindness">Доброта</span>
-        <span class="value-chip" data-v="influence">Влияние</span>
-        <span class="value-chip" data-v="beauty">Красота</span>
-        <span class="value-chip" data-v="knowledge">Знания</span>
-        <span class="value-chip" data-v="authenticity">Аутентичность</span>
-        <span class="value-chip" data-v="connection">Связь с людьми</span>
-        <span class="value-chip" data-v="security">Безопасность</span>
-        <span class="value-chip" data-v="joy">Радость</span>
-        <span class="value-chip" data-v="purpose">Предназначение</span>
-        <span class="value-chip" data-v="excellence">Мастерство</span>
-        <span class="value-chip" data-v="respect">Уважение</span>
-        <span class="value-chip" data-v="contribution">Вклад в мир</span>
-        <span class="value-chip" data-v="energy">Энергия</span>
-        <span class="value-chip" data-v="independence">Независимость</span>
-        <span class="value-chip" data-v="presence">Присутствие</span>
-        <span class="value-chip" data-v="leadership">Лидерство</span>
-        <span class="value-chip" data-v="trust">Доверие</span>
-        <span class="value-chip" data-v="balance">Баланс</span>
-        <span class="value-chip" data-v="resilience">Устойчивость</span>
-        <span class="value-chip" data-v="gratitude">Благодарность</span>
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <div class="matrix-sub">Личность / внутренний фундамент</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Быть полностью присутствующей в своей жизни, а не проживать её фоном.</div>
+            <div class="matrix-item">Удерживать фокус на том, что для меня по-настоящему важно.</div>
+            <div class="matrix-item">Идти вглубь, а не скользить по поверхности в себе, в людях и в работе.</div>
+            <div class="matrix-item">Постоянно учиться, оставаться живой к новому и не застывать в уже известном.</div>
+            <div class="matrix-item">Умножать добро во всём, к чему я прикасаюсь.</div>
+            <div class="matrix-item">Жить в ясности с собой, а не в автоматизме, шуме и самообмане.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Проявление в мире</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Не давать страху, тревоге или малодушию останавливать моё проявление.</div>
+            <div class="matrix-item">Быть смелой в том, как я говорю, действую и занимаю своё место.</div>
+            <div class="matrix-item">Оставаться подлинной и не фильтровать живые реакции ради удобства других.</div>
+            <div class="matrix-item">Говорить о сложном прямо, если это служит правде и жизни.</div>
+            <div class="matrix-item">Быть видимой и не уменьшать себя из страха оценки.</div>
+            <div class="matrix-item">Создавать в мире что-то настоящее, а не только обслуживать ожидания.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Близость / семья</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Быть по-настоящему рядом с теми, кого я люблю.</div>
+            <div class="matrix-item">Давать близким не только внимание, но и живое присутствие.</div>
+            <div class="matrix-item">Создавать в отношениях тепло, нежность и чувство безопасности.</div>
+            <div class="matrix-item">Быть человеком, на которого можно опереться.</div>
+            <div class="matrix-item">Любить не только чувством, но и качеством своего присутствия.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Духовность / смысл</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Жить не случайно, а в связи с тем, что для меня по-настоящему священно.</div>
+            <div class="matrix-item">Помнить, что жизнь больше, чем бытовые задачи и контроль.</div>
+            <div class="matrix-item">Сохранять связь с высшим, с красотой и с глубоким смыслом жизни.</div>
+            <div class="matrix-item">Быть благодарной за жизнь даже в её хрупкости.</div>
+            <div class="matrix-item">Позволять важным вопросам вести меня глубже, а не убегать от них.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card full">
+          <div class="matrix-sub">Тело / здоровье / качество жизни</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Уважать своё тело через выборы, которые поддерживают здоровье и долгую качественную жизнь.</div>
+            <div class="matrix-item">Жить так, чтобы тело было не полем насилия, а местом силы, чувствительности и опоры.</div>
+            <div class="matrix-item">Выбирать не истощение, а качество жизни.</div>
+            <div class="matrix-item">Заботиться о своём здоровье как о ценности, а не только как о функции.</div>
+            <div class="matrix-item">Не откладывать жизнь на потом, а чувствовать её вкус уже сейчас.</div>
+            <div class="matrix-item">Разрешать себе довольство, удовольствие и наполненность, а не жить в режиме вечной нехватки.</div>
+          </div>
+        </div>
       </div>
-      <div class="selected-count" id="selectedCount">Выбрано: 0</div>
+
+      <div class="matrix-note">Это примерная матрица. Ты можешь оставить какие-то фразы как есть, сократить их, переписать на своём языке, удалить половину списка, добавить свои блоки и дописать собственные ценности рядом.</div>
     </div>
 
     <!-- STEP 2 -->
     <div class="step-card reveal">
       <div class="step-num">2</div>
-      <h3>Сузь до 3–5 главных</h3>
-      <p>Посмотри на то, что ты выбрала. Теперь задай себе фильтрующий вопрос к каждой ценности:</p>
-      <p><strong>«Если бы я могла жить только по пяти принципам — этот вошёл бы в список?»</strong></p>
-      <p>Если сомневаешься между двумя похожими (например, «свобода» и «независимость») — выбери ту, которая точнее описывает, как ты хочешь себя чувствовать. Запиши свои 3–5 финальных ценностей:</p>
-      <textarea class="fw-textarea" id="topValues" placeholder="Например:&#10;1. Здоровье&#10;2. Свобода&#10;3. Рост&#10;4. Связь с людьми&#10;5. Смелость"></textarea>
+      <h3>Собери свою матрицу</h3>
+      <p>Теперь выбери 5–10 фраз, которые действительно описывают, <strong>как ты хочешь жить</strong>. Можно взять готовые формулировки выше, можно переписать их под себя, можно сделать свои.</p>
+      <p><strong>Вопрос для фильтра:</strong> «Если я буду жить именно так, я буду чувствовать, что живу свою жизнь?»</p>
+      <p>Запиши здесь свою рабочую матрицу. Можно по блокам, можно одним списком.</p>
+      <textarea class="fw-textarea" id="topValues" rows="12" placeholder="Например:&#10;Личность&#10;— Быть полностью присутствующей в своей жизни, а не проживать её фоном.&#10;— Идти вглубь, а не скользить по поверхности.&#10;&#10;Проявление&#10;— Не давать страху останавливать моё проявление.&#10;— Быть смелой в том, как я говорю и действую.&#10;&#10;Тело&#10;— Уважать своё тело через выборы, которые поддерживают здоровье и качество жизни."></textarea>
     </div>
 
     <!-- STEP 3 -->
     <div class="step-card reveal">
       <div class="step-num">3</div>
-      <h3>Оживи каждую ценность</h3>
-      <p>Ценность без контекста — абстракция. «Здоровье» может значить что угодно: для кого-то это марафон, для кого-то — спать 8 часов. Для каждой из своих ценностей напиши:</p>
-      <p><strong>Что эта ценность значит для меня лично? Как выглядит жизнь, в которой я ей следую?</strong></p>
-      <textarea class="fw-textarea" id="valuesAlive" rows="10" placeholder="Здоровье — для меня это значит: просыпаться с энергией, двигаться каждый день, есть так, чтобы тело работало на максимум. Жизнь по этой ценности — я тренируюсь утром, я не ем то, что меня замедляет, я сплю достаточно.&#10;&#10;Свобода — для меня это значит: ..."></textarea>
+      <h3>Дополни своими формулировками</h3>
+      <p>Теперь оживи список. Где нужно — сделай фразы более личными, конкретными и телесными. Допиши то, чего не хватает именно тебе.</p>
+      <p><strong>Подсказка:</strong> что для меня значит эта фраза? Как она выглядит в реальной жизни? Что я выбираю, когда ей следую, и что я предаю, когда от неё ухожу?</p>
+      <textarea class="fw-textarea" id="valuesAlive" rows="12" placeholder="Например:&#10;Для меня быть полностью присутствующей в своей жизни — это не жить в рассеянности и не проходить мимо важных моментов. Это значит быть в контакте с телом, с людьми, с работой и с тем, что я делаю прямо сейчас.&#10;&#10;Для меня уважать своё тело — это выбирать сон, еду, ритм и движение не из насилия, а из любви к качеству своей жизни.&#10;&#10;Я хочу добавить сюда ещё: ..."></textarea>
 
       <button class="fw-btn" id="saveBtn">Сохранить мои ценности</button>
     </div>
@@ -272,15 +343,6 @@ const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-/* Value chips */
-document.querySelectorAll('.value-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    chip.classList.toggle('selected');
-    const count = document.querySelectorAll('.value-chip.selected').length;
-    document.getElementById('selectedCount').textContent = 'Выбрано: ' + count;
-  });
-});
 
 /* Save */
 document.getElementById('saveBtn').addEventListener('click', () => {
