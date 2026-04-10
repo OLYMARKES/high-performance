@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework — Инверсия пророчества · Неделя 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2; --warm-white: #FFFDF9; --sand: #F0E8DC; --sand-dark: #E2D5C3;
+  --terracotta: #C4704B; --terracotta-light: #D4896A; --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F; --olive-light: #A3B396; --olive-pale: #E8EDDF;
+  --charcoal: #3A3632; --warm-gray: #7A746D; --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C; --gold-pale: #F5ECD7;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream); color: var(--charcoal);
+  font-family: var(--font-body); font-weight: 300; font-size: 17px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.2; color: var(--charcoal); }
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Hero */
+.hero {
+  padding: 80px 28px 40px; text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 30% 20%, rgba(198,169,108,0.07) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 75% 80%, rgba(196,112,75,0.04) 0%, transparent 70%), var(--cream);
+}
+.hero-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-gold); margin-bottom: 16px; }
+.hero h1 { font-size: clamp(36px,8vw,56px); font-weight: 400; letter-spacing: -1px; margin-bottom: 12px; }
+.hero h1 em { font-style: italic; color: var(--accent-gold); }
+.hero-sub { font-size: 18px; color: var(--warm-gray); max-width: 580px; margin: 0 auto; line-height: 1.7; }
+
+/* Intro */
+.intro-block {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 36px 32px; margin-bottom: 40px;
+}
+.intro-block p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 12px; }
+.intro-block p:last-child { margin-bottom: 0; }
+.intro-block strong { color: var(--charcoal); font-weight: 400; }
+
+/* Quote block */
+.quote-block {
+  background: var(--cream); border-left: 3px solid var(--accent-gold); border-radius: 0 12px 12px 0;
+  padding: 20px 24px; margin: 24px 0;
+}
+.quote-block .qt { font-family: var(--font-display); font-size: 18px; font-style: italic; font-weight: 400; line-height: 1.6; color: var(--charcoal); }
+.quote-block .qa { font-size: 13px; color: var(--accent-gold); margin-top: 10px; }
+
+/* Step cards */
+.step-card {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 40px 36px; margin-bottom: 28px; transition: transform 0.4s, box-shadow 0.4s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(58,54,50,0.06); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 12px; font-family: var(--font-display);
+  font-size: 18px; font-weight: 600; color: var(--warm-white); background: var(--accent-gold); margin-bottom: 16px;
+}
+.step-card h3 { font-size: 24px; margin-bottom: 12px; }
+.step-card p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 14px; }
+.step-card p:last-of-type { margin-bottom: 0; }
+.step-card strong { color: var(--charcoal); font-weight: 400; }
+
+/* Arrow diagram */
+.arrow-flow {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  flex-wrap: wrap; margin: 24px 0; padding: 24px; background: var(--gold-pale); border-radius: 14px;
+}
+.arrow-box {
+  padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
+  letter-spacing: 0.5px; text-align: center;
+}
+.arrow-box.negative { background: #F5E0DE; color: #9B4D4D; }
+.arrow-box.neutral { background: var(--sand); color: var(--warm-gray); }
+.arrow-box.positive { background: var(--olive-pale); color: var(--olive); }
+.arrow-sym { font-size: 20px; color: var(--light-gray); }
+
+/* Textarea */
+.fw-textarea {
+  width: 100%; min-height: 120px; border: 1px solid var(--sand-dark); border-radius: 16px;
+  padding: 20px 24px; font-family: var(--font-body); font-size: 16px; font-weight: 300;
+  line-height: 1.7; color: var(--charcoal); background: var(--cream); resize: vertical;
+  outline: none; transition: border-color 0.3s; margin-top: 16px;
+}
+.fw-textarea::placeholder { color: var(--light-gray); }
+.fw-textarea:focus { border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(198,169,108,0.15); }
+
+/* Evidence tracker */
+.evidence-section {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 40px 36px; margin-bottom: 28px;
+}
+.evidence-input-row {
+  display: flex; gap: 12px; margin-top: 16px;
+}
+.evidence-input {
+  flex: 1; padding: 14px 18px; border: 1px solid var(--sand-dark); border-radius: 12px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 300; color: var(--charcoal);
+  background: var(--cream); outline: none; transition: border-color 0.3s;
+}
+.evidence-input:focus { border-color: var(--accent-gold); }
+.evidence-input::placeholder { color: var(--light-gray); }
+.evidence-add-btn {
+  padding: 14px 24px; border: none; border-radius: 12px;
+  background: var(--accent-gold); color: var(--warm-white); font-family: var(--font-body);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.3s; white-space: nowrap;
+}
+.evidence-add-btn:hover { background: #B89A5E; }
+.evidence-list { margin-top: 20px; }
+.evidence-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--sand);
+}
+.evidence-item:last-child { border-bottom: none; }
+.evidence-check {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--olive-pale); display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--olive); margin-top: 2px;
+}
+.evidence-text { font-size: 15px; color: var(--charcoal); line-height: 1.6; }
+.evidence-empty { font-size: 14px; color: var(--light-gray); font-style: italic; padding: 12px 0; }
+
+/* Result */
+.prophecy-result {
+  background: var(--warm-white); border: 2px solid var(--gold-pale); border-radius: 20px;
+  padding: 48px 40px; margin-top: 40px; display: none;
+}
+.prophecy-result.visible { display: block; }
+.pr-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-gold); margin-bottom: 20px; text-align: center; }
+.pr-old { padding: 16px 20px; background: #F5E0DE; border-radius: 12px; margin-bottom: 16px; text-decoration: line-through; color: #9B4D4D; font-size: 16px; }
+.pr-arrow { text-align: center; font-size: 24px; color: var(--light-gray); margin: 8px 0; }
+.pr-new {
+  padding: 20px 24px; background: var(--olive-pale); border-radius: 12px;
+  font-family: var(--font-display); font-size: 22px; font-weight: 500;
+  color: var(--olive); text-align: center; line-height: 1.4;
+}
+.pr-evidence { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--sand); }
+.pr-evidence-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-gold); margin-bottom: 12px; }
+
+/* Button */
+.fw-btn {
+  display: inline-block; margin-top: 24px; padding: 16px 32px; border: none; border-radius: 14px;
+  background: var(--charcoal); color: var(--warm-white); font-family: var(--font-body);
+  font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: background 0.3s;
+}
+.fw-btn:hover { background: #4E4A45; }
+
+/* Closing / Footer */
+.closing { text-align: center; padding: 60px 28px; }
+.closing-quote {
+  font-family: var(--font-display); font-size: clamp(22px,4vw,28px);
+  font-style: italic; font-weight: 400; color: var(--accent-gold);
+  max-width: 580px; margin: 0 auto; line-height: 1.45;
+}
+.footer { text-align: center; padding: 32px 28px; font-size: 13px; color: var(--light-gray); border-top: 1px solid var(--sand); }
+
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .step-card, .evidence-section { padding: 28px 24px; }
+  .arrow-flow { flex-direction: column; }
+  .arrow-sym { transform: rotate(90deg); }
+  .evidence-input-row { flex-direction: column; }
+  .prophecy-result { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-tag">Неделя 3 · Framework 3</div>
+  <h1>Инверсия <em>пророчества</em></h1>
+  <p class="hero-sub">Техника на основе эффекта Пигмалиона: выбираем новое убеждение о себе и начинаем собирать доказательства в его пользу.</p>
+</section>
+
+<!-- ═══════ CONTENT ═══════ -->
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+
+    <div class="intro-block reveal">
+      <p>В эксперименте Розенталя (1968) учителя верили, что определённые дети — одарённые, и дети стали одарёнными. Тест был выдуман, дети выбраны случайно. Но <strong>убеждение учителей изменило их поведение — больше внимания, больше вызовов, больше тёплой обратной связи — и поведение изменило результат.</strong></p>
+      <p>Мы делаем то же самое с собой — постоянно. «Я недисциплинированная», «я не могу рано вставать», «я не из тех, кто бегает». Каждое из этих утверждений запускает цикл confirmation bias: мозг начинает избирательно фиксировать подтверждения. Это упражнение — про то, как развернуть этот цикл в свою пользу.</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-card reveal">
+      <div class="step-num">1</div>
+      <h3>Обнаружь старое пророчество</h3>
+      <p>Запиши убеждение о себе, которое тебя ограничивает. То, что ты повторяешь себе (или что тебе когда-то повторяли), и которое работает как фильтр: ты начинаешь замечать только то, что подтверждает это убеждение.</p>
+
+      <div class="arrow-flow">
+        <div class="arrow-box negative">Убеждение</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box neutral">Фильтр восприятия</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box neutral">Поведение</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box negative">Подтверждение</div>
+      </div>
+
+      <textarea class="fw-textarea" id="oldBelief" rows="3" placeholder="Например: «Я не дисциплинированная — я всегда бросаю начатое»&#10;или: «Я не создана для спорта»&#10;или: «Я не умею доводить дела до конца»"></textarea>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card reveal">
+      <div class="step-num">2</div>
+      <h3>Сформулируй новое пророчество</h3>
+      <p>Теперь напиши новое убеждение — то, которым ты хочешь заменить старое. Важно: <strong>оно должно быть реалистичным и основанным на ценностях.</strong> Исследования self-affirmation theory (Cohen & Sherman, 2014) показывают, что работают утверждения, связанные с конкретными действиями. Общие позитивные аффирмации вроде «я самая успешная» скорее вызывают когнитивный диссонанс — мозг сразу выдаёт опровержения.</p>
+
+      <div class="quote-block">
+        <div class="qt">Рабочее убеждение описывает конкретное поведение: «я — человек, который возвращается». Фокус на процессе.</div>
+      </div>
+
+      <p>Формула: <strong>«Я — человек, который [действие, согласованное с ценностью]»</strong></p>
+
+      <textarea class="fw-textarea" id="newBelief" rows="3" placeholder="Например: «Я — человек, который возвращается к тренировкам, даже после перерыва»&#10;или: «Я умею доводить дела до конца, когда они мне важны»"></textarea>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card reveal">
+      <div class="step-num">3</div>
+      <h3>Разверни фильтр</h3>
+      <p>Старое пророчество заставляло тебя замечать провалы и пропускать успехи. Новое убеждение перенастраивает фильтр: <strong>ты начинаешь замечать доказательства, которые раньше проходили мимо внимания.</strong></p>
+      <p>Прямо сейчас вспомни 2–3 момента из своей жизни, когда ты действовала в соответствии с новым убеждением. Они были — ты просто не придавала им значения.</p>
+
+      <div class="arrow-flow">
+        <div class="arrow-box positive">Новое убеждение</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box neutral">Новый фильтр</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box neutral">Новое поведение</div>
+        <div class="arrow-sym">&rarr;</div>
+        <div class="arrow-box positive">Подтверждение</div>
+      </div>
+
+      <textarea class="fw-textarea" id="firstEvidence" rows="5" placeholder="1. Когда я начала эту программу — это уже доказательство того, что я могу начинать&#10;2. В прошлом году я вернулась к тренировкам после болезни за 3 дня&#10;3. Я держала фокус на проекте X два месяца и довела его до конца"></textarea>
+    </div>
+
+    <!-- EVIDENCE TRACKER -->
+    <div class="evidence-section reveal">
+      <div style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent-gold);margin-bottom:12px;">Трекер доказательств</div>
+      <h3 style="font-family:var(--font-display);font-size:24px;margin-bottom:8px;">Собирай доказательства каждый день</h3>
+      <p style="font-size:16px;color:var(--warm-gray);line-height:1.8;">В течение недели записывай моменты, когда ты действовала в соответствии с новым убеждением. Даже маленькие. Особенно маленькие. Каждая запись — голос за новую идентичность.</p>
+
+      <div class="evidence-input-row">
+        <input class="evidence-input" id="evidenceInput" placeholder="Сегодня я сделала..." />
+        <button class="evidence-add-btn" id="evidenceAddBtn">Добавить</button>
+      </div>
+      <div class="evidence-list" id="evidenceList">
+        <div class="evidence-empty">Пока пусто. Добавь первое доказательство.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="fw-btn" id="saveBtn">Собрать всё вместе</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="prophecy-result" id="resultCard">
+      <div class="pr-label">Моя инверсия</div>
+      <div class="pr-old" id="resultOld"></div>
+      <div class="pr-arrow">&darr;</div>
+      <div class="pr-new" id="resultNew"></div>
+      <div class="pr-evidence" id="resultEvidence"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Ты — одновременно учитель и ученик в эксперименте Розенталя. Выбери, во что верить о себе — и начни замечать доказательства. Пророчество сбудется.</p>
+</section>
+
+<footer class="footer">Оля Маркес · High Performance · Неделя 3 · Framework 3</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* Evidence tracker */
+let evidenceItems = [];
+
+document.getElementById('evidenceAddBtn').addEventListener('click', addEvidence);
+document.getElementById('evidenceInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addEvidence();
+});
+
+function addEvidence() {
+  const input = document.getElementById('evidenceInput');
+  const text = input.value.trim();
+  if (!text) return;
+  evidenceItems.push(text);
+  input.value = '';
+  renderEvidence();
+}
+
+function renderEvidence() {
+  const list = document.getElementById('evidenceList');
+  if (evidenceItems.length === 0) {
+    list.innerHTML = '<div class="evidence-empty">Пока пусто. Добавь первое доказательство.</div>';
+    return;
+  }
+  list.innerHTML = evidenceItems.map(item =>
+    '<div class="evidence-item"><div class="evidence-check">&#10003;</div><div class="evidence-text">' + item + '</div></div>'
+  ).join('');
+}
+
+/* Save result */
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const oldB = document.getElementById('oldBelief').value.trim();
+  const newB = document.getElementById('newBelief').value.trim();
+  const firstEv = document.getElementById('firstEvidence').value.trim();
+  if (!oldB || !newB) { alert('Заполни старое и новое убеждение (шаги 1 и 2)'); return; }
+
+  document.getElementById('resultOld').textContent = oldB;
+  document.getElementById('resultNew').textContent = newB;
+
+  const evDiv = document.getElementById('resultEvidence');
+  const allEvidence = [];
+  if (firstEv) firstEv.split('\n').filter(l => l.trim()).forEach(l => allEvidence.push(l.replace(/^\d+[\.\)\-\s]*/, '').trim()));
+  evidenceItems.forEach(e => allEvidence.push(e));
+
+  if (allEvidence.length > 0) {
+    let html = '<div class="pr-evidence-title">Мои доказательства (' + allEvidence.length + ')</div>';
+    allEvidence.forEach(e => {
+      html += '<div class="evidence-item"><div class="evidence-check">&#10003;</div><div class="evidence-text">' + e + '</div></div>';
+    });
+    evDiv.innerHTML = html;
+    evDiv.style.display = 'block';
+  } else {
+    evDiv.style.display = 'none';
+  }
+
+  const card = document.getElementById('resultCard');
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>

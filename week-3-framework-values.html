@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework — Определение ценностей · Неделя 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream); color: var(--charcoal);
+  font-family: var(--font-body); font-weight: 300; font-size: 17px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+.section-label {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 16px;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.2; color: var(--charcoal); }
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Hero (compact) ── */
+.hero {
+  padding: 80px 28px 40px; text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196,112,75,0.06) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122,139,111,0.05) 0%, transparent 70%), var(--cream);
+}
+.hero-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 16px; }
+.hero h1 { font-size: clamp(36px, 8vw, 56px); font-weight: 400; letter-spacing: -1px; margin-bottom: 12px; }
+.hero h1 em { font-style: italic; color: var(--terracotta); }
+.hero-sub { font-size: 18px; color: var(--warm-gray); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+/* ── Intro block ── */
+.intro-block {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 36px 32px; margin-bottom: 40px;
+}
+.intro-block p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 12px; }
+.intro-block p:last-child { margin-bottom: 0; }
+.intro-block strong { color: var(--charcoal); font-weight: 400; }
+
+/* ── Step cards ── */
+.step-card {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 40px 36px; margin-bottom: 28px; transition: transform 0.4s, box-shadow 0.4s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(58,54,50,0.06); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 12px; font-family: var(--font-display);
+  font-size: 18px; font-weight: 600; color: var(--warm-white); background: var(--terracotta); margin-bottom: 16px;
+}
+.step-card h3 { font-size: 24px; margin-bottom: 12px; }
+.step-card p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 14px; }
+.step-card p:last-of-type { margin-bottom: 0; }
+
+/* ── Value chips (selectable) ── */
+.values-pool {
+  display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0;
+}
+.value-chip {
+  padding: 10px 18px; border-radius: 100px; border: 1px solid var(--sand-dark);
+  background: var(--cream); color: var(--warm-gray); font-size: 15px;
+  cursor: pointer; transition: all 0.25s; user-select: none;
+}
+.value-chip:hover { border-color: var(--terracotta-light); color: var(--charcoal); }
+.value-chip.selected {
+  background: var(--terracotta); color: var(--warm-white); border-color: var(--terracotta);
+}
+.value-chip.selected:hover { background: var(--terracotta-light); }
+.selected-count {
+  font-size: 13px; color: var(--terracotta); font-weight: 600; letter-spacing: 1px; margin-top: 12px;
+}
+
+/* ── Textarea ── */
+.fw-textarea {
+  width: 100%; min-height: 140px; border: 1px solid var(--sand-dark); border-radius: 16px;
+  padding: 20px 24px; font-family: var(--font-body); font-size: 16px; font-weight: 300;
+  line-height: 1.7; color: var(--charcoal); background: var(--cream); resize: vertical;
+  outline: none; transition: border-color 0.3s; margin-top: 16px;
+}
+.fw-textarea::placeholder { color: var(--light-gray); }
+.fw-textarea:focus { border-color: var(--terracotta-light); box-shadow: 0 0 0 3px rgba(196,112,75,0.1); }
+
+/* ── Result card ── */
+.result-card {
+  background: var(--warm-white); border: 2px solid var(--terracotta-pale); border-radius: 20px;
+  padding: 40px 36px; margin-top: 32px; display: none;
+}
+.result-card.visible { display: block; }
+.result-card h3 { font-size: 24px; margin-bottom: 16px; color: var(--terracotta); }
+.result-value {
+  font-family: var(--font-display); font-size: 22px; font-weight: 500;
+  color: var(--charcoal); line-height: 1.5; margin-bottom: 8px;
+}
+.result-why {
+  font-size: 15px; color: var(--warm-gray); line-height: 1.7;
+  padding-left: 16px; border-left: 2px solid var(--sand); margin-bottom: 16px;
+}
+
+/* ── Button ── */
+.fw-btn {
+  display: inline-block; margin-top: 24px; padding: 16px 32px; border: none; border-radius: 14px;
+  background: var(--charcoal); color: var(--warm-white); font-family: var(--font-body);
+  font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: background 0.3s;
+}
+.fw-btn:hover { background: #4E4A45; }
+
+/* ── Closing ── */
+.closing { text-align: center; padding: 60px 28px; }
+.closing-quote {
+  font-family: var(--font-display); font-size: clamp(22px, 4vw, 28px);
+  font-style: italic; font-weight: 400; color: var(--terracotta);
+  max-width: 560px; margin: 0 auto; line-height: 1.45;
+}
+.footer { text-align: center; padding: 32px 28px; font-size: 13px; color: var(--light-gray); border-top: 1px solid var(--sand); }
+
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .step-card { padding: 28px 24px; }
+  .step-card h3 { font-size: 20px; }
+  .value-chip { padding: 8px 14px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-tag">Неделя 3 · Framework 1</div>
+  <h1>Определение <em>ценностей</em></h1>
+  <p class="hero-sub">Практическое упражнение, которое поможет выделить 3–5 ключевых ценностей — твой личный компас.</p>
+</section>
+
+<!-- ═══════ INTRO ═══════ -->
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+
+    <div class="intro-block reveal">
+      <p>Ценности — это направления, в которых ты хочешь двигаться каждый день. Разница между «я хочу быть здоровой» (ценность) и «я хочу похудеть на 5 кг» (цель) — в том, что ценность никогда не заканчивается. У цели есть конечная точка, а ценность продолжает работать после достижения любой отдельной цели. Она работает как компас: даже когда конкретный маршрут изменился, компас показывает, куда идти дальше.</p>
+      <p><strong>Это упражнение состоит из трёх шагов.</strong> На выходе — 3–5 ценностей, которые ты сможешь использовать как фильтр для решений, как источник мотивации и как якорь в моменты, когда «не хочется».</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-card reveal">
+      <div class="step-num">1</div>
+      <h3>Выбери то, что резонирует</h3>
+      <p>Ниже — список ценностей из разных областей жизни. Не думай долго. Нажимай на те, которые вызывают отклик — ощущение «да, это моё». Выбери от 7 до 12 штук, потом мы сузим.</p>
+
+      <div class="values-pool" id="valuesPool">
+        <span class="value-chip" data-v="health">Здоровье</span>
+        <span class="value-chip" data-v="growth">Рост</span>
+        <span class="value-chip" data-v="freedom">Свобода</span>
+        <span class="value-chip" data-v="love">Любовь</span>
+        <span class="value-chip" data-v="creativity">Творчество</span>
+        <span class="value-chip" data-v="courage">Смелость</span>
+        <span class="value-chip" data-v="honesty">Честность</span>
+        <span class="value-chip" data-v="discipline">Дисциплина</span>
+        <span class="value-chip" data-v="family">Семья</span>
+        <span class="value-chip" data-v="adventure">Приключения</span>
+        <span class="value-chip" data-v="kindness">Доброта</span>
+        <span class="value-chip" data-v="influence">Влияние</span>
+        <span class="value-chip" data-v="beauty">Красота</span>
+        <span class="value-chip" data-v="knowledge">Знания</span>
+        <span class="value-chip" data-v="authenticity">Аутентичность</span>
+        <span class="value-chip" data-v="connection">Связь с людьми</span>
+        <span class="value-chip" data-v="security">Безопасность</span>
+        <span class="value-chip" data-v="joy">Радость</span>
+        <span class="value-chip" data-v="purpose">Предназначение</span>
+        <span class="value-chip" data-v="excellence">Мастерство</span>
+        <span class="value-chip" data-v="respect">Уважение</span>
+        <span class="value-chip" data-v="contribution">Вклад в мир</span>
+        <span class="value-chip" data-v="energy">Энергия</span>
+        <span class="value-chip" data-v="independence">Независимость</span>
+        <span class="value-chip" data-v="presence">Присутствие</span>
+        <span class="value-chip" data-v="leadership">Лидерство</span>
+        <span class="value-chip" data-v="trust">Доверие</span>
+        <span class="value-chip" data-v="balance">Баланс</span>
+        <span class="value-chip" data-v="resilience">Устойчивость</span>
+        <span class="value-chip" data-v="gratitude">Благодарность</span>
+      </div>
+      <div class="selected-count" id="selectedCount">Выбрано: 0</div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card reveal">
+      <div class="step-num">2</div>
+      <h3>Сузь до 3–5 главных</h3>
+      <p>Посмотри на то, что ты выбрала. Теперь задай себе фильтрующий вопрос к каждой ценности:</p>
+      <p><strong>«Если бы я могла жить только по пяти принципам — этот вошёл бы в список?»</strong></p>
+      <p>Если сомневаешься между двумя похожими (например, «свобода» и «независимость») — выбери ту, которая точнее описывает, как ты хочешь себя чувствовать. Запиши свои 3–5 финальных ценностей:</p>
+      <textarea class="fw-textarea" id="topValues" placeholder="Например:&#10;1. Здоровье&#10;2. Свобода&#10;3. Рост&#10;4. Связь с людьми&#10;5. Смелость"></textarea>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card reveal">
+      <div class="step-num">3</div>
+      <h3>Оживи каждую ценность</h3>
+      <p>Ценность без контекста — абстракция. «Здоровье» может значить что угодно: для кого-то это марафон, для кого-то — спать 8 часов. Для каждой из своих ценностей напиши:</p>
+      <p><strong>Что эта ценность значит для меня лично? Как выглядит жизнь, в которой я ей следую?</strong></p>
+      <textarea class="fw-textarea" id="valuesAlive" rows="10" placeholder="Здоровье — для меня это значит: просыпаться с энергией, двигаться каждый день, есть так, чтобы тело работало на максимум. Жизнь по этой ценности — я тренируюсь утром, я не ем то, что меня замедляет, я сплю достаточно.&#10;&#10;Свобода — для меня это значит: ..."></textarea>
+
+      <button class="fw-btn" id="saveBtn">Сохранить мои ценности</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-card" id="resultCard">
+      <h3>Твои ценности</h3>
+      <div id="resultContent"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Ценности живут в действиях, а не в словах. Возвращайся к этому списку, когда нужно принять решение или когда кажется, что всё бессмысленно.</p>
+</section>
+
+<footer class="footer">Оля Маркес · High Performance · Неделя 3 · Framework 1</footer>
+
+<script>
+/* Reveal */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* Value chips */
+document.querySelectorAll('.value-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('selected');
+    const count = document.querySelectorAll('.value-chip.selected').length;
+    document.getElementById('selectedCount').textContent = 'Выбрано: ' + count;
+  });
+});
+
+/* Save */
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const top = document.getElementById('topValues').value.trim();
+  const alive = document.getElementById('valuesAlive').value.trim();
+  if (!top) { alert('Напиши свои 3–5 ценностей в шаге 2'); return; }
+
+  const card = document.getElementById('resultCard');
+  const content = document.getElementById('resultContent');
+
+  const lines = top.split('\n').filter(l => l.trim());
+  let html = '';
+  lines.forEach(line => {
+    const clean = line.replace(/^\d+[\.\)\-\s]*/, '').trim();
+    html += '<div class="result-value">' + clean + '</div>';
+  });
+  if (alive) {
+    html += '<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--sand);">';
+    html += '<div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px;">Что они значат для меня</div>';
+    html += '<div class="result-why">' + alive.replace(/\n/g, '<br>') + '</div>';
+    html += '</div>';
+  }
+  content.innerHTML = html;
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>

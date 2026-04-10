@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Неделя 3 — Цели и ценности · High Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section { padding: 80px 0; }
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 16px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--charcoal);
+}
+
+/* ── Reveal animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196, 112, 75, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122, 139, 111, 0.05) 0%, transparent 70%),
+    var(--cream);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-dark);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -100px;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  border: 1px solid var(--terracotta-pale);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-inner {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 80px 28px;
+}
+
+.hero-tag {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: clamp(48px, 10vw, 80px);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--warm-gray);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Intro ── */
+.intro-text {
+  font-size: 19px;
+  line-height: 1.8;
+  color: var(--charcoal);
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.intro-text em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+/* ── Theory cards ── */
+.theory-grid {
+  display: grid;
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.theory-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.theory-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(58, 54, 50, 0.06);
+}
+
+.theory-card .card-num {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--warm-white);
+  margin-bottom: 20px;
+}
+
+.card-num.values { background: var(--terracotta); }
+.card-num.identity { background: var(--olive); }
+.card-num.research { background: var(--accent-gold); }
+
+.theory-card .card-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.card-tag.values { color: var(--terracotta); background: var(--terracotta-pale); }
+.card-tag.identity { color: var(--olive); background: var(--olive-pale); }
+.card-tag.research { color: var(--accent-gold); background: #F5ECD7; }
+
+.theory-card h3 {
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+.theory-card p {
+  font-size: 16px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+
+.theory-card p:last-child {
+  margin-bottom: 0;
+}
+
+.theory-card p strong {
+  color: var(--charcoal);
+  font-weight: 400;
+}
+
+/* ── Blockquote ── */
+.quote-block {
+  background: var(--cream);
+  border-left: 3px solid var(--terracotta);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+
+.quote-block .quote-text {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--charcoal);
+}
+
+.quote-block .quote-author {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--terracotta);
+  margin-top: 10px;
+}
+
+/* ── Research box ── */
+.research-box {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin: 20px 0;
+}
+
+.research-box .research-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 10px;
+}
+
+.research-box p {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.research-box p:last-child { margin-bottom: 0; }
+
+/* ── Skeleton markers (что будет дальше) ── */
+.skeleton-section {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+}
+
+.skeleton-grid {
+  display: grid;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.skeleton-item {
+  display: flex;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--cream);
+  border: 1px dashed var(--sand-dark);
+  border-radius: 16px;
+  align-items: flex-start;
+}
+
+.skeleton-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.skeleton-icon.todo { background: var(--terracotta-pale); }
+.skeleton-icon.done { background: var(--olive-pale); }
+
+.skeleton-item h4 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--charcoal);
+}
+
+.skeleton-item p {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.6;
+}
+
+.skeleton-item .status-chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.status-chip.ready { color: var(--olive); background: var(--olive-pale); }
+.status-chip.wip { color: var(--accent-gold); background: #F5ECD7; }
+.status-chip.next { color: var(--terracotta); background: var(--terracotta-pale); }
+
+/* ── Closing quote ── */
+.closing {
+  text-align: center;
+  padding: 80px 28px;
+}
+
+.closing-quote {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px 28px;
+  font-size: 13px;
+  color: var(--light-gray);
+  border-top: 1px solid var(--sand);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .hero { min-height: 50vh; }
+  .hero h1 { font-size: 48px; }
+  .theory-card { padding: 28px 24px; }
+  .theory-card h3 { font-size: 22px; }
+  .skeleton-item { flex-direction: column; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">High Performance · Апрель 2026</div>
+    <h1>Неделя <em>3</em></h1>
+    <p class="hero-sub">Цели и ценности. На этой неделе мы разбираемся, что нами на самом деле движет — и почему ясность в ценностях важнее силы воли.</p>
+  </div>
+</section>
+
+<!-- ═══════ INTRO ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="reveal">
+      <p class="intro-text">Две недели назад мы запустили систему: ритм, привычки, движение. Но система без направления — это конвейер. Сегодня мы подключаем навигацию: <em>куда я иду и зачем.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ BLOCK 1: ЦЕННОСТИ ≠ ЦЕЛИ ═══════ -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-label reveal">Теория</div>
+
+    <div class="theory-grid">
+
+      <!-- Card 1 -->
+      <div class="theory-card reveal">
+        <div class="card-num values">1</div>
+        <span class="card-tag values">Ценности</span>
+        <h3>Ценности и цели: в чём разница</h3>
+
+        <p>Ценности и цели часто путают — и то, и другое говорит о том, что для нас важно. Но в психологии это принципиально разные конструкты. Доктор Джулия Смит формулирует различие так:</p>
+
+        <div class="quote-block">
+          <div class="quote-text">&laquo;Ценности — это не то же самое, что цели. Цель — конкретная, конечная вещь. Когда ты её достигаешь — это конечная точка. Ценности нельзя завершить. Ценности — это то, как ты хочешь жить, каким человеком хочешь быть и за какие принципы готова стоять.&raquo;</div>
+          <div class="quote-author">— Д-р Джулия Смит, «Why Has Nobody Told Me This Before?»</div>
+        </div>
+
+        <p><strong>Цель</strong> — конкретна и конечна: «похудеть на 5 кг», «выступить на конференции», «заработать X». Ты дошла — и всё, точка. <strong>Ценность</strong> — это направление движения: «забота о здоровье», «рост и обучение», «финансовая свобода». Ценность продолжает работать после достижения любой отдельной цели — ей можно следовать бесконечно.</p>
+
+        <p>В терапии принятия и ответственности (ACT) используют метафору компаса: цели — это остановки на маршруте, ценности — сам курс, на который указывает стрелка. Ты можешь передумать насчёт конкретной остановки — но курс остаётся. Если ты сбилась с пути, ценности помогают перенастроиться в любой точке.</p>
+
+        <div class="research-box">
+          <div class="research-label">Почему это важно</div>
+          <p>Когда мотивация падает (а она падает у всех), люди, которые действуют из ценностей, продолжают двигаться. Их поведение привязано к «кем я хочу быть» — и поэтому продолжается, даже когда конкретный результат далеко. Как формулирует Смит: <strong>«Мастерство мотивации — это умение делать то, что для тебя по-настоящему важно, даже когда часть тебя не хочет этого делать.»</strong></p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="theory-card reveal">
+        <div class="card-num values">2</div>
+        <span class="card-tag values">Мотивация</span>
+        <h3>Мотивация приходит после действия</h3>
+
+        <p>Мы привыкли думать линейно: сначала появляется мотивация, потом я начинаю действовать. Но исследования показывают обратное — <strong>мотивация чаще всего приходит после того, как ты уже начала.</strong> В метаанализе Cuijpers et al. (2007) техника behavioral activation — начало действия до появления мотивации — оказалась сопоставима по эффективности с полным курсом когнитивной терапии при депрессии.</p>
+
+        <p>Джулия Смит описывает это для повседневной жизни: если ждать, пока появится желание что-то делать, можно ждать бесконечно. Один маленький шаг в нужном направлении запускает петлю обратной связи — действие создаёт импульс, импульс усиливает мотивацию.</p>
+
+        <p>Здесь подключаются ценности. Когда ты утром не хочешь идти на тренировку, далёкая цель «похудеть на 5 кг» слабо влияет на поведение. А утверждение «я — человек, который заботится о своём теле» — работает, потому что описывает идентичность прямо сейчас, в настоящем времени.</p>
+
+        <div class="quote-block">
+          <div class="quote-text">&laquo;Ты не ждёшь мотивации, чтобы почистить зубы. Ты делаешь это, потому что это часть того, кем ты являешься. Цель — сделать то же самое с вещами, которые для тебя важны.&raquo;</div>
+          <div class="quote-author">— Адаптация идеи Джеймса Клира, «Atomic Habits»</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="theory-card reveal">
+        <div class="card-num identity">3</div>
+        <span class="card-tag identity">Идентичность</span>
+        <h3>Каким человеком я хочу быть?</h3>
+
+        <p>Джеймс Клир в «Atomic Habits» описывает три уровня изменений. Первый — результаты («что я получаю»): похудеть, заработать, написать книгу. Второй — процессы («что я делаю»): ходить в зал, вести бюджет, писать каждый день. Третий — идентичность («во что я верю, кем себя считаю»).</p>
+
+        <p>Большинство людей начинают с результатов. Но результат — это следствие процессов и убеждений, которые его порождают. Если ты считаешь себя человеком, который «не может бегать по утрам», никакое расписание не поможет. А когда идентичность сдвигается — «я человек, который двигается каждый день» — привычка становится естественным продолжением того, кем ты себя ощущаешь.</p>
+
+        <p>Каждое действие — это голос за тип человека, которым ты хочешь стать. Совершенство здесь не требуется. Достаточно, чтобы голосов «за» набиралось больше. Пропустила тренировку — окей, это один голос. Пошла на следующий день — два голоса за. Перевес восстановлен.</p>
+
+        <div class="research-box">
+          <div class="research-label">Ключевой вопрос</div>
+          <p>Задай себе: <strong>«Каким человеком мне нужно стать, чтобы этот результат был естественным следствием?»</strong> Это сдвиг от outcome-based к identity-based подходу — и он меняет всё.</p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="theory-card reveal">
+        <div class="card-num research">4</div>
+        <span class="card-tag research">Исследование</span>
+        <h3>Самосбывающееся пророчество: эффект Пигмалиона</h3>
+
+        <p>В 1968 году психологи Роберт Розенталь и Ленор Якобсон провели эксперимент в начальной школе Spruce Elementary. Учителям сказали, что группе учеников дали специальный «Гарвардский тест способностей» и выявили «интеллектуальных спринтеров» — детей, которые должны в ближайшее время показать резкий скачок в развитии.</p>
+
+        <p>На самом деле никакого теста не было. Дети были выбраны абсолютно случайно.</p>
+
+        <p>Результат: к концу года «одарённые» дети показали прирост IQ в среднем на 4 пункта больше, чем остальные — в вербальных способностях, в рассуждении, в общем интеллекте. <strong>Единственная переменная — ожидания учителей.</strong></p>
+
+        <p>Когда учителя верили, что дети способные, они неосознанно давали им больше внимания, больше вызовов, больше тёплой обратной связи. И дети отвечали ростом. Розенталь назвал это <strong>эффектом Пигмалиона</strong> — по имени скульптора из мифа, который влюбился в свою статую, и она ожила.</p>
+
+        <div class="research-box">
+          <div class="research-label">Как это применимо к нам</div>
+          <p>Мы — одновременно и учитель, и ученик в этом эксперименте. То, как мы о себе думаем, создаёт рамку для наших действий. Убеждение «я ленивая» запускает confirmation bias: мозг начинает фиксировать подтверждения лени и пропускать моменты, когда ты была продуктивной. Убеждение формирует фильтр восприятия, фильтр влияет на поведение, поведение укрепляет убеждение — замкнутый цикл.</p>
+          <p><strong>Инверсия пророчества:</strong> выбери убеждение о себе, которое тебе нужно, — и начни собирать доказательства в его пользу. Доказательства уже существуют — их нужно научиться замечать.</p>
+          <p style="font-size:13px;color:var(--light-gray);margin-top:10px;">Rosenthal, R. & Jacobson, L. (1968). Pygmalion in the Classroom. Holt, Rinehart & Winston.</p>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="theory-card reveal">
+        <div class="card-num identity">5</div>
+        <span class="card-tag identity">Синтез</span>
+        <h3>Соединяем всё вместе</h3>
+
+        <p>Вот как это работает как единая система:</p>
+
+        <p><strong>Ценности</strong> дают направление — компас, который продолжает работать, когда отдельные цели уже достигнуты или потеряли актуальность. Ты знаешь, в какую сторону идти, даже когда конкретный маршрут неясен.</p>
+
+        <p><strong>Идентичность</strong> — это двигатель. Каждое действие, согласованное с ценностями, укрепляет идентичность. Каждое укрепление идентичности облегчает следующее действие.</p>
+
+        <p><strong>Самосбывающееся пророчество</strong> — это механизм. Убеждения о себе фильтруют реальность. Мы буквально начинаем замечать то, что соответствует нашим убеждениям, и пропускать то, что им противоречит. Осознанный выбор убеждений — это выбор фильтра.</p>
+
+        <p><strong>Мотивация</strong> приходит, когда ты уже в движении — когда действие подтвердило идентичность и вернуло ощущение agency: «я могу, и я делаю».</p>
+
+        <div class="quote-block">
+          <div class="quote-text">&laquo;Цель первых двух недель была — запустить движение. Цель третьей недели — понять, зачем двигаться. Когда ты знаешь своё «зачем», вопрос «как» решается проще.&raquo;</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Ценности работают, когда ты соединяешься с ними каждый день. И каждое маленькое действие в их сторону укрепляет человека, которым ты уже становишься.</p>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  Оля Маркес · High Performance · Неделя 3 · Апрель 2026
+</footer>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+/* Reveal animations */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

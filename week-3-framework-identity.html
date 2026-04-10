@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework — Каким человеком я хочу быть · Неделя 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2; --warm-white: #FFFDF9; --sand: #F0E8DC; --sand-dark: #E2D5C3;
+  --terracotta: #C4704B; --terracotta-light: #D4896A; --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F; --olive-light: #A3B396; --olive-pale: #E8EDDF;
+  --charcoal: #3A3632; --warm-gray: #7A746D; --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream); color: var(--charcoal);
+  font-family: var(--font-body); font-weight: 300; font-size: 17px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+.section-label {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--olive); margin-bottom: 16px;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.2; color: var(--charcoal); }
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Hero */
+.hero {
+  padding: 80px 28px 40px; text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 30% 20%, rgba(122,139,111,0.06) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 75% 80%, rgba(196,112,75,0.04) 0%, transparent 70%), var(--cream);
+}
+.hero-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); margin-bottom: 16px; }
+.hero h1 { font-size: clamp(36px,8vw,56px); font-weight: 400; letter-spacing: -1px; margin-bottom: 12px; }
+.hero h1 em { font-style: italic; color: var(--olive); }
+.hero-sub { font-size: 18px; color: var(--warm-gray); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+/* Intro */
+.intro-block {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 36px 32px; margin-bottom: 40px;
+}
+.intro-block p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 12px; }
+.intro-block p:last-child { margin-bottom: 0; }
+.intro-block strong { color: var(--charcoal); font-weight: 400; }
+
+/* Quote block */
+.quote-block {
+  background: var(--cream); border-left: 3px solid var(--olive); border-radius: 0 12px 12px 0;
+  padding: 20px 24px; margin: 24px 0;
+}
+.quote-block .qt { font-family: var(--font-display); font-size: 18px; font-style: italic; font-weight: 400; line-height: 1.6; color: var(--charcoal); }
+.quote-block .qa { font-size: 13px; color: var(--olive); margin-top: 10px; }
+
+/* Step cards */
+.step-card {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 40px 36px; margin-bottom: 28px; transition: transform 0.4s, box-shadow 0.4s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(58,54,50,0.06); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 12px; font-family: var(--font-display);
+  font-size: 18px; font-weight: 600; color: var(--warm-white); background: var(--olive); margin-bottom: 16px;
+}
+.step-card h3 { font-size: 24px; margin-bottom: 12px; }
+.step-card p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 14px; }
+.step-card p:last-of-type { margin-bottom: 0; }
+.step-card strong { color: var(--charcoal); font-weight: 400; }
+
+/* Prompt row */
+.prompt-row {
+  background: var(--olive-pale); border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+}
+.prompt-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--olive); margin-bottom: 8px; }
+.prompt-text { font-family: var(--font-display); font-size: 20px; font-style: italic; font-weight: 500; color: var(--charcoal); line-height: 1.4; }
+
+/* Textarea */
+.fw-textarea {
+  width: 100%; min-height: 120px; border: 1px solid var(--sand-dark); border-radius: 16px;
+  padding: 20px 24px; font-family: var(--font-body); font-size: 16px; font-weight: 300;
+  line-height: 1.7; color: var(--charcoal); background: var(--cream); resize: vertical;
+  outline: none; transition: border-color 0.3s; margin-top: 16px;
+}
+.fw-textarea::placeholder { color: var(--light-gray); }
+.fw-textarea:focus { border-color: var(--olive-light); box-shadow: 0 0 0 3px rgba(122,139,111,0.12); }
+
+/* Identity card (result) */
+.identity-result {
+  background: var(--warm-white); border: 2px solid var(--olive-pale); border-radius: 20px;
+  padding: 48px 40px; margin-top: 40px; text-align: center; display: none;
+}
+.identity-result.visible { display: block; }
+.identity-result .ir-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); margin-bottom: 16px; }
+.identity-result .ir-statement {
+  font-family: var(--font-display); font-size: clamp(22px,4vw,30px); font-weight: 500;
+  font-style: italic; color: var(--charcoal); line-height: 1.45; max-width: 600px; margin: 0 auto;
+}
+.identity-result .ir-details {
+  margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--sand);
+  font-size: 16px; color: var(--warm-gray); line-height: 1.75; text-align: left;
+}
+
+/* Button */
+.fw-btn {
+  display: inline-block; margin-top: 24px; padding: 16px 32px; border: none; border-radius: 14px;
+  background: var(--charcoal); color: var(--warm-white); font-family: var(--font-body);
+  font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: background 0.3s;
+}
+.fw-btn:hover { background: #4E4A45; }
+
+/* Closing / Footer */
+.closing { text-align: center; padding: 60px 28px; }
+.closing-quote {
+  font-family: var(--font-display); font-size: clamp(22px,4vw,28px);
+  font-style: italic; font-weight: 400; color: var(--olive);
+  max-width: 560px; margin: 0 auto; line-height: 1.45;
+}
+.footer { text-align: center; padding: 32px 28px; font-size: 13px; color: var(--light-gray); border-top: 1px solid var(--sand); }
+
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .step-card { padding: 28px 24px; }
+  .identity-result { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-tag">Неделя 3 · Framework 2</div>
+  <h1>Каким человеком <em>я хочу быть</em></h1>
+  <p class="hero-sub">Формулируем identity statement — кто я, как я действую, что для меня неприемлемо.</p>
+</section>
+
+<!-- ═══════ CONTENT ═══════ -->
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+
+    <div class="intro-block reveal">
+      <p>В предыдущем framework мы определили ценности — направления. Теперь переводим их в идентичность: от вопроса «что мне делать?» к вопросу <strong>«кем я являюсь?»</strong></p>
+      <p>Джеймс Клир описывает это так: каждая привычка — это голос за определённый тип человека. Идеал здесь не нужен. Достаточно, чтобы голосов «за» набиралось больше. Это упражнение поможет сформулировать, за кого ты голосуешь.</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-card reveal">
+      <div class="step-num">1</div>
+      <h3>Три роли</h3>
+      <p>Подумай о трёх главных ролях или сферах своей жизни. Это может быть что угодно: мама, предприниматель, спортсмен, партнёр, творец, лидер, ученик. Выбери три, которые сейчас для тебя самые значимые.</p>
+
+      <div class="prompt-row">
+        <div class="prompt-label">Вопрос-проводник</div>
+        <div class="prompt-text">Если бы кто-то, кто меня хорошо знает, описывал меня в лучшей версии — какие три слова-роли он бы использовал?</div>
+      </div>
+
+      <textarea class="fw-textarea" id="roles" placeholder="Например:&#10;1. Мама&#10;2. Предприниматель&#10;3. Человек, который заботится о себе"></textarea>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card reveal">
+      <div class="step-num">2</div>
+      <h3>Для каждой роли — «Как я действую»</h3>
+      <p>Возьми каждую роль и опиши, <strong>как ведёт себя человек, который живёт эту роль на максимум.</strong> Реалистичная лучшая версия тебя, с учётом твоих обстоятельств. Что она делает каждый день? Как принимает решения? Чего не делает?</p>
+
+      <div class="prompt-row">
+        <div class="prompt-label">Формат</div>
+        <div class="prompt-text">Я — [роль]. Я — человек, который [действия]. Я не [что неприемлемо].</div>
+      </div>
+
+      <textarea class="fw-textarea" id="behaviors" rows="10" placeholder="Я — мама. Я — человек, который присутствует. Когда я с детьми, я с ними, а не в телефоне. Я не откладываю качественное время на потом.&#10;&#10;Я — предприниматель. Я — человек, который действует из ясности, а не из страха. Я каждый день делаю самое важное первым. Я не размениваюсь на чужие приоритеты.&#10;&#10;Я — человек, который заботится о себе. Я двигаюсь каждый день, ем осознанно, сплю достаточно. Я не жертвую здоровьем ради продуктивности."></textarea>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card reveal">
+      <div class="step-num">3</div>
+      <h3>Identity statement — одна фраза</h3>
+      <p>Теперь сожми всё в одну-две фразы. Это твой identity statement — короткое утверждение, которое описывает, кем ты выбираешь быть. Оно должно быть достаточно коротким, чтобы вспомнить в любой момент, и достаточно точным, чтобы работать как фильтр.</p>
+
+      <div class="quote-block">
+        <div class="qt">&laquo;Я живу на полную: в теле, в голове, в отношениях, в работе. Я выбираю ясность, смелость и заботу — каждый день, а не когда-нибудь потом.&raquo;</div>
+        <div class="qa">Пример identity statement</div>
+      </div>
+
+      <textarea class="fw-textarea" id="statement" rows="4" placeholder="Напиши своё identity statement..."></textarea>
+
+      <button class="fw-btn" id="saveBtn">Сохранить мою идентичность</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="identity-result" id="resultCard">
+      <div class="ir-label">Моя идентичность</div>
+      <div class="ir-statement" id="resultStatement"></div>
+      <div class="ir-details" id="resultDetails"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Идентичность — это то, что ты выбираешь. Каждый день. Каждым действием.</p>
+</section>
+
+<footer class="footer">Оля Маркес · High Performance · Неделя 3 · Framework 2</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const stmt = document.getElementById('statement').value.trim();
+  const behaviors = document.getElementById('behaviors').value.trim();
+  if (!stmt) { alert('Напиши своё identity statement в шаге 3'); return; }
+
+  const card = document.getElementById('resultCard');
+  document.getElementById('resultStatement').textContent = stmt;
+  const details = document.getElementById('resultDetails');
+  if (behaviors) {
+    details.innerHTML = '<div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Как я это проживаю</div>' + behaviors.replace(/\n/g, '<br>');
+    details.style.display = 'block';
+  } else {
+    details.style.display = 'none';
+  }
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>

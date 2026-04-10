@@ -388,6 +388,32 @@ body {
 .material-card.accent-terra { border-left: 3px solid var(--terracotta); }
 .material-card.accent-olive { border-left: 3px solid var(--olive); }
 .material-card.accent-gold { border-left: 3px solid var(--accent-gold); }
+.materials-nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.materials-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--sand-dark);
+  border-radius: 999px;
+  background: var(--warm-white);
+  color: var(--warm-gray);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.materials-nav-link:hover {
+  border-color: var(--olive-light);
+  color: var(--olive);
+  background: rgba(122,139,111,0.05);
+}
 .material-card.accent-charcoal { border-left: 3px solid var(--charcoal); }
 
 /* ══════════════════════════════════
@@ -1034,28 +1060,34 @@ body {
 
     <!-- Materials section -->
     <div class="materials-section reveal">
-      <div class="materials-label">Материалы и навигация</div>
+      <div class="materials-label">Материалы недели 3</div>
       <div class="materials-grid">
-        <a class="material-card accent-charcoal" href="materials.html">
+        <a class="material-card accent-charcoal" href="week-3.html" target="_blank" rel="noopener">
           <div class="mc-icon">📚</div>
-          <div class="mc-title">Все материалы программы</div>
-          <div class="mc-desc">Открыть единый навигатор и быстро перейти в любую неделю</div>
+          <div class="mc-title">Цели и ценности</div>
+          <div class="mc-desc">Главный материал недели про мотивацию, ценности, identity и новый вектор</div>
         </a>
-        <a class="material-card accent-terra" href="materials.html#week-1">
-          <div class="mc-icon">🌱</div>
-          <div class="mc-title">Неделя 1</div>
-          <div class="mc-desc">Вернуться к базе, ритму и стартовым материалам</div>
+        <a class="material-card accent-terra" href="week-3-framework-values.html" target="_blank" rel="noopener">
+          <div class="mc-icon">🧭</div>
+          <div class="mc-title">Определение ценностей</div>
+          <div class="mc-desc">Framework 1 — выбери и опиши свои ценности</div>
         </a>
-        <a class="material-card accent-olive" href="materials.html#week-2">
-          <div class="mc-icon">🫀</div>
-          <div class="mc-title">Неделя 2</div>
-          <div class="mc-desc">Открыть материалы про тревогу и практики прошлой недели</div>
+        <a class="material-card accent-olive" href="week-3-framework-identity.html" target="_blank" rel="noopener">
+          <div class="mc-icon">🪞</div>
+          <div class="mc-title">Идентичность</div>
+          <div class="mc-desc">Framework 2 — сформулируй, каким человеком ты выбираешь быть</div>
         </a>
-        <a class="material-card accent-gold" href="https://kinescope.io/mfv5qpeuGUyPnJzRhWcwP2" target="_blank" rel="noopener">
-          <div class="mc-icon">🫁</div>
-          <div class="mc-title">Вакуум на всю неделю</div>
-          <div class="mc-desc">Дополнительная практика, к которой можно возвращаться каждый день</div>
+        <a class="material-card accent-gold" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">
+          <div class="mc-icon">✨</div>
+          <div class="mc-title">Инверсия пророчества</div>
+          <div class="mc-desc">Framework 3 — перепиши старое убеждение в новое пророчество о себе</div>
         </a>
+      </div>
+      <div class="materials-nav-row">
+        <a class="materials-nav-link" href="https://kinescope.io/mfv5qpeuGUyPnJzRhWcwP2" target="_blank" rel="noopener">Вакуум на всю неделю</a>
+        <a class="materials-nav-link" href="materials.html">Все материалы программы</a>
+        <a class="materials-nav-link" href="materials.html#week-1">Неделя 1</a>
+        <a class="materials-nav-link" href="materials.html#week-2">Неделя 2</a>
       </div>
     </div>
 
