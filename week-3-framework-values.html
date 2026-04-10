@@ -141,6 +141,41 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
   line-height: 1.7;
 }
 
+/* ── Phrase picker ── */
+.picker-note {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-top: 14px;
+}
+.phrase-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 6px;
+}
+.phrase-chip {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--sand-dark);
+  background: var(--cream);
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.25s;
+  user-select: none;
+}
+.phrase-chip:hover {
+  border-color: var(--terracotta-light);
+  color: var(--charcoal);
+}
+.phrase-chip.selected {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: var(--warm-white);
+}
+
 /* ── Textarea ── */
 .fw-textarea {
   width: 100%; min-height: 140px; border: 1px solid var(--sand-dark); border-radius: 16px;
@@ -293,7 +328,28 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
       <h3>Собери свою матрицу</h3>
       <p>Теперь выбери 5–10 фраз, которые действительно описывают, <strong>как ты хочешь жить</strong>. Можно взять готовые формулировки выше, можно переписать их под себя, можно сделать свои.</p>
       <p><strong>Вопрос для фильтра:</strong> «Если я буду жить именно так, я буду чувствовать, что живу свою жизнь?»</p>
-      <p>Запиши здесь свою рабочую матрицу. Можно по блокам, можно одним списком.</p>
+      <p>Можно не писать всё с нуля: сначала натыкай фразы, которые отзываются, а потом отредактируй их под себя.</p>
+
+      <div class="phrase-pool" id="phrasePool">
+        <button type="button" class="phrase-chip" data-value="Быть полностью присутствующей в своей жизни, а не проживать её фоном.">Присутствие в жизни</button>
+        <button type="button" class="phrase-chip" data-value="Удерживать фокус на том, что для меня по-настоящему важно.">Фокус на важном</button>
+        <button type="button" class="phrase-chip" data-value="Идти вглубь, а не скользить по поверхности в себе, в людях и в работе.">Глубина</button>
+        <button type="button" class="phrase-chip" data-value="Постоянно учиться, оставаться живой к новому и не застывать в уже известном.">Постоянно учиться</button>
+        <button type="button" class="phrase-chip" data-value="Умножать добро во всём, к чему я прикасаюсь.">Умножать добро</button>
+        <button type="button" class="phrase-chip" data-value="Не давать страху, тревоге или малодушию останавливать моё проявление.">Не давать страху останавливать</button>
+        <button type="button" class="phrase-chip" data-value="Быть смелой в том, как я говорю, действую и занимаю своё место.">Быть смелой</button>
+        <button type="button" class="phrase-chip" data-value="Оставаться подлинной и не фильтровать живые реакции ради удобства других.">Подлинность</button>
+        <button type="button" class="phrase-chip" data-value="Быть по-настоящему рядом с теми, кого я люблю.">Быть рядом</button>
+        <button type="button" class="phrase-chip" data-value="Создавать в отношениях тепло, нежность и чувство безопасности.">Тепло и безопасность</button>
+        <button type="button" class="phrase-chip" data-value="Жить не случайно, а в связи с тем, что для меня по-настоящему священно.">Жить не случайно</button>
+        <button type="button" class="phrase-chip" data-value="Сохранять связь с высшим, с красотой и с глубоким смыслом жизни.">Связь с высшим и смыслом</button>
+        <button type="button" class="phrase-chip" data-value="Уважать своё тело через выборы, которые поддерживают здоровье и долгую качественную жизнь.">Уважать своё тело</button>
+        <button type="button" class="phrase-chip" data-value="Выбирать не истощение, а качество жизни.">Качество жизни</button>
+        <button type="button" class="phrase-chip" data-value="Не откладывать жизнь на потом, а чувствовать её вкус уже сейчас.">Вкус жизни</button>
+        <button type="button" class="phrase-chip" data-value="Разрешать себе довольство, удовольствие и наполненность, а не жить в режиме вечной нехватки.">Довольство и наполненность</button>
+      </div>
+
+      <p class="picker-note">Запиши здесь свою рабочую матрицу. Можно по блокам, можно одним списком. Всё, что ты натыкаешь выше, автоматически появится в поле.</p>
       <textarea class="fw-textarea" id="topValues" rows="12" placeholder="Например:&#10;Личность&#10;— Быть полностью присутствующей в своей жизни, а не проживать её фоном.&#10;— Идти вглубь, а не скользить по поверхности.&#10;&#10;Проявление&#10;— Не давать страху останавливать моё проявление.&#10;— Быть смелой в том, как я говорю и действую.&#10;&#10;Тело&#10;— Уважать своё тело через выборы, которые поддерживают здоровье и качество жизни."></textarea>
     </div>
 
@@ -344,9 +400,33 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+/* Phrase picker */
+const topValuesInput = document.getElementById('topValues');
+document.querySelectorAll('.phrase-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const phrase = '— ' + chip.dataset.value.trim();
+    const lines = topValuesInput.value
+      .split('\n')
+      .map(line => line.trimEnd())
+      .filter(line => line.trim());
+
+    const hasPhrase = lines.includes(phrase);
+
+    if (hasPhrase) {
+      chip.classList.remove('selected');
+      topValuesInput.value = lines.filter(line => line !== phrase).join('\n');
+      return;
+    }
+
+    chip.classList.add('selected');
+    lines.push(phrase);
+    topValuesInput.value = lines.join('\n');
+  });
+});
+
 /* Save */
 document.getElementById('saveBtn').addEventListener('click', () => {
-  const top = document.getElementById('topValues').value.trim();
+  const top = topValuesInput.value.trim();
   const alive = document.getElementById('valuesAlive').value.trim();
   if (!top) { alert('Напиши свои 3–5 ценностей в шаге 2'); return; }
 
