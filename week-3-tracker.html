@@ -459,6 +459,98 @@ body {
 }
 
 /* ══════════════════════════════════
+   VALUES HOME
+   ══════════════════════════════════ */
+.values-home-section {
+  margin-bottom: 28px;
+}
+.values-home-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow: 0 8px 28px rgba(58,54,50,0.04);
+}
+.values-home-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 10px;
+}
+.values-home-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--charcoal);
+  margin-bottom: 10px;
+}
+.values-home-copy {
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.values-home-list {
+  display: grid;
+  gap: 10px;
+}
+.values-home-item {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+}
+.values-home-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--terracotta-light);
+}
+.values-home-notes {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--sand);
+  white-space: pre-wrap;
+  font-size: 14px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+}
+.values-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+.values-home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--sand-dark);
+  background: var(--warm-white);
+  color: var(--warm-gray);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.values-home-link:hover {
+  border-color: var(--terracotta);
+  color: var(--terracotta);
+  background: rgba(196,112,75,0.06);
+}
+
+/* ══════════════════════════════════
    MATERIALS SECTION
    ══════════════════════════════════ */
 .materials-section {
@@ -1181,6 +1273,7 @@ body {
     </div>
 
     <div class="workout-section reveal" id="workoutSection"></div>
+    <div class="values-home-section reveal" id="valuesHomeSection" style="display:none;"></div>
 
     <!-- Materials section -->
     <div class="materials-section reveal">
@@ -1234,6 +1327,7 @@ body {
    ────────────────────────────────── */
 
 const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+const FRAMEWORK_STORAGE_KEY = 'hp_week3_values_framework';
 
 const DEFAULT_MANIFESTO = {
   values: 'Я выбираю опираться на честность с собой, внутреннее достоинство, заботу о теле и на ту жизнь, в которой мои действия совпадают с моими ценностями.',
@@ -1431,7 +1525,8 @@ function normalizeManifestoState(data) {
     ...data,
     values: (data && data.values && data.values.trim()) || DEFAULT_MANIFESTO.values,
     identity: (data && data.identity && data.identity.trim()) || DEFAULT_MANIFESTO.identity,
-    prophecy: (data && data.prophecy && data.prophecy.trim()) || DEFAULT_MANIFESTO.prophecy
+    prophecy: (data && data.prophecy && data.prophecy.trim()) || DEFAULT_MANIFESTO.prophecy,
+    frameworkManifestoValues: (data && data.frameworkManifestoValues) || ''
   };
 }
 
@@ -1451,6 +1546,58 @@ function saveState() {
   } catch (e) {}
 }
 
+function loadValuesFramework() {
+  try {
+    const saved = localStorage.getItem(FRAMEWORK_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function extractFrameworkLines(text) {
+  return (text || '')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => !/^[А-Яа-яA-Za-z]+$/.test(line))
+    .map(line => line.replace(/^[\d\-\u2022—–\.\)\s]+/, '').trim())
+    .filter(Boolean);
+}
+
+function buildManifestoValuesFromFramework(framework) {
+  const lines = framework && framework.lines && framework.lines.length
+    ? framework.lines
+    : extractFrameworkLines(framework && framework.top ? framework.top : '');
+
+  if (!lines.length) return '';
+  return 'Мои ценности этой недели: ' + lines.slice(0, 4).join(' ');
+}
+
+function syncFrameworkIntoManifesto() {
+  const framework = loadValuesFramework();
+  if (!framework) return;
+
+  const generatedValues = framework.manifestoValues || buildManifestoValuesFromFramework(framework);
+  if (!generatedValues) return;
+
+  const canReplace =
+    !state.values ||
+    state.values === DEFAULT_MANIFESTO.values ||
+    state.values === state.frameworkManifestoValues;
+
+  if (canReplace) {
+    state = {
+      ...state,
+      values: generatedValues,
+      frameworkManifestoValues: generatedValues
+    };
+    saveState();
+  }
+}
+
+syncFrameworkIntoManifesto();
+
 /* ──────────────────────────────────
    3-LAYER MANIFESTO
    ────────────────────────────────── */
@@ -1469,6 +1616,7 @@ const expandBtn = document.getElementById('expandBtn');
 const expandText = document.getElementById('expandText');
 const expandArrow = document.getElementById('expandArrow');
 const workoutSection = document.getElementById('workoutSection');
+const valuesHomeSection = document.getElementById('valuesHomeSection');
 let bannerExpanded = false;
 
 function hasManifesto() {
@@ -1485,6 +1633,15 @@ function openManifesto() {
 
 function closeManifesto() {
   overlay.classList.remove('active');
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function toggleBanner() {
@@ -1536,12 +1693,48 @@ function renderBanner() {
   }
 }
 
+function renderValuesHomeSection() {
+  const framework = loadValuesFramework();
+  if (!framework) {
+    valuesHomeSection.style.display = 'none';
+    valuesHomeSection.innerHTML = '';
+    return;
+  }
+
+  const lines = framework.lines && framework.lines.length
+    ? framework.lines
+    : extractFrameworkLines(framework.top || '');
+
+  valuesHomeSection.style.display = 'block';
+  valuesHomeSection.innerHTML = `
+    <div class="values-home-card">
+      <div class="values-home-kicker">Мои цели и ценности</div>
+      <div class="values-home-title">Мой компас этой недели</div>
+      <div class="values-home-copy">Здесь живут мои формулировки из framework ценностей. Они остаются внутри недели и уже подтягиваются в слой ценностей манифеста, если я его ещё не переписывала вручную.</div>
+      <div class="values-home-list">
+        ${lines.slice(0, 8).map(line => `<div class="values-home-item">${escapeHtml(line)}</div>`).join('')}
+      </div>
+      ${framework.alive ? `<div class="values-home-notes">${escapeHtml(framework.alive)}</div>` : ''}
+      <div class="values-home-actions">
+        <a class="values-home-link" href="week-3-framework-values.html" target="_blank" rel="noopener">Открыть framework ценностей</a>
+        <button class="values-home-link" type="button" id="valuesToManifestoBtn">Редактировать манифест</button>
+      </div>
+    </div>
+  `;
+
+  const openBtn = document.getElementById('valuesToManifestoBtn');
+  if (openBtn) {
+    openBtn.addEventListener('click', () => openManifesto());
+  }
+}
+
 // Show overlay on load if no manifesto yet
 if (!hasManifesto()) {
   setTimeout(() => overlay.classList.add('active'), 600);
 } else {
   renderBanner();
 }
+renderValuesHomeSection();
 
 /* ──────────────────────────────────
    DAY NAVIGATION

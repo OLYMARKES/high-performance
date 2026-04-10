@@ -207,8 +207,23 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
   display: inline-block; margin-top: 24px; padding: 16px 32px; border: none; border-radius: 14px;
   background: var(--charcoal); color: var(--warm-white); font-family: var(--font-body);
   font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: background 0.3s;
+  text-decoration: none;
 }
 .fw-btn:hover { background: #4E4A45; }
+.fw-btn.secondary {
+  background: transparent;
+  color: var(--warm-gray);
+  border: 1px solid var(--sand-dark);
+}
+.fw-btn.secondary:hover {
+  background: var(--sand);
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
 
 /* ── Closing ── */
 .closing { text-align: center; padding: 60px 28px; }
@@ -368,6 +383,10 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
     <div class="result-card" id="resultCard">
       <h3>Твои ценности</h3>
       <div id="resultContent"></div>
+      <div class="result-actions">
+        <a class="fw-btn" href="week-3-tracker.html">Вернуться в трекер</a>
+        <a class="fw-btn secondary" href="week-3-framework-values.html">Продолжить редактировать</a>
+      </div>
     </div>
 
   </div>
@@ -400,6 +419,23 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+const FRAMEWORK_STORAGE_KEY = 'hp_week3_values_framework';
+
+function extractFrameworkLines(text) {
+  return text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => !/^[А-Яа-яA-Za-z]+$/.test(line))
+    .map(line => line.replace(/^[\d\-\u2022—–\.\)\s]+/, '').trim())
+    .filter(Boolean);
+}
+
+function buildManifestoValues(lines) {
+  if (!lines.length) return '';
+  return 'Мои ценности этой недели: ' + lines.slice(0, 4).join(' ');
+}
+
 /* Phrase picker */
 const topValuesInput = document.getElementById('topValues');
 document.querySelectorAll('.phrase-chip').forEach(chip => {
@@ -429,6 +465,17 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   const top = topValuesInput.value.trim();
   const alive = document.getElementById('valuesAlive').value.trim();
   if (!top) { alert('Напиши свои 3–5 ценностей в шаге 2'); return; }
+
+  const frameworkLines = extractFrameworkLines(top);
+  try {
+    localStorage.setItem(FRAMEWORK_STORAGE_KEY, JSON.stringify({
+      top,
+      alive,
+      lines: frameworkLines,
+      manifestoValues: buildManifestoValues(frameworkLines),
+      updatedAt: new Date().toISOString()
+    }));
+  } catch (e) {}
 
   const card = document.getElementById('resultCard');
   const content = document.getElementById('resultContent');
