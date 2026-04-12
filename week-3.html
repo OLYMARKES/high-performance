@@ -569,12 +569,12 @@ h1, h2, h3 {
 <section class="personal-links-shell">
   <div class="container">
     <div class="personal-links">
-      <a class="personal-link" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
+      <a class="personal-link" data-personal-link="tracker" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
       <a class="personal-link" href="materials.html" target="_blank" rel="noopener">Все мои материалы</a>
-      <a class="personal-link" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
-      <a class="personal-link" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
-      <a class="personal-link" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
-      <a class="personal-link" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
+      <a class="personal-link" data-personal-link="week3" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
+      <a class="personal-link" data-personal-link="values" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
+      <a class="personal-link" data-personal-link="identity" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
+      <a class="personal-link" data-personal-link="prophecy" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
     </div>
   </div>
 </section>
@@ -586,6 +586,28 @@ h1, h2, h3 {
 
 <!-- ═══════ SCRIPTS ═══════ -->
 <script>
+const personalParams = new URLSearchParams(window.location.search);
+const trackerUrl = personalParams.get('tracker') || 'week-3-tracker.html';
+const personalQuery = personalParams.toString();
+const personalPaths = {
+  tracker: trackerUrl,
+  week3: 'week-3.html',
+  values: 'week-3-framework-values.html',
+  identity: 'week-3-framework-identity.html',
+  prophecy: 'week-3-framework-prophecy.html'
+};
+
+document.querySelectorAll('[data-personal-link]').forEach((link) => {
+  const key = link.getAttribute('data-personal-link');
+  const base = personalPaths[key];
+  if (!base) return;
+  if (key === 'tracker') {
+    link.href = trackerUrl;
+    return;
+  }
+  link.href = personalQuery ? `${base}?${personalQuery}` : base;
+});
+
 /* Reveal animations */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {

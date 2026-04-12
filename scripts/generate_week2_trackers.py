@@ -11,6 +11,7 @@ OUTPUT_DIR = ROOT / "week_2_trackers_april_2026"
 SOURCE_TEMPLATE_PATH = Path("/Users/olymarkes/Documents/Claude/Projects/High perfomance/week-1-tracker.html")
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
 WEEK2_TRACKER_BASE_URL = "https://olymarkes.github.io/high-performance/week_2_trackers_april_2026"
+WEEK3_TRACKER_VERSION_QUERY = "v=week3-rollout-v1"
 TEAM_PAGE_TOKEN = "week2-vault-m3q8t4k1v6p2"
 TRACKER_VERSION_QUERY = "v=week2-pdf-v34"
 HABITS_PDF = f"../habit-sheet.pdf?{TRACKER_VERSION_QUERY}"
@@ -138,9 +139,11 @@ def quote_js(value: str) -> str:
 def build_week_switch_markup(token: str, active_week: int) -> str:
     week1_class = " is-active" if active_week == 1 else ""
     week2_class = " is-active" if active_week == 2 else ""
+    week3_class = " is-active" if active_week == 3 else ""
     return f"""    <nav class="week-switch reveal" aria-label="Переключение недели">
       <a class="week-switch-btn{week1_class}" href="../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 1</a>
       <a class="week-switch-btn{week2_class}" href="../week_2_trackers_april_2026/w2_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 2</a>
+      <a class="week-switch-btn{week3_class}" href="../week_3_trackers_april_2026/w3_{token}.html?{WEEK3_TRACKER_VERSION_QUERY}">Неделя 3</a>
     </nav>"""
 
 
