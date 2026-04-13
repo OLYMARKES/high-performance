@@ -312,6 +312,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.
 
 <script>
 const personalParams = new URLSearchParams(window.location.search);
+const personalParticipant = personalParams.get('participant');
 const trackerUrl = personalParams.get('tracker') || 'week-3-tracker.html';
 const personalQuery = personalParams.toString();
 const personalPaths = {
@@ -333,6 +334,33 @@ document.querySelectorAll('[data-personal-link]').forEach((link) => {
   link.href = personalQuery ? `${base}?${personalQuery}` : base;
 });
 
+const FRAMEWORK_STORAGE_KEY = personalParticipant
+  ? `hp_week3_values_framework_${personalParticipant}`
+  : 'hp_week3_values_framework';
+
+function loadFrameworkState() {
+  try {
+    const saved = localStorage.getItem(FRAMEWORK_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveFrameworkState(patch) {
+  const next = {
+    ...loadFrameworkState(),
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    localStorage.setItem(FRAMEWORK_STORAGE_KEY, JSON.stringify(next));
+  } catch (e) {}
+
+  return next;
+}
+
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
@@ -340,6 +368,18 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
 /* Evidence tracker */
 let evidenceItems = [];
+const oldBeliefInput = document.getElementById('oldBelief');
+const newBeliefInput = document.getElementById('newBelief');
+const firstEvidenceInput = document.getElementById('firstEvidence');
+const resultCard = document.getElementById('resultCard');
+const resultOld = document.getElementById('resultOld');
+const resultNew = document.getElementById('resultNew');
+const resultEvidence = document.getElementById('resultEvidence');
+
+function normalizeEvidenceList(items) {
+  if (!Array.isArray(items)) return [];
+  return items.map(item => String(item || '').trim()).filter(Boolean);
+}
 
 document.getElementById('evidenceAddBtn').addEventListener('click', addEvidence);
 document.getElementById('evidenceInput').addEventListener('keydown', e => {
@@ -366,35 +406,60 @@ function renderEvidence() {
   ).join('');
 }
 
-/* Save result */
-document.getElementById('saveBtn').addEventListener('click', () => {
-  const oldB = document.getElementById('oldBelief').value.trim();
-  const newB = document.getElementById('newBelief').value.trim();
-  const firstEv = document.getElementById('firstEvidence').value.trim();
-  if (!oldB || !newB) { alert('Заполни старое и новое убеждение (шаги 1 и 2)'); return; }
-
-  document.getElementById('resultOld').textContent = oldB;
-  document.getElementById('resultNew').textContent = newB;
-
-  const evDiv = document.getElementById('resultEvidence');
-  const allEvidence = [];
-  if (firstEv) firstEv.split('\n').filter(l => l.trim()).forEach(l => allEvidence.push(l.replace(/^\d+[\.\)\-\s]*/, '').trim()));
-  evidenceItems.forEach(e => allEvidence.push(e));
+function renderProphecyResult(oldBelief, newBelief, allEvidence) {
+  resultOld.textContent = oldBelief;
+  resultNew.textContent = newBelief;
 
   if (allEvidence.length > 0) {
     let html = '<div class="pr-evidence-title">Мои доказательства (' + allEvidence.length + ')</div>';
     allEvidence.forEach(e => {
       html += '<div class="evidence-item"><div class="evidence-check">&#10003;</div><div class="evidence-text">' + e + '</div></div>';
     });
-    evDiv.innerHTML = html;
-    evDiv.style.display = 'block';
+    resultEvidence.innerHTML = html;
+    resultEvidence.style.display = 'block';
   } else {
-    evDiv.style.display = 'none';
+    resultEvidence.style.display = 'none';
   }
 
-  const card = document.getElementById('resultCard');
-  card.classList.add('visible');
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  resultCard.classList.add('visible');
+}
+
+const existingFramework = loadFrameworkState();
+if (existingFramework.prophecyOldBelief) oldBeliefInput.value = existingFramework.prophecyOldBelief;
+if (existingFramework.prophecyNewBelief) newBeliefInput.value = existingFramework.prophecyNewBelief;
+if (existingFramework.prophecyFirstEvidence) firstEvidenceInput.value = existingFramework.prophecyFirstEvidence;
+evidenceItems = normalizeEvidenceList(existingFramework.prophecyEvidenceList);
+renderEvidence();
+if (existingFramework.prophecyOldBelief && existingFramework.prophecyNewBelief) {
+  renderProphecyResult(
+    existingFramework.prophecyOldBelief,
+    existingFramework.prophecyNewBelief,
+    normalizeEvidenceList(existingFramework.prophecyEvidence)
+  );
+}
+
+/* Save result */
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const oldB = oldBeliefInput.value.trim();
+  const newB = newBeliefInput.value.trim();
+  const firstEv = firstEvidenceInput.value.trim();
+  if (!oldB || !newB) { alert('Заполни старое и новое убеждение (шаги 1 и 2)'); return; }
+
+  const allEvidence = [];
+  if (firstEv) firstEv.split('\n').filter(l => l.trim()).forEach(l => allEvidence.push(l.replace(/^\d+[\.\)\-\s]*/, '').trim()));
+  evidenceItems.forEach(e => allEvidence.push(e));
+
+  saveFrameworkState({
+    prophecyOldBelief: oldB,
+    prophecyNewBelief: newB,
+    prophecyFirstEvidence: firstEv,
+    prophecyEvidenceList: evidenceItems,
+    prophecyEvidence: allEvidence,
+    manifestoProphecy: newB
+  });
+
+  renderProphecyResult(oldB, newB, allEvidence);
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 </script>
 </body>

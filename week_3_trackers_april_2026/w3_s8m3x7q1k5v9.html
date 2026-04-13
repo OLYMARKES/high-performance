@@ -1534,7 +1534,9 @@ function normalizeManifestoState(data) {
     values: (data && data.values && data.values.trim()) || DEFAULT_MANIFESTO.values,
     identity: (data && data.identity && data.identity.trim()) || DEFAULT_MANIFESTO.identity,
     prophecy: (data && data.prophecy && data.prophecy.trim()) || DEFAULT_MANIFESTO.prophecy,
-    frameworkManifestoValues: (data && data.frameworkManifestoValues) || ''
+    frameworkManifestoValues: (data && data.frameworkManifestoValues) || '',
+    frameworkManifestoIdentity: (data && data.frameworkManifestoIdentity) || '',
+    frameworkManifestoProphecy: (data && data.frameworkManifestoProphecy) || ''
   };
 }
 
@@ -1587,21 +1589,60 @@ function syncFrameworkIntoManifesto() {
   if (!framework) return;
 
   const generatedValues = framework.manifestoValues || buildManifestoValuesFromFramework(framework);
-  if (!generatedValues) return;
+  const generatedIdentity = framework.manifestoIdentity || framework.identityStatement || '';
+  const generatedProphecy = framework.manifestoProphecy || framework.prophecyNewBelief || '';
 
-  const canReplace =
-    !state.values ||
-    state.values === DEFAULT_MANIFESTO.values ||
-    state.values === state.frameworkManifestoValues;
+  let hasChanges = false;
 
-  if (canReplace) {
+  if (
+    generatedValues &&
+    (
+      !state.values ||
+      state.values === DEFAULT_MANIFESTO.values ||
+      state.values === state.frameworkManifestoValues
+    )
+  ) {
     state = {
       ...state,
       values: generatedValues,
       frameworkManifestoValues: generatedValues
     };
-    saveState();
+    hasChanges = true;
   }
+
+  if (
+    generatedIdentity &&
+    (
+      !state.identity ||
+      state.identity === DEFAULT_MANIFESTO.identity ||
+      state.identity === state.frameworkManifestoIdentity
+    )
+  ) {
+    state = {
+      ...state,
+      identity: generatedIdentity,
+      frameworkManifestoIdentity: generatedIdentity
+    };
+    hasChanges = true;
+  }
+
+  if (
+    generatedProphecy &&
+    (
+      !state.prophecy ||
+      state.prophecy === DEFAULT_MANIFESTO.prophecy ||
+      state.prophecy === state.frameworkManifestoProphecy
+    )
+  ) {
+    state = {
+      ...state,
+      prophecy: generatedProphecy,
+      frameworkManifestoProphecy: generatedProphecy
+    };
+    hasChanges = true;
+  }
+
+  if (hasChanges) saveState();
 }
 
 syncFrameworkIntoManifesto();

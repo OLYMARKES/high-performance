@@ -451,6 +451,29 @@ const FRAMEWORK_STORAGE_KEY = personalParticipant
   ? `hp_week3_values_framework_${personalParticipant}`
   : 'hp_week3_values_framework';
 
+function loadFrameworkState() {
+  try {
+    const saved = localStorage.getItem(FRAMEWORK_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveFrameworkState(patch) {
+  const next = {
+    ...loadFrameworkState(),
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    localStorage.setItem(FRAMEWORK_STORAGE_KEY, JSON.stringify(next));
+  } catch (e) {}
+
+  return next;
+}
+
 function extractFrameworkLines(text) {
   return text
     .split('\n')
@@ -468,6 +491,26 @@ function buildManifestoValues(lines) {
 
 /* Phrase picker */
 const topValuesInput = document.getElementById('topValues');
+const valuesAliveInput = document.getElementById('valuesAlive');
+
+function syncSelectedChipsFromInput() {
+  const currentLines = topValuesInput.value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  document.querySelectorAll('.phrase-chip').forEach(chip => {
+    const phrase = '— ' + chip.dataset.value.trim();
+    chip.classList.toggle('selected', currentLines.includes(phrase));
+  });
+}
+
+const existingFramework = loadFrameworkState();
+if (existingFramework.top) topValuesInput.value = existingFramework.top;
+if (existingFramework.alive) valuesAliveInput.value = existingFramework.alive;
+syncSelectedChipsFromInput();
+topValuesInput.addEventListener('input', syncSelectedChipsFromInput);
+
 document.querySelectorAll('.phrase-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     const phrase = '— ' + chip.dataset.value.trim();
@@ -493,19 +536,16 @@ document.querySelectorAll('.phrase-chip').forEach(chip => {
 /* Save */
 document.getElementById('saveBtn').addEventListener('click', () => {
   const top = topValuesInput.value.trim();
-  const alive = document.getElementById('valuesAlive').value.trim();
+  const alive = valuesAliveInput.value.trim();
   if (!top) { alert('Напиши свои 3–5 ценностей в шаге 2'); return; }
 
   const frameworkLines = extractFrameworkLines(top);
-  try {
-    localStorage.setItem(FRAMEWORK_STORAGE_KEY, JSON.stringify({
-      top,
-      alive,
-      lines: frameworkLines,
-      manifestoValues: buildManifestoValues(frameworkLines),
-      updatedAt: new Date().toISOString()
-    }));
-  } catch (e) {}
+  saveFrameworkState({
+    top,
+    alive,
+    lines: frameworkLines,
+    manifestoValues: buildManifestoValues(frameworkLines)
+  });
 
   const card = document.getElementById('resultCard');
   const content = document.getElementById('resultContent');
