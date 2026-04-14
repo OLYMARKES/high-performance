@@ -1502,6 +1502,7 @@ let state = loadState();
 let currentDay = 0;
 let editingItemIndex = null;
 let editingDayIndex = null;
+const rootPrefix = window.location.pathname.includes('/week_3_trackers_april_2026/') ? '../' : '';
 
 function getDefaultState() {
   return {
@@ -1639,6 +1640,12 @@ function syncFrameworkIntoManifesto() {
 
 syncFrameworkIntoManifesto();
 
+document.querySelectorAll('.materials-nav-link').forEach((link) => {
+  const rawHref = link.getAttribute('href');
+  if (!rawHref || !rawHref.startsWith('materials.html')) return;
+  link.href = `${rootPrefix}${rawHref}`;
+});
+
 /* ──────────────────────────────────
    3-LAYER MANIFESTO
    ────────────────────────────────── */
@@ -1747,6 +1754,11 @@ function renderValuesHomeSection() {
     : extractFrameworkLines(framework.top || '');
 
   valuesHomeSection.style.display = 'block';
+  const valuesMaterialLink = document.querySelector('.material-card.accent-terra');
+  const valuesFrameworkHref = valuesMaterialLink
+    ? valuesMaterialLink.href
+    : `${rootPrefix}week-3-framework-values.html`;
+
   valuesHomeSection.innerHTML = `
     <div class="values-home-card">
       <div class="values-home-kicker">Мои цели и ценности</div>
@@ -1757,7 +1769,7 @@ function renderValuesHomeSection() {
       </div>
       ${framework.alive ? `<div class="values-home-notes">${escapeHtml(framework.alive)}</div>` : ''}
       <div class="values-home-actions">
-        <a class="values-home-link" href="week-3-framework-values.html" target="_blank" rel="noopener">Открыть framework ценностей</a>
+        <a class="values-home-link" href="${escapeHtml(valuesFrameworkHref)}" target="_blank" rel="noopener">Открыть framework ценностей</a>
         <button class="values-home-link" type="button" id="valuesToManifestoBtn">Редактировать манифест</button>
       </div>
     </div>
