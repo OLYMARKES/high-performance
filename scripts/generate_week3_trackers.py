@@ -11,6 +11,7 @@ SOURCE_TEMPLATE_PATH = ROOT / "week-3-tracker.html"
 OUTPUT_DIR = ROOT / "week_3_trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_3_trackers_april_2026"
 TRACKER_VERSION_QUERY = "v=week3-rollout-v1"
+WEEK4_TRACKER_VERSION_QUERY = "v=week4-rollout-v1"
 TEAM_PAGE_TOKEN = "week3-vault-r7m4q2k8p6t1"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 CURATOR_TRACKER_PARTICIPANTS = [
@@ -62,6 +63,7 @@ def build_week_switch_markup(token: str) -> str:
       <a class="week-switch-btn" href="../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 1</a>
       <a class="week-switch-btn" href="../week_2_trackers_april_2026/w2_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 2</a>
       <a class="week-switch-btn is-active" href="../week_3_trackers_april_2026/w3_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 3</a>
+      <a class="week-switch-btn" href="../week_4_trackers_april_2026/w4_{token}.html?{WEEK4_TRACKER_VERSION_QUERY}">Неделя 4</a>
     </nav>"""
 
 
