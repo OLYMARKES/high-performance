@@ -12,6 +12,7 @@ PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_4_trackers_
 TRACKER_VERSION_QUERY = "v=week4-rollout-v1"
 TEAM_PAGE_TOKEN = "week4-vault-x6m3q9p2k7t4"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
+DISABLED_WEEK4_SLUGS = {"anna"}
 CURATOR_TRACKER_PARTICIPANTS = [
     {
         "full_name": "Варя",
@@ -53,7 +54,8 @@ CURATOR_TRACKER_PARTICIPANTS = [
 
 
 def get_week4_tracker_participants() -> list[dict[str, str]]:
-    return [*get_participants(), *CURATOR_TRACKER_PARTICIPANTS]
+    participants = [*get_participants(), *CURATOR_TRACKER_PARTICIPANTS]
+    return [participant for participant in participants if participant["slug"] not in DISABLED_WEEK4_SLUGS]
 
 
 def build_week_switch_markup(token: str) -> str:
