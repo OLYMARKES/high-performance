@@ -1292,32 +1292,34 @@ body {
 const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
 // ── Тренировки недели ──
+const WORKOUTS_PDF_URL = '../week-4-workouts.pdf';
+
 const WEEKLY_WORKOUT = {
   label: 'Массаж пресса · 10 мин',
-  url: 'https://kinescope.io/0mWxhEmp6FzWxZxAG8HapU'
+  url: WORKOUTS_PDF_URL
 };
 
 const WORKOUT_LINKS = [
   {
-    main: { label: 'Основная · 33 мин', url: 'https://kinescope.io/o2QYaVrUp69d4gUhUQaEoA' }
+    main: { label: 'Основная · 33 мин', url: WORKOUTS_PDF_URL }
   },
   {
-    morning: { label: 'Утро · 6 мин', url: 'https://kinescope.io/4CKEfhvi964GLwgAivVEP2' },
-    main: { label: 'Основная · 17 мин', url: 'https://kinescope.io/mRd5jM7FNBCEDEK6NkU2WP' }
+    morning: { label: 'Утро · 6 мин', url: WORKOUTS_PDF_URL },
+    main: { label: 'Основная · 17 мин', url: WORKOUTS_PDF_URL }
   },
   {
-    main: { label: 'Основная · 30 мин', url: 'https://kinescope.io/a4gz3NZaQvqwy68bCZruXm' }
+    main: { label: 'Основная · 30 мин', url: WORKOUTS_PDF_URL }
   },
   {
-    morning: { label: 'Утро · 12 мин', url: 'https://kinescope.io/cREfnxugcBjo7PEWXH66Vv' },
-    main: { label: 'Основная · 16 мин', url: 'https://kinescope.io/3CdzZNSQboq1aWr8QsDyh2' }
+    morning: { label: 'Утро · 12 мин', url: WORKOUTS_PDF_URL },
+    main: { label: 'Основная · 16 мин', url: WORKOUTS_PDF_URL }
   },
   {
-    main: { label: 'Основная · 30 мин', url: 'https://kinescope.io/ucWQUzqMC5eJ9XdB73rCC8' }
+    main: { label: 'Основная · 30 мин', url: WORKOUTS_PDF_URL }
   },
   {
-    morning: { label: 'Утро · 4 мин', url: 'https://kinescope.io/pyjjNmALvWHcwbkajm8NhW' },
-    main: { label: 'Основная · 17 мин', url: 'https://kinescope.io/5vHtiD15mztN2Ue5BoEfRJ' }
+    morning: { label: 'Утро · 4 мин', url: WORKOUTS_PDF_URL },
+    main: { label: 'Основная · 17 мин', url: WORKOUTS_PDF_URL }
   },
   {}
 ];
@@ -1568,11 +1570,11 @@ function renderWorkoutSection() {
         <div class="workout-day">${dayName}</div>
       </div>
       <div class="workout-title">Тренировка дня</div>
-      <div class="workout-copy">Сначала открывай дневную тренировку, а массаж пресса держи как одну практику на всю неделю.</div>
+      <div class="workout-copy">Открывай PDF с тренировками: внутри сохранены кликабельные ссылки на нужные практики дня и недельную практику.</div>
       ${dailyWorkout ? `
         <a class="workout-primary-link" href="${dailyWorkout.url}" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          ${mainWorkout ? 'Открыть основную тренировку' : `Открыть ${dailyWorkout.label.toLowerCase()}`}
+          Открыть PDF с тренировками
         </a>
       ` : `<div class="workout-empty">На этот день отдельная тренировка пока не добавлена.</div>`}
       <div class="workout-links-row">

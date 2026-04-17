@@ -151,6 +151,7 @@ def add_personalization(template: str, participant: dict[str, str]) -> str:
         1,
     )
     html = html.replace('href="week-4.html" target="_blank"', 'href="../week-4.html" target="_blank" rel="noopener"', 1)
+    html = html.replace("'week-4-workouts.pdf'", "'../week-4-workouts.pdf'")
     html = html.replace(
         "Оля Маркес · High Performance · Трекер недели 4 · Апрель 2026",
         f"{name} · High Performance · Трекер недели 4 · Апрель 2026",
