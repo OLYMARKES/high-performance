@@ -114,6 +114,11 @@ def add_personalization(template: str, participant: dict[str, str]) -> str:
         1,
     )
     html = html.replace(
+        'href="week-2-tracker.html" target="_blank"',
+        f'href="../week_2_trackers_april_2026/w2_{token}.html?{TRACKER_VERSION_QUERY}" target="_blank" rel="noopener"',
+        1,
+    )
+    html = html.replace(
         'href="week-3-tracker.html" target="_blank"',
         f'href="../week_3_trackers_april_2026/w3_{token}.html?{TRACKER_VERSION_QUERY}" target="_blank" rel="noopener"',
         1,
