@@ -5,7 +5,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from issue_snapshot_tools import build_questionnaire_match_index
-from participants_registry import get_participants
+from participants_registry import (
+    get_curator_participants,
+    get_participants,
+    get_questionnaire_extra_participants,
+)
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1919,7 +1923,7 @@ def main() -> None:
 
     entries = []
 
-    for participant in get_participants():
+    for participant in [*get_participants(), *get_curator_participants(), *get_questionnaire_extra_participants()]:
         participant_with_slug = participant
         filename = participant["filename"]
         page_html = build_participant_page(template, participant_with_slug)

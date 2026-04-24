@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from participants_registry import get_participants
+from participants_registry import get_curator_participants, get_participants
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,48 +14,10 @@ WEEK5_VERSION_QUERY = "v=week5-rollout-v1"
 TEAM_PAGE_TOKEN = "week4-vault-x6m3q9p2k7t4"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 DISABLED_WEEK4_SLUGS = {"anna"}
-CURATOR_TRACKER_PARTICIPANTS = [
-    {
-        "full_name": "Варя",
-        "public_name": "Варя",
-        "for_name": "Вари",
-        "display_name": "Варя",
-        "telegram_handle": "@va_rom",
-        "slug": "varya-curator",
-        "token": "k7v3m9q2t6p4",
-    },
-    {
-        "full_name": "Таня",
-        "public_name": "Таня",
-        "for_name": "Тани",
-        "display_name": "Таня",
-        "telegram_handle": "@tparam",
-        "slug": "tanya-curator",
-        "token": "p8m4k2v7q6t1",
-    },
-    {
-        "full_name": "Света",
-        "public_name": "Света",
-        "for_name": "Светы",
-        "display_name": "Света",
-        "telegram_handle": "@svetlana_saltykova",
-        "slug": "sveta-curator",
-        "token": "s4v8k2m7q1t5",
-    },
-    {
-        "full_name": "Настя",
-        "public_name": "Настя",
-        "for_name": "Насти",
-        "display_name": "Настя",
-        "telegram_handle": "@Nastia_Lee",
-        "slug": "nastya-curator",
-        "token": "n5t2v8k4q7m1",
-    },
-]
 
 
 def get_week4_tracker_participants() -> list[dict[str, str]]:
-    participants = [*get_participants(), *CURATOR_TRACKER_PARTICIPANTS]
+    participants = [*get_participants(), *get_curator_participants()]
     return [participant for participant in participants if participant["slug"] not in DISABLED_WEEK4_SLUGS]
 
 
@@ -78,7 +40,7 @@ def add_personalization(template: str, participant: dict[str, str]) -> str:
     for_name = participant["for_name"]
     slug = participant["slug"]
     token = participant["token"]
-    has_week5 = not slug.endswith("-curator")
+    has_week5 = True
 
     html = template
     html = html.replace(

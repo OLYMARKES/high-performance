@@ -48,6 +48,45 @@ RAW_PARTICIPANTS = [
 ]
 
 
+CURATOR_TRACKER_PARTICIPANTS = [
+    {
+        "name": "Варя",
+        "public_name": "Варя",
+        "contact": "@va_rom",
+        "source": "manual",
+        "token": "k7v3m9q2t6p4",
+        "slug_override": "varya-curator",
+    },
+    {
+        "name": "Таня",
+        "public_name": "Таня",
+        "contact": "@tparam",
+        "source": "manual",
+        "token": "p8m4k2v7q6t1",
+        "slug_override": "tanya-curator",
+    },
+    {
+        "name": "Света",
+        "public_name": "Света",
+        "contact": "@svetlana_saltykova",
+        "source": "manual",
+        "token": "s4v8k2m7q1t5",
+        "slug_override": "sveta-curator",
+    },
+    {
+        "name": "Настя",
+        "public_name": "Настя",
+        "contact": "@Nastia_Lee",
+        "source": "manual",
+        "token": "n5t2v8k4q7m1",
+        "slug_override": "nastya-curator",
+    },
+]
+
+
+LEGACY_QUESTIONNAIRE_TOKENS = {"f2v8m4q7k1t5"}
+
+
 TRANSLIT = {
     "а": "a",
     "б": "b",
@@ -146,6 +185,65 @@ def get_participants() -> list[dict[str, str]]:
                 "for_name": for_name,
                 "slug": slug,
                 "display_name": display_name,
+                "telegram_handle": raw["contact"],
+                "lead_issue": raw.get("issue"),
+                "paid": bool(raw.get("paid", True)),
+                "course_opened": bool(raw.get("course_opened", False)),
+                "opened_course": raw.get("opened_course", ""),
+                "questionnaire_token": raw.get("questionnaire_token", raw["token"]),
+                "filename": f"q_{raw.get('questionnaire_token', raw['token'])}.html",
+            }
+        )
+
+    return participants
+
+
+def get_curator_participants() -> list[dict[str, str]]:
+    participants: list[dict[str, str]] = []
+    for raw in CURATOR_TRACKER_PARTICIPANTS:
+        public_name = extract_public_name(raw)
+        participants.append(
+            {
+                **raw,
+                "full_name": raw["name"],
+                "public_name": public_name,
+                "for_name": str(raw.get("for_name", "")).strip() or build_for_name(public_name),
+                "slug": str(raw["slug_override"]).strip(),
+                "display_name": public_name,
+                "telegram_handle": raw["contact"],
+                "lead_issue": raw.get("issue"),
+                "paid": bool(raw.get("paid", True)),
+                "course_opened": bool(raw.get("course_opened", False)),
+                "opened_course": raw.get("opened_course", ""),
+                "questionnaire_token": raw.get("questionnaire_token", raw["token"]),
+                "filename": f"q_{raw.get('questionnaire_token', raw['token'])}.html",
+            }
+        )
+    return participants
+
+
+def get_questionnaire_extra_participants() -> list[dict[str, str]]:
+    participants: list[dict[str, str]] = []
+    used_slugs: set[str] = set()
+
+    for raw in RAW_PARTICIPANTS:
+        if raw["token"] not in LEGACY_QUESTIONNAIRE_TOKENS:
+            continue
+
+        base_slug = str(raw.get("slug_override", "")).strip() or slugify(raw["name"])
+        contact_slug = slugify(raw["contact"].replace("@", ""))
+        slug = base_slug if base_slug not in used_slugs else f"{base_slug}-{contact_slug}"
+        used_slugs.add(slug)
+
+        public_name = extract_public_name(raw)
+        participants.append(
+            {
+                **raw,
+                "full_name": raw["name"],
+                "public_name": public_name,
+                "for_name": str(raw.get("for_name", "")).strip() or build_for_name(public_name),
+                "slug": slug,
+                "display_name": public_name,
                 "telegram_handle": raw["contact"],
                 "lead_issue": raw.get("issue"),
                 "paid": bool(raw.get("paid", True)),

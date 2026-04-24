@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from participants_registry import get_participants
+from participants_registry import get_curator_participants, get_participants
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -283,7 +283,7 @@ def main() -> None:
     args = parse_args()
     template = SOURCE_TEMPLATE_PATH.read_text(encoding="utf-8")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    participants = get_participants()
+    participants = [*get_participants(), *get_curator_participants()]
 
     if args.slugs:
         wanted = set(args.slugs)

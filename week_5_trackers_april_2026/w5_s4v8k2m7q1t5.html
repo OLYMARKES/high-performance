@@ -1,11 +1,11 @@
-<!-- Generated from /Users/olymarkes/Desktop/high perfomance /week-4-tracker.html for Варя from manual roster update -->
+<!-- Generated from /Users/olymarkes/Desktop/high perfomance /week-5-tracker.html for Света from manual roster update -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>Трекер недели 4 — Варя</title>
+<title>Трекер недели 5 — Света</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -147,9 +147,9 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.layer-dot.notice { background: var(--terracotta); }
-.layer-dot.turn { background: var(--olive); }
-.layer-dot.bless { background: var(--accent-gold); }
+.layer-dot.done { background: var(--terracotta); }
+.layer-dot.meaning { background: var(--olive); }
+.layer-dot.carry { background: var(--accent-gold); }
 
 .manifesto-textarea {
   width: 100%;
@@ -556,6 +556,68 @@ body {
   box-shadow: none;
 }
 
+/* Previous trackers block */
+.archive-section {
+  margin-bottom: 48px;
+}
+.archive-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.archive-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--sand);
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.archive-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  padding: 16px 18px;
+  text-decoration: none;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  display: block;
+}
+.archive-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(58,54,50,0.05);
+  border-color: var(--accent-gold-light);
+}
+.archive-card .ac-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 6px;
+}
+.archive-card .ac-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--charcoal);
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.archive-card .ac-desc {
+  font-size: 12px;
+  color: var(--warm-gray);
+  line-height: 1.45;
+}
+
 /* ══════════════════════════════════
    HERO
    ══════════════════════════════════ */
@@ -608,7 +670,7 @@ body {
 .hero-sub {
   font-size: 17px;
   color: var(--warm-gray);
-  max-width: 620px;
+  max-width: 640px;
   margin: 0 auto;
   line-height: 1.65;
 }
@@ -772,7 +834,7 @@ body {
 }
 .tracker-item.checked .tracker-title { color: var(--accent-gold); }
 
-/* Special styling for gratitude item */
+/* Special styling for inventory item */
 .tracker-item.gratitude-special {
   border: 1px solid var(--accent-gold-light);
   background: linear-gradient(135deg, var(--warm-white), rgba(245,237,216,0.28));
@@ -1129,48 +1191,36 @@ body {
   .manifesto-banner .identity-text { font-size: 18px; }
   .day-nav-btn { width: 42px; height: 42px; font-size: 17px; }
   .materials-grid { grid-template-columns: 1fr; }
+  .archive-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════ 3-LAYER MANIFESTO OVERLAY ═══════ -->
+<!-- ═══════ MANIFESTO OVERLAY (одна главная благодарность месяца) ═══════ -->
 <div class="manifesto-overlay" id="manifestoOverlay">
   <div class="manifesto-modal">
-    <div class="modal-tag">Неделя 4 · Твой манифест благодарности</div>
-    <h2>Три коммита <em>благодарности</em></h2>
-    <p class="modal-desc">На этой неделе мы строим альтернативный контур — рядом с привычкой обесценивать мы выращиваем навык замечать и ценить. Три обещания себе, которые ты будешь перечитывать каждое утро.</p>
+    <div class="modal-tag">Неделя 5 · Финал месяца · Одна главная благодарность</div>
+    <h2>Главная <em>благодарность</em> месяца</h2>
+    <p class="modal-desc">Эта неделя — чтобы остановиться и увидеть апрель целиком. Не три фокуса, не список задач. Одно письмо себе — о том, за что я благодарна себе в этом месяце. Из этого места я и проектирую май.</p>
 
     <div class="example-block">
       <div class="example-tag">Пример для вдохновения</div>
       <div class="example-layer">
-        <div class="el-title">Пример манифеста</div>
+        <div class="el-title">Пример — моя благодарность апрелю</div>
         <div class="example-manifesto-copy">
-          <p>Благодарность и восхищение всем, что для меня важно, дают мне больше энергии. Это главный закон, по которому я хочу жить — и эта неделя об этом.</p>
-          <p>Я обещаю замечать, как мой ум по привычке скатывается в обесценивание и критицизм — быстрее, чем я успеваю опомниться. Это заученная нейронная дорожка, которая ничего не говорит о правде обо мне, о моих людях, о моей работе. В самом этом видении у меня уже появляется воздух — зазор, в котором я могу повернуть взгляд.</p>
-          <p>Я обещаю направлять на себя и на всё, что мне важно, любящий восхищённый взгляд. Я возвращаюсь к моим людям, моим проектам, моему телу, моим делам — с именами, с деталями, с теми моментами, которые уже получились.</p>
-          <p>Я обещаю давать этой благодарности напитать меня в груди, в дыхании, в теле — и принимать решения только из этого наполненного состояния.</p>
-          <p>Из него у меня больше креативной энергии, больше точности, больше радости двигаться. Всё, чем я восхищаюсь, расцветает. Я намаливаю свою жизнь.</p>
+          <p>Прежде всего я хочу остановиться и сказать себе спасибо. Я благодарна себе за усилия, за состояние, за энергию, за то, как я прожила этот месяц. Апрель мог легко стать переходным — временем боли и зависания между мирами, поставленной на паузу жизни. И я выбрала прожить его в своём прайме — и этим я горжусь.</p>
+          <p>Я ни разу не пропустила день без движения. Я сделала практически все тренировки по плану — и я горжусь той формой, в которой пришла к концу месяца. Я съездила с сыном на серф-ретрит, и это было частью моей живой, наполненной жизни. Я запустила и довела до конца проект, которым мне самой нравилось пользоваться: он не остался в столе — он вышел к людям и начал им служить. Я много читала и делилась тем, что читаю. Я отдыхала и училась не работать — для меня это отдельный навык. Я не была в острой тревоге. Я намечала свои проекты и соединялась с тем, что для меня важно.</p>
+          <p>И всё это — в месяц, который был для меня по-настоящему непростым. Тем ценнее для меня то, что я сделала. Этот апрель подтвердил во мне человека, который умеет опираться на тело, движение и ритм — и эти опоры держат меня, даже когда внутри трудно. Человека, у которого продуктивность вырастает из соединения с ценностями, а не из тревоги. Человека, который может держать внутри боль и одновременно держать свой прайм — и одно другому не мешает.</p>
+          <p>В май я вхожу с уже живой базой: ритм тренировок и движения, навык отдыха, связь со своими ценностями, понимание того, какие проекты мне нравится делать. Я не начинаю с нуля. Я двигаюсь дальше — отсюда.</p>
         </div>
       </div>
     </div>
 
-    <!-- Layer 1: Notice -->
+    <!-- Single field: main gratitude of the month -->
     <div class="layer-block">
-      <div class="layer-label"><span class="layer-dot notice"></span> Обещаю замечать</div>
-      <textarea class="manifesto-textarea" id="noticeInput" rows="3" placeholder="Что ты обещаешь замечать? Какие обесценивающие мысли или паттерны..."></textarea>
-    </div>
-
-    <!-- Layer 2: Turn -->
-    <div class="layer-block">
-      <div class="layer-label"><span class="layer-dot turn"></span> Обещаю поворачивать взгляд</div>
-      <textarea class="manifesto-textarea" id="turnInput" rows="3" placeholder="Как ты обещаешь поворачивать взгляд к благодарности..."></textarea>
-    </div>
-
-    <!-- Layer 3: Bless -->
-    <div class="layer-block">
-      <div class="layer-label"><span class="layer-dot bless"></span> Что я намаливаю эту неделю</div>
-      <textarea class="manifesto-textarea" id="blessInput" rows="3" placeholder="Какую одну сферу ты выбираешь намаливать — и какое именно состояние культивируешь..."></textarea>
+      <div class="layer-label"><span class="layer-dot carry"></span> Моя главная благодарность апрелю</div>
+      <textarea class="manifesto-textarea" id="gratitudeInput" rows="8" placeholder="Одно письмо себе. За что я благодарна себе в этом месяце — конкретно, с эпизодами и именами. Первый абзац — самое главное, потом можно развернуть..."></textarea>
     </div>
 
     <button class="manifesto-btn" id="manifestoSave">Начать неделю</button>
@@ -1209,9 +1259,9 @@ body {
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-tag">High Performance · Варя · Неделя 4</div>
-    <h1>Неделя <em>4</em></h1>
-    <p class="hero-sub">Персональный трекер четвёртой недели для Вари. Здесь собраны материал недели, тренировка дня, недельная практика и ежедневный трекер с автосохранением.</p>
+    <div class="hero-tag">High Performance · Света · Неделя 5</div>
+    <h1>Неделя <em>5</em></h1>
+    <p class="hero-sub">Месяц, в который я выбрала жить в своём прайме. На этой неделе я останавливаюсь, вижу сделанное целиком — и из этого места проектирую май.</p>
   </div>
 </section>
 
@@ -1222,22 +1272,13 @@ body {
     <!-- Manifesto banner (visible after saving) -->
     <div class="manifesto-banner reveal" id="manifestoBanner" style="display:none;">
       <div class="banner-label">
-        Мой манифест · Неделя 4
+        Главная благодарность апрелю
         <span class="edit-hint" id="bannerEditBtn" onclick="event.stopPropagation(); openManifesto();">редактировать</span>
       </div>
       <div class="identity-text" id="bannerIdentity"></div>
       <div class="layers-full" id="bannerFull">
         <div class="layer-row">
-          <div class="layer-row-label n-color"><span class="layer-dot notice" style="width:8px;height:8px;display:inline-block;border-radius:50%;"></span> Обещаю замечать</div>
-          <div class="layer-row-text" id="bannerNotice"></div>
-        </div>
-        <div class="layer-row">
-          <div class="layer-row-label t-color"><span class="layer-dot turn" style="width:8px;height:8px;display:inline-block;border-radius:50%;"></span> Обещаю поворачивать взгляд</div>
-          <div class="layer-row-text" id="bannerTurn"></div>
-        </div>
-        <div class="layer-row">
-          <div class="layer-row-label b-color"><span class="layer-dot bless" style="width:8px;height:8px;display:inline-block;border-radius:50%;"></span> Что я намаливаю эту неделю</div>
-          <div class="layer-row-text" id="bannerBless"></div>
+          <div class="layer-row-text" id="bannerGratitudeFull"></div>
         </div>
       </div>
       <div class="manifesto-expand-row">
@@ -1249,22 +1290,61 @@ body {
     </div>
 
     <nav class="week-switch reveal" aria-label="Переключение недели">
-      <a class="week-switch-btn" href="../week_1_trackers_april_2026/w1_k7v3m9q2t6p4.html?v=week4-rollout-v1">Неделя 1</a>
-      <a class="week-switch-btn" href="../week_2_trackers_april_2026/w2_k7v3m9q2t6p4.html?v=week4-rollout-v1">Неделя 2</a>
-      <a class="week-switch-btn" href="../week_3_trackers_april_2026/w3_k7v3m9q2t6p4.html?v=week4-rollout-v1">Неделя 3</a>
-      <a class="week-switch-btn is-active" href="../week_4_trackers_april_2026/w4_k7v3m9q2t6p4.html?v=week4-rollout-v1">Неделя 4</a>
-      <a class="week-switch-btn" href="../week_5_trackers_april_2026/w5_k7v3m9q2t6p4.html?v=week5-rollout-v1">Неделя 5</a>
+      <a class="week-switch-btn" href="../week_1_trackers_april_2026/w1_s4v8k2m7q1t5.html?v=week5-rollout-v1">Неделя 1</a>
+      <a class="week-switch-btn" href="../week_2_trackers_april_2026/w2_s4v8k2m7q1t5.html?v=week5-rollout-v1">Неделя 2</a>
+      <a class="week-switch-btn" href="../week_3_trackers_april_2026/w3_s4v8k2m7q1t5.html?v=week5-rollout-v1">Неделя 3</a>
+      <a class="week-switch-btn" href="../week_4_trackers_april_2026/w4_s4v8k2m7q1t5.html?v=week5-rollout-v1">Неделя 4</a>
+      <a class="week-switch-btn is-active" href="../week_5_trackers_april_2026/w5_s4v8k2m7q1t5.html?v=week5-rollout-v1">Неделя 5</a>
     </nav>
 
     <!-- Materials section -->
     <div class="materials-section reveal">
-      <div class="materials-label">Материалы недели 4</div>
+      <div class="materials-label">Материалы недели 5</div>
       <div class="materials-grid">
-        <a class="material-card accent-charcoal is-featured" href="../week-4.html" target="_blank" rel="noopener">
-          <div class="mc-icon">📚</div>
-          <div class="mc-kicker">Материал недели</div>
-          <div class="mc-title">Negativity Bias</div>
-          <div class="mc-desc">Благодарность как противоядие от обесценивания</div>
+        <a class="material-card accent-charcoal is-featured" href="https://www.loom.com/share/0405b88522b440e38144a08495799a9d" target="_blank" rel="noopener">
+          <div class="mc-icon">✦</div>
+          <div class="mc-kicker">Live-кодинг · урок 1</div>
+          <div class="mc-title">От установки CODEX до первых 3-х кейсов</div>
+          <div class="mc-desc">Первый урок по коду: быстрый вход в CODEX, базовая настройка и проход до первых трёх кейсов. Длительность: 18 минут 36 секунд.</div>
+        </a>
+        <a class="material-card accent-gold" href="https://www.loom.com/share/1486268fd5f540e4852206cee275d404" target="_blank" rel="noopener">
+          <div class="mc-icon">🗓</div>
+          <div class="mc-kicker">Live-кодинг · урок 2</div>
+          <div class="mc-title">Установка Claude с нуля</div>
+          <div class="mc-desc">Второй урок по коду: установка Claude с нуля, базовый сетап и рабочий старт без предподготовки. Длительность: 36 минут 41 секунда.</div>
+        </a>
+        <a class="material-card accent-olive" href="https://olymarkes.github.io/high-performance/week-5-lesson-designing-may.html?v=ab7ac07" target="_blank" rel="noopener">
+          <div class="mc-icon">✺</div>
+          <div class="mc-kicker">Live-кодинг · урок 3</div>
+          <div class="mc-title">Дизайним май — делаем трекер на пятую неделю</div>
+          <div class="mc-desc">Отдельная страница урока: живая запись часового коворка в Codex и Claude плюс подробный конспект из 16 шагов, чтобы повторить сборку трекера своими руками.</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Previous trackers -->
+    <div class="archive-section reveal">
+      <div class="archive-label">Трекеры прошлых недель</div>
+      <div class="archive-grid">
+        <a class="archive-card" href="../week_1_trackers_april_2026/w1_s4v8k2m7q1t5.html?v=week5-rollout-v1" target="_blank" rel="noopener">
+          <div class="ac-kicker">Неделя 1</div>
+          <div class="ac-title">Энергия</div>
+          <div class="ac-desc">Тело, сон, mindset · база</div>
+        </a>
+        <a class="archive-card" href="../week_2_trackers_april_2026/w2_s4v8k2m7q1t5.html?v=week5-rollout-v1" target="_blank" rel="noopener">
+          <div class="ac-kicker">Неделя 2</div>
+          <div class="ac-title">Тревога</div>
+          <div class="ac-desc">Замечать тревогу раньше и не отдавать ей управление</div>
+        </a>
+        <a class="archive-card" href="../week_3_trackers_april_2026/w3_s4v8k2m7q1t5.html?v=week5-rollout-v1" target="_blank" rel="noopener">
+          <div class="ac-kicker">Неделя 3</div>
+          <div class="ac-title">Ценности · Идентичность</div>
+          <div class="ac-desc">Кем я выбираю быть — и доказательства</div>
+        </a>
+        <a class="archive-card" href="../week_4_trackers_april_2026/w4_s4v8k2m7q1t5.html?v=week5-rollout-v1" target="_blank" rel="noopener">
+          <div class="ac-kicker">Неделя 4</div>
+          <div class="ac-title">Намаливание</div>
+          <div class="ac-desc">Благодарность как альтернативный контур</div>
         </a>
       </div>
     </div>
@@ -1281,7 +1361,7 @@ body {
 </section>
 
 <footer class="footer">
-  Варя · High Performance · Трекер недели 4 · Апрель 2026
+  Света · High Performance · Трекер недели 5 · 27 апреля — 3 мая 2026
 </footer>
 
 <!-- ═══════ SCRIPTS ═══════ -->
@@ -1291,46 +1371,74 @@ body {
    ────────────────────────────────── */
 
 const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+const DAY_DATES = ['27 апреля', '28 апреля', '29 апреля', '30 апреля', '1 мая', '2 мая', '3 мая'];
 
 // ── Тренировки недели ──
-const WORKOUTS_PDF_URL = '../week-4-workouts.pdf';
-
 const WEEKLY_WORKOUT = {
-  label: 'Массаж пресса · 10 мин',
-  url: WORKOUTS_PDF_URL
+  label: '',
+  url: ''
 };
 
 const WORKOUT_LINKS = [
   {
-    main: { label: 'Основная · 33 мин', url: WORKOUTS_PDF_URL }
+    summary: 'ВИИТ с Андреем · 22 мин',
+    main: {
+      label: 'ВИИТ с Андреем · 22 мин',
+      url: 'https://kinescope.io/gKvRqqmc3MgyqZEEUoX4bw'
+    }
   },
   {
-    morning: { label: 'Утро · 6 мин', url: WORKOUTS_PDF_URL },
-    main: { label: 'Основная · 17 мин', url: WORKOUTS_PDF_URL }
+    summary: 'Пресс и ягодицы с Барни · 21 мин',
+    main: {
+      label: 'Пресс и ягодицы с Барни · 21 мин',
+      url: 'https://kinescope.io/17t2kYzDW1Zp1vpR4ZxCrY'
+    }
   },
   {
-    main: { label: 'Основная · 30 мин', url: WORKOUTS_PDF_URL }
+    summary: 'Функциональная на пресс и ягодицы с Настей и Дмитрием Руслановичем · 19 мин',
+    main: {
+      label: 'Функциональная на пресс и ягодицы · 19 мин',
+      url: 'https://kinescope.io/e7XmmYTfBtR3nvityWdKQe'
+    }
   },
   {
-    morning: { label: 'Утро · 12 мин', url: WORKOUTS_PDF_URL },
-    main: { label: 'Основная · 16 мин', url: WORKOUTS_PDF_URL }
+    summary: 'На пресс с Мироновой · 22 мин',
+    main: {
+      label: 'На пресс с Мироновой · 22 мин',
+      url: 'https://kinescope.io/szCjE4boEMDPfxL8wJgWqe'
+    }
   },
   {
-    main: { label: 'Основная · 30 мин', url: WORKOUTS_PDF_URL }
+    summary: 'На всё тело с Егором и Дмитрием Руслановичем · 29 мин',
+    main: {
+      label: 'На всё тело · 29 мин',
+      url: 'https://kinescope.io/jbJsVahe1atpLzDG8i9NkL'
+    }
   },
   {
-    morning: { label: 'Утро · 4 мин', url: WORKOUTS_PDF_URL },
-    main: { label: 'Основная · 17 мин', url: WORKOUTS_PDF_URL }
+    summary: 'На пресс со Стасей и Никитой · 21 мин',
+    note: 'Нужны гантели.',
+    main: {
+      label: 'На пресс со Стасей и Никитой · 21 мин',
+      url: 'https://kinescope.io/0QCSZBF9D44HJEEviLzuGR'
+    }
   },
-  {}
+  {
+    summary: 'Фан-тренировка с Олей Маркес под треки · 25 мин',
+    note: 'А ты не сдерживай слёз, реви-реви.',
+    main: {
+      label: 'Фан-тренировка с Олей Маркес · 25 мин',
+      url: 'https://kinescope.io/gCd4KTcJ1vHDJfGhe85uL4'
+    }
+  }
 ];
 
 const DEFAULT_ITEMS = [
   {
     id: 'manifesto_morning',
     icon: '🌅',
-    title: 'Перечитала манифест утром',
-    subtitle: 'Три коммита благодарности — замечать, поворачивать взгляд, намаливать',
+    title: 'Перечитала благодарность апрелю',
+    subtitle: 'Моё письмо себе — главная благодарность месяца, из которой я проектирую май',
     hasInput: false,
     inputPlaceholder: '',
     category: 'mind'
@@ -1354,12 +1462,12 @@ const DEFAULT_ITEMS = [
     category: 'mind'
   },
   {
-    id: 'namalivanie',
-    icon: '🙏',
-    title: 'Намаливание — практика благодарности',
-    subtitle: 'Несколько минут посмотри через призму благодарности на выбранную сферу. Конкретно, с деталями, с телесным ощущением.',
+    id: 'monthinventory',
+    icon: '📓',
+    title: 'Инвентаризация дня: что получилось',
+    subtitle: 'Короткая запись того, что реально удалось сегодня — конкретно, с деталями. Этот список пойдёт в общий месячный инвентарь к воскресенью.',
     hasInput: true,
-    inputPlaceholder: 'За что ты благодарна сегодня? Что намаливаешь — проект, людей, себя, сферу жизни...',
+    inputPlaceholder: 'Что получилось сегодня? Одна практика, один выбор, один разговор — с именами и деталями...',
     category: 'mind',
     special: 'gratitude'
   },
@@ -1445,13 +1553,13 @@ const DEFAULT_ITEMS = [
     category: 'body'
   },
   {
-    id: 'evidence',
-    icon: '✨',
-    title: 'Записала доказательство',
-    subtitle: 'Одно доказательство в пользу твоего нового пророчества',
+    id: 'month_design',
+    icon: '🗺',
+    title: 'Шаг в дизайн следующего месяца',
+    subtitle: 'Одно маленькое действие в сторону архитектуры мая: выбор фокуса, заметка, скетч, короткий разговор',
     hasInput: true,
-    inputPlaceholder: 'Что сегодня подтвердило твоё новое убеждение о себе...',
-    category: 'mind'
+    inputPlaceholder: 'Какой шаг сегодня сделан — в одной фразе...',
+    category: 'focus'
   },
   {
     id: 'bedtime',
@@ -1468,18 +1576,15 @@ const DEFAULT_ITEMS = [
    STATE
    ────────────────────────────────── */
 
-let state = loadState();
-let currentDay = 0;
-let editingItemIndex = null;
-let editingDayIndex = null;
+const MANIFESTO_VERSION = 4;
+const STORAGE_KEY = 'hp_week5_tracker_sveta-curator';
 
 function getDefaultState() {
   return {
-    notice: '',
-    turn: '',
-    bless: '',
+    gratitude: '',
     days: DAY_NAMES.map((name, i) => ({
       name: name,
+      date: DAY_DATES[i],
       items: DEFAULT_ITEMS.map(item => ({
         ...item,
         id: item.id + '_' + i,
@@ -1492,40 +1597,56 @@ function getDefaultState() {
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('hp_week4_tracker_varya-curator');
-    if (saved) return JSON.parse(saved);
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migration: если сохранена старая версия манифеста — сбросить поля
+      // и перенести архитектуру на один «кусочек благодарности».
+      // Галочки и записи по дням при этом сохраняются.
+      if (parsed._manifestoVersion !== MANIFESTO_VERSION) {
+        // Убираем старые 3-слойные поля, если они есть (done/meaning/carry).
+        delete parsed.done;
+        delete parsed.meaning;
+        delete parsed.carry;
+        parsed.gratitude = '';
+        parsed._manifestoVersion = MANIFESTO_VERSION;
+      }
+      return parsed;
+    }
   } catch (e) {}
-  return getDefaultState();
+  const fresh = getDefaultState();
+  fresh._manifestoVersion = MANIFESTO_VERSION;
+  return fresh;
 }
 
 function saveState() {
   try {
-    localStorage.setItem('hp_week4_tracker_varya-curator', JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {}
 }
 
+let state = loadState();
+let currentDay = 0;
+let editingItemIndex = null;
+let editingDayIndex = null;
+
 /* ──────────────────────────────────
-   3-LAYER MANIFESTO
+   MANIFESTO — одна главная благодарность месяца
    ────────────────────────────────── */
 
 const overlay = document.getElementById('manifestoOverlay');
-const noticeInput = document.getElementById('noticeInput');
-const turnInput = document.getElementById('turnInput');
-const blessInput = document.getElementById('blessInput');
+const gratitudeInput = document.getElementById('gratitudeInput');
 const manifestoBanner = document.getElementById('manifestoBanner');
 const workoutSection = document.getElementById('workoutSection');
 const bannerIdentity = document.getElementById('bannerIdentity');
-const bannerNotice = document.getElementById('bannerNotice');
-const bannerTurn = document.getElementById('bannerTurn');
-const bannerBless = document.getElementById('bannerBless');
+const bannerGratitudeFull = document.getElementById('bannerGratitudeFull');
 const bannerFull = document.getElementById('bannerFull');
 const expandBtn = document.getElementById('expandBtn');
 const expandText = document.getElementById('expandText');
 const expandArrow = document.getElementById('expandArrow');
+
 const DEFAULT_MANIFESTO = {
-  notice: 'Я обещаю замечать, как мой ум по привычке скатывается в обесценивание и критицизм — быстрее, чем я успеваю опомниться. Это заученная нейронная дорожка, которая ничего не говорит о правде обо мне, о моих людях, о моей работе. В самом этом видении у меня уже появляется воздух — зазор, в котором я могу повернуть взгляд.',
-  turn: 'Я обещаю направлять на себя и на всё, что мне важно, любящий восхищённый взгляд. Я возвращаюсь к моим людям, моим проектам, моему телу, моим делам — с именами, с деталями, с теми моментами, которые уже получились.\n\nЯ обещаю давать этой благодарности напитать меня в груди, в дыхании, в теле — и принимать решения только из этого наполненного состояния.',
-  bless: 'Благодарность и восхищение всем, что для меня важно, дают мне больше энергии. Это главный закон, по которому я хочу жить — и эта неделя об этом.\n\nИз него у меня больше креативной энергии, больше точности, больше радости двигаться. Всё, чем я восхищаюсь, расцветает. Я намаливаю свою жизнь.'
+  gratitude: 'Я останавливаюсь и говорю себе спасибо — за усилия, за состояние, за энергию, за то, как я прожила этот месяц. Апрель мог легко стать переходным — временем боли и зависания между мирами, поставленной на паузу жизни. Я выбрала прожить его в своём прайме — и этим я горжусь.\n\nЯ ни разу не пропустила день без движения и сделала практически все тренировки по плану — и горжусь той формой, в которой пришла к концу месяца. Я съездила с сыном на серф-ретрит — и это было частью моей живой, наполненной жизни, а не отъездом из неё. Я запустила и довела до конца проект, которым мне самой нравилось пользоваться: он не остался в столе — он вышел к людям и начал им служить. Я много читала и делилась тем, что читаю. Я отдыхала и училась не работать — для меня это отдельный навык. Я не была в острой тревоге. Я намечала свои проекты и соединялась с тем, что для меня важно.\n\nИ всё это — в месяц, который был для меня по-настоящему непростым. Тем ценнее для меня то, что я сделала. Этот апрель подтвердил во мне человека, который умеет опираться на тело, движение и ритм — и эти опоры держат меня, даже когда внутри трудно. Человека, у которого продуктивность вырастает из соединения с ценностями, а не из тревоги. Человека, который может держать внутри боль и одновременно держать свой прайм — и одно другому не мешает.\n\nВ май я вхожу не с нуля, а из живой базы: ритм тренировок, навык отдыха, связь со своими ценностями, ясность, какие проекты мне нравится делать. Отсюда — и двигаюсь дальше.'
 };
 let bannerExpanded = false;
 
@@ -1535,15 +1656,13 @@ function getManifestoFieldValue(key) {
 }
 
 function hasManifesto() {
-  return state.notice || state.turn || state.bless;
+  return !!(state.gratitude && state.gratitude.trim());
 }
 
 function openManifesto() {
-  noticeInput.value = getManifestoFieldValue('notice');
-  turnInput.value = getManifestoFieldValue('turn');
-  blessInput.value = getManifestoFieldValue('bless');
+  gratitudeInput.value = getManifestoFieldValue('gratitude');
   overlay.classList.add('active');
-  setTimeout(() => noticeInput.focus(), 400);
+  setTimeout(() => gratitudeInput.focus(), 400);
 }
 
 function closeManifesto() {
@@ -1559,25 +1678,28 @@ function toggleBanner() {
 
 function renderWorkoutSection() {
   const dayName = DAY_NAMES[currentDay];
+  const dayDate = DAY_DATES[currentDay];
   const workoutDay = WORKOUT_LINKS[currentDay] || {};
   const morningWorkout = workoutDay.morning || null;
   const mainWorkout = workoutDay.main || null;
   const dailyWorkout = mainWorkout || morningWorkout || null;
+  const workoutSummary = workoutDay.summary || dailyWorkout?.label || 'Тренировка дня';
+  const workoutNote = workoutDay.note ? ` ${workoutDay.note}` : '';
 
   workoutSection.innerHTML = `
     <div class="workout-card">
       <div class="workout-topline">
         <div class="workout-kicker">Тренировки недели</div>
-        <div class="workout-day">${dayName}</div>
+        <div class="workout-day">${dayName} · ${dayDate}</div>
       </div>
       <div class="workout-title">Тренировка дня</div>
-      <div class="workout-copy">Открывай PDF с тренировками: внутри сохранены кликабельные ссылки на нужные практики дня и недельную практику.</div>
+      <div class="workout-copy">${workoutSummary}.${workoutNote}</div>
       ${dailyWorkout ? `
         <a class="workout-primary-link" href="${dailyWorkout.url}" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          Открыть PDF с тренировками
+          Открыть тренировку дня
         </a>
-      ` : `<div class="workout-empty">На этот день отдельная тренировка пока не добавлена.</div>`}
+      ` : `<div class="workout-empty">Тренировка дня сейчас недоступна.</div>`}
       <div class="workout-links-row">
         ${morningWorkout ? `<a class="workout-chip" href="${morningWorkout.url}" target="_blank" rel="noopener">${morningWorkout.label}</a>` : ''}
         ${mainWorkout ? `<a class="workout-chip is-main" href="${mainWorkout.url}" target="_blank" rel="noopener">${mainWorkout.label}</a>` : ''}
@@ -1588,9 +1710,7 @@ function renderWorkoutSection() {
 }
 
 document.getElementById('manifestoSave').addEventListener('click', () => {
-  state.notice = noticeInput.value.trim() || DEFAULT_MANIFESTO.notice;
-  state.turn = turnInput.value.trim() || DEFAULT_MANIFESTO.turn;
-  state.bless = blessInput.value.trim() || DEFAULT_MANIFESTO.bless;
+  state.gratitude = gratitudeInput.value.trim() || DEFAULT_MANIFESTO.gratitude;
   saveState();
   renderBanner();
   closeManifesto();
@@ -1603,18 +1723,19 @@ overlay.addEventListener('click', (e) => {
 function renderBanner() {
   if (hasManifesto()) {
     manifestoBanner.style.display = 'block';
-    const notice = getManifestoFieldValue('notice');
-    const turn = getManifestoFieldValue('turn');
-    const bless = getManifestoFieldValue('bless');
-    const primary = bless || turn || notice;
-    bannerIdentity.textContent = primary;
+    const gratitude = getManifestoFieldValue('gratitude');
+    // В свёрнутом виде баннер показывает только первый абзац (тизер);
+    // полный текст раскрывается по кнопке «Развернуть полностью».
+    const paragraphs = gratitude.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    const teaser = paragraphs[0] || gratitude;
+    bannerIdentity.textContent = teaser;
 
-    bannerNotice.textContent = notice;
-    bannerTurn.textContent = turn;
-    bannerBless.textContent = bless;
+    // В развёрнутом виде показываем остальные абзацы (без повтора тизера).
+    const rest = paragraphs.slice(1).join('\n\n');
+    bannerGratitudeFull.textContent = rest;
 
-    const filled = [notice, turn, bless].filter(Boolean).length;
-    expandBtn.style.display = filled > 1 ? 'inline-flex' : 'none';
+    // Кнопка «Развернуть» нужна только если текст длиннее одного абзаца.
+    expandBtn.style.display = paragraphs.length > 1 ? 'inline-flex' : 'none';
 
     bannerExpanded = false;
     bannerFull.style.display = 'none';
@@ -1649,7 +1770,7 @@ function renderDayNav() {
     const btn = document.createElement('button');
     btn.className = 'day-nav-btn' + (i === currentDay ? ' active' : '');
     btn.innerHTML = `${i + 1}<span class="completion-dot ${allDone ? 'show' : ''}"></span>`;
-    btn.title = day.name;
+    btn.title = `${day.name} · ${DAY_DATES[i]}`;
     btn.addEventListener('click', () => switchDay(i));
     dayNav.appendChild(btn);
   });
@@ -1676,7 +1797,7 @@ function renderDay() {
     <div class="day-section active">
       <div class="day-header">
         <h2>${day.name}</h2>
-        <div class="day-date">День ${currentDay + 1} из 7</div>
+        <div class="day-date">${DAY_DATES[currentDay]} · День ${currentDay + 1} из 7</div>
         <div class="day-progress">
           <div class="day-progress-bar">
             <div class="day-progress-bar-fill" style="width:${pct}%"></div>
@@ -1743,7 +1864,7 @@ function createTrackerItem(item, index) {
       workoutLinks.push(`
         <a class="tracker-workout-link is-placeholder" href="#" onclick="event.preventDefault();" aria-disabled="true">
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          Ссылка появится позже
+          Ссылка недоступна
         </a>`);
     }
 
