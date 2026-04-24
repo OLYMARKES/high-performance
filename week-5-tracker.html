@@ -1342,14 +1342,63 @@ const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Ч
 const DAY_DATES = ['27 апреля', '28 апреля', '29 апреля', '30 апреля', '1 мая', '2 мая', '3 мая'];
 
 // ── Тренировки недели ──
-// URLs будут заполнены Олей по мере поступления материалов
 const WEEKLY_WORKOUT = {
   label: '',
   url: ''
 };
 
 const WORKOUT_LINKS = [
-  {}, {}, {}, {}, {}, {}, {}
+  {
+    summary: 'ВИИТ с Андреем · 22 мин',
+    main: {
+      label: 'ВИИТ с Андреем · 22 мин',
+      url: 'https://kinescope.io/gKvRqqmc3MgyqZEEUoX4bw'
+    }
+  },
+  {
+    summary: 'Пресс и ягодицы с Барни · 21 мин',
+    main: {
+      label: 'Пресс и ягодицы с Барни · 21 мин',
+      url: 'https://kinescope.io/17t2kYzDW1Zp1vpR4ZxCrY'
+    }
+  },
+  {
+    summary: 'Функциональная на пресс и ягодицы с Настей и Дмитрием Руслановичем · 19 мин',
+    main: {
+      label: 'Функциональная на пресс и ягодицы · 19 мин',
+      url: 'https://kinescope.io/e7XmmYTfBtR3nvityWdKQe'
+    }
+  },
+  {
+    summary: 'На пресс с Мироновой · 22 мин',
+    main: {
+      label: 'На пресс с Мироновой · 22 мин',
+      url: 'https://kinescope.io/szCjE4boEMDPfxL8wJgWqe'
+    }
+  },
+  {
+    summary: 'На всё тело с Егором и Дмитрием Руслановичем · 29 мин',
+    main: {
+      label: 'На всё тело · 29 мин',
+      url: 'https://kinescope.io/jbJsVahe1atpLzDG8i9NkL'
+    }
+  },
+  {
+    summary: 'На пресс со Стасей и Никитой · 21 мин',
+    note: 'Нужны гантели.',
+    main: {
+      label: 'На пресс со Стасей и Никитой · 21 мин',
+      url: 'https://kinescope.io/0QCSZBF9D44HJEEviLzuGR'
+    }
+  },
+  {
+    summary: 'Фан-тренировка с Олей Маркес под треки · 25 мин',
+    note: 'А ты не сдерживай слёз, реви-реви.',
+    main: {
+      label: 'Фан-тренировка с Олей Маркес · 25 мин',
+      url: 'https://kinescope.io/gCd4KTcJ1vHDJfGhe85uL4'
+    }
+  }
 ];
 
 const DEFAULT_ITEMS = [
@@ -1499,6 +1548,7 @@ let state = loadState();
 let currentDay = 0;
 let editingItemIndex = null;
 let editingDayIndex = null;
+const STORAGE_KEY = 'hp_week5_tracker';
 
 function getDefaultState() {
   return {
@@ -1520,7 +1570,7 @@ function getDefaultState() {
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('hp_week5_tracker');
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
   } catch (e) {}
   return getDefaultState();
@@ -1528,7 +1578,7 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem('hp_week5_tracker', JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {}
 }
 
@@ -1593,6 +1643,8 @@ function renderWorkoutSection() {
   const morningWorkout = workoutDay.morning || null;
   const mainWorkout = workoutDay.main || null;
   const dailyWorkout = mainWorkout || morningWorkout || null;
+  const workoutSummary = workoutDay.summary || dailyWorkout?.label || 'Тренировка дня';
+  const workoutNote = workoutDay.note ? ` ${workoutDay.note}` : '';
 
   workoutSection.innerHTML = `
     <div class="workout-card">
@@ -1601,11 +1653,11 @@ function renderWorkoutSection() {
         <div class="workout-day">${dayName} · ${dayDate}</div>
       </div>
       <div class="workout-title">Тренировка дня</div>
-      <div class="workout-copy">Ссылки на тренировки недели Оля добавит сюда позже — как только подготовит план на финальную неделю.</div>
+      <div class="workout-copy">${workoutSummary}.${workoutNote}</div>
       ${dailyWorkout ? `
         <a class="workout-primary-link" href="${dailyWorkout.url}" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          ${mainWorkout ? 'Открыть основную тренировку' : `Открыть ${dailyWorkout.label.toLowerCase()}`}
+          Открыть тренировку дня
         </a>
       ` : `<div class="workout-empty">Тренировка на этот день появится здесь, когда Оля закинет ссылку.</div>`}
       <div class="workout-links-row">
