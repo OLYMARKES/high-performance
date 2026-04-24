@@ -1706,7 +1706,7 @@ function renderWorkoutSection() {
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
           Открыть тренировку дня
         </a>
-      ` : `<div class="workout-empty">Тренировка на этот день появится здесь, когда Оля закинет ссылку.</div>`}
+      ` : `<div class="workout-empty">Тренировка дня сейчас недоступна.</div>`}
       <div class="workout-links-row">
         ${morningWorkout ? `<a class="workout-chip" href="${morningWorkout.url}" target="_blank" rel="noopener">${morningWorkout.label}</a>` : ''}
         ${mainWorkout ? `<a class="workout-chip is-main" href="${mainWorkout.url}" target="_blank" rel="noopener">${mainWorkout.label}</a>` : ''}
@@ -1872,7 +1872,7 @@ function createTrackerItem(item, index) {
       workoutLinks.push(`
         <a class="tracker-workout-link is-placeholder" href="#" onclick="event.preventDefault();" aria-disabled="true">
           <svg viewBox="0 0 16 16"><polyline points="9 2 15 2 15 8"/><line x1="15" y1="2" x2="7" y2="10"/><path d="M13 9v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-          Ссылка появится позже
+          Ссылка недоступна
         </a>`);
     }
 
