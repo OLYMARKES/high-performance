@@ -10,6 +10,7 @@ SOURCE_TEMPLATE_PATH = ROOT / "week-4-tracker.html"
 OUTPUT_DIR = ROOT / "week_4_trackers_april_2026"
 PUBLIC_BASE_URL = "https://olymarkes.github.io/high-performance/week_4_trackers_april_2026"
 TRACKER_VERSION_QUERY = "v=week4-rollout-v1"
+WEEK5_VERSION_QUERY = "v=week5-rollout-v1"
 TEAM_PAGE_TOKEN = "week4-vault-x6m3q9p2k7t4"
 CHAT_URL = "https://t.me/+UQzb3a_ohdliMTEy"
 DISABLED_WEEK4_SLUGS = {"anna"}
@@ -58,12 +59,17 @@ def get_week4_tracker_participants() -> list[dict[str, str]]:
     return [participant for participant in participants if participant["slug"] not in DISABLED_WEEK4_SLUGS]
 
 
-def build_week_switch_markup(token: str) -> str:
+def build_week_switch_markup(token: str, has_week5: bool) -> str:
+    week5_link = (
+        f'\n      <a class="week-switch-btn" href="../week_5_trackers_april_2026/w5_{token}.html?{WEEK5_VERSION_QUERY}">Неделя 5</a>'
+        if has_week5
+        else ""
+    )
     return f"""    <nav class="week-switch reveal" aria-label="Переключение недели">
       <a class="week-switch-btn" href="../week_1_trackers_april_2026/w1_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 1</a>
       <a class="week-switch-btn" href="../week_2_trackers_april_2026/w2_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 2</a>
       <a class="week-switch-btn" href="../week_3_trackers_april_2026/w3_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 3</a>
-      <a class="week-switch-btn is-active" href="../week_4_trackers_april_2026/w4_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 4</a>
+      <a class="week-switch-btn is-active" href="../week_4_trackers_april_2026/w4_{token}.html?{TRACKER_VERSION_QUERY}">Неделя 4</a>{week5_link}
     </nav>"""
 
 
@@ -72,6 +78,7 @@ def add_personalization(template: str, participant: dict[str, str]) -> str:
     for_name = participant["for_name"]
     slug = participant["slug"]
     token = participant["token"]
+    has_week5 = not slug.endswith("-curator")
 
     html = template
     html = html.replace(
@@ -147,7 +154,7 @@ def add_personalization(template: str, participant: dict[str, str]) -> str:
     )
     html = html.replace(
         '    <!-- Materials section -->',
-        f"{build_week_switch_markup(token)}\n\n    <!-- Materials section -->",
+        f"{build_week_switch_markup(token, has_week5)}\n\n    <!-- Materials section -->",
         1,
     )
     html = html.replace('href="week-4.html" target="_blank"', 'href="../week-4.html" target="_blank" rel="noopener"', 1)
