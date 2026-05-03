@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Финальный воркбук High Performance</title>
+  <style>
+    :root {
+      --ink: #171817;
+      --soft-ink: #40443e;
+      --muted: #6a6e66;
+      --cream: #f3eee3;
+      --paper: #fbf7ed;
+      --pink: #f6b8dd;
+      --acid: #eaff32;
+      --moss: #263f31;
+      --sage: #dfe8dc;
+      --yellow: #ead766;
+      --blue: #dce9ef;
+      --line: rgba(23, 24, 23, .22);
+      --shadow: 10px 12px 0 rgba(23, 24, 23, .18);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #111; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); line-height: 1.38; }
+    a { color: inherit; text-decoration: none; }
+    strong { background: linear-gradient(transparent 56%, rgba(234,255,50,.86) 56%); font-weight: 800; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+      min-height: 48px; padding: 0 24px;
+      background: rgba(251,247,237,.84); border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px); font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 18px; white-space: nowrap; }
+    .mark-logo { width: 42px; height: 34px; display: grid; place-items: center; color: var(--moss); font-family: var(--serif); font-size: 26px; font-weight: 700; }
+    .nav-meta { justify-self: end; display: flex; gap: 18px; color: var(--muted); }
+
+    .hero {
+      min-height: calc(100vh - 48px);
+      display: grid; grid-template-rows: 1fr auto;
+      overflow: hidden; position: relative;
+      background:
+        linear-gradient(180deg, rgba(28,44,34,.08), rgba(28,44,34,.62)),
+        radial-gradient(circle at 51% 42%, rgba(246,184,221,.36), transparent 20%),
+        linear-gradient(105deg, #a7bd8b 0%, #e2d662 36%, #819b6d 64%, #c4d7df 100%);
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 22% -8% -6%;
+      background:
+        radial-gradient(ellipse at 12% 92%, #233d2d 0 13%, transparent 13.5%),
+        radial-gradient(ellipse at 24% 86%, #41633d 0 16%, transparent 16.5%),
+        radial-gradient(ellipse at 42% 89%, #547344 0 14%, transparent 14.5%),
+        radial-gradient(ellipse at 65% 88%, #2d5137 0 17%, transparent 17.5%),
+        radial-gradient(ellipse at 84% 91%, #64814a 0 18%, transparent 18.5%);
+      filter: blur(2px); opacity: .96;
+    }
+    .hero::after {
+      content: ""; position: absolute; left: 46%; bottom: 20%; width: min(25vw, 340px); aspect-ratio: 1/1.34;
+      border-radius: 46% 46% 10% 10%;
+      background:
+        radial-gradient(circle at 50% 17%, #eec39d 0 12%, transparent 12.5%),
+        linear-gradient(90deg, transparent 0 35%, rgba(246,221,210,.98) 35% 42%, transparent 42% 58%, rgba(246,221,210,.98) 58% 65%, transparent 65%),
+        linear-gradient(112deg, transparent 0 22%, rgba(246,184,221,.92) 22% 78%, transparent 78%);
+      box-shadow: 0 18px 48px rgba(23,24,23,.22); opacity: .82; transform: rotate(-4deg);
+    }
+    .hero-copy { position: relative; z-index: 3; align-self: end; padding: 9vh clamp(22px,5vw,76px) 3vh; }
+    .eyebrow { display: inline-block; padding: 4px 8px; background: var(--acid); font: 800 11px/1 var(--mono); text-transform: uppercase; }
+    h1 { max-width: 11ch; margin: 26px 0 0; color: rgba(255,239,111,.92); font: 400 clamp(76px, 15vw, 220px)/.76 var(--serif); letter-spacing: 0; }
+    .hero-note { position: absolute; right: 7vw; bottom: 24vh; z-index: 4; width: min(330px, 36vw); color: var(--acid); font: 12px/1.24 var(--mono); }
+    .slide-footer { position: relative; z-index: 5; height: 38px; display: grid; grid-template-columns: 54px 1fr 170px 54px; background: var(--pink); border-block: 1px solid rgba(23,24,23,.62); font: 11px/1 var(--mono); text-transform: uppercase; }
+    .slide-footer > * { display: flex; align-items: center; padding: 0 14px; border-right: 1px solid rgba(23,24,23,.45); }
+    .slide-footer > *:last-child { border-right: 0; justify-content: center; font-size: 22px; }
+
+    section { padding: clamp(58px, 7vw, 104px) clamp(22px, 5vw, 76px); border-bottom: 1px solid var(--line); }
+    .pink { background: var(--pink); }
+    .cream { background: var(--cream); }
+    .yellow { background: var(--yellow); }
+    .dark { background: #1d2a21; color: var(--acid); }
+    .blue { background: var(--blue); }
+    .label { margin-bottom: 28px; font: 800 12px/1 var(--mono); text-transform: uppercase; color: var(--moss); }
+    .dark .label { color: rgba(234,255,50,.78); }
+    h2.section-title { max-width: 1040px; margin: 0 0 34px; font: 400 clamp(44px, 8vw, 118px)/.9 var(--serif); letter-spacing: 0; }
+    .lead { max-width: 980px; margin: 0; font: 400 clamp(28px, 4.4vw, 62px)/1.02 var(--serif); }
+    .body-grid { display: grid; grid-template-columns: minmax(280px,.92fr) minmax(320px,1.08fr); gap: clamp(28px, 7vw, 96px); align-items: start; }
+    .body-copy p, .body-copy li { font-size: clamp(17px, 1.45vw, 22px); }
+    .body-copy ul { margin: 22px 0; padding-left: 1.2em; }
+    .body-copy li { margin: 10px 0; }
+    .mini { font: 12px/1.35 var(--mono); color: var(--soft-ink); max-width: 440px; }
+
+    .callout {
+      margin: 30px 0; padding: 24px; background: rgba(234,255,50,.78);
+      border: 1px solid rgba(23,24,23,.7); box-shadow: var(--shadow);
+    }
+    .callout span { display: block; margin-bottom: 12px; font: 800 11px/1 var(--mono); text-transform: uppercase; }
+    .callout p { margin: 0 0 10px; font-size: 18px; }
+
+    .week-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid rgba(23,24,23,.35); border-right: 0; }
+    .week-card { min-height: 330px; padding: 24px; border-right: 1px solid rgba(23,24,23,.35); background: rgba(255,255,255,.26); }
+    .week-card:nth-child(2n) { background: rgba(234,255,50,.4); }
+    .week-num { margin-bottom: 42px; font: 800 13px/1 var(--mono); }
+    .week-card h3 { margin: 0 0 18px; font: 400 35px/.9 var(--serif); }
+    .week-card p { margin: 0; font: 12px/1.32 var(--mono); }
+
+    .quote-wall { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 26px); max-width: 1320px; }
+    .voice-card {
+      min-height: clamp(430px, 40vw, 560px); padding: clamp(26px, 3.4vw, 46px);
+      display: grid; grid-template-rows: auto auto; align-content: center; gap: clamp(16px, 1.8vw, 24px);
+      position: relative;
+      background: #efd99b; border: 1px solid rgba(23,24,23,.42); box-shadow: var(--shadow);
+    }
+    .voice-card:nth-child(3n+2) { background: #f3d891; }
+    .voice-card:nth-child(3n) { background: #ead399; }
+    .voice-side { position: static; }
+    .voice-top {
+      position: absolute; top: clamp(20px, 2.4vw, 32px); left: clamp(22px, 3vw, 42px); right: clamp(22px, 3vw, 42px);
+      display: flex; justify-content: space-between; gap: 14px; align-items: center; margin: 0; padding: 0;
+      font: 800 11px/1 var(--mono); text-transform: uppercase;
+    }
+    .voice-card h3 { margin: 0; max-width: 9.8em; font: 400 clamp(34px, 4.2vw, 62px)/.92 var(--serif); }
+    .voice-card blockquote {
+      margin: 0; padding: 0;
+      border-left: 0;
+      font: 400 clamp(19px, 1.55vw, 25px)/1.34 var(--sans);
+    }
+    .voice-card blockquote::before {
+      content: "“"; float: left; margin: -.08em .1em 0 -.03em;
+      color: rgba(23,24,23,.2); font: 400 4.8em/.72 var(--serif);
+    }
+    .voice-card:nth-child(3n+1) blockquote strong { background: linear-gradient(transparent 58%, rgba(234,255,50,.88) 58%); }
+    .voice-card:nth-child(3n+2) blockquote strong { background: linear-gradient(transparent 58%, rgba(246,184,221,.78) 58%); }
+    .voice-card:nth-child(3n) blockquote strong { background: linear-gradient(transparent 58%, rgba(255,255,255,.78) 58%); }
+
+    .poster-quote { min-height: 70vh; display: grid; place-items: center; text-align: center; }
+    .poster-quote blockquote { max-width: 1120px; margin: 0; font: 400 clamp(48px, 8vw, 120px)/.9 var(--serif); }
+    .poster-quote cite { display: block; margin-top: 24px; font: 12px/1 var(--mono); text-transform: uppercase; color: rgba(234,255,50,.72); }
+
+    .may-map { display: grid; grid-template-columns: .9fr 1.1fr; min-height: 760px; padding: 0; background: #d7d7d2; }
+    .abstract-photo { position: relative; overflow: hidden; background:
+      radial-gradient(circle at 42% 34%, #eac29e 0 7%, transparent 7.5%),
+      linear-gradient(100deg, transparent 0 27%, rgba(246,184,221,.78) 27% 49%, transparent 49%),
+      radial-gradient(ellipse at 18% 86%, #25442d 0 17%, transparent 17.5%),
+      radial-gradient(ellipse at 38% 82%, #557641 0 23%, transparent 23.5%),
+      radial-gradient(ellipse at 72% 88%, #385a36 0 22%, transparent 22.5%),
+      linear-gradient(#a7b9b3, #c7d1c4 58%, #74915e 58%);
+    }
+    .about-card { position: absolute; right: -44px; top: 24%; width: min(420px, 72%); aspect-ratio: 1.18; display: grid; place-items: center; background: var(--acid); border: 1px solid var(--ink); box-shadow: 8px 8px 0 rgba(23,24,23,.25); transform: rotate(-1deg); }
+    .about-card strong { font: 400 clamp(42px, 6vw, 72px)/.78 var(--sans); }
+    .may-content { padding: clamp(42px, 7vw, 92px); align-self: center; }
+    .may-content .body-copy p, .may-content .body-copy li { font-size: 18px; }
+    .pill-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 34px; }
+    .pill { padding: 8px 11px; border: 1px solid rgba(23,24,23,.4); border-radius: 999px; background: rgba(255,255,255,.4); font: 12px/1 var(--mono); }
+
+    .workbook { display: grid; grid-template-columns: minmax(280px,.72fr) minmax(320px,1.28fr); gap: clamp(28px, 6vw, 82px); align-items: start; }
+    .sticky-card { position: sticky; top: 72px; padding: 26px; background: var(--acid); border: 1px solid var(--ink); box-shadow: var(--shadow); }
+    .sticky-card h2 { margin: 0 0 16px; font: 400 48px/.9 var(--serif); }
+    .fields { display: grid; gap: 18px; }
+    label { display: block; font: 800 12px/1.25 var(--mono); text-transform: uppercase; }
+    textarea { width: 100%; min-height: 124px; margin-top: 9px; padding: 15px; color: var(--ink); background: rgba(255,255,255,.7); border: 1px solid rgba(23,24,23,.32); font: 16px/1.35 var(--sans); resize: vertical; }
+
+    .final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
+    .final-card { padding: 28px; border: 1px solid rgba(23,24,23,.28); background: rgba(255,255,255,.46); }
+    .final-card h3 { margin: 0 0 16px; font: 400 38px/.95 var(--serif); }
+    .source-note { margin-top: 44px; font: 12px/1.45 var(--mono); color: var(--muted); }
+
+    @media (max-width: 980px) {
+      .nav { grid-template-columns: 1fr auto; }
+      .nav-links, .nav-meta { display: none; }
+      .hero { min-height: 740px; }
+      .hero-note { position: relative; right: auto; bottom: auto; width: auto; margin: 20px 24px 70px; }
+      .slide-footer { grid-template-columns: 46px 1fr 46px; }
+      .slide-footer .hide-mobile { display: none; }
+      .body-grid, .quote-wall, .may-map, .workbook, .final-grid { grid-template-columns: 1fr; }
+      .voice-card { min-height: auto; padding: 92px 24px 34px; }
+      .voice-side { position: static; }
+      .week-grid { grid-template-columns: 1fr; border-right: 1px solid rgba(23,24,23,.35); }
+      .week-card { min-height: auto; border-right: 0; border-bottom: 1px solid rgba(23,24,23,.35); }
+      .about-card { right: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <nav class="nav-links">
+      <a href="#april">апрель</a>
+      <a href="#voices">голоса</a>
+      <a href="#may">май</a>
+      <a href="#practice">практика</a>
+    </nav>
+    <div class="mark-logo">HP</div>
+    <div class="nav-meta"><span>final workbook</span><span>april 2026</span></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">interactive workbook</span>
+        <h1>Апрель, который мы сделали</h1>
+      </div>
+      <p class="hero-note">Наш финальный звонок апреля — круг, на котором мы собрались поделиться, что у каждой случилось за этот месяц, и вместе придумать, с чем входим в май.</p>
+      <div class="slide-footer">
+        <span>01</span>
+        <span>финальный звонок high performance</span>
+        <span class="hide-mobile">30 april</span>
+        <span>↘</span>
+      </div>
+    </section>
+
+    <section class="cream" id="april">
+      <div class="body-grid">
+        <div>
+          <div class="label">part one</div>
+          <h2 class="section-title">Что мы прожили в апреле</h2>
+          <p class="mini">Сначала присваиваем месяц целиком: не как список галочек, а как опыт, который мы прожили вместе.</p>
+        </div>
+        <div class="body-copy">
+          <p>Этот месяц мы провели вместе — больше четырёх недель плечом к плечу, в одном чате, на еженедельных созвонах, в общем поле внимания друг к другу. Мы заходили в апрель с разной степенью усталости, с разными запросами, с разной верой в то, что у нас вообще есть силы что-то начать. И всё-таки — начали и довели.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pink">
+      <div class="label">program rhythm</div>
+      <h2 class="section-title">Пять недель как пять дверей</h2>
+      <div class="week-grid">
+        <article class="week-card">
+          <div class="week-num">↘ 01</div>
+          <h3>Энергия</h3>
+          <p>Утренняя опора, тело, базовые принципы и ощущение, что жизнь снова можно собрать руками.</p>
+        </article>
+        
+
+        <article class="week-card">
+          <div class="week-num">↘ 02</div>
+          <h3>Тревога</h3>
+          <p>Шесть видов по Бреверу, петли, добрый разговор с собой и первый честный взгляд на тревогу.</p>
+        </article>
+        
+
+        <article class="week-card">
+          <div class="week-num">↘ 03</div>
+          <h3>Ценности</h3>
+          <p>Что я ставлю в центр, какая у меня идентичность и какое пророчество из меня растет.</p>
+        </article>
+        
+
+        <article class="week-card">
+          <div class="week-num">↘ 04</div>
+          <h3>Намаливание</h3>
+          <p>Любящее внимание к одной сфере, благодарность, восхищение, нежность и расширение на всё.</p>
+        </article>
+        
+
+        <article class="week-card">
+          <div class="week-num">↘ 05</div>
+          <h3>Дизайн мая</h3>
+          <p>Ритуалы, фокусы, новый месяц с чистого листа и разрешение делать прикольно.</p>
+        </article>
+        </div>
+    </section>
+
+    <section class="yellow">
+      <div class="body-grid">
+        <div>
+          <div class="label">core principle</div>
+          <p class="lead">Пробный шаг — это уже шаг. Даже если практика не подошла, вы узнали что-то важное о своём дизайне.</p>
+        </div>
+        <div class="body-copy">
+          <ul><li><strong>Неделю первую</strong> — про энергию, про утреннюю опору, про то, как мы вообще устроены, когда у нас есть тело и принципы.</li><li><strong>Неделю вторую</strong> — про тревогу. Шесть видов по Бреверу, привычка тревожиться как замкнутая петля, добрый разговор с собой вместо того, чтобы продолжать накручивать. Кто-то впервые в жизни увидел свою тревогу и понял, что она у него вообще есть. Кто-то — наоборот — поймал её хвост и научился делать тот самый шаг назад.</li><li><strong>Неделю третью</strong> — про ценности. Что я выбираю поставить в центр, какая у меня идентичность, какое из меня растёт пророчество.</li><li><strong>Неделю четвёртую</strong> — про намаливание. Любящее внимание к одной сфере: благодарность, восхищение, нежность. Сначала к одной, потом мы расширили — на всё.</li><li><strong>Неделю пятую</strong> — про дизайн мая. Как пересобрать ритуалы, выбрать фокусы, войти в новый месяц с чистого листа.</li></ul>
+<p>И параллельно с этим — три интеграционных звонка, общий чат, пятничные сообщения о том, что у кого получилось, чьи-то срывы и чьи-то микропобеды, которые мы все читали и ловили волну. Это и есть то, что у нас получилось вместе: создать пространство, в котором можно делиться, и из этого общего поля брать опору.</p>
+<aside class="callout"><span>Олин принцип</span><p>«Если вы не тренируетесь, дело не в вас, дело в тренировке. Что-то не подобралось — это нормально. Возможно, мне правда не хотелось делать именно это именно так. Значит, практика не легла в реальный дизайн моего месяца. <strong>Давайте присвоим, попразднуем, даже если что-то не получилось — чтобы вы узнали, что это вам не подходит.</strong>»</p></aside>
+<p>Сегодня мы будем смотреть на свой апрель через одну-единственную призму: <strong>мы ебашили</strong>. Мы пришли сюда, мы направили внимание и энергию, и сейчас будем разговаривать про то, что получилось, что пошло чуть иначе, и что я попробовала — пусть даже не зашло. Пробный шаг — это уже шаг.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark poster-quote">
+      <div>
+        <blockquote>“Давайте присвоим, попразднуем, даже если что-то не получилось.”</blockquote>
+        <cite>рамка финального круга</cite>
+      </div>
+    </section>
+
+    <section class="pink" id="voices">
+      <div class="label">part two</div>
+      <h2 class="section-title">Голоса круга</h2>
+      <p class="mini">Живые фразы из финального круга: про тело, тревогу, дисциплину, смелость, заботу и то, как много может значить один пробный шаг.</p>
+      <div class="quote-wall">
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>01</span><span>голос круга</span></div>
+                <h3>Пробный шаг сохраняется</h3>
+              </div>
+              <blockquote>«Я слушаю вас и так горжусь, потому что даже "попробовала" — это уже очень много. Это какой-то такой бейби-степ, но это уже шаг вперёд. <strong>Когда ты что-то пробуешь, оно может прямо сейчас не быть уместным, не приживаться, но где-то в чердаке нашей памяти знание об этом пробном шаге остаётся. И потом, когда придёт время, оно вернётся и будет очень актуальным.</strong>» У меня на самом деле апрель был достаточно сложным в плане здоровья, и я начала понимать, что я просто умираю, у меня нет сил вообще что-либо делать. В итоге я дошла до врача, сдала анализы, оказалось, что у меня нет вообще никакого запаса, железо на нуле. Я начала пить железо, и силы ко мне начали возвращаться, энергия возвращается, я опять начала бегать, опять начала тренироваться. С одной стороны апрель был тяжёлый, с другой стороны он был наполнен очень многими осмыслениями, заботой о себе, каким-то шагом вперёд.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>02</span><span>голос круга</span></div>
+                <h3>Дисциплина, подобранная под себя</h3>
+              </div>
+              <blockquote>«Я с ноги ворвалась в этот проект на ужасной злости на себя — и в принципе конвертировала всю эту злость в силу за весь месяц. Я узнала про себя, что я могу делать тренировки каждый день, оказывается. Я очень долго пыталась это вести в свою жизнь, у меня никогда не получалось. Я узнала, что мне нужно двигаться в своём ритме. Не сразу, не с первой недели, но вот, попав на дисциплину и попытавшись пойти против своего тела и своей нервной системы, я потом поняла: окей, давай мы как-то будем с заботой о себе и с любовью, а не уходить в отношения с собой как стегатор. <strong>Это для меня прямо большое достижение — что есть дисциплина, но она подобрана под меня.</strong>» Я тоже стала читать каждый день, и это классный такой, мне это очень успокаивает. Я читаю книги художественные, это мой осознанный выбор: я хотела в этом месяце отвлечься и уйти в какие-то другие миры и фантазии. Я попробовала джорналинг — это тоже одна из практик, которые мне никогда не удавались. Я делаю это нерегулярно, но всё равно делаю. И это круто: появляется нейронная связь с тем, что эта практика может помогать с моей тревогой.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>03</span><span>голос круга</span></div>
+                <h3>Не намерена думать о плохом</h3>
+              </div>
+              <blockquote>«У меня получилось продержаться целый месяц с тренировками — пусть и с перерывами, но тем не менее. И получилось поддерживать интерес ко всему происходящему. Это кайф. Может быть, что-то пошло не так — я до сих пор ничего не намаливала и на вайп не ходила конкретно внутри этого спринта, но я про это даже не думала. <strong>Мне настолько было хорошо весь этот апрель, и настолько это был важный поворотный месяц, что ни о чём вообще плохом я в конце думать даже не намерена.</strong>» И вот я попробовала наконец-то вести дневник. Для меня джорналинг, наверное, самая прикольная медитация: вести дневник и не думать о том, что я его завтра брошу. Даже если завтра брошу, мне сегодня было с ним в кайф. И насколько я ненавижу медитации — они как-то прижились, и это прекрасно. Ещё я попробовала быть открытой и честной в таком прекрасном женском комьюнити. Это для меня тоже важно.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>04</span><span>голос круга</span></div>
+                <h3>Когда разрешилось — началось своё</h3>
+              </div>
+              <blockquote>«Я 16 апреля получила годовой бонус, который ждала год — и получила его в совсем другом объёме. Меня просто обманули случайным образом, как я потом поговорила со своим боссом. И это стало последней точкой. Я чётко поняла, что я больше не хочу, я ухожу. Договорилась об условиях выхода. <strong>И с того момента я почувствовала такое облегчение — миллион грузов с души. Я поняла: господи, всё, ура, у меня это разрешилось. И я начала делать первые шаги со своим проектом и очень от этого кайфую.</strong>» Тут ко всему этому наплелись конфликты, переживания и попытка это разрешить, и я как раз пробовала разные инструменты работы с тревогой. Сегодня у меня было важное выступление, и для меня оно тоже знаковое: этим выступлением я завершила свою операционную деятельность и ушла только в работу с проектами. Я пошла отмечать, перенесла на обед занятия танцами, меня встретил муж, мы пошли в кафе, я заказала пиццу и очень сильно кайфанула. Впереди май — месяц больших перемен.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>05</span><span>голос круга</span></div>
+                <h3>Платформа 9¾ в собственной жизни</h3>
+              </div>
+              <blockquote>«Тренировки прожились, но не так, как я предполагала. Раньше тренировки были усилием воли и дисциплины. А сейчас я стала в каких-то простых моментах внедрять в свою жизнь движение. Не успела сделать утреннюю — но, например, пока чищу зубы, могу присесть несколько раз. Или ногу куда-нибудь на стеллаж закинуть и потянуться. <strong>Для меня это ощущается как в Гарри Поттере платформа 9¾ — я вдруг увидела, что можно где-то расширить пространство, и туда это движение внедрять.</strong> Пусть это не полноценная тренировка, не покачала пресс — но движение стало больше, и я заметила, как у меня тело стало отзываться, стало гибче, где-то даже выносливее.» Ещё благодарю за практику массажа живота. Я её тоже периодически в неожиданные моменты начинаю делать, и вижу, что действительно есть куда стремиться, но оно размялось и стало мягче и эластичнее, с этим легче работать. Джорналинг делала первую неделю, немного вторую, а потом забросила. Зато косвенно вошла в мою жизнь рефлексия, и я стала много применять её на работе с сотрудниками и с детьми в школе.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>06</span><span>голос круга</span></div>
+                <h3>Тревога как газ — и шаг назад</h3>
+              </div>
+              <blockquote>«Я поняла, что тревога — она вот такая, как газ в моём случае. Она просто распространилась на весь мой день, на всю мою жизнь. И только концентрируется немножечко, я прям чувствую эти моменты. От этого уследить за ней стало сложнее, ловить эти петли стало сложнее — но это был целый квест. Я отследила эти чёртовы петли и поняла, что я очень сильно заражаюсь чужим негативом. И я, видимо, достаточно эмпатична, чтобы проникнуться — а потом могу несколько дней ходить и думать "да что вообще произошло". <strong>И вот этот шаг назад — вспомнить, что же произошло в момент, который на меня так повлиял, — он мне сейчас очень помогает.</strong>» У меня получилось вставать раньше, получилось читать, получилось качественно проводить время с близкими. Я обратила внимание, что когда я качественно уделяю время им, они качественно уделяют время мне. Получилось регулярно тренироваться, но здесь я отстала от себя в плане того, что где-то не поставила галочку, пропустила день — вообще я ни с кем не соревнуюсь, и мне это было классно. Я попробовала джорналинг, попробовала выходить на улицу и гулять.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>07</span><span>голос круга</span></div>
+                <h3>Люди заражаются счастьем друг от друга</h3>
+              </div>
+              <blockquote>«Мне очень понравилось, Оля, ты рассказывала про то, что люди заражаются счастьем друг от друга. Я никогда так на это не смотрела. Для меня это важнейший инсайт — поэтому я очень внимательно читала чат. Мне очень нравилось, когда вы делитесь о том, что у вас получается, и это правда заряжает. Остаётся послевкусие, которое уже влияет на меня. <strong>Качественно уделяешь время близким — они качественно уделяют время тебе. В какой-то момент эти гаджеты откладывают, и вообще ништяк работает.</strong>» Я наконец-то смогла это прожить и начать применять даже в мелких рабочих вопросах. Раньше я могла откладывать, и оно копилось, копилось, давило на меня сверху большим прессом. А сейчас я стараюсь не игнорить свои мысли, свои идеи, а делать какие-то маленькие действия, сеять семечки. Может быть, что-то вырастет большое, может быть и не вырастет, но я стала замечать, чтобы это обязательно было положено в землю.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>08</span><span>голос круга</span></div>
+                <h3>Любящий взгляд и добрый голос</h3>
+              </div>
+              <blockquote>«У меня появилась привычка: просыпаюсь — и вместо телефона беру сразу журнальчик, медитирую. Просто сидишь, чувствуешь свою тревогу, в неё смотришь, даёшь ей место — и пробуешь развернуться к ней любящим взглядом и с любопытством. <strong>И я прям таким дурацким добрым голосом проговаривала: "что это у нас за тревога такая".</strong> Это помогало немножко с юмором прикоснуться к состоянию, которое тебя обычно выносит. И ещё интересно: я стала замечать, и меня стало очень сильно попадать, когда я слышу, что кто-то про себя плохо говорит. И сразу — нет-нет, подожди, так не надо, давай я тебе сейчас расскажу. Я прям поняла, что хожу и такая: "есть ли у вас минуточка поговорить о любви к себе".» Любящий взгляд и добрый разговор с собой, намаливание — оно очень классно прижилось. Я стала замечать, что меня очень сильно цепляет, когда кто-то про себя плохо говорит, когда кто-то себя плохо называет или оскорбляет. Сразу хочется сказать: нет-нет, подожди, так не надо. Я поняла, что хожу и такая: есть ли у вас минуточка поговорить о любви к себе.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>09</span><span>голос круга</span></div>
+                <h3>Отпиздить — а потом обнять</h3>
+              </div>
+              <blockquote>«С тревогой получилось поработать. Основной инсайт — что в моменты, когда я тревожусь, не надо пить кофе. Иначе я вообще перекрываюсь, ловлю сложные состояния. Но в целом получается лучше отслеживать свои паттерны и держать добрый взгляд к себе тоже. <strong>Наверное, любимое — это когда я пытаюсь себя отпиздить, а потом вспоминаю, что мне надо себя обнять.</strong> В конце апреля меня максимально разъебало — я из-за события сына сама ретравмировалась. И последнюю неделю я пытаюсь трогать землю и продолжать жить. Сдала немного позиций, но немного другим сейчас занимаюсь.» В начале было непонятно, как ориентироваться в группе: где фасилитация, почему меня не контролируют. Первую неделю я злилась, что мне нужно самой изучать материалы. А потом я расслабила эту штуку, и последние недели поняла, что происходит, очень прониклась всем. Спасибо вам за поддержку и за наше пространство. Я даже пока не понимаю, что завтра первое мая и заканчивается программа.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>10</span><span>голос круга</span></div>
+                <h3>Густой апрель — предчувствие того, что будет</h3>
+              </div>
+              <blockquote>«У меня ушёл живот, который не мог уйти два года после родов. Я была уверена, что он со мной на всю жизнь. И это прям что-то невероятное. Журналинг лёг — я с детства писала дневники, потом перестала, и сейчас снова решила. Постоянно есть что сказать. <strong>Апрель, наверное, мой самый любимый месяц — внутренне как ощущение чего-то расцветающего. И этот апрель был как будто густой на то, что будет в ближайшее время.</strong> Сегодня я бронировала зал по своим лекциям, которые будут в большом формате проходить. Я прям, пух, ожидаю, как это сбудется.» Мне очень легла практика джорналинга. Я с детства писала дневники, потом в подростковом возрасте надо мной смеялись друзья, что я их сушу, и я перестала. Сейчас снова решила: слушать или не слушать — и очень сильно порадовалась этому моменту, постоянно есть что сказать. На следующий месяц мне нравится, что апрель не просто прошёл и закончился, а уже есть намётки, конкретные действия, которые я осуществляю.</blockquote>
+            </article>
+            
+            <article class="voice-card">
+              <div class="voice-side">
+                <div class="voice-top"><span>11</span><span>голос круга</span></div>
+                <h3>Благодарить опыт неудачный — и сеять семечки</h3>
+              </div>
+              <blockquote>«Мне очень зашла идея про отношение к своим неудачам. Я стала на это обращать внимание — и не просто отмахиваться, а проживать и прямо благодарить этот неудачный опыт. Стала толерантнее к своим ошибкам. И ещё мне очень зашла концепция, что когда к тебе приходит энергия, ты заряжен какой-то идеей — её надо быстро реализовать, превратить в действие. Раньше я могла откладывать, и оно копилось, копилось, давило сверху. <strong>А сейчас я стараюсь не игнорить свои мысли, а прямо сеять семечки — чтобы потом, может быть, что-то выросло большое.</strong> Может быть и не вырастет — когда мы сеем, что-то прорастает, что-то нет. Но я стала замечать, чтобы это обязательно было положено в землю.» Тренировки прожились, но не так, как я предполагала: для меня они всегда были усилием воли и дисциплины, а сейчас я стала в простых моментах внедрять движение в жизнь. Я понимаю: не сделала утреннюю тренировку, но пока чищу зубы, могу присесть несколько раз или потянуться. И от этого движения стало больше, тело стало отзываться, стало гибче, где-то даже выносливее.</blockquote>
+            </article>
+            </div>
+    </section>
+
+    <section class="may-map" id="may">
+      <div class="abstract-photo">
+        <div class="about-card"><strong>Design<br>May</strong></div>
+      </div>
+      <div class="may-content">
+        <div class="label">part three</div>
+        <h2 class="section-title">Что мы забираем в май</h2>
+        <div class="pill-list">
+          <span class="pill">тело</span><span class="pill">лицо</span><span class="pill">отдых</span><span class="pill">природа</span><span class="pill">смелые шаги</span><span class="pill">AI / дизайн</span><span class="pill">семья</span><span class="pill">деньги</span>
+        </div>
+        <div class="body-copy"><p>Завтра начинается май. И к этому можно отнестись не как к продолжению апреля, а как к чему-то новому — как будто завтра начинается ещё какая-то жизнь, в которой можно перепридумать и прямо с утра начать жить по своему новому дизайну.</p>
+<h3>Сферы, которые мы вместе вытащили на круге</h3>
+<p>Когда мы накидывали, что поставить в центр мая, прозвучало:</p>
+<ul><li><strong>Тело и лицо</strong> — заботливые тренировки, движение в простых моментах, массаж, приятные вещи.</li><li><strong>Любовь к себе</strong> — намаливание, чтобы внутренний критик возвращался как можно реже.</li><li><strong>Отдых и забота о себе</strong> — ритуалы, которые держат вас в ресурсе.</li><li><strong>Природа и живое общение</strong> — то, что наполняет, когда работа высасывает.</li><li><strong>Смелые шаги</strong> — образ, который сейчас кажется нереальным, но именно его и стоит начать сеять.</li><li><strong>Обучение и AI/дизайн</strong> — то, что нас останавливает от воплощения, и чему стоит научиться.</li><li><strong>Семья, дети, деньги</strong> — сферы, в которые тяжело заходить, и в которые именно поэтому нужна креативность.</li></ul>
+<h3>Один принцип, который пригодится для всех сфер</h3>
+<p>Если в сферу тяжело войти — спросите себя: <strong>«Как я могу это сделать прикольно, чтобы мне было прикольно?»</strong> Не «надо ввести ритуал» (на это нет сил), а — что в этой сфере я могу сделать вместе с близким, что мы можем спечь, куда поехать, как поговорить, как превратить «надо» в маленькую радость. Это — лайфхак, который даёт креативность вместо насилия над собой.</p>
+<h3>Ваш майский смелый шаг</h3>
+<p>Один из самых сильных моментов круга — кто-то вспомнил совет своего терапевта: <strong>«практиковать без страши»</strong>. Не бояться о чём-то мечтать и постепенно туда идти. Нарисовать образ — даже если он сейчас кажется нереальным — и его посеять.</p>
+<aside class="callout"><span>из звонка</span><p>✏️ <strong>Задание для интерактива:</strong></p>
+<ul><li>Какая сфера встаёт у меня в центр мая? <em>(одна, главная)</em></li><li>Какие 2–3 ритуала её держат? <em>(простые, чтобы хватало сил)</em></li><li>Что — мой майский смелый шаг? <em>(тот самый образ, который страшно даже произнести)</em></li><li>От чего я отказываюсь в мае? <em>(чтобы освободить место под новое)</em></li></ul></aside>
+<h3>Ритуал «20 минут на главное дело»</h3>
+<p>Олино напоминание, которое забираем как опору:</p>
+<aside class="callout"><span>из звонка</span><p>«Я проживаю каждый день с тем, что <strong>тренировка — это главное дело дня всегда</strong>. И классно, что всего 20 минут на главное дело дня. Может, какие-то подходы вам будут помогать. Как хорошо, что главное дело дня занимает всего 20 минут — в остальное время я могу делать вообще что угодно другое.»</p></aside>
+<p>20 минут — это та доза, которую можно дать себе в любой день. И этого достаточно.</p>
+<h3>Ваше микро-комьюнити</h3>
+<p>И последнее — то, на чём Оля закрыла звонок:</p>
+<aside class="callout"><span>из звонка</span><p>«Когда-то я сделала секту, потому что я знала: если не будет других людей, я сольюсь. Мне нужна была компания, чтобы продолжать. Я думаю, что вы можете собирать свои <strong>микро-комьюнити</strong> — вокруг своих целей, своих планов на май. Делиться с другими, что вы хотите делать дальше. Делиться по чуть-чуть вашими шагами — у вас уже есть большая основа, апрель, в котором вы где-то поменялись к лучшему, где-то что-то перевернули.</p>
+<p>Мир в целом любящий и безопасный. Кругом вас — люди, которые к вам тянутся, готовы вами вдохновиться, впитать вашу уязвимость, может быть зарядиться. И может быть то, что вы поделитесь своими инсайтами, кого-то вдохновит — прочитать книгу про тревогу, или принести эту тему к своему терапевту, или вообще по-другому начать свой май.</p>
+<p><strong>Вы можете сами собирать комьюнити вокруг своих целей. Вы можете сами заражать своими идеями. Вы можете делать свой High Performance май, или июнь — вместе с единомышленниками. Вокруг тренировок, вокруг вайп-кодинга, вокруг тревоги. Здесь нужна ваша смелость, вера в себя и в свои проекты.</strong>»</p></aside></div>
+      </div>
+    </section>
+
+    <section class="blue" id="practice">
+      <div class="workbook">
+        <aside class="sticky-card">
+          <h2>Мой май</h2>
+          <p class="mini">Запиши то, что хочется унести в следующий месяц. Не идеально, не навсегда — просто как честный дизайн ближайших недель.</p>
+        </aside>
+        <div class="fields">
+          <label>01 / Какая сфера встаёт у меня в центр мая?
+            <textarea placeholder="Одна, главная сфера..."></textarea>
+          </label>
+          <label>02 / Какие 2–3 ритуала её держат?
+            <textarea placeholder="Простые, чтобы хватало сил..."></textarea>
+          </label>
+          <label>03 / Что — мой майский смелый шаг?
+            <textarea placeholder="Тот самый образ, который страшно даже произнести..."></textarea>
+          </label>
+          <label>04 / От чего я отказываюсь в мае?
+            <textarea placeholder="Чтобы освободить место под новое..."></textarea>
+          </label>
+          <label>05 / Кто моё микро-комьюнити?
+            <textarea placeholder="Люди, с которыми я смогу не слиться и продолжать..."></textarea>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="cream">
+      <div class="label">final</div>
+      <h2 class="section-title">Это не финал, а переход</h2>
+      <div class="final-grid">
+        <article class="final-card">
+          <h3>Что остаётся внутри</h3>
+          <div class="body-copy"><p>Этот месяц завершается, но это не финал — это переход. Чаты остаются, материалы остаются, наш трекер остаётся (GitHub сам ничего не удаляет), доступы к курсам сохраняются до их логического завершения.</p>
+<p>Но главное — остаётся то, что мы вырастили внутри. Привычка делать главное дело за 20 минут. Любящий взгляд на тревогу. Дисциплина, подобранная под себя. Способность благодарить опыт неудачный. Платформа 9¾ в простых бытовых моментах. И знание, что когда мы заражаемся счастьем друг от друга — это самое сильное, что у нас вообще есть.</p></div>
+        </article>
+        <article class="final-card">
+          <h3>Что отнести дальше</h3>
+          <div class="body-copy"><aside class="callout"><span>из звонка</span><p>«Спасибо большое всем. Так не хочется завершать этот звонок — но я делаю это с очень хорошим чувством в сердце, с огромной благодарностью. Каждый звонок, все материалы, все фреймворки — мне правда так было важно этим поделиться. Этот заряд, который я могу дать, — он точно не для большого количества людей, а вот для нашей небольшой группы. <strong>Очень надеюсь, что вы тоже это возьмёте и отнесёте дальше — чтобы оно служило другим людям вокруг вас.</strong>»</p></aside></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll('textarea').forEach((field, index) => {
+      const key = `final-workbook-note-${index}`;
+      field.value = localStorage.getItem(key) || '';
+      field.addEventListener('input', () => localStorage.setItem(key, field.value));
+    });
+  </script>
+</body>
+</html>
