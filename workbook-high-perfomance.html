@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High Perfomance — Воркбук программы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5EFE3;
+    --cream-soft:#F8F4EC;
+    --cream-deep:#EFE7D6;
+    --honey:#EFC94B;
+    --honey-deep:#E5BC32;
+    --honey-soft:#F4D976;
+    --honey-mute:#FAEBA8;
+    --ink:#1A1A1A;
+    --ink-soft:#3A3A3A;
+    --ink-fade:#6B6B6B;
+    --olive:#5E6B4F;
+    --display:'Fraunces', Georgia, serif;
+    --body:'Inter', system-ui, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--body);
+    font-weight:400;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── верхняя навигация ────────────────────── */
+  nav.top{
+    position:absolute; top:0; left:0; right:0;
+    padding:28px 48px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    z-index:10;
+    color:#fff;
+  }
+  nav.top .left, nav.top .right{
+    display:flex; gap:32px;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-weight:500;
+  }
+  nav.top .right{justify-content:flex-end}
+  nav.top a{color:#fff; text-decoration:none; opacity:.9; transition:opacity .2s}
+  nav.top a:hover{opacity:1}
+  nav.top .emblem{display:flex; align-items:center; justify-content:center}
+
+  /* ── sticky-нав, появляется после hero ────── */
+  .sticky-nav{
+    position:fixed; top:-60px; left:0; right:0;
+    background:var(--cream);
+    border-bottom:1px solid rgba(26,26,26,.08);
+    padding:14px 32px;
+    display:flex; justify-content:space-between; align-items:center;
+    z-index:50;
+    transition:top .3s;
+  }
+  .sticky-nav.show{top:0}
+  .sticky-nav .brand{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:18px;
+    color:var(--ink);
+    letter-spacing:-.01em;
+  }
+  .sticky-nav .links{display:flex; gap:28px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; font-weight:500}
+  .sticky-nav .links a{color:var(--ink-soft); text-decoration:none; transition:color .2s}
+  .sticky-nav .links a:hover{color:var(--honey-deep)}
+
+  /* ── HERO ─────────────────────────────────── */
+  .hero{
+    position:relative;
+    height:84vh;
+    min-height:620px;
+    background:
+      linear-gradient(180deg, rgba(50,70,30,.22) 0%, rgba(50,70,30,0) 35%, rgba(50,70,30,.18) 100%),
+      url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80');
+    background-size:cover;
+    background-position:center 40%;
+    overflow:hidden;
+  }
+  .hero-text{
+    position:absolute; top:130px; left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    color:#fff;
+    max-width:560px;
+    padding:0 24px;
+  }
+  .hero-text .kicker{
+    font-size:11px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--honey-soft);
+    font-weight:600;
+    margin-bottom:24px;
+  }
+  .hero-text p.intro-line{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:400;
+    font-size:22px;
+    line-height:1.45;
+    margin-bottom:30px;
+    text-shadow:0 1px 3px rgba(0,0,0,.18);
+  }
+  .btn-pill{
+    display:inline-block;
+    padding:15px 34px;
+    background:var(--honey);
+    color:var(--ink);
+    border-radius:999px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.04em;
+    transition:background .2s, transform .2s;
+  }
+  .btn-pill:hover{background:var(--honey-deep); transform:translateY(-1px)}
+
+  .wordmark{
+    position:absolute;
+    bottom:-46px;
+    left:0; right:0;
+    text-align:center;
+    font-family:var(--display);
+    font-weight:500;
+    font-size:clamp(56px, 14.5vw, 220px);
+    line-height:.88;
+    color:var(--honey);
+    letter-spacing:-.035em;
+    pointer-events:none;
+    z-index:5;
+    white-space:nowrap;
+    padding:0 16px;
+  }
+
+  /* ── секция-вступление ────────────────────── */
+  .intro{
+    padding:180px 48px 130px;
+    max-width:1240px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:96px;
+    align-items:center;
+  }
+  .intro-left{text-align:center}
+  .intro h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:54px;
+    line-height:1.05;
+    color:var(--ink);
+    margin-bottom:36px;
+    letter-spacing:-.02em;
+  }
+  .intro h2 em{font-style:italic; color:var(--ink-soft)}
+  .intro-emblem{
+    margin:0 auto 36px;
+    width:64px; height:64px;
+    color:var(--honey-deep);
+  }
+  .intro p{
+    font-size:15.5px;
+    line-height:1.7;
+    color:var(--ink-soft);
+    margin:0 auto 32px;
+    max-width:380px;
+  }
+  .btn-dark{
+    display:inline-block;
+    padding:14px 30px;
+    background:var(--ink);
+    color:#fff;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.03em;
+    transition:background .2s;
+  }
+  .btn-dark:hover{background:#000}
+
+  .intro-right{
+    aspect-ratio:1.05/1;
+    border-radius:18px;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(120,150,80,.25), rgba(80,110,60,.45)),
+      url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=80');
+    background-size:cover;
+    background-position:center;
+    position:relative;
+    box-shadow:0 14px 44px rgba(60,80,40,.18);
+  }
+  .ring-labels{position:absolute; inset:0}
+  .ring-labels .dot{
+    position:absolute;
+    background:rgba(245,239,227,.93);
+    color:var(--ink);
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+    box-shadow:0 4px 16px rgba(0,0,0,.12);
+  }
+  .ring-labels .d1{top:7%; left:50%; transform:translateX(-50%)}
+  .ring-labels .d2{top:30%; right:-3%}
+  .ring-labels .d3{top:30%; left:-3%}
+  .ring-labels .d4{bottom:30%; right:-3%}
+  .ring-labels .d5{bottom:30%; left:-3%}
+  .ring-labels .d6{bottom:7%; left:50%; transform:translateX(-50%)}
+
+  /* ── жёлтая полоса с методологией ─────────── */
+  .yellow-band{background:var(--honey); padding:110px 48px 120px}
+  .yellow-band-inner{
+    max-width:1240px; margin:0 auto;
+    display:grid; grid-template-columns:1fr 1.4fr;
+    gap:80px;
+  }
+  .band-overline{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--ink); font-weight:600; margin-bottom:28px;
+  }
+  .band-title{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:64px;
+    line-height:1.02;
+    color:var(--ink);
+    letter-spacing:-.02em;
+  }
+  .band-title em{font-style:italic}
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:48px 56px}
+  .card{padding-top:8px}
+  .card-icon{width:36px; height:36px; color:var(--ink); margin-bottom:18px}
+  .card h4{
+    font-family:var(--display); font-weight:500; font-size:22px;
+    color:var(--ink); margin-bottom:12px;
+  }
+  .card p{font-size:14px; line-height:1.65; color:var(--ink-soft)}
+
+  /* ── БЛОК НЕДЕЛИ (любой) ──────────────────── */
+  .week-block{padding:140px 48px 140px; max-width:1240px; margin:0 auto}
+  .week-block.bg-soft{max-width:none; padding:140px 48px 140px}
+  .week-block.bg-soft > .week-inner{max-width:1240px; margin:0 auto}
+  .week-block.bg-soft{background:var(--cream-soft)}
+  .week-block.bg-deep{background:var(--cream-deep); max-width:none}
+  .week-block.bg-deep > .week-inner{max-width:1240px; margin:0 auto}
+  .week-block .tag{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--honey-deep); font-weight:600; margin-bottom:28px;
+    text-align:center;
+  }
+  .week-block h1.section-title{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:72px;
+    line-height:.98;
+    color:var(--ink);
+    text-align:center;
+    margin:0 auto 36px;
+    letter-spacing:-.025em;
+    max-width:980px;
+  }
+  .week-block.foundational h1.section-title{font-size:88px}
+  .week-block h1.section-title em{font-style:italic; color:var(--ink-soft)}
+  .week-block .anthem{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:500;
+    font-size:30px;
+    line-height:1.35;
+    color:var(--ink);
+    text-align:center;
+    max-width:780px;
+    margin:0 auto 28px;
+  }
+  .week-block.foundational .anthem{font-size:32px}
+  .week-block .manifesto{
+    font-size:17px;
+    line-height:1.75;
+    color:var(--ink-soft);
+    max-width:680px;
+    margin:0 auto 100px;
+    text-align:center;
+  }
+  .week-block .manifesto strong{color:var(--ink); font-weight:600}
+
+  /* шапки слоёв (Мантры / Концепты / Цитаты) */
+  .layer-head{
+    text-align:center; margin:80px 0 56px;
+    padding-top:64px;
+    border-top:1px solid rgba(26,26,26,.12);
+  }
+  .layer-head .num{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:28px;
+    color:var(--honey-deep);
+    margin-bottom:8px;
+  }
+  .layer-head h3{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:54px;
+    line-height:1.02;
+    color:var(--ink);
+    letter-spacing:-.02em;
+    margin-bottom:18px;
+  }
+  .layer-head h3 em{font-style:italic; color:var(--ink-soft)}
+  .layer-head p{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:19px;
+    color:var(--ink-soft);
+    max-width:620px; margin:0 auto;
+    line-height:1.55;
+  }
+
+  /* мантры — карточная сетка с большим жёлтым акцентом */
+  .mantras{display:grid; grid-template-columns:repeat(2, 1fr); gap:18px}
+  .mantra{
+    background:var(--cream-soft);
+    border:1px solid rgba(26,26,26,.07);
+    border-radius:18px;
+    padding:38px 36px;
+    position:relative;
+    transition:transform .25s, box-shadow .25s;
+  }
+  .mantra:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 32px rgba(60,60,40,.08);
+  }
+  .mantra .no{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:500;
+    font-size:54px;
+    line-height:1;
+    color:var(--honey-deep);
+    margin-bottom:22px;
+  }
+  .mantra p{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:24px;
+    line-height:1.32;
+    color:var(--ink);
+    letter-spacing:-.005em;
+  }
+  .mantra p em{font-style:italic; color:var(--ink-soft)}
+  .mantra .echo{
+    margin-top:18px;
+    font-family:var(--body);
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink-fade);
+  }
+
+  /* концепты — широкие двухколоночные блоки */
+  .concept{
+    display:grid;
+    grid-template-columns:160px 1fr;
+    gap:48px;
+    align-items:start;
+    padding:44px 0;
+    border-bottom:1px solid rgba(26,26,26,.08);
+  }
+  .concept:last-of-type{border-bottom:none}
+  .concept .left .num{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:400;
+    font-size:84px;
+    line-height:.92;
+    color:var(--honey-deep);
+    letter-spacing:-.02em;
+  }
+  .concept .left .label{
+    margin-top:12px;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-fade);
+    font-weight:600;
+  }
+  .concept .right h4{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:36px;
+    line-height:1.15;
+    color:var(--ink);
+    margin-bottom:18px;
+    letter-spacing:-.01em;
+  }
+  .concept .right h4 em{font-style:italic; color:var(--ink-soft)}
+  .concept .thesis{
+    background:var(--honey-mute);
+    padding:18px 24px;
+    border-radius:10px;
+    font-size:15.5px;
+    line-height:1.65;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .concept .right p{
+    font-size:16px;
+    line-height:1.75;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .concept .right p:last-child{margin-bottom:0}
+
+  /* цитаты — сетка карточек */
+  .quotes{display:grid; grid-template-columns:repeat(2, 1fr); gap:18px}
+  .quote{
+    background:var(--cream-soft);
+    border:1px solid rgba(26,26,26,.07);
+    border-radius:18px;
+    padding:36px 36px 30px;
+    display:flex; flex-direction:column;
+    transition:transform .25s, box-shadow .25s;
+  }
+  .quote:hover{transform:translateY(-2px); box-shadow:0 12px 32px rgba(60,60,40,.08)}
+  .quote .qmark{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:500;
+    font-size:64px;
+    line-height:.5;
+    color:var(--honey-deep);
+    margin-bottom:18px;
+  }
+  .quote q{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:400;
+    font-size:21px;
+    line-height:1.45;
+    color:var(--ink);
+    quotes:none;
+    flex:1;
+  }
+  .quote q::before, .quote q::after{content:none}
+  .quote .who{
+    margin-top:24px;
+    padding-top:18px;
+    border-top:1px solid rgba(26,26,26,.1);
+    font-size:13px;
+    color:var(--ink-fade);
+  }
+  .quote .who b{
+    display:block;
+    color:var(--ink);
+    font-weight:600;
+    font-size:14px;
+    margin-bottom:2px;
+  }
+  .quote .who span{font-style:italic}
+
+  /* ── НЕДЕЛИ 2-5 — компактные блоки ─────────── */
+  .other-weeks{
+    background:var(--cream-deep);
+    padding:120px 48px;
+  }
+  .other-weeks-inner{max-width:1240px; margin:0 auto}
+  .other-weeks .head{text-align:center; margin-bottom:80px}
+  .other-weeks .head .tag{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--honey-deep); font-weight:600; margin-bottom:24px;
+  }
+  .other-weeks .head h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:64px;
+    line-height:1.02;
+    color:var(--ink);
+    letter-spacing:-.02em;
+    margin-bottom:24px;
+  }
+  .other-weeks .head h2 em{font-style:italic; color:var(--ink-soft)}
+  .other-weeks .head p{
+    font-family:var(--display); font-style:italic;
+    font-size:20px; color:var(--ink-soft);
+    max-width:680px; margin:0 auto;
+  }
+  .week-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+  .week-card{
+    background:var(--cream-soft);
+    border-radius:18px;
+    border:1px solid rgba(26,26,26,.07);
+    padding:48px 44px;
+    transition:transform .25s, box-shadow .25s;
+  }
+  .week-card:hover{transform:translateY(-2px); box-shadow:0 12px 32px rgba(60,60,40,.08)}
+  .week-card .num{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:500;
+    font-size:80px;
+    line-height:.9;
+    color:var(--honey-deep);
+    margin-bottom:14px;
+  }
+  .week-card .week-tag{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--ink-fade); font-weight:600; margin-bottom:14px;
+  }
+  .week-card h4{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:32px;
+    line-height:1.1;
+    color:var(--ink);
+    margin-bottom:18px;
+    letter-spacing:-.01em;
+  }
+  .week-card h4 em{font-style:italic; color:var(--ink-soft)}
+  .week-card p{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+  }
+  .week-card .materials-mini{
+    border-top:1px solid rgba(26,26,26,.08);
+    padding-top:18px;
+  }
+  .week-card .materials-mini .label{
+    font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--ink-fade); font-weight:600; margin-bottom:10px;
+  }
+  .week-card .materials-mini ul{list-style:none; font-size:14px}
+  .week-card .materials-mini li{
+    padding:7px 0; color:var(--ink); display:flex; gap:10px;
+  }
+  .week-card .materials-mini li::before{
+    content:"·"; color:var(--honey-deep); font-weight:700; font-size:16px;
+  }
+
+  /* ── ЗВОНКИ ────────────────────────────────── */
+  .calls{padding:120px 48px}
+  .calls-inner{max-width:1240px; margin:0 auto}
+  .calls .head{text-align:center; margin-bottom:80px}
+  .calls .head .tag{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--honey-deep); font-weight:600; margin-bottom:24px;
+  }
+  .calls .head h2{
+    font-family:var(--display); font-weight:400; font-size:64px;
+    line-height:1.02; color:var(--ink); letter-spacing:-.02em;
+    margin-bottom:24px;
+  }
+  .calls .head h2 em{font-style:italic; color:var(--ink-soft)}
+  .call-list{display:grid; gap:32px}
+  .call{
+    background:var(--cream-soft);
+    border-radius:18px;
+    border:1px solid rgba(26,26,26,.07);
+    padding:48px 44px;
+    transition:transform .25s, box-shadow .25s;
+  }
+  .call:hover{box-shadow:0 12px 32px rgba(60,60,40,.08)}
+  .call-header{
+    display:grid;
+    grid-template-columns:120px 1fr 180px;
+    gap:32px;
+    align-items:start;
+    padding-bottom:30px;
+    border-bottom:1px solid rgba(26,26,26,.08);
+    margin-bottom:30px;
+  }
+  .call .date{
+    font-family:var(--display);
+    font-style:italic;
+    font-weight:500;
+    font-size:42px;
+    color:var(--honey-deep);
+    line-height:.9;
+  }
+  .call .date .month{
+    display:block;
+    font-style:normal;
+    font-family:var(--body);
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-fade);
+    font-weight:600;
+    margin-top:6px;
+  }
+  .call .body h5{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:30px;
+    line-height:1.15;
+    color:var(--ink);
+    margin-bottom:10px;
+    letter-spacing:-.005em;
+  }
+  .call .body h5 em{font-style:italic; color:var(--ink-soft)}
+  .call .body p.lead{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:18px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .call .meta{
+    text-align:right;
+    font-size:12px;
+    color:var(--ink-fade);
+    letter-spacing:.04em;
+  }
+  .call .meta b{
+    display:block; color:var(--ink); font-weight:600;
+    font-family:var(--display); font-style:italic;
+    font-size:20px; margin-bottom:4px;
+  }
+  .call .body-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:48px;
+  }
+  .call h6{
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-fade);
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .call .structure ol{
+    list-style:none;
+    counter-reset:cstep;
+    padding:0;
+    margin:0;
+  }
+  .call .structure ol li{
+    counter-increment:cstep;
+    padding:10px 0 10px 36px;
+    position:relative;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink);
+    border-bottom:1px solid rgba(26,26,26,.06);
+  }
+  .call .structure ol li:last-child{border-bottom:none}
+  .call .structure ol li::before{
+    content:counter(cstep, decimal-leading-zero);
+    position:absolute; left:0; top:10px;
+    font-family:var(--display);
+    font-style:italic;
+    font-size:16px;
+    color:var(--honey-deep);
+    font-weight:500;
+  }
+  .call .insights ul{list-style:none; padding:0; margin:0}
+  .call .insights ul li{
+    padding:10px 0 10px 22px;
+    position:relative;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink);
+    border-bottom:1px solid rgba(26,26,26,.06);
+  }
+  .call .insights ul li:last-child{border-bottom:none}
+  .call .insights ul li::before{
+    content:"·";
+    position:absolute; left:0; top:8px;
+    color:var(--honey-deep);
+    font-weight:700;
+    font-size:18px;
+  }
+  .call .call-quotes{
+    margin-top:30px;
+    padding-top:24px;
+    border-top:1px solid rgba(26,26,26,.08);
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+  }
+  .call .call-quote{
+    background:var(--cream);
+    padding:20px 24px;
+    border-radius:12px;
+    border:1px solid rgba(26,26,26,.06);
+  }
+  .call .call-quote q{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:15.5px;
+    line-height:1.45;
+    color:var(--ink);
+    quotes:none;
+    display:block;
+    margin-bottom:10px;
+  }
+  .call .call-quote q::before, .call .call-quote q::after{content:none}
+  .call .call-quote .who{
+    font-size:11.5px;
+    letter-spacing:.04em;
+    color:var(--ink-fade);
+  }
+  .call .call-quote .who b{color:var(--ink); font-weight:600; margin-right:6px}
+  .call .call-materials{
+    margin-top:24px;
+    padding-top:20px;
+    border-top:1px solid rgba(26,26,26,.08);
+    font-size:13px;
+    color:var(--ink-fade);
+    font-style:italic;
+  }
+  .call .call-materials b{
+    color:var(--ink);
+    font-style:normal;
+    font-weight:600;
+    margin-right:6px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-size:11px;
+  }
+
+  /* ── ХРАНИЛИЩЕ ─────────────────────────────── */
+  .vault{
+    background:var(--ink);
+    color:var(--cream);
+    padding:120px 48px;
+  }
+  .vault-inner{max-width:1240px; margin:0 auto}
+  .vault .head{text-align:center; margin-bottom:80px}
+  .vault .head .tag{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--honey); font-weight:600; margin-bottom:24px;
+  }
+  .vault .head h2{
+    font-family:var(--display); font-weight:400; font-size:64px;
+    line-height:1.02; color:var(--cream); letter-spacing:-.02em;
+    margin-bottom:24px;
+  }
+  .vault .head h2 em{font-style:italic; color:var(--honey)}
+  .vault-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px}
+  .vault-card{
+    border:1px solid rgba(245,239,227,.15);
+    border-radius:14px;
+    padding:36px 32px;
+    transition:background .25s, border-color .25s;
+  }
+  .vault-card:hover{background:rgba(239,201,75,.06); border-color:rgba(239,201,75,.3)}
+  .vault-card h4{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:24px;
+    color:var(--honey);
+    margin-bottom:14px;
+  }
+  .vault-card p{
+    font-size:14.5px;
+    line-height:1.65;
+    color:rgba(245,239,227,.75);
+    margin-bottom:18px;
+  }
+  .vault-card a{
+    display:inline-block;
+    padding:10px 22px;
+    background:transparent;
+    color:var(--honey);
+    border:1px solid var(--honey);
+    border-radius:999px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    transition:background .2s, color .2s;
+  }
+  .vault-card a:hover{background:var(--honey); color:var(--ink)}
+
+  /* ── ФУТЕР ─────────────────────────────────── */
+  footer{
+    background:var(--honey);
+    padding:80px 48px 60px;
+    text-align:center;
+  }
+  footer .wordmark-small{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:64px;
+    line-height:.9;
+    color:var(--ink);
+    letter-spacing:-.025em;
+    margin-bottom:24px;
+  }
+  footer p{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:18px;
+    color:var(--ink);
+    margin-bottom:36px;
+    max-width:520px; margin-left:auto; margin-right:auto;
+  }
+  footer .meta-row{
+    display:flex; justify-content:center; gap:48px;
+    padding-top:36px;
+    border-top:1px solid rgba(26,26,26,.18);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    flex-wrap:wrap;
+  }
+  footer .meta-row b{
+    display:block; color:var(--ink); font-style:italic;
+    font-family:var(--display); font-size:16px; font-weight:500;
+    letter-spacing:0; text-transform:none; margin-bottom:2px;
+  }
+
+  /* ── мобильная вёрстка ─────────────────────── */
+  @media (max-width:900px){
+    nav.top{padding:18px 22px; grid-template-columns:auto 1fr auto}
+    nav.top .left, nav.top .right{display:none}
+    .sticky-nav{padding:10px 18px}
+    .sticky-nav .links{display:none}
+
+    .hero{height:auto; min-height:540px; padding-bottom:80px}
+    .hero-text{top:90px; padding:0 32px}
+    .wordmark{font-size:clamp(40px, 14vw, 96px); bottom:-18px; padding:0 12px}
+
+    .intro{grid-template-columns:1fr; gap:48px; padding:120px 22px 80px}
+    .intro h2{font-size:42px}
+
+    .yellow-band{padding:64px 22px}
+    .yellow-band-inner{grid-template-columns:1fr; gap:40px}
+    .band-title{font-size:42px}
+    .cards{grid-template-columns:1fr; gap:32px}
+
+    .week-block{padding:80px 22px}
+    .week-block.bg-soft, .week-block.bg-deep{padding:80px 0}
+    .week-block.bg-soft > .week-inner, .week-block.bg-deep > .week-inner{padding:0 22px}
+    .week-block h1.section-title{font-size:48px}
+    .week-block.foundational h1.section-title{font-size:52px}
+    .week-block .anthem{font-size:23px}
+    .week-block.foundational .anthem{font-size:24px}
+    .layer-head h3{font-size:38px}
+    .mantras{grid-template-columns:1fr}
+    .mantra{padding:30px 28px}
+    .mantra p{font-size:21px}
+    .concept{grid-template-columns:1fr; gap:18px; padding:36px 0}
+    .concept .left .num{font-size:60px}
+    .concept .right h4{font-size:28px}
+    .quotes{grid-template-columns:1fr}
+
+    .other-weeks{padding:80px 22px}
+    .other-weeks .head h2{font-size:42px}
+    .week-grid{grid-template-columns:1fr; gap:18px}
+    .week-card{padding:36px 28px}
+
+    .calls{padding:80px 22px}
+    .calls .head h2{font-size:42px}
+    .call{padding:32px 24px}
+    .call-header{grid-template-columns:1fr; gap:14px; padding-bottom:20px; margin-bottom:20px}
+    .call .meta{text-align:left}
+    .call .body-grid{grid-template-columns:1fr; gap:28px}
+    .call .body h5{font-size:24px}
+    .call .call-quotes{grid-template-columns:1fr}
+
+    .vault{padding:80px 22px}
+    .vault .head h2{font-size:42px}
+    .vault-grid{grid-template-columns:1fr; gap:18px}
+
+    footer{padding:60px 22px 48px}
+    footer .wordmark-small{font-size:42px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- HERO                                             -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="hero">
+  <nav class="top">
+    <div class="left">
+      <a href="#mission">Программа</a>
+      <a href="#week-one">Принципы</a>
+      <a href="#weeks">Недели</a>
+    </div>
+    <div class="emblem">
+      <svg width="42" height="42" viewBox="0 0 32 32" fill="none" stroke="#EFC94B" stroke-width="1.6">
+        <path d="M16 4 L16 28"/>
+        <path d="M16 18 C 8 18, 6 12, 8 6 C 14 8, 16 14, 16 18"/>
+        <path d="M16 18 C 24 18, 26 12, 24 6 C 18 8, 16 14, 16 18"/>
+      </svg>
+    </div>
+    <div class="right">
+      <a href="#calls">Звонки</a>
+      <a href="#vault">Хранилище</a>
+      <a href="#footer">3 мая</a>
+    </div>
+  </nav>
+
+  <div class="hero-text">
+    <div class="kicker">Воркбук программы · поток апрель 2026</div>
+    <p class="intro-line">Здесь собрано всё, что мы прошли вместе за пять недель — чтобы ты могла вернуться к любому материалу и перечитать в свободном ритме.</p>
+    <a href="#week-one" class="btn-pill">Открыть первую неделю</a>
+  </div>
+
+  <div class="wordmark">High&nbsp;Perfomance</div>
+</div>
+
+<!-- sticky-навигация -->
+<div class="sticky-nav" id="stickyNav">
+  <div class="brand">High Perfomance</div>
+  <div class="links">
+    <a href="#mission">Миссия</a>
+    <a href="#week-one">Неделя 1</a>
+    <a href="#weeks">Недели</a>
+    <a href="#calls">Звонки</a>
+    <a href="#vault">Хранилище</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- МИССИЯ                                           -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="intro" id="mission">
+  <div class="intro-left">
+    <div class="intro-emblem">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M16 4 L16 28"/>
+        <path d="M16 18 C 8 18, 6 12, 8 6 C 14 8, 16 14, 16 18"/>
+        <path d="M16 18 C 24 18, 26 12, 24 6 C 18 8, 16 14, 16 18"/>
+      </svg>
+    </div>
+    <h2>Тело и внимание<br>рассказывают <em>целую историю.</em></h2>
+    <p>Программа собрана вокруг устойчивого состояния — когда у тебя есть энергия в теле, спокойное внимание, ясные ценности и способность замечать хорошее. Эти четыре опоры держат друг друга, и именно поэтому мы шли через них последовательно, неделя за неделей.</p>
+    <p>Высокая результативность здесь — не про достижения. Это про то, как ты живёшь между достижениями: с какой энергией просыпаешься, что замечаешь в себе и в других, на что у тебя хватает внимания.</p>
+    <a href="#week-one" class="btn-dark">К принципам недели 1</a>
+  </div>
+  <div class="intro-right">
+    <div class="ring-labels">
+      <div class="dot d1">Тело и энергия</div>
+      <div class="dot d2">Ценности</div>
+      <div class="dot d3">Тревога</div>
+      <div class="dot d4">Намаливание</div>
+      <div class="dot d5">Внимание</div>
+      <div class="dot d6">Дизайн месяца</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ЖЁЛТАЯ ПОЛОСА — методология                      -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="yellow-band">
+  <div class="yellow-band-inner">
+    <div>
+      <div class="band-overline">Что внутри программы</div>
+      <h2 class="band-title">Глубина без надрыва, <em>состояние, которое держится.</em></h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 4 L16 28 M8 10 L24 10 M10 22 L22 22"/>
+          </svg>
+        </div>
+        <h4>Тёплая структура</h4>
+        <p>Каждая неделя даёт один устойчивый ментальный ход и одну-две практики, которые этот ход закрепляют в теле. Без жёстких дисциплинарных рамок и без давления.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="16" cy="16" r="12"/>
+            <path d="M16 8 L16 16 L22 19"/>
+          </svg>
+        </div>
+        <h4>Опора на исследования</h4>
+        <p>За каждой практикой стоит отдельная линия исследований — Brewer, Smith, Двек, Талеб, Клир, Tolle, Fredrickson, Emmons. В воркбуке для каждой недели собраны источники.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 16 C 10 8, 22 8, 26 16 C 22 24, 10 24, 6 16 Z"/>
+            <circle cx="16" cy="16" r="3"/>
+          </svg>
+        </div>
+        <h4>Метапозиция как навык</h4>
+        <p>Главная задача недели — научиться замечать своё состояние с интересом, а не с борьбой. Из этой позиции тревога, обесценивание и усталость теряют свою силу.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M8 24 L16 8 L24 24 Z M12 24 L20 24"/>
+          </svg>
+        </div>
+        <h4>Связность недель</h4>
+        <p>Тревога мешает увидеть ценности, ценности без благодарности превращаются в очередной список задач, а без энергии не работает ничего. Поэтому недели идут именно в этой последовательности.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- НЕДЕЛЯ 1 · ФУНДАМЕНТ                             -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="week-block foundational" id="week-one">
+  <div class="tag">Неделя 01 · 30 марта — 5 апреля · Getting Shit Done</div>
+  <h1 class="section-title">Принципы первой недели — <em>фундамент всей программы.</em></h1>
+
+  <p class="anthem">«Чтобы расти туда, куда хочешь — нужно делать то, чего ещё не делаешь.»</p>
+
+  <p class="manifesto">Реальные действия — это поверхностный слой нашей жизни. <strong>Главный слой — это то, как мы относимся к происходящему:</strong> к триггерам, к плохому настроению, к тревоге, к страху, к самокритике, к собственным импульсам и привычкам. Действия здесь — это поле, на котором мы тренируем своё отношение, а не самоцель. Вся остальная программа — это пять разных способов работать именно с этим внутренним слоем. Поэтому первая неделя — это не разогрев и не вступление; это фундамент, на котором будут держаться все следующие недели, и принципы, к которым имеет смысл возвращаться постоянно.</p>
+
+  <!-- ── СЛОЙ 1 · МАНТРЫ ─────────────────────── -->
+  <div class="layer-head">
+    <div class="num">— Слой первый —</div>
+    <h3>Восемь <em>мантр.</em></h3>
+    <p>Короткие фразы, которые можно носить с собой и доставать в нужный момент. Каждая — выжимка одного раздела недели.</p>
+  </div>
+
+  <div class="mantras">
+    <div class="mantra">
+      <div class="no">01</div>
+      <p>Если идея пришла, <em>надо успеть на её импульсе.</em></p>
+      <div class="echo">Мотивация коротенькая, и пока она ещё горит, я успеваю прожить с идеей хотя бы три шага вперёд. Думать о ней, сомневаться в плане и взвешивать ресурсы я разрешаю себе уже после того, как сделала первое движение, иначе внутренний разговор гасит импульс быстрее, чем дойдёт до дела. И идею стоит отгрызать маленьким кусочком, как слона: огромный план в голове кажется неприступным, а вот хвостик на сегодня и кусочек на завтра — это всё, что нужно, чтобы продолжать двигаться.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">02</div>
+      <p>Самокритика — <em>это привычка,</em> и её можно увидеть.</p>
+      <div class="echo">Самоуничижение и сомнения в себе — это не часть твоего характера, а просто привычная реакция, которую внутренний наблюдатель уже умеет замечать. Когда я её замечаю, у меня появляется маленькая щель, в которой можно решить иначе: не ругать себя в сотый раз за то же самое, а напомнить себе, какой я хочу быть в этой ситуации. Каждое такое маленькое решение, как говорит Джеймс Клир, — это голос за тот тип личности, которым я становлюсь, и собирается это медленно, как лифт, который потихоньку везёт тебя в другое место.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">03</div>
+      <p>Когда я держусь пути, <em>проиграть невозможно.</em></p>
+      <div class="echo">Результат — это секунда: достигла, поставила галочку, к утру следующего дня это уже стало нормой. А путь — это всё остальное время жизни, и именно в этом времени мы себя собираем. Когда внимание держится на результате, любой провал ощущается катастрофой; когда внимание держится на пути, тот же провал становится материалом для роста — данными о том, как именно работает моя голова, что её сбивает, что её держит. Growth mindset — это умение в моменте, когда поднимается старая привычная мысль, замедлиться и заметить её, прежде чем она унесла тебя в спираль.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">04</div>
+      <p>Хороший день <em>делается мыслями.</em></p>
+      <div class="echo">Хороший день собирается из маленьких решений в течение него самого: дать себе тёплую мысль, поддержать себя там, где привычка тянет поругать, не докармливать тревогу её любимым кормом — катастрофизацией. И войти в это состояние можно через любой край: через движение, через хорошую фразу самой себе, через контакт с близким, через паузу с чашкой кофе. Один маленький шаг в любом из этих направлений — и в теле уже другая химия, и в голове другой ритм.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">05</div>
+      <p>Мир полон возможностей, <em>и Чёрный лебедь рано или поздно прилетит.</em></p>
+      <div class="echo">Внимание устроено так, что подбирает то, во что направлено. Если я держу в голове «всё закрыто, ничего не получится» — я и буду видеть подтверждения, потому что они есть в любом дне. А если я держу в голове, что мир полон возможностей и что в любой момент может случиться что-то неожиданно хорошее, я начинаю замечать другие сигналы — людей, разговоры, открытые двери. И пока Чёрный лебедь не прилетел, мотивация не свалится мне на голову сама — её делает мой собственный маленький шаг, даже самого короткого формата: если нет сил на сорок минут, у меня всегда есть семь.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">06</div>
+      <p>Хитрый взгляд <em>работает лучше силы воли.</em></p>
+      <div class="echo">Сила воли звучит как «мне трудно, но я доползу», и она работает ровно до того момента, как ресурс кончится. Хитрый взгляд устроен по-другому: вместо борьбы с ситуацией я задаю себе вопрос «как это можно использовать в свою пользу?». Заленилась — может быть, это сигнал перенастроить нагрузку, и тогда лень становится материалом, а не приговором. Съела лишнее — может быть, я давно не давала себе удовольствия, и тогда вечер про принятие, а не про вину. Стыд как мотиватор не работает — он истощает и оставляет только желание спрятаться, — а антихрупкость работает, потому что она про каучуковый мячик: всё, что в тебя попадает, отскакивает и при этом делает тебя крепче, не жёстче.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">07</div>
+      <p>Тело — <em>это та опора, у которой нет минусов.</em></p>
+      <div class="echo">Когда мне плохо, я возвращаюсь к телу первым: оно даёт результат, даже если в этот день удалось совсем мало. Любая тренировка, любая забота о питании или о сне сдвигает мозг — он считывает тело и подстраивает под него своё состояние. И в самом движении мне интересна не столько форма (хотя её я тоже хочу), сколько философия: чуть глубже сесть в приседе — это не про ноги, это про то, что я учусь идти глубже там, где обычно останавливаюсь, и эта тренировка переносится потом в любые другие сферы — в разговор, в работу, в отношение к себе. Поддерживать тело здоровым — это и благодарность всей цепочке предков, которые донесли до меня эту ДНК.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">08</div>
+      <p>Дисциплина без драмы — <em>и навык быстро возвращаться.</em></p>
+      <div class="echo">Дисциплина у нас — это спокойное расставление условий, в которых правильное оказывается проще, чем неправильное, и привычка возвращаться к ним каждый день, без сжатых кулаков и без героического самопреодоления. Главное умение, которое мы здесь тренируем, — это bouncing back from failure: способность после срыва, после развалившегося дня, после провала спокойно вернуться в «да и насрать, я продолжаю», без долгого восстановления и без самоуничижения. Жизнь будет давать нагрузку, и я учусь под этой нагрузкой собираться обратно всё быстрее.</div>
+    </div>
+  </div>
+
+  <!-- ── СЛОЙ 2 · КОНЦЕПТЫ ───────────────────── -->
+  <div class="layer-head">
+    <div class="num">— Слой второй —</div>
+    <h3>Восемь <em>концептов.</em></h3>
+    <p>То же самое, но с механикой и развёрнуто — что мы делаем и почему это работает.</p>
+  </div>
+
+  <div class="concepts">
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">01</div>
+        <div class="label">Превращать импульс в действие</div>
+      </div>
+      <div class="right">
+        <h4>На импульсе <em>надо успеть как можно больше.</em></h4>
+        <div class="thesis">Когда есть какие-то идеи и ты долго-долго о них думаешь, особенно со слоем тревоги, в какой-то момент минусов этого действия становится больше, чем плюсов. И в итоге идея появилась, а ты её не сделала. Поэтому простое правило: <strong>если есть идея — надо делать её сразу,</strong> пока импульс ещё горит и пока внутренний разговор не успел его погасить.</div>
+        <p>Этот проект я придумала во время последнего Брессворка — и сразу же написала о нём, сразу же открыла продажи, не дав себе времени на сомнения. И в какой-то момент я поняла, что с одной истории чудо не произойдёт, что я не соберу группу — но у меня столько заряда, что я буду продолжать и продолжать. Не дать первой сложности тебя выбить. Уметь защищать свою идею. Таких маленьких выборов очень много, и именно они в итоге управляют твоим mindset'ом.</p>
+        <p>В практическом смысле это работает так: пока я не сделала первые три шага в сторону идеи — думать о ней себе запрещаю. Даже если эти три шага уведут в чащу леса и идея не сработает, у меня останется живой опыт, которого без этих шагов не появилось бы. И ещё: завтра встанешь, и голосочки в голове скажут «может, всё не так уж плохо, и так нормально живём, и времени не так уж много». Это и есть та точка, в которой можно идею не предать — это возможность послужить ей до конца, потренировать какую-то новую гибкость, встроиться в другой поток и узнать в себе ту версию, которая уже это пережила.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">02</div>
+        <div class="label">Себя — как объект наблюдения</div>
+      </div>
+      <div class="right">
+        <h4>Самокритика — <em>это привычка, и её можно увидеть.</em></h4>
+        <div class="thesis">Когда мы смотрим на успешных людей, мы берём эту работу над собой как объект наблюдения, как поле экспериментов. Самокритика, самоуничижение, сомнения в себе — это просто привычная реакция, которая поднимается в ответ на эмоцию. И когда мы её замечаем, у нас появляется крошечный зазор, в котором можно решить иначе.</div>
+        <p>Если раньше мы смотрим на свои паттерны из позиции «я такой, так будет всегда, это никогда не изменится» — это ещё больше демотивирует. То сейчас, и я очень прошу тебе мне поверить, — это можно изменить. Может быть, не с первого раза, может быть, не сразу; самые важные вещи нам не даются легко, и если бы они были лёгкими, было бы неинтересно. Но это точно меняется, и ты можешь стать другим человеком, у которого получается то, что не получается у тебя сейчас, у тебя прежней. Mindset — это две составляющие: то, как я думаю о себе, и то, как я думаю о мире, и обе эти составляющие можно осознанно сдвигать.</p>
+        <p>Тут есть важный нюанс: «не хотеть так» — этого мало, нужно знать, как именно я хочу реагировать. Мой пример: я ревнивая, и мне не нравится, когда мои партнёры с кем-то флиртуют. Можно хотеть, чтобы партнёры ни с кем не флиртовали — но это не то, чего я хочу на самом деле. На самом деле я хочу быть настолько альфа-человеком, чтобы мне это вообще не беспокоило. И вот когда я держу в сознании именно ту реакцию, которую хочу, — даже если сразу так не реагирую — градус начинает понемногу спадать. Меняешься медленно, как лифт, но перемены видны: можешь стать другим человеком не сейчас, а через какое-то время, даже если ты просто лежишь в эту сторону.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">03</div>
+        <div class="label">Mindset — это две составляющие</div>
+      </div>
+      <div class="right">
+        <h4>Когда я держусь пути, <em>проиграть невозможно.</em></h4>
+        <div class="thesis">У ограничительного mindset'а есть две стороны. Первая — про себя: «я не там, я опять не смог, у меня не получается, я снова всё испортила». Вторая — про мир: «успех — это сложно, обстоятельства непреодолимы, тучи сгущаются, раньше было лучше». Эти мысли — даже если в моменте кажутся правдой — нельзя думать, потому что в них нет никакой пользы и они отравляют только тебя саму.</div>
+        <p>Все эти мысли, если за ними понаблюдать, — это просто привычка. И эта привычка точно не приводит ни к чему хорошему: она усугубляет, потому что когда мы оформляем эмоции в эти слова, мы их подпитываем. Мы постоянно живём в мире, который меняется, в котором надо расти, адаптироваться, и каждый человек испытывает большой прессинг. Наша привычная реакция на этот прессинг — эмоции, страх, тревога. И когда они приходят, у нас есть выбор: пойти за ними по старой колее или заметить и не пойти.</p>
+        <p>Зафиксированность на результате — это самое худшее, что может случиться в работе с собой. Результат — это секунда: достигла, поставила галочку, к утру следующего дня уже стало нормой. А путь — это всё остальное время жизни, и именно в этом времени мы себя собираем. Когда фокус держится на пути, провалы перестают быть катастрофами: они становятся материалом для роста, точкой, в которой видно, как именно работает моя голова, что её сбивает, что её держит. Кэрол Двек об этом писала так: в фиксированном мышлении всё про результат — провалился, и всё было зря; мышление роста позволяет ценить то, что ты делаешь, вне зависимости от результата.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">04</div>
+        <div class="label">Не подкармливать тревогу мыслями</div>
+      </div>
+      <div class="right">
+        <h4>Хороший день <em>делается мыслями.</em></h4>
+        <div class="thesis">Когда я тревожусь и у меня стресс, я могу просто посидеть с этой тревогой и сказать себе: «я чувствую тревогу, она определяется в теле». Но привычку подкармливать её мыслями — объяснять, прокручивать, катастрофизировать — я убираю. Вместо этого формируется новая привычка: «я тревожусь, но я могу; у меня свой путь; я благодарна за то, что есть; сейчас не могу, но смогу — я делаю».</div>
+        <p>Спираль работает простым образом: случилось что-то неприятное, настроение упало, приходит мысль «какой смысл, ничего не помогает», действие сворачивается до «полежу, подожду, может, пройдёт». Чем дольше избегаешь движения, тем более вялой себя чувствуешь, и плохое настроение начинает подталкивать делать ровно то, что делает его ещё хуже. Это и есть та нисходящая спираль, которую описывает Джули Смит в своей книге: внешние события влияют на внутреннее состояние → настроение падает → «какой смысл, ничего не помогает» → подчиняемся позывам отступить → ничего не меняется → цикл повторяется.</p>
+        <p>Хороший день выглядит иначе и собирается через КПТ-крест: мысли, эмоции, поведение и физические ощущения связаны, и вход в изменения возможен через любой из четырёх квадрантов. Можно дать себе тёплую мысль — и через несколько минут сдвинется эмоция. Можно сделать короткое движение — и сдвинется физика, и мысли сами поменяют тон. Можно встретиться с близким — и одна тёплая фраза в твою сторону размягчит весь день. Это не самоуговаривание, это переучивание мозга в моменте: ты хвалишь себя там, где старая привычка хочет поругать, и со временем пропадает сама необходимость в этом самобичевании.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">05</div>
+        <div class="label">С тобой случается — или ты делаешь</div>
+      </div>
+      <div class="right">
+        <h4>Мир полон возможностей, <em>и ты сама делаешь мотивацию.</em></h4>
+        <div class="thesis">Когда «с тобой случается» — случается хорошее настроение, случается мотивация, случается плодотворное время — ты всегда ждёшь. Ты всегда как пёрышко на ветру. А когда «ты делаешь» — ты точно знаешь: ты можешь сделать хорошее время, можешь сделать мотивацию, можешь в любой момент создать себе оптимальные условия. Любой момент оптимальный для чего-то, и даже минус, в который не хочется ничего, оказывается такой же базой, как и плюс.</div>
+        <p>Мир полон возможностей. Эта мысль всегда мне очень помогала: мир полон прекрасных вероятностей, и сейчас может казаться, что нет — но через минуту что-то появится. Если ты о чём-то мечтаешь — это с тобой произойдёт; верить в это нет никакого минуса, потому что внимание устроено так, что подбирает то, во что направлено. Если присмотреться, можно полюбить почти каждого, найти контакт почти везде, увидеть выход почти из любой ситуации. Моя любимая книга, которую я прочитала в восемнадцать лет, — это «Чёрный лебедь» Талеба. Я её прочитала так: если я сейчас в жопе, то Чёрный лебедь — большая случайность, которая всё меняет — рано или поздно принесёт мне удачу. Хуже у меня уже не будет, а лучше может стать сильно.</p>
+        <p>Определение многое решает. Один человек говорит «я больной» при тех же данных, при которых другой говорит «я здоровый», и они начинают двигаться в разных направлениях. Mindset реально essential. И мотивация — это не фиксированная черта личности, ждать её бессмысленно; Джули Смит про это пишет: «мотивация, которая приходит и уходит, — это не сбой системы, это часть человеческой природы». Поэтому на каждый день, когда сил нет, у меня есть backup — вместо сорокаминутной тренировки семь минут. Решение простое: если у меня нет времени и сил на всё, я сделаю что-то. В минусе я не жду, а делаю.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">06</div>
+        <div class="label">Хитрый взгляд (не сила воли)</div>
+      </div>
+      <div class="right">
+        <h4>На драме ничего не могу. <em>На хитром взгляде могу всё.</em></h4>
+        <div class="thesis">Mindset — это не равно усилие воли. Сила воли звучит как «мне трудно, но я справлюсь, я доползу» — это выжигающее напряжение, на драме, на надрыве; для меня это вообще не топливо, я на нём ничего не могу делать. Хитрый взгляд устроен иначе: я смотрю на любую ситуацию и спрашиваю себя <strong>«как я могу это использовать в свою пользу? как я могу сделать этот сложный момент одним из лучших для себя?».</strong></div>
+        <p>Энергия жалости к себе — «о боже, бедный я, у меня опять не получилось» — начинает требовать есть, и когда ты с ней идентифицируешься, выйти из неё тяжело. Куприянов очень хорошо об этом сказал: «я не могу позволить себе ныть, у меня нет такой роскоши; нытьё только всё отравляет вокруг и меня, и никому от этого не легче». Каждый раз, когда хочется поныть — внутренний или вслух — стоит спросить себя: мне станет от этого легче? И если нет, можно заменить нытьё на добрый разговор с собой, и это в сто раз полезнее. На хитрой стороне нет ощущения, что ты перенапрягаешься.</p>
+        <p>Здесь же работает антихрупкость — качество каучукового мячика: всё, что в тебя попадает, отскакивает и при этом делает тебя крепче, не жёстче. И ещё один важный инструмент — добрый юмор в разговоре с собой. Не злая ирония и не сарказм, а тёплая улыбка над собственной катастрофизацией: «что это тут у меня происходит? Какая безвыходная ситуация — я что, на ночь обожралась мороженым? Какой кошмар!» Когда мы внутри себя начинаем драматизировать «это начало конца, теперь точно всё», ощущение катастрофы и делает это катастрофой. А если ты можешь над этим тихо улыбнуться, оно перестаёт иметь над тобой власть.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">07</div>
+        <div class="label">Тело — первый шаг</div>
+      </div>
+      <div class="right">
+        <h4>Тело — это <em>самая крутая база, всегда.</em></h4>
+        <div class="thesis">Всё это применимо к любому процессу в жизни. Первый шаг — почему именно тело? Потому что у этого нет никаких минусов: даже если задача про mental health, мы всё равно начинаем с тела, потому что тело — это гормоны. Мозг постоянно считывает, что в нём происходит — пульс, дыхание, мышцы — и реагирует на эту информацию, решая, сколько энергии выделить на задачу. У нас гораздо больше влияния на наши чувства через тело, чем нам кажется.</div>
+        <p>Что я начинала, когда у меня были жёсткие отходники и ломки, — с тела. Что я начинаю сейчас — всегда с тела. Это самый крутой ресурс, в котором нет минусов, и любая тренировка, любая забота о питании или о сне сдвигает мозг — он начинает выделять другие нейротрансмиттеры, и состояние меняется. Поддерживать тело здоровым — это, как говорит Тик Нат Хан, выражение благодарности всей вселенной: все мои предки донесли до меня эту ДНК, и сейчас она принадлежит мне. И обратная сторона работает точно так же: запущенное тело тащит за собой запущенный мозг.</p>
+        <p>В движении меня привлекает не столько результат — хотя и пресс, и форма мне приятны, — сколько философия. Часто на коврике, в тренировке, проявляется моя лень, моя инертность, нежелание идти в более глубокий контакт с телом. Иногда честность — это остановиться и сменить нагрузку: мой пример с йогой, на которой я подсела, заболели суставы, и потребовалось усилие, чтобы остановиться и перейти на другое, потому что моя инертность тащила меня обратно к привычному. Чуть глубже сесть в приседе, ещё чуть-чуть на повтор больше — это не про ноги. Это про то, что я учусь идти глубже там, где обычно останавливаюсь, и эта тренировка переносится потом в любые другие сферы жизни — в разговор, в работу, в отношение к себе.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left">
+        <div class="num">08</div>
+        <div class="label">Дисциплина без драмы</div>
+      </div>
+      <div class="right">
+        <h4>Дисциплина без драмы — <em>и навык быстро возвращаться.</em></h4>
+        <div class="thesis">Дисциплина у нас — это спокойное погружение в то, что есть сейчас. Точка ноль, и от неё мы потихоньку улучшаем, без драматичных целей и без сжатых кулаков. Не стараемся обогнать время, собираем все сокровища по пути. Меняет нас именно путь, не цель; и вход в него начинается с принципа <strong>«если я не делаю — я не делаю; если я делаю — я делаю с удовольствием»</strong>.</div>
+        <p>От нуля до одного — сложно. Это та самая дофаминовая яма, в которой обычно сливается половина людей: новое тяжёлое, результата нет, ресурса меньше. Но именно в этой фазе важно вкладываться спокойно, без драматичных мыслей вроде «я опять провалилась» или «у меня ничего не получится». Просто «делаю, делаю, делаю». Если я в эту яму ничего не напускаю, кроме простого продолжения, я очень быстро попадаю в фазу, где появляется первый результат. Мотивации до этого результата у меня скорее всего не будет; нужно дождаться его, продолжая вкладываться. Джеймс Клир об этом пишет точно: «успех — это продукт ежедневных привычек, а не разовых трансформаций; если хочешь лучших результатов — забудь о целях, сфокусируйся на системе».</p>
+        <p>Главный навык, который мы здесь тренируем, — это <strong>bouncing back from failure:</strong> способность после срыва, после развалившегося дня, после того как я что-то просрала, спокойно вернуться в «да и насрать, я продолжаю», без долгого восстановления и без самоуничижения. И второй навык — <strong>perform under pressure:</strong> учусь работать в том мире, который есть, а не в идеальных условиях. Мир давит, обстоятельства давят, случается что угодно — упал метеорит, объявили пандемию, сломался интернет, не открывается трекер. Меня ничего не сломит. Через тринадцать лет работы с группами в секте я знаю: первая неделя у всех тяжёлая, а через неделю настроение становится супер. Это не магия, это работа.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── СЛОЙ 3 · ЦИТАТЫ ─────────────────────── -->
+  <div class="layer-head">
+    <div class="num">— Слой третий —</div>
+    <h3>Цитаты из книг, <em>которые мы читали.</em></h3>
+    <p>Опоры за каждым принципом. Если что-то из мантр или концептов резонирует — иди туда, к источнику.</p>
+  </div>
+
+  <div class="quotes">
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Начни — начать это половина дела. Пусть ещё половина остаётся; снова начни — и ты закончишь.</q>
+      <div class="who"><b>Марк Аврелий</b><span>«Размышления» · стоики</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Препятствие на пути становится путём.</q>
+      <div class="who"><b>Марк Аврелий</b><span>«Размышления» · стоики</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>В бою не думай о победе или поражении. Думай только о том, чтобы рубить.</q>
+      <div class="who"><b>Миямото Мусаси</b><span>«Книга пяти колец»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Не потому вещи сложны, что мы не решаемся. А потому мы не решаемся, что вещи кажутся сложными.</q>
+      <div class="who"><b>Сенека</b><span>письма к Луцилию · стоики</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Пока ты не сделаешь бессознательное сознательным, оно будет управлять твоей жизнью, а ты будешь называть это судьбой.</q>
+      <div class="who"><b>Карл Юнг</b><span>аналитическая психология</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Каждое действие — это голос за тот тип личности, которым ты хочешь стать.</q>
+      <div class="who"><b>Джеймс Клир</b><span>«Atomic Habits»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Успех — это продукт ежедневных привычек, а не разовых трансформаций.</q>
+      <div class="who"><b>Джеймс Клир</b><span>«Atomic Habits»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Если хочешь лучших результатов — забудь о целях. Сфокусируйся на системе.</q>
+      <div class="who"><b>Джеймс Клир</b><span>«Atomic Habits»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>В фиксированном мышлении всё про результат. Провалился — всё было зря. Мышление роста позволяет ценить то, что ты делаешь, вне зависимости от результата.</q>
+      <div class="who"><b>Кэрол Двек</b><span>«Mindset: The New Psychology of Success»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Чем дольше избегаешь движения, тем более вялым себя чувствуешь. Плохое настроение подталкивает делать то, что делает его ещё хуже.</q>
+      <div class="who"><b>Julie Smith</b><span>«Why Has Nobody Told Me This Before?»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Никакое количество тревоги не изменит ничего из того, что произойдёт.</q>
+      <div class="who"><b>Алан Уоттс</b><span>лекции и эссе</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Обычно мы думаем, что у смелых людей нет страха. Правда в том, что они со страхом на «ты».</q>
+      <div class="who"><b>Пема Чодрон</b><span>«When Things Fall Apart»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Без усилия твой талант — это всего лишь нереализованный потенциал.</q>
+      <div class="who"><b>Анджела Дакворт</b><span>«Grit»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Ветер тушит свечу и разжигает огонь. Так же с хаосом и неопределённостью — используй их, а не прячься.</q>
+      <div class="who"><b>Нассим Талеб</b><span>«Антихрупкость»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Я лучше буду тупым и антихрупким, чем крайне умным и хрупким.</q>
+      <div class="who"><b>Нассим Талеб</b><span>«Антихрупкость»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Уязвимость — это тяжело и страшно. Но не настолько, как оказаться в конце жизни и спросить себя: а что, если бы я решилась?</q>
+      <div class="who"><b>Брене Браун</b><span>«Daring Greatly»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Если ты хочешь что-то сжать — дай этому расшириться. Если хочешь от чего-то избавиться — дай полностью проявиться.</q>
+      <div class="who"><b>Лао Цзы</b><span>«Дао Дэ Цзин»</span></div>
+    </div>
+    <div class="quote">
+      <div class="qmark">"</div>
+      <q>Поддерживать здоровье тела — это выражение благодарности всей вселенной.</q>
+      <div class="who"><b>Тик Нат Хан</b><span>дзен-буддизм, mindfulness</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- НЕДЕЛЯ 2 · ТРЕВОГА                              -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="week-block bg-soft" id="w2" data-anchor="weeks">
+<a id="weeks" style="display:block; position:relative; top:-60px; visibility:hidden;"></a>
+  <div class="week-inner">
+    <div class="tag">Неделя 02 · 6–12 апреля · Тревога</div>
+    <h1 class="section-title">Тревога — <em>привычная петля, которую размыкает любопытство.</em></h1>
+
+    <p class="anthem">«Тревога — это привычка. А привычки можно менять — не силой воли, а через любопытство».</p>
+
+    <p class="manifesto">Тревога — это старая система безопасности, доставшаяся нам по наследству от тех времён, когда вокруг были реальные хищники. Когда-то она спасала жизнь: услышал шорох — тело мобилизовалось, внимание заострилось. Теперь среда совсем другая, а механизм продолжает работать в прежнем режиме и срабатывает на новостной заголовок и на бытовую неопределённость точно так же, как когда-то срабатывал на тигра в кустах. И со временем эта реакция оформляется в петлю: <strong>триггер → поведение → краткое облегчение → закрепление петли.</strong> Главный ход недели — научиться видеть эту петлю изнутри, без морального суждения, и через любопытство понемногу переучить мозг искать награду в другом.</p>
+
+    <!-- Слой 1 — Мантры -->
+    <div class="layer-head">
+      <div class="num">— Слой первый —</div>
+      <h3>Десять <em>мантр.</em></h3>
+      <p>Короткие фразы, которые можно носить с собой и доставать в момент, когда тревога поднимается.</p>
+    </div>
+
+    <div class="mantras">
+      <div class="mantra">
+        <div class="no">01</div>
+        <p>Я замечаю тревогу — <em>и это уже шаг из неё.</em></p>
+        <div class="echo">Когда ты видишь тревогу как внешний процесс, ты уже вышла из полного слияния с ней. Ты больше не тревога — ты тот, кто её видит. Это смещение само по себе ослабляет её власть.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">02</div>
+        <p>Тревога обещает контроль, <em>а даёт только бессонницу.</em></p>
+        <div class="echo">Мозг верит, что прокручивая сценарии, он готовится и обезопасивает. Но на практике тревога только энергоёмка и парализует. Если она реально работает — почему ты чувствуешь себя хуже, а не лучше?</div>
+      </div>
+      <div class="mantra">
+        <div class="no">03</div>
+        <p>На теле видно <em>раньше, чем в голове.</em></p>
+        <div class="echo">Тревога живёт в теле — в груди, горле, животе, челюстях, плечах. Когда ты замечаешь её как ощущение, а не как спираль мыслей, она становится менее страшной.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">04</div>
+        <p>Любопытство — <em>bigger better offer для мозга.</em></p>
+        <div class="echo">Антидот к тревоге — это не борьба и не контроль, а направленное любопытство. Вместо «как это остановить» — «что я сейчас чувствую, где в теле, как это устроено». Мозг идёт туда, где выше вознаграждение.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">05</div>
+        <p>Руминация — <em>это не анализ, это привычка зуда.</em></p>
+        <div class="echo">Когда мысль крутится по кругу в сто первый раз, продуктивного мышления в этом нет — это просто выученная привычка, в которой мозг ищет облегчение. Распознав руминацию, её можно остановить физически: встать, двинуться, сказать «стоп» вслух, выйти из комнаты.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">06</div>
+        <p>Я работаю на тревоге <em>или я работаю на ценностях.</em></p>
+        <div class="echo">Многие используют тревогу как мотивационное топливо — адреналин запустил продуктивность. Но кортизол выгорает, ценности нет. Вопрос не в том, включена ли мотивация, а в том, что её питает.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">07</div>
+        <p>Без системы я <em>на ночных работах и поверхностных идеях.</em></p>
+        <div class="echo">Тревога часто маскируется под необходимость «быть готовой» и «не пропустить». Это съедает сон, ясность, глубину. Система — якорь к телу, ограничения по времени, забота о нервной системе — это инвестиция в качество, а не наказание.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">08</div>
+        <p>Боюсь — <em>значит, иду в направлении развития.</em></p>
+        <div class="echo">Страх — это нормальный сигнал, что ты на границе зоны комфорта. Но граница — это не опасность, это расширение. Страх можно прочитать как знак интересного пути, а не как причину остановиться.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">09</div>
+        <p>Дисциплина — <em>это система, а не драма.</em></p>
+        <div class="echo">Тревога часто сцеплена с перфекционизмом и самобичеванием. Дисциплина устроена иначе: это просто выстроенные условия, в которых правильное проще, чем неправильное. Не нужно мучить себя, нужно расставить мебель.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">10</div>
+        <p>Я вижу петлю — <em>и я не жертва петли.</em></p>
+        <div class="echo">Осознанное наблюдение за механизмом (триггер → поведение → облегчение) даёт выбор. Можно выйти из автопилота, заметить, что происходит, и выбрать другой ответ. Это не мгновенно, но это уже не отсутствие выбора.</div>
+      </div>
+    </div>
+
+    <!-- Слой 2 — Концепты -->
+    <div class="layer-head">
+      <div class="num">— Слой второй —</div>
+      <h3>Семь <em>концептов.</em></h3>
+      <p>Механика недели: что мы делаем, и почему мозг на это отвечает.</p>
+    </div>
+
+    <div class="concepts">
+      <div class="concept">
+        <div class="left"><div class="num">01</div><div class="label">Тревога как система безопасности</div></div>
+        <div class="right">
+          <h4>Эволюционный механизм защиты, <em>который теперь срабатывает слишком часто.</em></h4>
+          <div class="thesis">Тревога — это сигнал «внимание, опасность». Когда-то она спасала жизнь: услышал угрозу — тело мобилизовалось, внимание заострилось. Теперь среда другая, но мозг продолжает реагировать на новости, неопределённость и бытовые мелочи как на тигра в кустах.</div>
+          <p>Эволюция жёстко отбирала тех, кто переживал. Они выживали; те, кто был спокоен и не беспокоился, попадали на хищника и не оставили потомства. Поэтому в нас встроен сдвиг: мозг замечает угрозу быстрее, анализирует её глубже, запоминает дольше — это и есть negativity bias. Гениальный дизайн для тех времён, плохая опора для современной жизни.</p>
+          <p>Сегодня угроз много, и они не заканчиваются: новости о войне, кризис, климатические изменения, неопределённость в работе. Мозг продолжает реагировать на всё это как на реальную опасность, и тревога становится хроническим фоном. Понимание этого — первая ступень: ты тревожишься не потому, что с тобой что-то не так, а потому, что система делает свою старую работу в новой среде.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">02</div><div class="label">Петля привычки</div></div>
+        <div class="right">
+          <h4>Триггер → поведение → облегчение → <em>закрепление.</em></h4>
+          <div class="thesis">Тревога становится привычкой через выученный механизм, описанный Брюером. Сигнал → реакция мозга (мысли, напряжение) → поведение для облегчения (еда, скроллинг, контроль, избегание) → краткое облегчение → петля закрепляется в мозге.</div>
+          <p>Например: ты просыпаешься с лёгким беспокойством — это триггер. Мозг подкармливает список дел — это реакция. Ты берёшь телефон, скроллишь — это поведение. Две минуты облегчения, потом вина и ещё больше тревоги — но петля уже сформирована, и в следующий раз телефон снова будет казаться решением.</p>
+          <p>Или другой вариант: тревога о проекте → мысли о том, что может не получиться → контроль деталей, бесконечная переделка → временное облегчение от ощущения готовности → ещё больше контроля. Привычка работает, потому что обещает что-то — контроль, готовность, облегчение, — и мозг верит этому обещанию, даже когда оно ложное.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">03</div><div class="label">Reward value</div></div>
+        <div class="right">
+          <h4>Мозг повторяет то, <em>что считает наградой.</em></h4>
+          <div class="thesis">Тревожные привычки сохраняются не потому, что они помогают, а потому, что мозг считает, что они помогают. Ощущение облегчения, даже краткое и иллюзорное, — это reward, который заставляет повторять.</div>
+          <p>Когда ты переживаешь ситуацию, мозг через какое-то время чувствует облегчение — не потому, что переживание решило проблему, а потому, что просто прошло время. Но ассоциация уже сформирована: «переживаю → потом легче». В следующий раз мозг снова предложит переживать. Это похоже на курильщика, который курит не ради сигареты, а ради облегчения от абстиненции, которую вызвала предыдущая.</p>
+          <p>Ключевой инсайт Брюера: когда человек видит, что тревога реально не помогает — что reward value ложна, — петля начинает ослабевать. Мозг обновляет информацию и ищет другое вознаграждение. Это не ломка через волю, это переучивание через честное наблюдение.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">04</div><div class="label">Шесть видов тревоги</div></div>
+        <div class="right">
+          <h4>Не всё одинаково: <em>у каждой тревоги свой триггер.</em></h4>
+          <div class="thesis">Брюер выделил шесть типов: ситуативная (конкретный триггер), генерализованная (фоновая 24/7), социальная (страх оценки), тревога будущего (катастрофизация), тревога контроля (перфекционизм), экзистенциальная (смысл, конечность). Каждая требует своего подхода.</div>
+          <p>Понимание типа важно, потому что инструменты разные. Ситуативная тревога перед экзаменом работает не так, как генерализованная фоновая, не привязанная к событию. Тревога контроля — «я должна всё переделать идеально» — отличается от социальной тревоги, в которой ключ совсем другой.</p>
+          <p>Когда ты определяешь тип, ты лучше видишь свой триггер и можешь работать с ним точнее. Для социальной тревоги важно отделить собственное мнение о себе от предполагаемого мнения других. Для тревоги контроля — признать, что совершенство и невозможно, и не нужно. Эта точность экономит много энергии.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">05</div><div class="label">Negativity bias и обесценивание</div></div>
+        <div class="right">
+          <h4>Сделала десять раз хорошо, <em>один раз плохо — мозг выбирает плохое.</em></h4>
+          <div class="thesis">Мозг по умолчанию замечает плохое быстрее, анализирует глубже, запоминает дольше. Это negativity bias. Когда ты сделала десять раз хорошо и один раз плохо, мозг выбирает и запоминает именно ошибку. Это создаёт привычку обесценивания позитива и гиперфокуса на негативе.</div>
+          <p>Пример из жизни: написала красивый контент, получила сто лайков и одну критику — критика затмевает остальное. Мозг как бы говорит: «вот, видишь, ты не такая хорошая, как думала». Это не личная слабость, это механизм, общий для всех. Для человека с тревогой он особенно болит: тревога питается именно этим смещением внимания.</p>
+          <p>Разворот — это активное замечание хорошего, похвала себе, признание своих усилий. Это переучивание мозга, и оно работает медленно. Зато надёжно: чем чаще ты подсвечиваешь хорошее, тем привычнее это становится для системы внимания.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">06</div><div class="label">Affect labelling</div></div>
+        <div class="right">
+          <h4>Назови эмоцию словами — <em>и она ослабнет.</em></h4>
+          <div class="thesis">Когда ты называешь эмоцию точным словом — даже про себя: «я сейчас тревожусь», «это страх», — активируется префронтальная кора, и активность амигдалы снижается. Эмоция становится менее интенсивной.</div>
+          <p>Affect labelling работает через простое точное наименование того, что сейчас в тебе происходит. «Я вижу тревогу в груди, вижу мысли о том, что может не получиться, вижу импульс взять телефон». Когда ты это назвала, ты вышла из отождествления: ты не растворилась в состоянии «я ужасная», а осталась той, кто это состояние видит. Разница тут колоссальная — и это не визуализация и не самовнушение, это просто точное наблюдение за собственным опытом.</p>
+          <p>Хорошая выходная фраза для практики: «Я замечаю, что происходит со мной — и я остаюсь со своей тревогой, не исчезаю в ней». Это формула присутствия: ты признаёшь состояние и одновременно сохраняешь себя как наблюдателя.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">07</div><div class="label">Любопытство как антидот</div></div>
+        <div class="right">
+          <h4>Не борьба, не подавление — <em>смена фокуса в режим исследования.</em></h4>
+          <div class="thesis">Механизм изменения строится на переводе внимания в режим любопытства. Не «как мне избавиться» и не «это плохо», а «что это такое? как это ощущается в теле? что будет, если я просто побуду?».</div>
+          <p>Когда ты любопытна, ты уже не жертва обстоятельств — ты наблюдатель. Это точка силы. Испуганному, катастрофизирующему человеку невозможно быть любопытным; а любопытствующему человеку невозможно оставаться жертвой. Это когнитивный сдвиг, который не требует усилия — только смены ориентира с борьбы на исследование.</p>
+          <p>Образ, который Оля носит с собой: внутренний Далай-лама, который смотрит на жизнь с лёгкостью и юмором. Это не отрицание боли. Это отношение к жизни, в котором даже тяжёлое может стать материалом для интереса, а не материалом для самоуничтожения.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слой 3 — Цитаты -->
+    <div class="layer-head">
+      <div class="num">— Слой третий —</div>
+      <h3>Цитаты и <em>источники.</em></h3>
+      <p>Опоры за каждым принципом недели.</p>
+    </div>
+
+    <div class="quotes">
+      <div class="quote"><div class="qmark">"</div><q>Тревога — это привычка. А привычки можно менять. Не силой воли, а через любопытство.</q><div class="who"><b>Джадсон Брюер</b><span>«Unwinding Anxiety»</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Anxiety is the brain's alarm signal — often a false alarm.</q><div class="who"><b>Джадсон Брюер</b><span>нейроучёный, 20 лет исследований</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Overthinking is not a personality trait — it's a habit that happens more when stress is high.</q><div class="who"><b>Julie Smith</b><span>«Why Has Nobody Told Me This Before?»</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Мы не можем контролировать мысли, которые приходят. Но мы можем выбирать, куда направить внимание. Это единственная власть, которая у нас есть.</q><div class="who"><b>Eckhart Tolle</b><span>о внимании как осознанной энергии</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Противоположное действие: если порыв — свернуться в комок, противоположное действие — встать и двинуться. Тело меняет состояние мозга быстрее, чем мысль.</q><div class="who"><b>Марша Линехан</b><span>диалектическая поведенческая терапия</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Участники, которые использовали осознанность вместо запретов, снизили компульсивное переедание на 40% и показали 67% снижение симптомов тревоги.</q><div class="who"><b>Брюер</b><span>исследования зависимостей</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>301 миллион человек с тревожными расстройствами в мире. 12 миллиардов рабочих дней потеряны ежегодно.</q><div class="who"><b>Статистика тревожных расстройств</b><span>Брюер, обзор данных</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Смелые люди не лишены страха. Они со страхом на «ты».</q><div class="who"><b>Пема Чодрон</b><span>буддийская психология</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Никакое количество тревоги не изменит ничего из того, что произойдёт.</q><div class="who"><b>Алан Уоттс</b><span>философия и психология</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>За счёт проекта, фокуса и включённости я впервые спокойно засыпала, когда отказалась от гаджетов после восьми вечера. Я к этому шла пять лет.</q><div class="who"><b>Оля Маркес</b><span>личный опыт</span></div></div>
+    </div>
+
+    <!-- Материалы недели -->
+    <div class="materials" style="margin-top:80px; max-width:680px; margin-left:auto; margin-right:auto;">
+      <h3>Состав недели</h3>
+      <ul>
+        <li><b>Лекция «Зачем работать с тревогой»</b><span>конспект</span></li>
+        <li><b>Шесть видов тревоги</b><span>памятка</span></li>
+        <li><b>12 постов · Unwinding Anxiety</b><span>чтение</span></li>
+        <li><b>Задание дня 4 · kind self-talk</b><span>практика</span></li>
+        <li><b>Трекер недели 2 · три передачи Бревера</b><span>трекер</span></li>
+        <li><b>Integration Call №2 · 12 апреля</b><span>звонок</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- НЕДЕЛЯ 3 · ЦЕННОСТИ И ИДЕНТИЧНОСТЬ              -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="week-block" id="w3">
+  <div class="tag">Неделя 03 · 13–19 апреля · Ценности и идентичность</div>
+  <h1 class="section-title">Ценности — идентичность — <em>пророчество.</em></h1>
+
+  <p class="anthem">«Я живу полностью: в теле, голове, отношениях, работе. Я выбираю ясность, мужество и заботу — каждый день, не когда-нибудь».</p>
+
+  <p class="manifesto">Тревога часто строится на отсутствии якоря — на жизни, которую направляют внешние обстоятельства, а не внутренние ценности. Эта неделя про то, что при наличии ясного компаса (ценности) и образа себя (идентичность) можно двигаться осознанно, даже когда путь неясен. Третий слой — <strong>самосбывающееся пророчество:</strong> мозг работает на том, во что ты в него веришь. Вместо того чтобы ждать, пока почувствуешь себя дисциплинированной и сильной, ты действуешь из этого образа — и с каждым действием мозг обновляет веру.</p>
+
+  <!-- Мантры -->
+  <div class="layer-head">
+    <div class="num">— Слой первый —</div>
+    <h3>Десять <em>мантр.</em></h3>
+    <p>Якоря, которые держат, когда снова кажется, что всё неясно.</p>
+  </div>
+
+  <div class="mantras">
+    <div class="mantra">
+      <div class="no">01</div>
+      <p>Мои ценности — <em>это компас, когда карты нет.</em></p>
+      <div class="echo">Когда всё неясно, когда не знаешь, правильно ли поступила, ценности держат тебя в направлении. Они не дают цель, они дают курс. Даже если нет видимого прогресса, ты знаешь, в какую сторону двигаешься.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">02</div>
+      <p>Цели заканчиваются. <em>Ценности — нет.</em></p>
+      <div class="echo">Достигла цель — секунда радости, потом снова пусто. Ценность же — это бесконечный путь. Если ценность «быть полностью присутствующей в отношениях», каждый разговор и каждый день становятся её воплощением. Это наполненность, а не финиш.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">03</div>
+      <p>Я — <em>это то, что я делаю каждый день.</em></p>
+      <div class="echo">Личность формируется действиями, а не желаниями. Ты не «будешь» дисциплинированной когда-то. Ты становишься ею в тот момент, когда выполняешь обещание себе — даже маленькое. Маленькие действия аккумулируются в образ.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">04</div>
+      <p>Вера в себя <em>не приходит с неба. Она растёт из доказательств.</em></p>
+      <div class="echo">Уверенность не появляется от размышлений «я уверен». Она появляется, когда ты видишь, что снова и снова делаешь обещанное. Даже если падаешь — встаёшь. Это и есть доказательство для мозга, что ты надёжная.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">05</div>
+      <p>Старое пророчество задаёт траекторию. <em>Новое пророчество строит жизнь.</em></p>
+      <div class="echo">Если ты верила «я ненадёжная, я всегда срываюсь» — эта вера управляла выборами. Когда осознанно формулируешь новую веру и вводишь её как рабочую гипотезу — меняется внимание и действия.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">06</div>
+      <p>Я собираю доказательства <em>для новой версии себя.</em></p>
+      <div class="echo">Задача не верить новому образу — это слишком рано. Задача собирать данные, которые соответствуют ему. Один раз выполнила обещание — одна точка. Два раза — две. С каждой точкой граница между «пробую» и «это я» стирается.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">07</div>
+      <p>Ясность — это <em>собранное напряжение, а не отсутствие конфликта.</em></p>
+      <div class="echo">Когда ты определяешь ценности, ты определяешь и конфликты. Жизнь полна выборов. Но в этих выборах ты стоишь на ясной точке: например, «максимальное присутствие» означает «нет» гаджетам после восьми. Это управление конфликтом из ясного центра.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">08</div>
+      <p>Идентичность работает, <em>когда ты действуешь из неё, а не к ней.</em></p>
+      <div class="echo">Важное различие: не «иду к образу успешного человека», а «действую как человек, который это уже знает». Первое — напряжённое ползание. Второе — выражение того, что уже есть.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">09</div>
+      <p>Я дую <em>на существующий уголь, а не разжигаю с нуля.</em></p>
+      <div class="echo">Ты уже что-то о себе знаешь. Ты не изобретаешь человека с пустого листа — ты замечаешь, что уже есть, и усиливаешь. Один раз прочитала — есть уголь. Читаешь каждый день — углы разгораются в пламя.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">10</div>
+      <p>Мой выбор ценностей — <em>это выбор жизни, которую я хочу.</em></p>
+      <div class="echo">Ценности — это персональное заявление о том, как ты хочешь жить. Они могут отличаться от ценностей родителей, общества, прошлого. Этот выбор — акт свободы и взрослости.</div>
+    </div>
+  </div>
+
+  <!-- Концепты -->
+  <div class="layer-head">
+    <div class="num">— Слой второй —</div>
+    <h3>Восемь <em>концептов.</em></h3>
+    <p>От компаса ценностей к самосбывающемуся пророчеству.</p>
+  </div>
+
+  <div class="concepts">
+    <div class="concept">
+      <div class="left"><div class="num">01</div><div class="label">Ценности vs цели</div></div>
+      <div class="right">
+        <h4>Цель — это <em>точка. Ценность — это направление.</em></h4>
+        <div class="thesis">Цель — конечная: закончить проект, похудеть, выйти замуж. Когда достигаешь, она исчезает. Ценность — это качество жизни, которое не заканчивается: верность, рост, любовь, создание. Когда живёшь по ценностям, каждый день наполнен, а не в ожидании финиша.</div>
+        <p>Julie Smith различает эти два подхода. Люди с тревогой часто строят жизнь на целях: «когда достигну, буду спокойна». Но мозг привыкает, опустошается, ищет новую цель — и спокойствие снова отодвигается. Ценности же дают якорь, который не уплывает после достижения.</p>
+        <p>Если ценность — «максимальное присутствие», то встреча с другом, разговор с детьми, работа над проектом становятся возможностью её воплотить. Синтез простой: цели дают направление, ценности дают смысл каждому шагу. Без целей путь рассыпается; без ценностей даже достижения оставляют пусто.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">02</div><div class="label">Идентичность как двигатель</div></div>
+      <div class="right">
+        <h4>Мозг работает <em>на том, во что ты веришь о себе.</em></h4>
+        <div class="thesis">Большинство ищет мотивацию на уровне результатов («буду стройной — буду счастлива») или процессов («у меня будет расписание»). Но долгосрочная мотивация строится на идентичности: «кто я?». Из веры о себе течёт всё остальное.</div>
+        <p>Джеймс Клир выделяет три уровня: результаты (внешние, видимые), процессы (системы, привычки), идентичность (внутреннее убеждение о себе). Когда ты внутренне видишь себя как пишущего человека — не потому, что написала книгу, а потому, что сегодня опубликовала пост, — ты пишешь иначе, по внутреннему драйву.</p>
+        <p>Формула, которая работает на практике: вместо «я буду дисциплинированной» — «я тот человек, кто возвращается к практике после перерыва». Это не похвала, это самоописание. И каждый раз, когда ты возвращаешься, описание подтверждается, а вера укрепляется.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">03</div><div class="label">Эффект Розенталя</div></div>
+      <div class="right">
+        <h4>Вера учителя <em>изменила реальный IQ детей на +4 пункта.</em></h4>
+        <div class="thesis">В 1968 году психолог Роберт Розенталь сказал учителям, что некоторые дети в классе «одарённые» — на самом деле случайные. Через год эти дети показали реальный прирост IQ только потому, что учителя по-другому с ними взаимодействовали. Вера создала реальность.</div>
+        <p>Механизм простой и не магический. Учитель верил, что ребёнок умный — давал более сложные задачи, больше хвалил, был более внимателен. Ребёнок инертировал эту веру, начинал верить в себя сам, рисковал отвечать, тренировался больше. Результат — реальное улучшение, измеряемое тестом.</p>
+        <p>Для взрослого это значит то же самое. Пророчество, которое ты о себе говоришь — «я способная, я дисциплинированная, я смелая» — направляет внимание, выбор, действия и эмоции. И если ты осознанно меняешь пророчество, через какое-то время меняется и жизнь. Но это работает только тогда, когда ты действуешь из нового пророчества, собирая доказательства.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">04</div><div class="label">Три слоя идентичности</div></div>
+      <div class="right">
+        <h4>Роли → действия → <em>синтез в одно предложение.</em></h4>
+        <div class="thesis">Фреймворк Оли строится на трёх шагах: назвать роли, в которых ты живёшь; для каждой роли описать, как ты в ней действуешь; синтезировать в одно-два предложения, которые описывают основную идентичность.</div>
+        <p>Пример из жизни: роли — мама, коуч, создатель, партнёр. Как я действую в каждой роли: в роли мамы я полностью присутствую; в роли коуча работаю с глубиной и честностью; в роли создателя берусь за сложное и неизведанное; в роли партнёра забочусь и создаю пространство для другого.</p>
+        <p>Синтез: «Я живу полностью: в теле, голове, отношениях, работе. Я выбираю ясность, мужество и заботу — каждый день, не когда-нибудь». Это не красивая фраза для соцсетей. Это рабочее описание того, как ты хочешь действовать. Каждый раз, когда сомневаешься, можно вернуться и спросить: соответствует ли это моей идентичности?</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">05</div><div class="label">Переворот пророчества</div></div>
+      <div class="right">
+        <h4>Старое убеждение → <em>новое + сбор доказательств.</em></h4>
+        <div class="thesis">Когда осознаёшь старое пророчество («я ненадёжная, я всегда срываюсь»), можно выбрать новое. Задача не в позитивном мышлении, а в том, чтобы действовать из нового убеждения как из гипотезы и собирать доказательства.</div>
+        <p>Конкретный пример: старое пророчество — «я не следую своему обещанию себе». Новое — «я тот человек, кто возвращается к практике даже после перерыва». Это не панацея, это просто другая точка зрения. Но когда начинаешь действовать из неё, даже после падения встаёшь — и это маленькое действие становится доказательством.</p>
+        <p>С каждым доказательством мозг обновляет веру. Это медленно, но это работает. Через месяц у тебя уже есть стопка примеров, на которые можно опереться. Старое пророчество не исчезает мгновенно, но рядом с ним растёт новое — и со временем новое становится сильнее.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">06</div><div class="label">Пять категорий ценностей</div></div>
+      <div class="right">
+        <h4>Карта личного пространства, <em>чтобы не упустить важное.</em></h4>
+        <div class="thesis">Матрица из пяти областей охватывает всю жизнь и помогает найти баланс: личность/фундамент (кто я внутренне), проявление (как действую в мире), близость/семья, духовность/смысл, тело/здоровье/качество жизни.</div>
+        <p>Часто люди фокусируются только на работе — и другие области атрофируются. Или только на семье — и теряют себя как отдельного человека. Эта карта помогает увидеть жизнь целиком: проверить, есть ли у тебя ценность в каждой из пяти областей, и если нет — где сейчас провисает.</p>
+        <p>Примеры ценностей по областям: личность — честность, мужество, любопытство; проявление — полнота, щедрость, качество; близость — забота, верность, интимность; духовность — служение, красота, рост; тело — энергия, удовольствие, движение. Когда видны все пять, ясно, какие выборы держат жизнь в балансе.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">07</div><div class="label">Ясность как результат выбора</div></div>
+      <div class="right">
+        <h4>Ясность не приходит, <em>пока ты не выбрала.</em></h4>
+        <div class="thesis">Люди часто ждут, пока сомнение пройдёт, чтобы выбрать. Но всё работает наоборот: выбор и создаёт ясность. Когда ты выбираешь ценности, ты тем самым говоришь нет другим вещам — и это создаёт напряжение, но это собранность, а не разброд.</div>
+        <p>Когда Оля выбрала ценность «максимальное присутствие», это означало нет гаджетам после восьми вечера, нет ночным работам, нет прокрастинации через телефон. Это вызывает беспокойство — может, я упущу что-то важное? Но именно в этом напряжении живёт ясность.</p>
+        <p>Качество жизни не в избегании конфликтов, а в выборе, какие конфликты тебе стоят. Когда у тебя есть ценность, конфликт перестаёт быть случайным — он становится подтверждением выбора. И каждое такое подтверждение делает тебя более собранной.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">08</div><div class="label">Мотивация после действия</div></div>
+      <div class="right">
+        <h4>Мотивация приходит после действия, <em>не наоборот.</em></h4>
+        <div class="thesis">Обычное убеждение: мне нужна мотивация, чтобы начать. На практике: когда начинаешь — даже силком, — мозг получает стимуляцию, выделяет нейротрансмиттеры, и мотивация приходит. Это поведенческая активация.</div>
+        <p>Это контринтуитивно, но работает. Если ждать мотивации, можно прождать вечность; если начать, в первые минуты появляется ощущение «о, на самом деле я могу». Это не сила воли, это нейрохимия: тело меняет состояние мозга быстрее, чем мысль.</p>
+        <p>А если ты действуешь из идентичности, а не из мотивации, ты становишься независимой от колебаний настроения. Не «я мотивирована — пойду тренироваться», а «я тот человек, кто тренируется по средам — значит, иду». Это иной уровень устойчивости.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Цитаты -->
+  <div class="layer-head">
+    <div class="num">— Слой третий —</div>
+    <h3>Цитаты и <em>источники.</em></h3>
+    <p>Опоры за каждым принципом недели.</p>
+  </div>
+
+  <div class="quotes">
+    <div class="quote"><div class="qmark">"</div><q>Три уровня: результаты (что вы получаете), процессы (что вы делаете), идентичность (во что вы верите о себе). Долгосрочное изменение построено на идентичности.</q><div class="who"><b>Джеймс Клир</b><span>«Atomic Habits»</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Ценности никогда не заканчиваются. Цели заканчиваются. Ценность — это компас, цель — это остановка на маршруте.</q><div class="who"><b>Julie Smith</b><span>психолог, ценности и экспозиция</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Случайно отобранных детей назвали одарёнными. Через год их IQ вырос на 4 пункта — только из-за ожиданий учителей. Вера становится реальностью.</q><div class="who"><b>Розенталь и Якобсон</b><span>«Pygmalion in the Classroom», 1968</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Я к этому шла пять лет. С первого раза не получилось, со второго тоже. Но я хочу это отпраздновать.</q><div class="who"><b>Оля Маркес</b><span>про ограничение гаджетов после 8 вечера</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Я живу полностью: в теле, голове, отношениях, работе. Я выбираю ясность, мужество и заботу — каждый день, не когда-нибудь.</q><div class="who"><b>Оля Маркес</b><span>определение идентичности</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Мотивация приходит после действия, не наоборот. Начните, и мозг включится.</q><div class="who"><b>Психология поведения</b><span>поведенческая активация</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Когда вы действуете из идентичности, активируются другие нейронные сети, чем когда вы действуете из долга или страха. Это более устойчиво.</q><div class="who"><b>Нейробиология идентичности</b><span>современные исследования</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Материнская вера в ребёнка, что у него всё получится, может дать больше, чем любая воспитательная мера. И это же работает в отношении себя.</q><div class="who"><b>Оля Маркес</b><span>про материнскую веру</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Каждый раз, когда вы действуете в соответствии с новой идентичностью, вы собираете доказательство. Мозг обновляет веру. Это медленно, но это реально.</q><div class="who"><b>Структура валидации</b><span>принцип сборки доказательств</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Максимальное присутствие, здоровье тела, смелость в направлении страха.</q><div class="who"><b>Оля Маркес</b><span>три ценности, на которых строятся все выборы</span></div></div>
+  </div>
+
+  <!-- Материалы -->
+  <div class="materials" style="margin-top:80px; max-width:680px; margin-left:auto; margin-right:auto;">
+    <h3>Состав недели</h3>
+    <ul>
+      <li><b>Фреймворк ценностей</b><span>5 категорий, матрица</span></li>
+      <li><b>Фреймворк идентичности</b><span>3 шага определения</span></li>
+      <li><b>Фреймворк пророчества</b><span>смена убеждения через доказательства</span></li>
+      <li><b>Теоретическое введение</b><span>5 карточек теории</span></li>
+      <li><b>Трекер недели 3</b><span>обновление каждый день</span></li>
+      <li><b>Integration Call №2 · 12 апреля</b><span>звонок</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- НЕДЕЛЯ 4 · НАМАЛИВАНИЕ                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="week-block bg-soft" id="w4">
+  <div class="week-inner">
+    <div class="tag">Неделя 04 · 20–26 апреля · Намаливание и благодарность</div>
+    <h1 class="section-title">Намаливание — <em>выращивание света рядом со сложностью.</em></h1>
+
+    <p class="anthem">«Я не борюсь с тёмным облаком над проектом. Я выращиваю рядом другой голос — голос признания и видения».</p>
+
+    <p class="manifesto">Тревога и обесценивание работают через одну петлю — это <strong>negativity bias,</strong> эволюционное наследие: мозг замечает плохое быстрее, анализирует глубже, помнит дольше. Благодарность не отрицает эту привычку. Она создаёт альтернативную петлю — петлю видения хорошего, расширения, укрепления через признание. Это не позитивное мышление, это переучивание мозга. Опоры — Fredrickson (broaden-and-build theory), Brewer (reward value), Tolle, Emmons. Слово <strong>намаливание</strong> — от образа свечи, которую ты намаливаешь воском: делаешь её ярче, теплее, заметнее.</p>
+
+    <!-- Мантры -->
+    <div class="layer-head">
+      <div class="num">— Слой первый —</div>
+      <h3>Девять <em>мантр.</em></h3>
+      <p>Якоря для тех моментов, когда хочется снова закрыть глаза на хорошее.</p>
+    </div>
+
+    <div class="mantras">
+      <div class="mantra">
+        <div class="no">01</div>
+        <p>Мой мозг был запрограммирован замечать опасность. <em>Я переучу его замечать чудо.</em></p>
+        <div class="echo">Negativity bias — это не твоя вина, это миллионы лет эволюции. Но теперь ты можешь выбирать. Каждый раз, когда замечаешь хорошее, ты тренируешь мозг на новый паттерн. Медленно, но надёжно.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">02</div>
+        <p>Благодарность — это <em>не отрицание сложного. Это видение обоих сразу.</em></p>
+        <div class="echo">Многие думают, что быть благодарной — значит закрыть глаза на проблемы. На самом деле благодарный человек видит больше: и сложность, и красоту. Это расширяет восприятие, увеличивает варианты, улучшает решения.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">03</div>
+        <p>Я вырастила одно облако ночью. <em>Я могу вырастить другой голос днём.</em></p>
+        <div class="echo">Тревога, обесценивание, критика — это привычки, которые ты выращивала годами. Другой голос — голос признания и видения хорошего — ты выращиваешь сейчас. Параллельные процессы, не замена и не борьба.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">04</div>
+        <p>Доказательства хорошего <em>есть везде. Я просто не смотрела туда.</em></p>
+        <div class="echo">Мозг фильтрует информацию в соответствии с убеждениями. Если веришь, что всё плохо, пропустишь половину хорошего. Когда начинаешь искать хорошее, оказывается, что его очень много. Это переучивание фильтра.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">05</div>
+        <p>Благодарность в пятый раз <em>работает лучше, чем в первый.</em></p>
+        <div class="echo">Первый раз, когда говоришь спасибо себе за что-то, может казаться фальшивым. Это упражнение, как мышца. Второй раз проще. К пятому становится естественно. Мозг обновляет ассоциации.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">06</div>
+        <p>Я могу видеть сложность <em>и всё равно оставаться благодарной.</em></p>
+        <div class="echo">Проект не идёт как планировал — но я благодарна, что я учусь. Что я вижу, что не работает. Что у меня есть время переделать. Сложность не исключает благодарность. Они сосуществуют.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">07</div>
+        <p>Качество мышления <em>зависит от ширины восприятия.</em></p>
+        <div class="echo">Когда испугана, сужена, в анализе — мозг видит только опасности. Когда благодарна и открыта — видит больше вариантов и связей. Это (Фредриксон) напрямую влияет на решения.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">08</div>
+        <p>Намаливание собирается медленно, <em>по одной маленькой благодарности в день.</em></p>
+        <div class="echo">Ты не проснулась благодарной. Ты сегодня заметила одно хорошее. Завтра — два. Через неделю благодарность стала естественной. Не быстро, но устойчиво.</div>
+      </div>
+      <div class="mantra">
+        <div class="no">09</div>
+        <p>Свеча, которую я намаливаю, <em>светит на меня, на проект и на людей вокруг.</em></p>
+        <div class="echo">Когда выращиваешь благодарность, ты меняешь не только отношение к работе — ты меняешь энергию, которую несёшь. Люди это видят и чувствуют. Проект получает другой импульс. Эмоциональное заражение.</div>
+      </div>
+    </div>
+
+    <!-- Концепты -->
+    <div class="layer-head">
+      <div class="num">— Слой второй —</div>
+      <h3>Семь <em>концептов.</em></h3>
+      <p>Механика недели — что мы делаем и почему мозг отвечает.</p>
+    </div>
+
+    <div class="concepts">
+      <div class="concept">
+        <div class="left"><div class="num">01</div><div class="label">Negativity bias</div></div>
+        <div class="right">
+          <h4>Эволюция отобрала параноиков. <em>Теперь можно переучить.</em></h4>
+          <div class="thesis">Мозг замечает опасность быстрее, анализирует глубже, запоминает дольше. Это спасло вид, но теперь создаёт хроническую тревогу. Благодарность переучивает мозг, переключая внимание на хорошее.</div>
+          <p>Эволюция отобрала тех, кто был в постоянной готовности: видели угрозу на дереве, готовились к худшему, помнили ошибки. Те, кто был спокоен, попадали на тигра. Поэтому когда ты сегодня достигаешь десять успехов и получаешь одну критику — мозг выбирает критику. Это встроенный паттерн, общий для всех.</p>
+          <p>Переучивание работает медленно, но реально. Каждый раз, когда замечаешь хорошее (даже маленькое) и даёшь ему внимание, ты говоришь мозгу: это тоже важно. Со временем он начинает замечать больше хорошего. Это не отрицание плохого — это расширение видения.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">02</div><div class="label">Обесценивание как привычка</div></div>
+        <div class="right">
+          <h4>«Это везение, а не благодаря мне» — <em>выученная защита.</em></h4>
+          <div class="thesis">Люди с высокой тревогой часто используют обесценивание как защиту. Достигла — но тут же говоришь себе: это везение, я недостаточно хорошая. Это прямая ветвь negativity bias.</div>
+          <p>Механизм такой: если не признать успех, не поднимутся ожидания, и не так страшно упасть. Если не похвалить себя, никто не будет ожидать многого. Это ложная защита — она истощает, потому что мозг не получает ощущения прогресса, не укрепляется вера в себя.</p>
+          <p>Пример из жизни: написала интересный контент, получила много откликов — первый импульс обесценить (это алгоритм, не я). Задача — заметить этот импульс и вместо него сказать спасибо себе, признать качество. Это маленькое действие, но оно меняет петлю.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">03</div><div class="label">Broaden-and-build</div></div>
+        <div class="right">
+          <h4>Положительные эмоции <em>расширяют восприятие.</em></h4>
+          <div class="thesis">Барбара Фредриксон исследовала, как разные эмоции влияют на ширину восприятия. Отрицательные сужают (надо быстро действовать), положительные расширяют (можно исследовать). Это нейробиологическая реальность, а не «хорошая идея».</div>
+          <p>Когда ты благодарна, префронтальная кора (логика) более активна, лимбическая система (эмоции) менее доминантна. Это значит, что ты видишь больше вариантов, делаешь более качественные решения, вырабатываешь больше нейротрансмиттеров, которые улучшают настроение. Это не сентиментальность.</p>
+          <p>Фредриксон также исследовала длительные эффекты: люди, которые практиковали благодарность 10 недель, показали устойчивое улучшение благополучия через несколько месяцев после эксперимента. Благодарность — это не просто хорошая идея, это инвестиция в мозг с накопительным эффектом.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">04</div><div class="label">Изменение reward value</div></div>
+        <div class="right">
+          <h4>Тревога даёт краткое облегчение. <em>Видение даёт глубокое.</em></h4>
+          <div class="thesis">Брюер: мозг работает на том, что даёт вознаграждение. Если благодарность даёт глубокое (смысл, расширение, энергия), мозг будет искать её. Если тревога даёт только краткое облегчение и потом ещё больше страха, мозг начнёт избегать её.</div>
+          <p>Вознаграждение от благодарности другое, чем облегчение от тревоги. Облегчение от тревоги быстрое, краткое, и потом ещё хуже. Вознаграждение от благодарности глубокое, расширяющее, накапливающееся. Когда ты замечаешь хорошее в проекте, мозг получает не только положительный опыт — он начинает видеть проект как стоящий.</p>
+          <p>Это меняет всю энергию работы. Проект перестаёт быть источником тревоги и становится источником интереса и роста. И эта переориентация работает не на уровне философии — на уровне химии мозга.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">05</div><div class="label">Намаливание</div></div>
+        <div class="right">
+          <h4>Свеча из воска — <em>метафора выращивания состояния.</em></h4>
+          <div class="thesis">Намаливание — это выращивание благодарности рядом со сложностью, как выращивание свечи из воска: ты намаливаешь её, делая ярче, теплее, заметнее. Облако сложности при этом никуда не уходит — оно остаётся там, где оно есть, но рядом постепенно разгорается другой свет, и со временем оба становятся видны одинаково.</div>
+          <p>Когда над проектом висит тёмное облако (сложность, неопределённость, критика), инстинкт — либо бороться с облаком (напрасно), либо закрыть на него глаза (не помогает). Третий путь: оставить облако там, где оно есть, но рядом выращивать свет. Каждый день записывать три вещи, за которые я благодарна в этом проекте.</p>
+          <p>Не огромные вещи. Маленькие: я благодарна, что вижу, где ошибка. Я благодарна, что у меня есть помощник. Я благодарна, что я учусь. Со временем параллельная свеча благодарности становится такой же заметной, как облако сложности. И когда обе видны, мозг работает иначе.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">06</div><div class="label">Три истории намаливания</div></div>
+        <div class="right">
+          <h4>Alai Oli, sekta, <em>семейная практика перед сном.</em></h4>
+          <div class="thesis">Три примера, как намаливание сработало в реальных контекстах: многолетняя группа Alai Oli, образовательный проект sekta, ежевечерняя практика в семье.</div>
+          <p>Alai Oli — была фаза, когда казалось, что групповая динамика разрушается, что люди уходят. Вместо отчаяния — записывание того, что работает: глубина разговоров, трансформация людей, красота встреч. Благодарность не отрицала реальность, но позволила видеть обе стороны. sekta — сложность в масштабировании, непредсказуемость рынка, непрерывная работа. Параллельно — благодарность за людей, которые это создают, за возможность делиться знанием, за сам процесс развития.</p>
+          <p>Семейная практика: каждый вечер перед сном все члены семьи говорят по три вещи, за которые благодарны. Это не отрицает сложность дня — это создаёт пространство видения того хорошего, что всё равно было. Простой ритуал, который накопительно меняет атмосферу дома.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="left"><div class="num">07</div><div class="label">Пять шагов практики</div></div>
+        <div class="right">
+          <h4>Конкретный инструмент, <em>чтобы не остаться на уровне идеи.</em></h4>
+          <div class="thesis">Пятишаговый протокол, который превращает идею намаливания в выполнимую практику: одна область → три благодарности в день → объяснение «почему важно» → благодарность даже за сложность → перечитывание в конце недели.</div>
+          <p>Шаг 1 — выбери одну область жизни (проект, отношения, тело). Не пытайся охватить всё сразу. Шаг 2 — каждый день в течение 5–10 минут пиши три вещи, за которые ты благодарна именно в этой области. Шаг 3 — для каждой благодарности напиши, почему это важно, что это даёт. Без этого слоя список превращается в формальность.</p>
+          <p>Шаг 4 — если день был сложным, напиши благодарность за сложность: я благодарна, что вижу проблему, что я учусь, что у меня есть силы это пережить. Шаг 5 — в конце недели перечитай всё написанное и почувствуй, как меняется вращение мысли. Это и есть переучивание мозга — простое, но мощное.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Цитаты -->
+    <div class="layer-head">
+      <div class="num">— Слой третий —</div>
+      <h3>Цитаты и <em>источники.</em></h3>
+      <p>Опоры намаливания.</p>
+    </div>
+
+    <div class="quotes">
+      <div class="quote"><div class="qmark">"</div><q>Куда вы направляете внимание, туда течёт энергия. Внимание — это форма сознания.</q><div class="who"><b>Eckhart Tolle</b><span>о внимании и энергии</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Положительные эмоции расширяют восприятие, увеличивают варианты, улучшают качество мышления. Это биологическая реальность.</q><div class="who"><b>Барбара Фредриксон</b><span>«Positivity», broaden-and-build theory</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Десятинедельное исследование благодарности показало устойчивое улучшение благополучия через несколько месяцев после завершения практики.</q><div class="who"><b>Robert Emmons</b><span>исследования благодарности</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Благодарность переучивает мозг искать награду в ценности, а не в облегчении от тревоги.</q><div class="who"><b>Джадсон Брюер</b><span>о переучивании и reward</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Я не борюсь с тёмным облаком над проектом. Я выращиваю рядом другой голос — голос признания и видения.</q><div class="who"><b>Оля Маркес</b><span>определение намаливания</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Люди с тревогой часто используют обесценивание как защиту. Это проверяемая привычка, которая переучивается через активное признание успеха.</q><div class="who"><b>Психология обесценивания</b><span>модель защитных механизмов</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Благодарность активирует вентромедиальную префронтальную кору и укрепляет связи, которые поддерживают эмоциональную регуляцию.</q><div class="who"><b>Neuroscience of gratitude</b><span>fMRI-исследования</span></div></div>
+      <div class="quote"><div class="qmark">"</div><q>Каждый вечер перед сном все говорят три благодарности. Это не отрицание дня, это видение того, что всё равно было.</q><div class="who"><b>Оля Маркес</b><span>про семейную практику</span></div></div>
+    </div>
+
+    <!-- Материалы -->
+    <div class="materials" style="margin-top:80px; max-width:680px; margin-left:auto; margin-right:auto;">
+      <h3>Состав недели</h3>
+      <ul>
+        <li><b>Лекция «Благодарность»</b><span>конспект</span></li>
+        <li><b>Теоретические карточки</b><span>Smith, Brewer, Tolle, Fredrickson, Emmons</span></li>
+        <li><b>Пятишаговая практика намаливания</b><span>на одну область</span></li>
+        <li><b>Три истории Оли</b><span>Alai Oli, sekta, семья</span></li>
+        <li><b>Трекер недели 4</b><span>трекер</span></li>
+        <li><b>Integration Call №3 · 22 апреля</b><span>звонок</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- НЕДЕЛЯ 5 · ДИЗАЙН МАЯ                           -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="week-block" id="w5">
+  <div class="tag">Неделя 05 · 27 апреля — 3 мая · Дизайн мая и возвращение паттернов</div>
+  <h1 class="section-title">Старые паттерны вернутся. <em>Скорость возврата — это навык.</em></h1>
+
+  <p class="anthem">«Когда старые паттерны вернутся, я заметила их — и у меня есть выбор».</p>
+
+  <p class="manifesto">Финальная неделя — это две вещи одновременно. Первая — практическое умение проектировать следующий месяц (используя Claude для смысла и Codex для технического оформления). Вторая — глубокий разбор того, что происходит, когда возвращаются старые паттерны: переедание, прокрастинация, скроллинг, самокритика. Они вернутся — и это не провал, это нормальная часть процесса. Главный инструмент — <strong>трёхслойный анализ:</strong> линза тревоги (видеть петлю без суждения), удаление слоя самокритики, тренировка скорости возврата вместо совершенства.</p>
+
+  <!-- Мантры -->
+  <div class="layer-head">
+    <div class="num">— Слой первый —</div>
+    <h3>Девять <em>мантр.</em></h3>
+    <p>Якоря для тех моментов, когда паттерн вернулся, а внутренний критик уже поднял голос.</p>
+  </div>
+
+  <div class="mantras">
+    <div class="mantra">
+      <div class="no">01</div>
+      <p>Когда паттерн вернулся — <em>это не провал, это данные.</em></p>
+      <div class="echo">Ты собирала информацию об этом паттерне всю программу. Теперь жизнь показывает, как он работает в реальности. Это не ошибка — это полезная информация. Мораль может подождать.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">02</div>
+      <p>Я рассматриваю петлю <em>триггер-поведение-облегчение без гнева.</em></p>
+      <div class="echo">Когда упала в паттерн (съела сладкое, скроллила два часа), не воюй с собой. Просто посмотри: что был триггер? Скука? Неопределённость? Что я делала? Что получила? Видение петли — уже половина выхода.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">03</div>
+      <p>Старые копинг-механизмы работали. <em>Иначе я их не использовала бы.</em></p>
+      <div class="echo">Переедание, скроллинг, избегание — это работающие механизмы справления. Они дают облегчение. Вопрос не в том, почему ты их делаешь, а в том, стоит ли тебе та краткая минута облегчения цены, которая платится потом.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">04</div>
+      <p>Совершенство — не цель. <em>Скорость возврата — тренируемое умение.</em></p>
+      <div class="echo">Ты никогда не будешь идеальной. Ты никогда не избежишь паттернов. Но скорость можно тренировать. Вчера после срыва восстанавливалась неделю. Сегодня — двое суток. Завтра — несколько часов. Это и есть прогресс.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">05</div>
+      <p>Самокритика — не инструмент изменения. <em>Это топливо для спирали.</em></p>
+      <div class="echo">Когда упала и начала ругать себя, ты включила цикл: стресс → ещё больше стресса → ещё больше компенсации. Самокритика не делает тебя лучше, она делает ситуацию хуже. Вместо «я ужас» — «я заметила паттерн».</div>
+    </div>
+    <div class="mantra">
+      <div class="no">06</div>
+      <p>Мне нужна не дополнительная сила воли. <em>Мне нужна другая петля.</em></p>
+      <div class="echo">(Брюер) Воля кончится. Но если создашь более интересную альтернативу паттерну, мозг сам пойдёт туда. Вместо скроллинга — 10 минут в саду, чтение, прогулка. Не через запрет, а через bigger better offer.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">07</div>
+      <p>Промежуток между импульсом и действием — <em>место, где рождается свобода.</em></p>
+      <div class="echo">(Виктор Франкл) Это не огромный промежуток. Это может быть секунда. Но в эту секунду ты можешь заметить импульс и выбрать другой ответ. Тренировка скорости — это тренировка этой секунды.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">08</div>
+      <p>К желанию работает <em>любопытство там, где борьба ломается.</em></p>
+      <div class="echo">Вместо «я не должна есть сладкое» (борьба) или «я съем всё» (сдача) — третий путь. «Мне любопытно, что тут происходит. Я ем, потому что грустно? Скучно? Неопределённо?» Когда осознанна, можешь выбрать.</div>
+    </div>
+    <div class="mantra">
+      <div class="no">09</div>
+      <p>Я не совершенна. <em>Я выздоравливаю.</em></p>
+      <div class="echo">Выздоровление не означает, что болезни больше нет. Это означает, что ты учишься жить с привычками, видеть их, делать выборы. Каждый день путь становится немного легче, чем вчера.</div>
+    </div>
+  </div>
+
+  <!-- Концепты -->
+  <div class="layer-head">
+    <div class="num">— Слой второй —</div>
+    <h3>Семь <em>концептов.</em></h3>
+    <p>Инструменты для работы с возвращением паттернов.</p>
+  </div>
+
+  <div class="concepts">
+    <div class="concept">
+      <div class="left"><div class="num">01</div><div class="label">Трёхслойная аналитика</div></div>
+      <div class="right">
+        <h4>Тревога → удалить критику → <em>тренировать скорость.</em></h4>
+        <div class="thesis">Когда паттерн вернулся, есть три слоя анализа. Первый — увидеть петлю (триггер, поведение, облегчение) из линзы тревоги. Второй — удалить слой самокритики, который усиливает паралич. Третий — тренировать не совершенство, а скорость возврата.</div>
+        <p>Пример: ты съела сладкое и потом чувствуешь себя плохо. Слой 1 — линза тревоги: какой был триггер? Стресс? Скука? Неопределённость? Это наблюдение, а не суждение. Слой 2 — удалить критику: вместо «я ужас, я не могу контролировать себя, я никогда не изменюсь» — просто факт: я съела, это случилось.</p>
+        <p>Слой 3 — тренировка: вчера после срыва вернулась через неделю. Сегодня — через два дня. Это прогресс. Вместо того чтобы ждать совершенства, ты отслеживаешь улучшение скорости. Совершенство невозможно — скорость отскока тренируема.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">02</div><div class="label">Четыре паттерна</div></div>
+      <div class="right">
+        <h4>Переедание, прокрастинация, <em>скроллинг, самокритика.</em></h4>
+        <div class="thesis">Четыре основных паттерна, которые часто возвращаются. У каждого свой триггер, свой механизм облегчения, своя цена. Видение всех четырёх как взаимосвязанной системы помогает разрабатывать более точные инструменты.</div>
+        <p>Переедание (особенно сладкое) часто триггерится эмоциями: стресс, скука, неопределённость. Облегчение — краткое, потом вина. Цена — контроль над телом. Прокрастинация — триггер это дискомфорт от задачи или неопределённость результата. Облегчение — отвлечение. Цена — давление дедлайна, стресс, качество работы.</p>
+        <p>Скроллинг — триггер часто тревога, одиночество, скука. Облегчение — микродозы дофамина. Цена — время, внимание, качество сна. Самокритика — триггер ошибка или неудача. Облегчение (парадоксально) — ощущение контроля: «если я себя достаточно поругаю, я не повторю». Цена — самоуважение, мотивация, энергия.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">03</div><div class="label">Линза тревоги</div></div>
+      <div class="right">
+        <h4>Видение без суждения — <em>позиция наблюдателя.</em></h4>
+        <div class="thesis">Вместо морального суждения (хорошо/плохо, дисциплинирована/ленива) ты смотришь на паттерн как на привычку, как на мозг, ищущий облегчения.</div>
+        <p>Когда замечаешь, что съела сладкое за стрессом, вместо внутреннего голоса «я безвольная» ты видишь мозг, который делает свою работу. Он искал облегчения, нашёл его (через еду) и взял. Это не преступление, это автоматизм.</p>
+        <p>Когда смотришь на паттерн как на проблему мозга, а не как на личный недостаток, ты уже смещаешься в позицию наблюдателя. А позиция наблюдателя даёт выбор. Это и есть та точка, в которой петля начинает размыкаться: не потому что ты заставила себя, а потому что увидела устройство.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">04</div><div class="label">Удаление самокритики</div></div>
+      <div class="right">
+        <h4>Самокритика усиливает <em>спираль, а не выводит из неё.</em></h4>
+        <div class="thesis">Самокритика — это механизм, который люди используют, чтобы попытаться контролировать себя. На самом деле она усиливает стресс и потребность в копинге.</div>
+        <p>Механизм: упала в паттерн → самокритика (стресс) → больше стресса → больше потребности в облегчении → ещё больше паттерна. Это спираль. Линехан и Smith подчёркивают: самокритика не работает как мотиватор. Она работает как ускоритель в неправильном направлении.</p>
+        <p>Когда удаляешь слой самокритики (признаёшь, что это случилось, и двигаешься дальше), снижается стресс — и тогда есть ресурс на то, чтобы сделать другой выбор. Это не означает отсутствие ответственности. Это означает ответственность без самоуничтожения.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">05</div><div class="label">Bigger Better Offer</div></div>
+      <div class="right">
+        <h4>Мозг идёт туда, <em>где выше вознаграждение.</em></h4>
+        <div class="thesis">Если просто говоришь мозгу «не скролли», но не предлагаешь ничего лучше — мозг будет сопротивляться. Брюер: дай мозгу bigger better offer, и он выберет его.</div>
+        <p>Когда поднимается тревога и появляется импульс скролить, ты предлагаешь мозгу: вместо скроллинга — 10 минут в саду, или рисование, или разговор с другом. Вознаграждение (внимание, стимуляция, социальный контакт, расслабление) можно получить от альтернативы.</p>
+        <p>Это не борьба, это переговоры с мозгом. Если альтернатива действительно интереснее, мозг её выбирает. Если она скучнее — нет. Поэтому имеет смысл готовить альтернативы заранее, до того как поднимется импульс: тогда они уже знакомы и ассоциированы с чем-то приятным.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">06</div><div class="label">Скорость возврата</div></div>
+      <div class="right">
+        <h4>Не совершенство, <em>а тренируемое умение возвращаться.</em></h4>
+        <div class="thesis">Если ждёшь, что никогда не упадёшь, разочаруешься. Если тренируешь скорость восстановления, поправишься. Совершенство невозможно, скорость отскока — тренируема.</div>
+        <p>В начале программы от срыва до возврата могут проходить дни. На середине — часы. К концу — минуты. Это тренируемое умение. Как быстро ты заметила паттерн? Как быстро остановилась? Как быстро вернулась? Каждое улучшение — это прогресс.</p>
+        <p>Перенос фокуса с «никогда не падать» на «быстро возвращаться» меняет всю работу. Жизнь обязательно даст напряжения, в которых ты сорвёшься. Но твоя сила не в избегании срывов, а в том, как быстро после них ты снова на пути.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="left"><div class="num">07</div><div class="label">Пятишаговый протокол</div></div>
+      <div class="right">
+        <h4>Пауза → петля → проверка → <em>добрая фраза → один шаг.</em></h4>
+        <div class="thesis">Конкретный пятишаговый протокол для работы с паттерном в реальный момент. Не абстракция — выполнимая последовательность.</div>
+        <p>Шаг 1 — пауза + сканирование тела: заметила паттерн, остановилась, посканировала тело — где напряжение, какие ощущения. Шаг 2 — петля в три строки: триггер → поведение → облегчение. Написала или проговорила вслух, не думая. Шаг 3 — проверка вознаграждения: что я реально получу? Облегчение? Контроль? Вина? Стоит ли цена?</p>
+        <p>Шаг 4 — добрая фраза: вместо критики — «мне любопытно, что здесь происходит. Я чувствую себя странно — и я остаюсь со своей странностью, не исчезаю». Шаг 5 — один маленький шаг: не попытка переделать всё, не попытка быть идеальной. Один шаг: встать, пойти гулять, позвонить другу, выпить воды. Это возвращает тебя в тело, в выбор, на путь.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Цитаты -->
+  <div class="layer-head">
+    <div class="num">— Слой третий —</div>
+    <h3>Цитаты и <em>источники.</em></h3>
+    <p>Опоры для работы с возвращением старых паттернов.</p>
+  </div>
+
+  <div class="quotes">
+    <div class="quote"><div class="qmark">"</div><q>Мозг выбирает не то, что вы запретили. Мозг выбирает то, что даёт лучшее вознаграждение. Дайте мозгу что-то лучше, чем паттерн.</q><div class="who"><b>Джадсон Брюер</b><span>о bigger better offer</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Противоположное действие: если импульс свернуться, противоположное — встать и двинуться. Тело меняет состояние мозга быстрее, чем мысль.</q><div class="who"><b>Марша Линехан</b><span>диалектическая поведенческая терапия</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Самокритика не работает как мотиватор изменения. Она работает как ускоритель в неправильном направлении.</q><div class="who"><b>Julie Smith</b><span>о самокритике</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Между стимулом и реакцией — промежуток. В этом промежутке — наша свобода выбора. Это свобода, которая даёт нам власть.</q><div class="who"><b>Виктор Франкл</b><span>«Человек в поисках смысла»</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Когда паттерн вернулся — это не провал, это данные. Я использую их, чтобы лучше понимать себя.</q><div class="who"><b>Оля Маркес</b><span>про работу со старыми паттернами</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Люди, которые относятся к себе с добротой в момент срыва, восстанавливаются быстрее. Это не моральная сентиментальность, это нейробиология.</q><div class="who"><b>Брюер</b><span>о самосострадании и скорости</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Я не совершенна. Я выздоравливаю. И каждый день возвращение мне немного легче, чем вчера.</q><div class="who"><b>Оля Маркес</b><span>о выздоровлении</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Способность восстанавливаться после срыва — это более важный предиктор успеха, чем избегание срывов.</q><div class="who"><b>Исследования resilience</b><span>современная психология</span></div></div>
+    <div class="quote"><div class="qmark">"</div><q>Слой 1 — тревога. Слой 2 — удалить критику. Слой 3 — тренировать скорость. Это полный инструмент для работы с возвращением паттернов.</q><div class="who"><b>Оля Маркес</b><span>трёхслойный анализ</span></div></div>
+  </div>
+
+  <!-- Материалы -->
+  <div class="materials" style="margin-top:80px; max-width:680px; margin-left:auto; margin-right:auto;">
+    <h3>Состав недели</h3>
+    <ul>
+      <li><b>Лекция «Проектирование мая»</b><span>5 фаз, 16 шагов</span></li>
+      <li><b>Гайд «Когда вернулись старые паттерны»</b><span>трёхслойный анализ</span></li>
+      <li><b>Loom-уроки по live-кодингу</b><span>Claude и CODEX</span></li>
+      <li><b>Pattern Return Guide</b><span>пятишаговый протокол</span></li>
+      <li><b>Трекер недели 5</b><span>трекер</span></li>
+      <li><b>Финальный звонок · 3 мая</b><span>звонок</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ЗВОНКИ                                           -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="calls" id="calls">
+  <div class="calls-inner">
+    <div class="head">
+      <div class="tag">Интеграционные звонки</div>
+      <h2>Четыре <em>точки сборки.</em></h2>
+    </div>
+
+    <div class="call-list">
+
+      <!-- Call 1 -->
+      <div class="call" id="c1">
+        <div class="call-header">
+          <div class="date">5<span class="month">апреля</span></div>
+          <div class="body">
+            <h5>Integration Call №1 — <em>от импульса к действию, от расфокуса к системе.</em></h5>
+            <p class="lead">От ощущения, что ты сломана (на первой неделе результата ещё нет, а усилия уже есть), к пониманию, что это нормальная фаза. И углубление в тревогу как привычку, которую можно увидеть и выбрать другой ответ.</p>
+          </div>
+          <div class="meta"><b>92 минуты</b>27 участниц</div>
+        </div>
+
+        <div class="body-grid">
+          <div class="structure">
+            <h6>Структура звонка</h6>
+            <ol>
+              <li>Где мы — фаза 0 к 1, самая сложная. Всё непривычно, мозг защищает старый режим.</li>
+              <li>Что практиковали: 9 практик недели 1 (bouncing back, хитрый взгляд, добрый разговор, наблюдатель, импульс→действие, запрет думать, дисциплина, дофаминовая яма, тело как база).</li>
+              <li>Рефлексия: четыре вопроса о хвале, дофаминовой яме, паттернах мышления, хитром взгляде.</li>
+              <li>Истории участниц — Оля (ночные работы и качество мышления после ограничения гаджетов), Алёна (болезнь, рифрейминг), Алиса (критик vs червячок), две другие участницы.</li>
+              <li>Живые заметки Оли — тревога и карьера, антихрупкость в стрессе, любопытство как эмоциональный сдвиг, руминация, утренняя тревога, переедание через наблюдение за reward.</li>
+              <li>Дорожная карта программы — недели 2 (тело + тревога), 3–4 (компас ценностей).</li>
+              <li>Углубление в тревогу — зачем работать с ней, что это такое, как становится привычкой (цикл 1-2-3-4).</li>
+              <li>Шесть видов тревоги — ситуативная, генерализованная, социальная, будущего, контроля, экзистенциальная.</li>
+              <li>Инструменты — мэппинг привычки (триггер → поведение → reward), три шага (заметь, проверь reward, любопытствуй), bigger better offer, разрыв руминации.</li>
+            </ol>
+          </div>
+          <div class="insights">
+            <h6>Главные инсайты</h6>
+            <ul>
+              <li>Тревога — это привычка, и привычки можно менять.</li>
+              <li>Первая неделя самая сложная (0 к 1). Это нормально — боль от изменения, а не от провала.</li>
+              <li>Система работает дольше, чем сила воли. Гаджеты после 8 вечера = спокойный сон, качественный мозг, конец нервных ночных работ.</li>
+              <li>Тревога питает многое: переедание, прокрастинацию, скроллинг, самокритику, отношения. Работа с одним помогает всем.</li>
+              <li>Любопытство — это не рациональный выбор. Это эмоциональная смена точки зрения. Из испуга → в наблюдение = из жертвы → в силу.</li>
+              <li>Материнская вера в себя (как в ребёнка) может дать больше, чем воспитательная мера. Важно вырастить эту веру внутри себя.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="call-quotes">
+          <div class="call-quote"><q>Тревога — это привычка. Привычки можно менять. Не силой воли, а через любопытство.</q><div class="who"><b>Джадсон Брюер</b></div></div>
+          <div class="call-quote"><q>Никакое количество тревоги не изменит ничего из того, что произойдёт.</q><div class="who"><b>Алан Уоттс</b></div></div>
+          <div class="call-quote"><q>Смелые люди не лишены страха. Они со страхом на «ты».</q><div class="who"><b>Пема Чодрон</b></div></div>
+          <div class="call-quote"><q>Anxiety is the brain's alarm signal — often a false alarm.</q><div class="who"><b>Dr. Julie Smith</b></div></div>
+        </div>
+
+        <div class="call-materials"><b>Материалы:</b> integration-call-1-konspekt.html · лекция по тревоге · задание «Паттерн бобра» — мэппинг тревоги без попытки исправлять</div>
+      </div>
+
+      <!-- Call 2 -->
+      <div class="call" id="c2">
+        <div class="call-header">
+          <div class="date">12<span class="month">апреля</span></div>
+          <div class="body">
+            <h5>Integration Call №2 — <em>от тревоги к ценностям и идентичности.</em></h5>
+            <p class="lead">От вопроса «как контролировать опасность» к вопросу «кто я на самом деле и как я хочу жить». От реактивного мозга — к мозгу, который знает свой курс.</p>
+          </div>
+          <div class="meta"><b>88 минут</b>25 участниц</div>
+        </div>
+
+        <div class="body-grid">
+          <div class="structure">
+            <h6>Структура звонка</h6>
+            <ol>
+              <li>Итоги недели 2 — что заметили, когда стали смотреть на тревогу как на данные, а не как на врага.</li>
+              <li>Оптический эффект — когда фокусируешься на тревоге, кажется, что её больше. На самом деле просто переместила её с фона на передний план. Это нормально.</li>
+              <li>Грунтирующая практика — 60-секундное заземление: ноги, дыхание, три сенса.</li>
+              <li>Привычка в деталях — петля Брюера (триггер → реакция → облегчение), три момента (где в теле, точная мысль, действие). Exit phrase: «Я замечаю, что происходит со мной — и я остаюсь со своей тревогой, не исчезаю в ней».</li>
+              <li>Переход к неделе 3 — три внутренних слоя: ценности, идентичность, пророчество. Ответ на вопрос «во что я верю о себе» создаёт якорь сильнее, чем контроль.</li>
+              <li>Ценности Оли — максимальное присутствие, здоровье тела, смелость идти туда, где страшно.</li>
+              <li>Эффект Розенталя — вера создаёт реальность. Учитель верил, что ребёнок умный → +4 пункта IQ за год.</li>
+              <li>Карточка flip-the-prophecy — старое пророчество («я не следую обещаниям») → новое («я тот, кто возвращается к практике»). Сборка доказательств.</li>
+              <li>Шеринг круг — три вопроса о неделе и о том, что пока не работает.</li>
+              <li>Домашнее задание — три ценности, одно ежедневное доказательство новой идентичности, использование exit phrase.</li>
+              <li>Закрывающая цитата: «Новая версия себя аккумулируется из малых моментов не-быть-старой-версией».</li>
+            </ol>
+          </div>
+          <div class="insights">
+            <h6>Главные инсайты</h6>
+            <ul>
+              <li>Видение тревоги без морального суждения даёт выбор.</li>
+              <li>Вера в себя не приходит через позитивное мышление. Она растёт через маленькие доказательства: я выполнила обещание, я заметила паттерн, я вернулась к практике.</li>
+              <li>Ценности — это компас, когда карты нет. Идентичность — это траектория, по которой ты идёшь.</li>
+              <li>Эффект Розенталя работает не только в школе. То, во что ты веришь о себе, управляет твоими действиями и эмоциями.</li>
+              <li>Мотивация приходит после действия, не наоборот. Когда действуешь из идентичности, мотивация не нужна.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="call-quotes">
+          <div class="call-quote"><q>Идентичность работает на трёх уровнях: результаты, процессы, вера о себе. Долгосрочное изменение построено на вере.</q><div class="who"><b>Джеймс Клир</b></div></div>
+          <div class="call-quote"><q>Вера учителя изменила реальный IQ детей на +4 пункта.</q><div class="who"><b>Розенталь и Якобсон, 1968</b></div></div>
+          <div class="call-quote"><q>Я живу полностью: в теле, голове, отношениях, работе. Я выбираю ясность, мужество и заботу — каждый день.</q><div class="who"><b>Оля Маркес</b></div></div>
+          <div class="call-quote"><q>Новая версия себя аккумулируется из малых моментов не-быть-старой-версией.</q><div class="who"><b>принцип сборки доказательств</b></div></div>
+        </div>
+
+        <div class="call-materials"><b>Материалы:</b> integration-call-2-slides.html · фреймворки ценностей, идентичности, пророчества · трекер доказательств</div>
+      </div>
+
+      <!-- Call 3 -->
+      <div class="call" id="c3">
+        <div class="call-header">
+          <div class="date">22<span class="month">апреля</span></div>
+          <div class="body">
+            <h5>Integration Call №3 — <em>намаливание сфер: со «своей» — на все.</em></h5>
+            <p class="lead">Звонок про любящее внимание как практику. Расширение задания недели — выбор одной сферы — на все сферы жизни. Опоры — Julie Smith, Brewer, Tolle, Fredrickson, Emmons.</p>
+          </div>
+          <div class="meta"><b>90 минут</b>26 участниц</div>
+        </div>
+
+        <div class="body-grid">
+          <div class="structure">
+            <h6>Структура звонка</h6>
+            <ol>
+              <li>Открытие — что было на этой неделе с одной сферой намаливания. Body scan, заземление через тело.</li>
+              <li>Шеринг по триаде — где удалось замечать хорошее, где обесценивание было сильнее, где появилось расширение восприятия.</li>
+              <li>Ключевая мысль звонка — namaливание не остаётся на одной сфере. Когда практика устоялась в одной области, она начинает работать как линза для всех остальных.</li>
+              <li>Опоры из лекции — negativity bias (Fredrickson), reward value (Brewer), внимание как энергия (Tolle), исследования благодарности (Emmons), переучивание обесценивания (Smith).</li>
+              <li>Три истории Оли — как намаливание сработало в Alai Oli, в sekta, в семейной практике перед сном.</li>
+              <li>Расширение фреймворка — пять областей жизни, в каждой выращиваешь свечу. Это не про равномерность, это про присутствие во всех.</li>
+              <li>Шеринг через сдвиги, не через симптомы — где я заметила, что что-то изменилось; что я стала видеть; что благодарность открыла.</li>
+              <li>Закрывающая практика — три благодарности перед сном, начиная с этого вечера.</li>
+            </ol>
+          </div>
+          <div class="insights">
+            <h6>Главные инсайты</h6>
+            <ul>
+              <li>Намаливание не нужно делать большим — три маленьких благодарности в день уже меняют петлю мозга.</li>
+              <li>Когда замечаешь хорошее в одной области, расширяется видение во всех. Это не про область, это про оптику.</li>
+              <li>Обесценивание — это привычная защита. Замена её на признание делает жизнь устойчивее.</li>
+              <li>Благодарность за сложность — не натянутая фраза. Это видение того, что даже трудный день что-то даёт.</li>
+              <li>Семейный ритуал благодарности перед сном меняет атмосферу дома сильнее, чем любая воспитательная стратегия.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="call-quotes">
+          <div class="call-quote"><q>Куда вы направляете внимание, туда течёт энергия. Внимание — это форма сознания.</q><div class="who"><b>Eckhart Tolle</b></div></div>
+          <div class="call-quote"><q>Положительные эмоции расширяют восприятие, увеличивают варианты. Это биологическая реальность.</q><div class="who"><b>Барбара Фредриксон</b></div></div>
+          <div class="call-quote"><q>Я не борюсь с тёмным облаком над проектом. Я выращиваю рядом другой голос — голос признания.</q><div class="who"><b>Оля Маркес</b></div></div>
+          <div class="call-quote"><q>Каждый вечер три благодарности. Это не отрицание дня — это видение того, что всё равно было.</q><div class="who"><b>о семейной практике</b></div></div>
+        </div>
+
+        <div class="call-materials"><b>Материалы:</b> Integration Call 3 — Сценарий часа · Намаливание сфер.pptx · Лекция 4 — Благодарность</div>
+      </div>
+
+      <!-- Call 4 -->
+      <div class="call" id="c4">
+        <div class="call-header">
+          <div class="date">3<span class="month">мая</span></div>
+          <div class="body">
+            <h5>Финальный звонок — <em>дизайн мая и закрытие потока.</em></h5>
+            <p class="lead">Сборка сделанного за пять недель и проектирование следующего месяца. Выбор 3-4 фокусов, архитектура мая по сферам, личный ритуал входа в новый месяц.</p>
+          </div>
+          <div class="meta"><b>сегодня</b>финал потока</div>
+        </div>
+
+        <div class="body-grid">
+          <div class="structure">
+            <h6>Структура звонка</h6>
+            <ol>
+              <li>Открытие — body scan, заземление, благодарность за пять недель совместной работы.</li>
+              <li>Сбор пройденного — что осело, что закрепилось, что пока требует продолжения.</li>
+              <li>Возвращение к принципам недели 1 — это фундамент, к которому возвращаемся постоянно.</li>
+              <li>Дизайн мая — выбор 3-4 фокусов на месяц, без перегруза. По одному ходу из каждой ключевой сферы.</li>
+              <li>Архитектура месяца по сферам — энергия, тело, тревога, ценности, благодарность, отношения. Где какой акцент.</li>
+              <li>Личный ритуал входа в месяц — что ты делаешь 1 мая, чтобы зайти в него собранно. Микроформат, выполнимый.</li>
+              <li>Возвращение паттернов — напоминание трёхслойного протокола. Когда вернутся, ты знаешь, что делать.</li>
+              <li>Live-кодинг материалов — Loom-уроки по Claude и CODEX для тех, кто хочет собирать свои трекеры.</li>
+              <li>Закрывающий круг — с чем ухожу из программы, что забираю как практику. По одной фразе от каждой.</li>
+              <li>Закрытие — благодарность друг другу, открытое будущее.</li>
+            </ol>
+          </div>
+          <div class="insights">
+            <h6>Главные инсайты</h6>
+            <ul>
+              <li>Главная работа — это не пройти пять недель, а понять, как держать практику дальше, в обычной жизни.</li>
+              <li>Май — это возможность углубить то, что уже есть. Без новой драмы, без перегруза, без планки повыше.</li>
+              <li>Принципы первой недели остаются фундаментом. К ним возвращаемся каждый раз, когда что-то рассыпается.</li>
+              <li>Возвращение паттернов — это не провал, это часть процесса. У тебя есть инструмент: трёхслойный анализ + пятишаговый протокол.</li>
+              <li>Программа заканчивается, но практика продолжается. Главное, что ты унесла — это умение, а не воспоминание.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="call-materials"><b>Материалы:</b> HP_финал_3мая.pptx · Pattern Return Guide · Designing May lesson · Loom-уроки live-кодинга</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ХРАНИЛИЩЕ                                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="vault" id="vault">
+  <div class="vault-inner">
+    <div class="head">
+      <div class="tag">Хранилище</div>
+      <h2>Куда <em>можно вернуться</em> позже.</h2>
+    </div>
+
+    <div class="vault-grid">
+      <div class="vault-card">
+        <h4>Голоса участниц</h4>
+        <p>Истории, шеринги, цитаты из чата и звонков. Пока живут в чате потока — со временем соберём отдельный архив.</p>
+        <a href="#calls">К звонкам</a>
+      </div>
+      <div class="vault-card">
+        <h4>Лекция 1 — конспект</h4>
+        <p>Полная расшифровка стартовой лекции «Getting Shit Done» — фундамент программы, на котором держатся все следующие недели.</p>
+        <a href="Лекция 1 — Конспект выступления.html">Открыть конспект</a>
+      </div>
+      <div class="vault-card">
+        <h4>Цитаты — подборка</h4>
+        <p>Источники и опоры: Двек, Клир, Талеб, Brewer, Smith, Tolle, Fredrickson, Emmons, Брене Браун, Лао Цзы, стоики, Куприянов, Франкл, Камю.</p>
+        <a href="Цитаты для лекции — подборка.md">Открыть подборку</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ФУТЕР                                            -->
+<!-- ═══════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="wordmark-small">High Perfomance</div>
+  <p>Воркбук программы — поток апрель 2026. С благодарностью каждой участнице.</p>
+  <div class="meta-row">
+    <div><b>5 недель</b>программа</div>
+    <div><b>4 звонка</b>интеграция</div>
+    <div><b>26</b>участниц</div>
+    <div><b>3 мая 2026</b>финал</div>
+  </div>
+</footer>
+
+<script>
+  // sticky-навигация появляется после прокрутки за hero
+  const stickyNav = document.getElementById('stickyNav');
+  const heroH = window.innerHeight * 0.84;
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > heroH * 0.9) {
+      stickyNav.classList.add('show');
+    } else {
+      stickyNav.classList.remove('show');
+    }
+  });
+</script>
+
+</body>
+</html>
