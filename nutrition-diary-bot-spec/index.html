@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ТЗ: бот проверки дневников питания</title>
+  <style>
+    :root {
+      --ink: #121317;
+      --muted: #6c7280;
+      --line: rgba(18, 19, 23, 0.08);
+      --paper: #fbfaf7;
+      --card: rgba(255, 255, 255, 0.78);
+      --cyan: #42d8ee;
+      --blue: #5887f7;
+      --pink: #ed6ec5;
+      --yellow: #ffd66b;
+      --green: #80e1ba;
+      --shadow: 0 28px 70px rgba(35, 38, 54, 0.12);
+      --soft-shadow: 0 18px 42px rgba(35, 38, 54, 0.09);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 214, 107, 0.26), transparent 28rem),
+        radial-gradient(circle at 86% 20%, rgba(237, 110, 197, 0.22), transparent 30rem),
+        linear-gradient(180deg, #fffdf8 0%, #f4f2ed 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 18px;
+      margin-bottom: 34px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.64);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(35, 38, 54, 0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 16px;
+      height: 16px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--yellow), var(--pink) 48%, var(--blue));
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 8px 18px rgba(88,135,247,0.28);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a {
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .nav a:hover {
+      background: rgba(18, 19, 23, 0.05);
+      color: var(--ink);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 0.86fr 1.14fr;
+      gap: 34px;
+      align-items: center;
+      min-height: 390px;
+      margin-bottom: 34px;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 16px;
+      max-width: 500px;
+      font-size: clamp(46px, 6vw, 82px);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      max-width: 520px;
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.62;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border: 1px solid rgba(18, 19, 23, 0.08);
+      border-radius: 999px;
+      font-weight: 760;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 12px 30px rgba(35, 38, 54, 0.08);
+    }
+
+    .button.primary {
+      color: white;
+      border: 0;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      box-shadow: 0 14px 32px rgba(88, 135, 247, 0.28);
+    }
+
+    .hero-visual {
+      min-height: 390px;
+      border-radius: 42px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255,214,107,0.95) 0%, rgba(237,110,197,0.92) 40%, rgba(88,135,247,0.88) 76%, rgba(255,255,255,0.78) 100%);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.32), transparent 44%),
+        linear-gradient(20deg, rgba(255,255,255,0.18), transparent 38%);
+      z-index: -1;
+    }
+
+    .visual-content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+    }
+
+    .visual-content strong {
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .visual-content span {
+      display: block;
+      margin-top: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 30px;
+      background: var(--card);
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card.pad {
+      padding: 30px;
+    }
+
+    .mini-gradient {
+      min-height: 250px;
+      padding: 30px;
+      color: white;
+      background: linear-gradient(135deg, var(--pink), var(--blue) 48%, var(--green) 100%);
+    }
+
+    .mini-gradient h2,
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 3vw, 42px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .mini-gradient p,
+    .card p {
+      margin: 0;
+      color: rgba(255,255,255,0.76);
+      line-height: 1.58;
+    }
+
+    .card p {
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.58);
+      color: rgba(18, 19, 23, 0.76);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .download-panel {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .download-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .download-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.68);
+    }
+
+    .download-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .download-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .download-item a {
+      flex: 0 0 auto;
+      min-height: 38px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(90deg, var(--pink), var(--blue));
+      font-weight: 780;
+      font-size: 13px;
+    }
+
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 24px;
+      padding: 0;
+      margin: 24px 0 0;
+      list-style: none;
+    }
+
+    .sections li {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      color: #2b2d34;
+      font-weight: 680;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .stat {
+      min-height: 160px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat .num {
+      font-size: 38px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 620;
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(4, 54px);
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .swatch {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.64), 0 14px 28px rgba(35, 38, 54, 0.1);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px 4px 0;
+    }
+
+    @media (max-width: 860px) {
+      .topbar,
+      .footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .hero,
+      .grid,
+      .download-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-visual {
+        min-height: 300px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .sections {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 22px, 1180px);
+        padding-top: 12px;
+      }
+
+      .hero-copy h1 {
+        font-size: 44px;
+      }
+
+      .card.pad,
+      .mini-gradient {
+        padding: 22px;
+      }
+
+      .download-item {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .download-item a {
+        width: 100%;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Nutrition Spec
+      </a>
+      <nav class="nav" aria-label="Навигация">
+        <a href="#overview">Обзор</a>
+        <a href="#mvp">MVP</a>
+        <a href="#downloads">Файлы</a>
+        <a href="#sections">Разделы</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="overview">
+      <div class="hero-copy">
+        <h1>Telegram-бот дневников питания</h1>
+        <p>Короткая продуктово-техническая выжимка для команды: что строим, как бот отвечает, какие данные хранит, где границы MVP и что нужно решить перед разработкой.</p>
+        <div class="actions">
+          <a class="button primary" href="downloads/2026-05-07_nutrition_diary_bot_technical_spec_ru_v1.md" download>Скачать подробнее</a>
+          <a class="button" href="#downloads">Все файлы</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Пастельная карточка спецификации">
+        <div class="visual-content">
+          <div>
+            <strong>Nutrition Diary AI</strong>
+            <span>Telegram · Vision · КБЖУ · Curator workflow</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stat-grid" id="mvp" aria-label="Ключевые параметры">
+      <article class="card stat">
+        <div class="num">100-1000</div>
+        <div class="label">активных пользователей в день как ориентир нагрузки</div>
+      </article>
+      <article class="card stat">
+        <div class="num">4</div>
+        <div class="label">роли доступа: участник, куратор, админ, owner</div>
+      </article>
+      <article class="card stat">
+        <div class="num">50/30/20</div>
+        <div class="label">базовая методология баланса тарелки</div>
+      </article>
+      <article class="card stat">
+        <div class="num">MVP</div>
+        <div class="label">Telegram, фото, КБЖУ, база, исправления, резюме</div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card mini-gradient">
+        <h2>Как работает</h2>
+        <p>Участник тегает бота с фото, текстом или аудио. Бот распознает еду, оценивает КБЖУ, сохраняет запись по человеку и отвечает публичным фидбэком.</p>
+        <div class="pill-row">
+          <span class="pill">только по тегу</span>
+          <span class="pill">фото + текст</span>
+          <span class="pill">исправления</span>
+        </div>
+      </article>
+
+      <article class="card pad">
+        <h2>Что важно</h2>
+        <p>Фидбэк фактологичный и человеческий: минимальные эмодзи, обращение по имени, расчет как оценочный диапазон. День цикла учитывается только если пользователь сам его указал.</p>
+        <div class="pill-row">
+          <span class="pill">без медицинских назначений</span>
+          <span class="pill">allow-list</span>
+          <span class="pill">кураторские сводки</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="download-panel" id="downloads">
+      <article class="card pad">
+        <h2>Скачать файлы</h2>
+        <p>Основной документ и метаданные проекта скопированы рядом с HTML, чтобы страницу можно было отправить или открыть локально без дополнительных путей.</p>
+        <div class="download-list">
+          <div class="download-item">
+            <div>
+              <strong>Полное ТЗ, Markdown</strong>
+              <span>главный документ для разработки</span>
+            </div>
+            <a href="downloads/2026-05-07_nutrition_diary_bot_technical_spec_ru_v1.md" download>Скачать MD</a>
+          </div>
+          <div class="download-item">
+            <div>
+              <strong>Пакет проекта</strong>
+              <span>MD, manifest, status, commands</span>
+            </div>
+            <a href="downloads/2026-05-07_nutrition_diary_bot_spec_bundle_ru_v1.zip" download>Скачать ZIP</a>
+          </div>
+          <div class="download-item">
+            <div>
+              <strong>Manifest</strong>
+              <span>машиночитаемое описание источников и outputs</span>
+            </div>
+            <a href="downloads/manifest.yaml" download>YAML</a>
+          </div>
+          <div class="download-item">
+            <div>
+              <strong>Commands</strong>
+              <span>команды проверки и воспроизводимости</span>
+            </div>
+            <a href="downloads/commands.md" download>MD</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card pad">
+        <h2>Состав ТЗ</h2>
+        <p>Документ покрывает продуктовую логику, роли, Telegram-сценарии, формат ответов, данные, safety, AI pipeline, админку, MVP и открытые вопросы.</p>
+        <div class="palette" aria-label="Цветовая палитра страницы">
+          <span class="swatch" style="background: linear-gradient(135deg, #ffd66b, #ed6ec5);"></span>
+          <span class="swatch" style="background: linear-gradient(135deg, #42d8ee, #5887f7);"></span>
+          <span class="swatch" style="background: linear-gradient(135deg, #80e1ba, #f7f2ce);"></span>
+          <span class="swatch" style="background: linear-gradient(135deg, #f5a6d8, #6ddde8);"></span>
+        </div>
+      </article>
+    </section>
+
+    <section class="card pad" id="sections">
+      <h2>Разделы полного документа</h2>
+      <p>Кнопка выше скачивает полную версию. Ниже быстрый индекс первых разделов.</p>
+      <ul class="sections">
+        <li>1. Назначение продукта</li>
+<li>2. Референсы</li>
+<li>3. Платформа и каналы</li>
+<li>4. Роли и доступы</li>
+<li>5. Настройки чата</li>
+<li>6. Профиль пользователя</li>
+<li>7. Типы пользовательского ввода</li>
+<li>8. Основные пользовательские сценарии</li>
+<li>9. Команды и интенты</li>
+<li>10. Формат ответа бота</li>
+<li>11. Методология питания</li>
+<li>12. Резюме и аналитика</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <span>Draft v1 · 2026-05-07 · nutrition_diary_bot_spec</span>
+      <span>Собрано из интервью и референса High Performance Nutrition Bot</span>
+    </footer>
+  </main>
+</body>
+</html>
