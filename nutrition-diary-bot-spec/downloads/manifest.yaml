@@ -1,0 +1,13 @@
+project_slug: nutrition_diary_bot_spec
+owner: sekta
+language: ru
+inputs:
+  - /Users/olymarkes/Desktop/telegr/tg-mcp/data/export/high_performance_pitanie.md
+  - /Users/olymarkes/Desktop/telegr/tg-mcp/data/export/high_performance_pitanie_bot_context.md
+  - conversation_brief_2026-05-07
+outputs:
+  - source/2026-05-07_nutrition_diary_bot_technical_spec_ru_v1.md
+  - output/2026-05-07_nutrition_diary_bot_spec_overview_ru_v1.html
+  - output/downloads/2026-05-07_nutrition_diary_bot_technical_spec_ru_v1.md
+  - output/downloads/2026-05-07_nutrition_diary_bot_spec_bundle_ru_v1.zip
+canonical_build: output/2026-05-07_nutrition_diary_bot_spec_overview_ru_v1.html

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Link — Медитация и Journaling</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0c;
+    color: #e0ddd5;
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    background: linear-gradient(180deg, #141418 0%, #0a0a0c 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(180, 160, 120, 0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #8a8375;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    color: #f0ece4;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span {
+    font-weight: 600;
+    background: linear-gradient(135deg, #c4b48a, #a89060);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: #6b6560;
+    font-weight: 300;
+  }
+
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: #2a2824;
+    margin: 0 auto;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  .section {
+    margin-top: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .section-number {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #2e2a24;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #c4b48a;
+    background: rgba(180, 160, 120, 0.04);
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #f0ece4;
+    letter-spacing: -0.3px;
+  }
+
+  .section-title small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #6b6560;
+    margin-top: 4px;
+  }
+
+  .content p {
+    font-size: 15.5px;
+    color: #b5b0a6;
+    margin-bottom: 20px;
+    font-weight: 350;
+  }
+
+  .highlight-card {
+    background: linear-gradient(135deg, rgba(180, 160, 120, 0.05) 0%, rgba(180, 160, 120, 0.02) 100%);
+    border-left: 2px solid #c4b48a;
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    margin: 28px 0;
+  }
+
+  .highlight-card p {
+    font-size: 14.5px;
+    color: #c4b48a;
+    margin-bottom: 0;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .tag {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1e1c18;
+    color: #8a8375;
+    background: rgba(180, 160, 120, 0.03);
+  }
+
+  .sep {
+    margin: 56px 0;
+    border: none;
+    border-top: 1px solid #1a1816;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px 32px 48px;
+    border-top: 1px solid #141210;
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: #3a3632;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Конспект практик</div>
+  <h1>Journey <span>Link</span></h1>
+  <p class="hero-sub">Медитация и Journaling — две базовые ежедневные практики</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="container">
+
+  <!-- SECTION 1: Медитация -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">
+        Медитация
+        <small>Утренняя и дневная практика</small>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>Есть очень много медитаций, и вы можете найти разные гайды, но под медитацией я имею в виду следующее — свободная практика без внешнего сопровождения.</p>
+
+      <p>Когда я утром просыпаюсь, мой день часто начинается с тревожных мыслей — это следствие моей высокой базовой тревоги и большого количества ответственности и дел, которые надо сделать. Поэтому обычно утром я просто сажусь — с открытыми или закрытыми глазами, — ставлю таймер на 5–15 минут и наблюдаю за ощущениями в теле: за тревогой, за тем, где она живёт физически, в какие мысли она тянется. Я стараюсь не превращать это в поток мыслей, а именно наблюдаю за физическим ощущением.</p>
+
+      <p>Иногда я дышу внимательнее, сосредотачиваюсь на дыхании. Иногда смотрю в окно, но стараюсь не фокусироваться ни на чём конкретном — просто ощущать движение мира и его красоту, параллельно дышать и сохранять контакт с телом.</p>
+
+      <p>Мне кажется принципиально важным, чтобы никакая информация извне не поступала. Никаких гайдов, голосов, музыки — наоборот, сохраняется внутренняя тишина и внимание к тому, что происходит в теле. Просто таймер — и дальше свободный полёт.</p>
+
+      <div class="highlight-card">
+        <p>Такие же короткие медитации я делаю в течение дня между рабочими сессиями. Даже 5 минут очень перезагружают: после них у меня появляется ясность — что именно делать и с чего начать следующую задачу.</p>
+      </div>
+
+      <div class="tag-row">
+        <span class="tag">5–15 мин</span>
+        <span class="tag">без гайда</span>
+        <span class="tag">наблюдение за телом</span>
+        <span class="tag">только таймер</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- SECTION 2: Journaling -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">
+        Journaling
+        <small>Ежедневная письменная практика</small>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>У меня есть тетрадка, в которой я пишу дату, — а дальше это тоже свободный полёт. Формат каждый раз может быть разным.</p>
+
+      <p>Иногда мой journaling — это выгрузка мыслей и дел: всё, что меня беспокоит, или всё, что надо сделать. Иногда это просто таск-лист. Иногда я описываю интересные события, которые произошли за день.</p>
+
+      <p>Для меня это способ выгрузить наружу всё, что внутри дребезжит и дёргает, — чтобы оставить больше свободного пространства для новых идей и нового видения, а не крутить в голове одни и те же мысли. Всё, что крутится в голове, — я это выгружаю на бумагу.</p>
+
+      <div class="highlight-card">
+        <p>Здесь тоже есть разные техники: кто-то ставит таймер на 10 минут. У меня просто есть задача каждый день что-то написать — такая low-stakes практика без жёстких правил, и она у меня работает лучше всего.</p>
+      </div>
+
+      <div class="tag-row">
+        <span class="tag">ежедневно</span>
+        <span class="tag">свободный формат</span>
+        <span class="tag">без правил</span>
+        <span class="tag">выгрузка мыслей</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>JOURNEY LINK</p>
+</div>
+
+</body>
+</html>

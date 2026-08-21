@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Когда паттерн возвращается — High Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --gold: #8F7733;
+  --gold-pale: #F5ECD7;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section { padding: 56px 0; }
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 18px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--charcoal);
+}
+
+h2 {
+  font-size: clamp(28px, 5vw, 38px);
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+h3 {
+  font-size: 22px;
+  margin-top: 26px;
+  margin-bottom: 14px;
+}
+
+p { margin-bottom: 20px; }
+
+p strong {
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+.hero {
+  min-height: 52vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196, 112, 75, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122, 139, 111, 0.05) 0%, transparent 70%),
+    var(--cream);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -80px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-dark);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -100px;
+  width: 350px; height: 350px;
+  border-radius: 50%;
+  border: 1px solid var(--terracotta-pale);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-inner {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 72px 28px 56px;
+  max-width: 720px;
+}
+
+.hero-tag {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: clamp(42px, 8.5vw, 68px);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 18px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+}
+
+.hero-sub {
+  font-size: 19px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--warm-gray);
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+
+.intro {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+}
+
+.intro p {
+  font-size: 18px;
+}
+
+.layer-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 40px 36px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.layer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.layer-card.l1::before { background: var(--terracotta); }
+.layer-card.l2::before { background: var(--olive); }
+.layer-card.l3::before { background: var(--gold); }
+
+.layer-number {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.layer-card.l1 .layer-number { color: var(--terracotta); background: var(--terracotta-pale); }
+.layer-card.l2 .layer-number { color: var(--olive); background: var(--olive-pale); }
+.layer-card.l3 .layer-number { color: var(--gold); background: var(--gold-pale); }
+
+.layer-card h2 {
+  font-size: clamp(24px, 4vw, 32px);
+  margin-bottom: 20px;
+}
+
+.layer-card h2 em { color: var(--terracotta); font-style: italic; }
+.layer-card.l2 h2 em { color: var(--olive); }
+.layer-card.l3 h2 em { color: var(--gold); }
+
+.quote-line {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--terracotta);
+  padding: 14px 0 14px 22px;
+  margin: 24px 0;
+  border-left: 2px solid var(--terracotta-pale);
+}
+
+.layer-card.l2 .quote-line { color: var(--olive); border-left-color: var(--olive-pale); }
+.layer-card.l3 .quote-line { color: var(--gold); border-left-color: var(--gold-pale); }
+
+.loop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  margin: 28px 0;
+}
+
+.loop-box {
+  flex: 1 1 180px;
+  min-width: 140px;
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  padding: 16px 18px;
+  text-align: center;
+}
+
+.loop-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 6px;
+}
+
+.loop-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--charcoal);
+  line-height: 1.3;
+}
+
+.loop-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--terracotta-light);
+  font-size: 18px;
+  flex: 0 0 16px;
+}
+
+.protocol {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+}
+
+.steps {
+  margin-top: 36px;
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--terracotta-pale), var(--gold-pale), var(--olive-pale), var(--terracotta-pale));
+  border-radius: 2px;
+}
+
+.step {
+  display: flex;
+  gap: 24px;
+  padding: 18px 0;
+  position: relative;
+  align-items: flex-start;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--terracotta-pale);
+  color: var(--terracotta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  z-index: 1;
+  border: 3px solid var(--cream);
+}
+
+.step-num.n2 { background: var(--olive-pale); color: var(--olive); }
+.step-num.n3 { background: var(--gold-pale); color: var(--gold); }
+.step-num.n4 { background: var(--terracotta-pale); color: var(--terracotta); }
+.step-num.n5 { background: var(--olive-pale); color: var(--olive); }
+
+.step-body { flex: 1; padding-top: 6px; }
+
+.step-body h3 { margin: 0 0 6px; font-size: 21px; }
+
+.step-body p {
+  font-size: 16px;
+  color: var(--charcoal);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.reminder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.reminder {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  padding: 26px 26px;
+}
+
+.reminder-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--terracotta);
+  line-height: 1.3;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.reminder p {
+  font-size: 15.5px;
+  color: var(--charcoal);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.themes {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+}
+
+.theme-list {
+  margin-top: 28px;
+  counter-reset: theme;
+}
+
+.theme {
+  padding: 20px 24px 20px 64px;
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  background: var(--cream);
+  counter-increment: theme;
+  position: relative;
+}
+
+.theme::before {
+  content: counter(theme);
+  position: absolute;
+  left: 22px;
+  top: 18px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--terracotta);
+}
+
+.theme-text {
+  font-size: 16.5px;
+  color: var(--charcoal);
+  line-height: 1.55;
+}
+
+.closing {
+  text-align: center;
+  padding: 64px 28px 48px;
+}
+
+.closing-quote {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3.8vw, 30px);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.45;
+}
+
+.divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(to right, var(--terracotta-pale), var(--olive-pale));
+  border-radius: 2px;
+  margin: 0 auto 36px;
+}
+
+.sources {
+  font-size: 13px;
+  color: var(--warm-gray);
+  text-align: center;
+  padding: 0 28px 40px;
+  line-height: 1.7;
+  font-style: italic;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.footer {
+  text-align: center;
+  padding: 32px 28px;
+  font-size: 13px;
+  color: var(--light-gray);
+  border-top: 1px solid var(--sand);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .section { padding: 40px 0; }
+  .hero { min-height: 44vh; }
+  .hero h1 { font-size: 42px; }
+  .layer-card { padding: 28px 22px; }
+  .layer-card::before { width: 3px; }
+  .steps::before { left: 17px; }
+  .step-num { width: 36px; height: 36px; font-size: 16px; }
+  .step { gap: 16px; }
+  .theme { padding: 18px 20px 18px 56px; }
+  .theme::before { left: 18px; top: 16px; font-size: 20px; }
+}
+
+@media print {
+  .hero { min-height: auto; }
+  .reveal { opacity: 1; transform: none; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">High Performance · Памятка на конец месяца</div>
+    <h1>Когда паттерн <em>возвращается</em></h1>
+    <p class="hero-sub">Заедание, прокрастинация, скролл, самокритика — что делать, если вы скатываетесь. В три слоя.</p>
+  </div>
+</section>
+
+<section class="section intro">
+  <div class="container">
+    <div class="reveal">
+      <p>Месяц заканчивается, и сейчас или позже кто-то из вас столкнётся с этим — со сладким, со старыми паттернами. Эта памятка — про то, что делать, когда проявляется паттерн: заедание, прокрастинация, скролл, самокритика. Разбираем в три слоя.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layer-card l1 reveal">
+      <span class="layer-number">Слой 1</span>
+      <h2>Прежде всего — смотрим с точки зрения <em>тревоги</em></h2>
+
+      <p>Сам паттерн — это всего лишь следствие. До тех пор, пока мы не сделаем масштабную работу с тем, как мы себя чувствуем, и не изменим копинг-механизмы, следствие будет возвращаться. Поэтому мы не лечим сладкое как проблему со сладким, а скролл как проблему со скроллом. <strong>Мы идём в корень.</strong></p>
+
+      <p>Здесь работают две линии внимания одновременно. Под поведением — тревога, которую оно пытается выключить. На поверхности — само действие, скатывание, которое важно зафиксировать в моменте. Поэтому задача — <strong>отслеживать тревогу и замечать сами действия</strong> (что мы скатываемся).</p>
+
+      <p>Это напрямую первая передача Брюера. Любая привычная реакция — это петля из трёх элементов.</p>
+
+      <div class="loop">
+        <div class="loop-box">
+          <div class="loop-label">Триггер</div>
+          <div class="loop-text">тревога, скука, раздражение</div>
+        </div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-box">
+          <div class="loop-label">Поведение</div>
+          <div class="loop-text">еда, скролл, вино, самокритика</div>
+        </div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-box">
+          <div class="loop-label">Награда</div>
+          <div class="loop-text">краткое облегчение</div>
+        </div>
+      </div>
+
+      <p>Мозг в какой-то момент выучил, что определённое поведение приносит облегчение, и закрепил связку. Сейчас он запускает её автоматически, ещё до того, как вы осознали, что что-то началось. Поймали себя внутри поведения — остановились, восстановили цепочку в три строки. Что было за тридцать секунд до. Что я чувствовала в теле. Какая награда закрыла петлю. В позиции исследователя, без оценки.</p>
+
+      <div class="quote-line">
+        Почему мы это делаем — это большая работа.
+        Это слои, которые вскрываются месяцами — через терапию, через практику, через честные разговоры с собой в тишине.
+      </div>
+
+      <p>За неделю корень не выкорчёвывается, и не должен. <strong>Важно видеть: если паттерны повторяются — значит, работа всё ещё в процессе.</strong> Это не срыв программы. Это и есть программа на этом этапе.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="layer-card l2 reveal">
+      <span class="layer-number">Слой 2</span>
+      <h2>Следующий слой — убираем <em>критику и обесценивание</em></h2>
+
+      <p>Потому что <strong>наши копинг-механизмы работают — и мы ими пользуемся</strong>. Еда правда на пятнадцать минут успокаивает. Скролл отвлекает. Вино расслабляет на вечер. Если бы не работало, мы бы к этому не возвращались. Мозг выбирает то, что в его картине мира приносит облегчение — это не слабость характера, это механика.</p>
+
+      <div class="quote-line">
+        Пока мы не предложим себе лучшую опцию справляться с тем или иным — старые способы останутся.
+      </div>
+
+      <p>Запреты и сила воли здесь не работают: мозг воспринимает их как новый стресс, и петлю это закрепляет ещё плотнее. Работает другое — более глубокая, более питательная альтернатива. У Брюера это третья передача: любопытство и доброта к себе вместо автоматического облегчения. В нашей программе это то, что мы называем намаливанием: не борьба с тёмной тучей, а мягкое выращивание другого голоса рядом с ней.</p>
+
+      <p>Самокритика в эту логику не вписывается. Это та же тревожная петля, только одетая в мысли — и ругать себя после срыва значит подкармливать тот самый корень, из которого срыв и вырос.</p>
+
+      <p>И ещё важное. <strong>Если мы катастрофизируем и требуем от себя мгновенных изменений, силы не будет.</strong> Катастрофизация — «опять не получилось, значит, никогда не получится» — это обесценивающий фильтр, который подробно описывает Джулия Смит. Он закрывает собой всё хорошее, что уже произошло. И главное — <strong>он отключает ресурс на изменения</strong>. Любое изменение требует энергии, любопытства и веры, что усилие имеет смысл. Катастрофизация выключает все три вещи одновременно. Это буквально топливная утечка.</p>
+
+      <p>Требование мгновенных результатов работает по тому же принципу: мы не можем перестроить за неделю то, что складывалось десятилетиями. Силы не будет, если требуем того, что биологически невозможно.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="layer-card l3 reveal">
+      <span class="layer-number">Слой 3</span>
+      <h2>Дальше — учимся <em>быстрее возвращаться</em></h2>
+
+      <p><strong>Главное — не избегать моментов и не делать всё по-старому постоянно, а учиться быстрее возвращаться.</strong> Потому что старые паттерны в любом случае будут.</p>
+
+      <div class="quote-line">
+        Вопрос не в том, чтобы их не было.
+        Вопрос в том, будут ли они определять вашу жизнь или нет.
+      </div>
+
+      <p>Это принципиальный сдвиг цели. Цель «чтобы никогда не срываться» — невыполнима, и на такой дистанции любой срыв начинает ощущаться как провал всего. Цель <strong>сократить время до возвращения</strong> — достижима и тренируема.</p>
+
+      <p>В психологии у неё есть конкретное имя — <em>opposite action</em> (Линехан, через Джулию Смит). Между побуждением и действием всегда есть зазор, пусть микроскопический. В этом зазоре живёт ваш выбор. Внимание к самому моменту этот зазор расширяет — и туда помещается другое действие: сесть на три минуты в тишине, выпить воды, выйти на прогулку, позвонить подруге.</p>
+
+      <p>Это и есть <strong>bouncing back from failure</strong> — способность вернуться после падения. Ключевой навык высокой устойчивости и одна из центральных опор этой программы. Падения, срывы, откаты — не исключение и не сбой системы, а часть любой живой траектории. Разница между людьми, у которых получается, и теми, у кого не получается, — не в том, что одни не падают. Она в том, <strong>насколько быстро они возвращаются</strong> и насколько честно, без драмы и обесценивания, встают обратно на курс.</p>
+
+      <p>Bouncing back тренируется как мышца. Каждый раз, когда вы сократили время до возврата на двадцать минут, на час, на день — это прямая тренировка. Каждый раз, когда вы после срыва не ушли в самокритику на неделю, а через час сделали один маленький шаг в сторону своего — вы становитесь устойчивее. <strong>Именно падение и возвращение, повторённые много раз, формируют навык</strong>, а не ровная линия без срывов, которой не существует.</p>
+
+      <p>И держите рядом две вещи, пока тренируетесь.</p>
+
+      <p><strong>С тобой случается — или ты делаешь.</strong> Когда с тобой случается, ты ждёшь настроения, мотивации, ресурсного понедельника. Когда ты делаешь — ты сам собираешь условия, в любой момент, включая минус. Скатывание в этой логике — тоже материал, который можно развернуть в свою пользу.</p>
+
+      <p><strong>Perform under pressure.</strong> Мы не ждём идеальных условий. Мы учимся делать то, что для нас важно, в том мире, который есть сейчас — с тревогой, с усталостью, с концом месяца. Умение функционировать в неидеальных условиях и есть высокая устойчивость.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section protocol">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Что делать в моменте</div>
+      <h2>Короткий <em>протокол</em>, когда петля уже запустилась</h2>
+    </div>
+
+    <div class="steps reveal">
+
+      <div class="step">
+        <div class="step-num n1">1</div>
+        <div class="step-body">
+          <h3>Пауза и тело</h3>
+          <p>Минута тишины. Ноги на пол, пять выдохов, внимание по телу. Это вход в зазор.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num n2">2</div>
+        <div class="step-body">
+          <h3>Петля в три строки</h3>
+          <p>Триггер. Поведение. Награда — облегчение, отвлечение, иллюзия контроля. В позиции исследователя.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num n3">3</div>
+        <div class="step-body">
+          <h3>Проверить реальную награду</h3>
+          <p>Через десять минут после — легче или пусто? Тревога ушла или спряталась под слоем поведения?</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num n4">4</div>
+        <div class="step-body">
+          <h3>Добрая, но твёрдая фраза</h3>
+          <p>«Это сложный момент. Я замечаю. Я делаю шаг обратно.» Без раздирания и без драмы.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num n5">5</div>
+        <div class="step-body">
+          <h3>Один маленький шаг назад в день</h3>
+          <p>Вода, растяжка, одна строчка в трекер, прогулка, сон вовремя. Маленькое и постоянное перестраивает нейронную карту. Грандиозные жесты выжигают.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Что держать в голове</div>
+      <h2>Когда <em>повторится</em> снова</h2>
+    </div>
+
+    <div class="reminder-grid reveal">
+
+      <div class="reminder">
+        <div class="reminder-title">Повторение — это продолжение работы</div>
+        <p>Не регресс. Заметили петлю — сделано много, даже если поведение случилось. Спросили себя про реальную награду — карта обновилась ещё на шаг.</p>
+      </div>
+
+      <div class="reminder">
+        <div class="reminder-title">Я — объект наблюдения, жизнь — поле экспериментов</div>
+        <p>Не «я такая, так будет всегда». А «что я сейчас делаю, и куда могу это развернуть». Любой срыв — материал.</p>
+      </div>
+
+      <div class="reminder">
+        <div class="reminder-title">Маленькое побеждает грандиозное</div>
+        <p>Ресурсный месяц — миф. Любая точка оптимальна для следующего шага. Пять минут каждый день перестраивают больше, чем один выходной «на себя».</p>
+      </div>
+
+      <div class="reminder">
+        <div class="reminder-title">Идентичность — это возвращение</div>
+        <p>Короткая фраза, которую берёте с собой: «Я — человек, который возвращается». Не без срывов — такого не существует. Именно тот, кто возвращается, твёрдо и быстрее каждый раз.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section themes">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Темы недели</div>
+      <h2>Шесть тем для <em>шеринга</em> и рефлексии</h2>
+    </div>
+
+    <div class="theme-list reveal">
+
+      <div class="theme">
+        <div class="theme-text">Как я узнаю тревогу до того, как иду в старое поведение.</div>
+      </div>
+
+      <div class="theme">
+        <div class="theme-text">Что мои копинги мне реально давали — и где награда уже перестаёт работать.</div>
+      </div>
+
+      <div class="theme">
+        <div class="theme-text">Момент, когда я вернулась быстрее, чем обычно.</div>
+      </div>
+
+      <div class="theme">
+        <div class="theme-text">Моя добрая, но твёрдая фраза — та, которая возвращает.</div>
+      </div>
+
+      <div class="theme">
+        <div class="theme-text">Мой маленький шаг обратно на этой неделе.</div>
+      </div>
+
+      <div class="theme">
+        <div class="theme-text">За какого человека я голосую сегодняшними действиями.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="divider"></div>
+  <p class="closing-quote reveal">Старые паттерны в любом случае будут. Вопрос — будут ли они определять вашу жизнь.</p>
+</section>
+
+<p class="sources">
+  Опоры: Judson Brewer — три передачи работы с петлёй; Julie Smith — обесценивающий фильтр и КПТ-крест; Marsha Linehan — opposite action; материалы программы High Performance, Недели 1–4.
+</p>
+
+<footer class="footer">
+  Оля Маркес · High Performance · Памятка на конец месяца · 2026
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

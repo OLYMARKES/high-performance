@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework — Определение ценностей · Неделя 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream); color: var(--charcoal);
+  font-family: var(--font-body); font-weight: 300; font-size: 17px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+.section-label {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 16px;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.2; color: var(--charcoal); }
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Hero (compact) ── */
+.hero {
+  padding: 80px 28px 40px; text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 30% 20%, rgba(196,112,75,0.06) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 75% 80%, rgba(122,139,111,0.05) 0%, transparent 70%), var(--cream);
+}
+.hero-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 16px; }
+.hero h1 { font-size: clamp(36px, 8vw, 56px); font-weight: 400; letter-spacing: -1px; margin-bottom: 12px; }
+.hero h1 em { font-style: italic; color: var(--terracotta); }
+.hero-sub { font-size: 18px; color: var(--warm-gray); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+/* ── Intro block ── */
+.intro-block {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 36px 32px; margin-bottom: 40px;
+}
+.intro-block p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 12px; }
+.intro-block p:last-child { margin-bottom: 0; }
+.intro-block strong { color: var(--charcoal); font-weight: 400; }
+
+/* ── Step cards ── */
+.step-card {
+  background: var(--warm-white); border: 1px solid var(--sand); border-radius: 20px;
+  padding: 40px 36px; margin-bottom: 28px; transition: transform 0.4s, box-shadow 0.4s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(58,54,50,0.06); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 12px; font-family: var(--font-display);
+  font-size: 18px; font-weight: 600; color: var(--warm-white); background: var(--terracotta); margin-bottom: 16px;
+}
+.step-card h3 { font-size: 24px; margin-bottom: 12px; }
+.step-card p { font-size: 16px; color: var(--warm-gray); line-height: 1.8; margin-bottom: 14px; }
+.step-card p:last-of-type { margin-bottom: 0; }
+
+/* ── Matrix example ── */
+.matrix-intro {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-bottom: 22px;
+}
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.matrix-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  padding: 24px 22px;
+}
+.matrix-card.full {
+  grid-column: 1 / -1;
+}
+.matrix-sub {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 14px;
+}
+.matrix-list {
+  display: grid;
+  gap: 10px;
+}
+.matrix-item {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+}
+.matrix-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--terracotta-light);
+}
+.matrix-note {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(196,112,75,0.08);
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── Phrase picker ── */
+.picker-note {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-top: 14px;
+}
+.phrase-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 6px;
+}
+.phrase-chip {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--sand-dark);
+  background: var(--cream);
+  color: var(--warm-gray);
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.25s;
+  user-select: none;
+}
+.phrase-chip:hover {
+  border-color: var(--terracotta-light);
+  color: var(--charcoal);
+}
+.phrase-chip.selected {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: var(--warm-white);
+}
+
+/* ── Textarea ── */
+.fw-textarea {
+  width: 100%; min-height: 140px; border: 1px solid var(--sand-dark); border-radius: 16px;
+  padding: 20px 24px; font-family: var(--font-body); font-size: 16px; font-weight: 300;
+  line-height: 1.7; color: var(--charcoal); background: var(--cream); resize: vertical;
+  outline: none; transition: border-color 0.3s; margin-top: 16px;
+}
+.fw-textarea::placeholder { color: var(--light-gray); }
+.fw-textarea:focus { border-color: var(--terracotta-light); box-shadow: 0 0 0 3px rgba(196,112,75,0.1); }
+
+/* ── Result card ── */
+.result-card {
+  background: var(--warm-white); border: 2px solid var(--terracotta-pale); border-radius: 20px;
+  padding: 40px 36px; margin-top: 32px; display: none;
+}
+.result-card.visible { display: block; }
+.result-card h3 { font-size: 24px; margin-bottom: 16px; color: var(--terracotta); }
+.result-value {
+  font-family: var(--font-display); font-size: 22px; font-weight: 500;
+  color: var(--charcoal); line-height: 1.5; margin-bottom: 8px;
+}
+.result-why {
+  font-size: 15px; color: var(--warm-gray); line-height: 1.7;
+  padding-left: 16px; border-left: 2px solid var(--sand); margin-bottom: 16px;
+}
+
+/* ── Button ── */
+.fw-btn {
+  display: inline-block; margin-top: 24px; padding: 16px 32px; border: none; border-radius: 14px;
+  background: var(--charcoal); color: var(--warm-white); font-family: var(--font-body);
+  font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: background 0.3s;
+  text-decoration: none;
+}
+.fw-btn:hover { background: #4E4A45; }
+.fw-btn.secondary {
+  background: transparent;
+  color: var(--warm-gray);
+  border: 1px solid var(--sand-dark);
+}
+.fw-btn.secondary:hover {
+  background: var(--sand);
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ── Closing ── */
+.closing { text-align: center; padding: 60px 28px; }
+.closing-quote {
+  font-family: var(--font-display); font-size: clamp(22px, 4vw, 28px);
+  font-style: italic; font-weight: 400; color: var(--terracotta);
+  max-width: 560px; margin: 0 auto; line-height: 1.45;
+}
+.footer { text-align: center; padding: 32px 28px; font-size: 13px; color: var(--light-gray); border-top: 1px solid var(--sand); }
+.personal-links-shell { padding: 0 0 28px; }
+.personal-links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.personal-link {
+  display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 999px;
+  border: 1px solid var(--sand-dark); background: var(--warm-white); color: var(--warm-gray);
+  font-size: 13px; font-weight: 600; text-decoration: none; transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.personal-link:hover { border-color: var(--terracotta); color: var(--terracotta); background: rgba(196,112,75,0.05); }
+
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .step-card { padding: 28px 24px; }
+  .step-card h3 { font-size: 20px; }
+  .matrix-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-tag">Неделя 3 · Framework 1</div>
+  <h1>Определение <em>ценностей</em></h1>
+  <p class="hero-sub">Практическое упражнение, которое поможет выделить 3–5 ключевых ценностей — твой личный компас.</p>
+</section>
+
+<!-- ═══════ INTRO ═══════ -->
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+
+    <div class="intro-block reveal">
+      <p>Ценности — это направления, в которых ты хочешь двигаться каждый день. Разница между «я хочу быть здоровой» (ценность) и «я хочу похудеть на 5 кг» (цель) — в том, что ценность никогда не заканчивается. У цели есть конечная точка, а ценность продолжает работать после достижения любой отдельной цели. Она работает как компас: даже когда конкретный маршрут изменился, компас показывает, куда идти дальше.</p>
+      <p><strong>Это упражнение состоит из трёх шагов.</strong> На выходе — 3–5 ценностей, которые ты сможешь использовать как фильтр для решений, как источник мотивации и как якорь в моменты, когда «не хочется».</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-card reveal">
+      <div class="step-num">1</div>
+      <h3>Посмотри на примерную матрицу</h3>
+      <p class="matrix-intro">Это не “правильный” список и не то, что нужно повторять слово в слово. Это пример того, как ценности могут звучать сразу фразами. Здесь можно оставить то, что отзывается, переписать формулировки под себя, убрать лишнее и дописать своё.</p>
+
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <div class="matrix-sub">Личность / внутренний фундамент</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Быть полностью присутствующей в своей жизни, а не проживать её фоном.</div>
+            <div class="matrix-item">Удерживать фокус на том, что для меня по-настоящему важно.</div>
+            <div class="matrix-item">Идти вглубь, а не скользить по поверхности в себе, в людях и в работе.</div>
+            <div class="matrix-item">Постоянно учиться, оставаться живой к новому и не застывать в уже известном.</div>
+            <div class="matrix-item">Умножать добро во всём, к чему я прикасаюсь.</div>
+            <div class="matrix-item">Жить в ясности с собой, а не в автоматизме, шуме и самообмане.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Проявление в мире</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Не давать страху, тревоге или малодушию останавливать моё проявление.</div>
+            <div class="matrix-item">Быть смелой в том, как я говорю, действую и занимаю своё место.</div>
+            <div class="matrix-item">Оставаться подлинной и не фильтровать живые реакции ради удобства других.</div>
+            <div class="matrix-item">Говорить о сложном прямо, если это служит правде и жизни.</div>
+            <div class="matrix-item">Быть видимой и не уменьшать себя из страха оценки.</div>
+            <div class="matrix-item">Создавать в мире что-то настоящее, а не только обслуживать ожидания.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Близость / семья</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Быть по-настоящему рядом с теми, кого я люблю.</div>
+            <div class="matrix-item">Давать близким не только внимание, но и живое присутствие.</div>
+            <div class="matrix-item">Создавать в отношениях тепло, нежность и чувство безопасности.</div>
+            <div class="matrix-item">Быть человеком, на которого можно опереться.</div>
+            <div class="matrix-item">Любить не только чувством, но и качеством своего присутствия.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div class="matrix-sub">Духовность / смысл</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Жить не случайно, а в связи с тем, что для меня по-настоящему священно.</div>
+            <div class="matrix-item">Помнить, что жизнь больше, чем бытовые задачи и контроль.</div>
+            <div class="matrix-item">Сохранять связь с высшим, с красотой и с глубоким смыслом жизни.</div>
+            <div class="matrix-item">Быть благодарной за жизнь даже в её хрупкости.</div>
+            <div class="matrix-item">Позволять важным вопросам вести меня глубже, а не убегать от них.</div>
+          </div>
+        </div>
+
+        <div class="matrix-card full">
+          <div class="matrix-sub">Тело / здоровье / качество жизни</div>
+          <div class="matrix-list">
+            <div class="matrix-item">Уважать своё тело через выборы, которые поддерживают здоровье и долгую качественную жизнь.</div>
+            <div class="matrix-item">Жить так, чтобы тело было не полем насилия, а местом силы, чувствительности и опоры.</div>
+            <div class="matrix-item">Выбирать не истощение, а качество жизни.</div>
+            <div class="matrix-item">Заботиться о своём здоровье как о ценности, а не только как о функции.</div>
+            <div class="matrix-item">Не откладывать жизнь на потом, а чувствовать её вкус уже сейчас.</div>
+            <div class="matrix-item">Разрешать себе довольство, удовольствие и наполненность, а не жить в режиме вечной нехватки.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="matrix-note">Это примерная матрица. Ты можешь оставить какие-то фразы как есть, сократить их, переписать на своём языке, удалить половину списка, добавить свои блоки и дописать собственные ценности рядом.</div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card reveal">
+      <div class="step-num">2</div>
+      <h3>Собери свою матрицу</h3>
+      <p>Теперь выбери 5–10 фраз, которые действительно описывают, <strong>как ты хочешь жить</strong>. Можно взять готовые формулировки выше, можно переписать их под себя, можно сделать свои.</p>
+      <p><strong>Вопрос для фильтра:</strong> «Если я буду жить именно так, я буду чувствовать, что живу свою жизнь?»</p>
+      <p>Можно не писать всё с нуля: сначала натыкай фразы, которые отзываются, а потом отредактируй их под себя.</p>
+
+      <div class="phrase-pool" id="phrasePool">
+        <button type="button" class="phrase-chip" data-value="Быть полностью присутствующей в своей жизни, а не проживать её фоном.">Присутствие в жизни</button>
+        <button type="button" class="phrase-chip" data-value="Удерживать фокус на том, что для меня по-настоящему важно.">Фокус на важном</button>
+        <button type="button" class="phrase-chip" data-value="Идти вглубь, а не скользить по поверхности в себе, в людях и в работе.">Глубина</button>
+        <button type="button" class="phrase-chip" data-value="Постоянно учиться, оставаться живой к новому и не застывать в уже известном.">Постоянно учиться</button>
+        <button type="button" class="phrase-chip" data-value="Умножать добро во всём, к чему я прикасаюсь.">Умножать добро</button>
+        <button type="button" class="phrase-chip" data-value="Не давать страху, тревоге или малодушию останавливать моё проявление.">Не давать страху останавливать</button>
+        <button type="button" class="phrase-chip" data-value="Быть смелой в том, как я говорю, действую и занимаю своё место.">Быть смелой</button>
+        <button type="button" class="phrase-chip" data-value="Оставаться подлинной и не фильтровать живые реакции ради удобства других.">Подлинность</button>
+        <button type="button" class="phrase-chip" data-value="Быть по-настоящему рядом с теми, кого я люблю.">Быть рядом</button>
+        <button type="button" class="phrase-chip" data-value="Создавать в отношениях тепло, нежность и чувство безопасности.">Тепло и безопасность</button>
+        <button type="button" class="phrase-chip" data-value="Жить не случайно, а в связи с тем, что для меня по-настоящему священно.">Жить не случайно</button>
+        <button type="button" class="phrase-chip" data-value="Сохранять связь с высшим, с красотой и с глубоким смыслом жизни.">Связь с высшим и смыслом</button>
+        <button type="button" class="phrase-chip" data-value="Уважать своё тело через выборы, которые поддерживают здоровье и долгую качественную жизнь.">Уважать своё тело</button>
+        <button type="button" class="phrase-chip" data-value="Выбирать не истощение, а качество жизни.">Качество жизни</button>
+        <button type="button" class="phrase-chip" data-value="Не откладывать жизнь на потом, а чувствовать её вкус уже сейчас.">Вкус жизни</button>
+        <button type="button" class="phrase-chip" data-value="Разрешать себе довольство, удовольствие и наполненность, а не жить в режиме вечной нехватки.">Довольство и наполненность</button>
+      </div>
+
+      <p class="picker-note">Запиши здесь свою рабочую матрицу. Можно по блокам, можно одним списком. Всё, что ты натыкаешь выше, автоматически появится в поле.</p>
+      <textarea class="fw-textarea" id="topValues" rows="12" placeholder="Например:&#10;Личность&#10;— Быть полностью присутствующей в своей жизни, а не проживать её фоном.&#10;— Идти вглубь, а не скользить по поверхности.&#10;&#10;Проявление&#10;— Не давать страху останавливать моё проявление.&#10;— Быть смелой в том, как я говорю и действую.&#10;&#10;Тело&#10;— Уважать своё тело через выборы, которые поддерживают здоровье и качество жизни."></textarea>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card reveal">
+      <div class="step-num">3</div>
+      <h3>Дополни своими формулировками</h3>
+      <p>Теперь оживи список. Где нужно — сделай фразы более личными, конкретными и телесными. Допиши то, чего не хватает именно тебе.</p>
+      <p><strong>Подсказка:</strong> что для меня значит эта фраза? Как она выглядит в реальной жизни? Что я выбираю, когда ей следую, и что я предаю, когда от неё ухожу?</p>
+      <textarea class="fw-textarea" id="valuesAlive" rows="12" placeholder="Например:&#10;Для меня быть полностью присутствующей в своей жизни — это не жить в рассеянности и не проходить мимо важных моментов. Это значит быть в контакте с телом, с людьми, с работой и с тем, что я делаю прямо сейчас.&#10;&#10;Для меня уважать своё тело — это выбирать сон, еду, ритм и движение не из насилия, а из любви к качеству своей жизни.&#10;&#10;Я хочу добавить сюда ещё: ..."></textarea>
+
+      <button class="fw-btn" id="saveBtn">Сохранить мои ценности</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-card" id="resultCard">
+      <h3>Твои ценности</h3>
+      <div id="resultContent"></div>
+      <div class="result-actions">
+        <a class="fw-btn" id="returnToTrackerBtn" href="week-3-tracker.html">Вернуться в трекер</a>
+        <a class="fw-btn secondary" id="continueEditingBtn" href="week-3-framework-values.html">Продолжить редактировать</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Ценности живут в действиях, а не в словах. Возвращайся к этому списку, когда нужно принять решение или когда кажется, что всё бессмысленно.</p>
+</section>
+
+<section class="personal-links-shell">
+  <div class="container">
+    <div class="personal-links">
+      <a class="personal-link" data-personal-link="tracker" href="week-3-tracker.html" target="_blank" rel="noopener">Мой трекер недели 3</a>
+      <a class="personal-link" href="materials.html" target="_blank" rel="noopener">Все мои материалы</a>
+      <a class="personal-link" data-personal-link="week3" href="week-3.html" target="_blank" rel="noopener">Цели и ценности</a>
+      <a class="personal-link" data-personal-link="values" href="week-3-framework-values.html" target="_blank" rel="noopener">Ценности</a>
+      <a class="personal-link" data-personal-link="identity" href="week-3-framework-identity.html" target="_blank" rel="noopener">Идентичность</a>
+      <a class="personal-link" data-personal-link="prophecy" href="week-3-framework-prophecy.html" target="_blank" rel="noopener">Пророчество</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">Оля Маркес · High Performance · Неделя 3 · Framework 1</footer>
+
+<script>
+/* Reveal */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+const personalParams = new URLSearchParams(window.location.search);
+const personalParticipant = personalParams.get('participant') || '';
+const trackerUrl = personalParams.get('tracker') || 'week-3-tracker.html';
+const personalQuery = personalParams.toString();
+const personalPaths = {
+  tracker: trackerUrl,
+  week3: 'week-3.html',
+  values: 'week-3-framework-values.html',
+  identity: 'week-3-framework-identity.html',
+  prophecy: 'week-3-framework-prophecy.html'
+};
+
+document.querySelectorAll('[data-personal-link]').forEach((link) => {
+  const key = link.getAttribute('data-personal-link');
+  const base = personalPaths[key];
+  if (!base) return;
+  if (key === 'tracker') {
+    link.href = trackerUrl;
+    return;
+  }
+  link.href = personalQuery ? `${base}?${personalQuery}` : base;
+});
+
+const returnToTrackerBtn = document.getElementById('returnToTrackerBtn');
+if (returnToTrackerBtn) returnToTrackerBtn.href = trackerUrl;
+const continueEditingBtn = document.getElementById('continueEditingBtn');
+if (continueEditingBtn) continueEditingBtn.href = personalQuery ? `week-3-framework-values.html?${personalQuery}` : 'week-3-framework-values.html';
+
+const FRAMEWORK_STORAGE_KEY = personalParticipant
+  ? `hp_week3_values_framework_${personalParticipant}`
+  : 'hp_week3_values_framework';
+
+function loadFrameworkState() {
+  try {
+    const saved = localStorage.getItem(FRAMEWORK_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveFrameworkState(patch) {
+  const next = {
+    ...loadFrameworkState(),
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    localStorage.setItem(FRAMEWORK_STORAGE_KEY, JSON.stringify(next));
+  } catch (e) {}
+
+  return next;
+}
+
+function extractFrameworkLines(text) {
+  return text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => !/^[А-Яа-яA-Za-z]+$/.test(line))
+    .map(line => line.replace(/^[\d\-\u2022—–\.\)\s]+/, '').trim())
+    .filter(Boolean);
+}
+
+function buildManifestoValues(lines) {
+  if (!lines.length) return '';
+  return 'Мои ценности этой недели: ' + lines.slice(0, 4).join(' ');
+}
+
+/* Phrase picker */
+const topValuesInput = document.getElementById('topValues');
+const valuesAliveInput = document.getElementById('valuesAlive');
+
+function syncSelectedChipsFromInput() {
+  const currentLines = topValuesInput.value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  document.querySelectorAll('.phrase-chip').forEach(chip => {
+    const phrase = '— ' + chip.dataset.value.trim();
+    chip.classList.toggle('selected', currentLines.includes(phrase));
+  });
+}
+
+const existingFramework = loadFrameworkState();
+if (existingFramework.top) topValuesInput.value = existingFramework.top;
+if (existingFramework.alive) valuesAliveInput.value = existingFramework.alive;
+syncSelectedChipsFromInput();
+topValuesInput.addEventListener('input', syncSelectedChipsFromInput);
+
+document.querySelectorAll('.phrase-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const phrase = '— ' + chip.dataset.value.trim();
+    const lines = topValuesInput.value
+      .split('\n')
+      .map(line => line.trimEnd())
+      .filter(line => line.trim());
+
+    const hasPhrase = lines.includes(phrase);
+
+    if (hasPhrase) {
+      chip.classList.remove('selected');
+      topValuesInput.value = lines.filter(line => line !== phrase).join('\n');
+      return;
+    }
+
+    chip.classList.add('selected');
+    lines.push(phrase);
+    topValuesInput.value = lines.join('\n');
+  });
+});
+
+/* Save */
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const top = topValuesInput.value.trim();
+  const alive = valuesAliveInput.value.trim();
+  if (!top) { alert('Напиши свои 3–5 ценностей в шаге 2'); return; }
+
+  const frameworkLines = extractFrameworkLines(top);
+  saveFrameworkState({
+    top,
+    alive,
+    lines: frameworkLines,
+    manifestoValues: buildManifestoValues(frameworkLines)
+  });
+
+  const card = document.getElementById('resultCard');
+  const content = document.getElementById('resultContent');
+
+  const lines = top.split('\n').filter(l => l.trim());
+  let html = '';
+  lines.forEach(line => {
+    const clean = line.replace(/^\d+[\.\)\-\s]*/, '').trim();
+    html += '<div class="result-value">' + clean + '</div>';
+  });
+  if (alive) {
+    html += '<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--sand);">';
+    html += '<div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px;">Что они значат для меня</div>';
+    html += '<div class="result-why">' + alive.replace(/\n/g, '<br>') + '</div>';
+    html += '</div>';
+  }
+  content.innerHTML = html;
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Неделя тревоги · День 4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --ink-light: #4a4a4a;
+            --ink-muted: #7a7a7a;
+            --cream: #faf8f5;
+            --cream-dark: #f0ece6;
+            --accent: #c4553a;
+            --accent-soft: #e8d5cf;
+            --rule: #d4cfc7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'Lora', Georgia, serif;
+            font-size: 18px;
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── top bar ── */
+        .topbar {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+        }
+
+        .topbar span {
+            display: inline-block;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 0.3rem;
+        }
+
+        /* ── progress ── */
+        .progress-section {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem 2rem;
+        }
+
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--rule);
+            transition: background 0.3s;
+        }
+
+        .progress-dot.done {
+            background: var(--accent);
+        }
+
+        .progress-dot.current {
+            background: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        /* ── hero ── */
+        .hero {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero .kicker {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--ink);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .hero .subtitle {
+            font-family: 'Lora', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--ink-muted);
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ── divider ── */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: var(--rule);
+            margin: 0 auto;
+        }
+
+        .divider.ornament {
+            width: auto;
+            height: auto;
+            background: none;
+            text-align: center;
+            color: var(--rule);
+            font-size: 1.2rem;
+            padding: 1.5rem 0;
+        }
+
+        /* ── article body ── */
+        .article {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 4rem;
+        }
+
+        .article p {
+            margin-bottom: 1.5rem;
+            color: var(--ink-light);
+        }
+
+        .article p.lead {
+            font-size: 1.15rem;
+            line-height: 1.85;
+            color: var(--ink);
+        }
+
+        .article p.lead::first-letter {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 3.4rem;
+            float: left;
+            line-height: 0.8;
+            margin: 0.08em 0.12em 0 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ── personal story block ── */
+        .story-block {
+            background: linear-gradient(135deg, #fff 0%, var(--cream-dark) 100%);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 2rem 2.2rem;
+            margin: 2.5rem 0;
+            position: relative;
+        }
+
+        .story-block::before {
+            content: '\201C';
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: var(--accent-soft);
+            position: absolute;
+            top: 0.1rem;
+            left: 0.8rem;
+            line-height: 1;
+        }
+
+        .story-block .story-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            padding-left: 0.1rem;
+        }
+
+        .story-block p {
+            margin-bottom: 1.2rem;
+            color: var(--ink-light);
+            font-size: 0.97rem;
+            line-height: 1.8;
+        }
+
+        .story-block p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .story-item {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .story-item::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .story-item p {
+            margin-bottom: 0;
+        }
+
+        /* ── assignment card ── */
+        .assignment {
+            background: #fff;
+            border: 1px solid var(--rule);
+            border-radius: 12px;
+            padding: 2.5rem 2.2rem;
+            margin: 3rem 0 2rem;
+            position: relative;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+        }
+
+        .assignment-badge {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--accent);
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1.2rem;
+        }
+
+        .assignment h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        .assignment p {
+            color: var(--ink-light);
+            margin-bottom: 1rem;
+            font-size: 0.97rem;
+        }
+
+        .assignment ol {
+            padding-left: 1.4rem;
+            margin: 1.2rem 0;
+        }
+
+        .assignment ol li {
+            color: var(--ink-light);
+            font-size: 0.97rem;
+            margin-bottom: 0.8rem;
+            padding-left: 0.3rem;
+        }
+
+        .assignment ol li::marker {
+            color: var(--accent);
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ── closing note ── */
+        .closing {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+        }
+
+        .closing p {
+            font-style: italic;
+            color: var(--ink-muted);
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ── footer ── */
+        .footer {
+            text-align: center;
+            padding: 3rem 1rem 2.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: var(--ink-muted);
+            letter-spacing: 0.08em;
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 600px) {
+            body { font-size: 16px; }
+            .hero { padding: 1.5rem 1.2rem 2rem; }
+            .article { padding: 1.5rem 1.2rem 3rem; }
+            .story-block { padding: 1.5rem 1.4rem; }
+            .assignment { padding: 1.8rem 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <span>High Performance · Неделя тревоги</span>
+    </header>
+
+    <!-- Progress: 7 dots for 7 days, 3 done, 4th is current -->
+    <nav class="progress-section" aria-label="Прогресс недели">
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot current"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </nav>
+
+    <section class="hero">
+        <div class="kicker">День 4 · Середина недели</div>
+        <h1>Какой была бы<br>ваша жизнь <em>без&nbsp;тревоги</em>?</h1>
+        <p class="subtitle">Джорналинг как способ увидеть, что именно тревога забирает у вас — и начать это возвращать</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <article class="article">
+
+        <p class="lead">Прошла ровно половина нашей недели, посвящённой тревоге. Вы уже начали замечать её, наблюдать за ней, отделять себя от неё. Сегодня — новое задание, и оно про то, ради чего вообще стоит работать с тревогой.</p>
+
+        <p>Иногда нам бывает неясно, зачем конкретно разбираться с тревогой. Она привычна. Она кажется частью нас, чем-то, что просто «всегда было». Но если задать себе вопрос — <em>какой была бы моя жизнь, если бы тревога не захватывала меня?</em> — начинают проступать очень конкретные ответы. И эти ответы могут стать мощным источником мотивации.</p>
+
+        <p>Сегодня я предлагаю вам джорналинг — свободное письменное размышление на эту тему. Не эссе, не «правильный текст», а честный разговор с собой на бумаге или в заметках. Чтобы вам было проще начать, я поделюсь своим примером.</p>
+
+        <!-- Personal story -->
+        <div class="story-block">
+            <div class="story-label">Мой личный опыт</div>
+
+            <p>Из долгого опыта работы с тревогой мне больше всего помогает одно: постоянно отслеживать тревогу в моменте и спрашивать себя — каким был бы мой опыт жизни, если бы тревога не захватывала меня? Вот что я обнаружила:</p>
+
+            <div class="story-item">
+                <p>Из-за тревоги в отношениях — из-за страха, что партнёр, пока я уезжаю, будет встречаться с другими женщинами — я не путешествую одна. Хотя на самом деле мне хотелось бы ездить одной, открывать новые места самостоятельно.</p>
+            </div>
+
+            <div class="story-item">
+                <p>Из-за тревоги, что я не увижу старших родственников, я постоянно еду только в Россию — вместо того чтобы исследовать новые места. А когда я в России с семьёй, я так тревожусь, что выпадаю из контакта в телефон и не могу качественно побыть рядом.</p>
+            </div>
+
+            <div class="story-item">
+                <p>Из-за тревоги я не могу сосредоточиться и не читаю книг — хотя если бы не тревожилась, я бы читала.</p>
+            </div>
+
+            <div class="story-item">
+                <p>Если бы я не тревожилась, я бы могла меньше работать — потому что знала бы, что эффективно распределяю время, и мне не нужно всегда быть на связи.</p>
+            </div>
+
+            <div class="story-item">
+                <p>Я бы меньше контролировала своих детей и давала бы им больше свободы. У меня много родительской тревоги: я постоянно придумываю, чем детям «полезно» заняться. Если бы я была более расслабленной — они бы тоже были более расслаблены рядом со мной.</p>
+            </div>
+
+            <div class="story-item">
+                <p>Я бы меньше «выедала мозг» партнёру по разным поводам. Наши отношения точно были бы лучше, потому что я бы не отравляла их своей тревогой.</p>
+            </div>
+
+            <p>Это лишь маленькая часть моих размышлений. Но когда я начала выписывать эти списки, произошло удивительное: <strong>тревога сама начала отступать</strong> — и давать мне возможность жить именно ту жизнь, которую я представляла себе в части «если бы у меня не было тревоги».</p>
+        </div>
+
+        <!-- Assignment -->
+        <div class="assignment">
+            <div class="assignment-badge">Задание дня</div>
+            <h2>Напишите свой список</h2>
+            <p>Возьмите блокнот, откройте заметки — и начните писать. Отталкивайтесь от вопроса:</p>
+            <p style="text-align:center; font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--ink); font-style:italic; margin: 1.5rem 0;">«Какой была бы моя жизнь, если бы тревога не захватывала меня?»</p>
+
+            <ol>
+                <li>Вспомните конкретные ситуации, в которых тревога влияла на ваши решения — в отношениях, работе, отдыхе, родительстве, здоровье.</li>
+                <li>Для каждой ситуации напишите: что бы вы делали иначе, если бы тревоги не было?</li>
+                <li>Не редактируйте себя. Пишите всё, что приходит в голову — даже если кажется мелким или странным.</li>
+                <li>Перечитайте написанное. Обратите внимание на ощущения: что вы чувствуете, когда видите эту другую версию своей жизни?</li>
+            </ol>
+
+            <p>Не торопитесь. Этот список можно дополнять в течение дня — или возвращаться к нему на протяжении всей недели.</p>
+        </div>
+
+        <div class="closing">
+            <p>Я верю, что это упражнение может помочь. Не потому что оно магическое — а потому что когда мы ясно видим, что тревога у нас забирает, у нас появляется настоящая причина с ней работать.</p>
+        </div>
+
+    </article>
+
+    <div class="divider ornament">✦</div>
+
+    <footer class="footer">
+        Неделя тревоги · День 4 из 7
+    </footer>
+
+</body>
+</html>

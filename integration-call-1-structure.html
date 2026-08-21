@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Integration Call #1 — Структура</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Calibri','Segoe UI',system-ui,sans-serif;background:#FBF7F2;color:#3A3632;line-height:1.7}
+
+.hero{background:#2C2926;color:#FBF7F2;padding:60px 24px 48px;text-align:center;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:#C4704B}
+.hero h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.8rem,5vw,2.8rem);margin-bottom:8px}
+.hero .sub{color:#E2D5C3;font-size:1.05rem;margin-bottom:24px}
+.hero .meta{display:flex;justify-content:center;gap:24px;font-size:.85rem;color:#C4704B;flex-wrap:wrap}
+
+/* About + Practices */
+.about{max-width:720px;margin:40px auto 12px;padding:0 24px}
+.about-box{background:#F5EDE6;border-radius:12px;padding:28px 32px;border-left:4px solid #C4704B}
+.about-box h2{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;color:#A85A3A;margin-bottom:10px}
+.about-box p{font-size:.93rem;color:#3A3632;margin-bottom:6px}
+.about-box p:last-child{margin-bottom:0}
+
+.practices{max-width:720px;margin:20px auto 32px;padding:0 24px}
+.practices-box{background:#fff;border:1px solid #E2D5C3;border-radius:12px;padding:28px 32px}
+.practices-box h2{font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;color:#A85A3A;margin-bottom:16px}
+.practice{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #F5EDE6}
+.practice:last-child{border:none}
+.practice-name{font-weight:700;color:#A85A3A;font-size:.9rem;min-width:200px;flex-shrink:0}
+.practice-desc{font-size:.88rem;color:#555}
+
+/* Timeline */
+.timeline{max-width:720px;margin:32px auto;padding:0 24px}
+.block{position:relative;padding-left:64px;margin-bottom:40px}
+.block::before{content:'';position:absolute;left:28px;top:0;bottom:-40px;width:2px;background:#E2D5C3}
+.block:last-child::before{display:none}
+.time-badge{position:absolute;left:0;top:2px;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;z-index:1}
+
+.block-header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.block-time{font-family:'Playfair Display',Georgia,serif;font-size:.85rem;color:#C4704B;font-weight:700;white-space:nowrap}
+.block-mins{font-size:.7rem;color:#7A8B6F;background:#F5EDE6;padding:2px 8px;border-radius:10px}
+.block-title{font-family:'Playfair Display',Georgia,serif;font-size:1.25rem;font-weight:700;width:100%}
+
+.block-essence{font-size:.93rem;color:#555;margin-bottom:12px}
+
+.block-say{background:#F5EDE6;border-left:3px solid #C4704B;padding:14px 18px;border-radius:0 8px 8px 0;font-size:.93rem;margin-bottom:10px}
+.block-say .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#C4704B;font-weight:700;margin-bottom:4px}
+
+.block-then{font-size:.86rem;color:#7A8B6F;padding-left:18px;border-left:2px solid #E2D5C3;margin-bottom:10px}
+.block-then .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:#7A8B6F;font-weight:700;margin-bottom:3px}
+
+.block-questions{background:#fff;border:1px solid #E2D5C3;border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.q-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#A85A3A;font-weight:700;margin-bottom:6px}
+.q-item{font-size:.9rem;color:#3A3632;padding:3px 0}
+
+.mini-slide{width:320px;background:#2C2926;border-radius:10px;padding:28px 24px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+.slide-inner{text-align:center}
+.sl{font-family:'Playfair Display',Georgia,serif;font-size:.95rem;color:#FBF7F2;line-height:1.6;margin-bottom:4px}
+
+.hw-section{max-width:720px;margin:40px auto;padding:0 24px}
+.hw-box{background:#2C2926;color:#FBF7F2;border-radius:12px;padding:32px;position:relative;overflow:hidden}
+.hw-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:#C4704B}
+.hw-box h2{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;color:#C4704B;margin-bottom:6px}
+.hw-box .hw-sub{font-size:.88rem;color:#E2D5C3;margin-bottom:18px}
+.hw-item{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.93rem;color:#E2D5C3;display:flex;gap:12px;align-items:flex-start}
+.hw-item:last-child{border:none}
+.hw-emoji{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+
+.footer{text-align:center;padding:48px 24px;font-size:.8rem;color:#C4704B}
+
+@media(max-width:600px){
+  .block{padding-left:48px}
+  .time-badge{width:40px;height:40px;font-size:1rem}
+  .block::before{left:19px}
+  .mini-slide{width:100%}
+  .practice{flex-direction:column;gap:2px}
+  .practice-name{min-width:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Integration Call #1</h1>
+  <div class="sub">Getting Shit Done — Неделя 1, половина позади</div>
+  <div class="meta">
+    <span>⏱ 60 мин</span>
+    <span>👥 15+ человек</span>
+    <span>🎯 Празднуем · Интегрируем · Анонсируем</span>
+  </div>
+</div>
+
+<div class="about">
+  <div class="about-box">
+    <h2>О чём этот звонок</h2>
+    <p>Мы берём инструменты из «Getting Shit Done» и прогоняем их на реальном материале недели. Каждый блок — конкретная практика в действии. Участники делятся опытом, а ты связываешь их истории с концепциями из лекции.</p>
+    <p>Финал — мост к неделе 2: работа с тревогой.</p>
+  </div>
+</div>
+
+<div class="practices">
+  <div class="practices-box">
+    <h2>Практики из лекции — напоминаем в начале звонка</h2>
+    <div class="practice"><div class="practice-name">Импульс → действие</div><div class="practice-desc">Мотивация короткая. Не додумывать — делать. Откусить от слона и съесть сразу. Защитить идею от голосочков.</div></div><div class="practice"><div class="practice-name">Запрещаю себе думать</div><div class="practice-desc">Пока не сделаю три шага вперёд — не рефлексирую. Облажаться и получить опыт лучше, чем стоять на месте.</div></div><div class="practice"><div class="practice-name">Наблюдатель за паттернами</div><div class="practice-desc">Fixed mindset о себе («я не смогу») и о мире («обстоятельства не те»). Видеть — уже shift. Выключать — следующий уровень.</div></div><div class="practice"><div class="practice-name">Добрый разговор с собой</div><div class="practice-desc">Там, где хочется обесценить — хвалим. Самокритика — дурная привычка. Замена: «какая я придумщица» вместо «опять херню придумала».</div></div><div class="practice"><div class="practice-name">Дофаминовая яма</div><div class="practice-desc">Начало всегда тяжёлое. Не ждём, пока пройдёт — действуем в минусе. Вкладываемся, пока не увидим первый результат.</div></div><div class="practice"><div class="practice-name">Хитрый взгляд vs сила воли</div><div class="practice-desc">Сила воли — «трудно, но доползу» — гвоздь в крышку гроба. Хитрый взгляд — «как использовать себе на пользу?». На драме ничего не можешь, на хитром взгляде — можешь всё.</div></div><div class="practice"><div class="practice-name">Тело как база</div><div class="practice-desc">Начинаем всегда с тела. Тренировка — не ради пресса, а философия. В каждом повторе — вселенная. Инертность в тренировке = инертность в жизни.</div></div><div class="practice"><div class="practice-name">Bouncing back from failure</div><div class="practice-desc">Не получилось — и насрать, продолжаю. Не фиксируемся на провале. Откатились — встали — дальше. Критический навык.</div></div><div class="practice"><div class="practice-name">Дисциплина без драмы</div><div class="practice-desc">Не ставим драматичных целей. Делаем систему. Не получилось сегодня — завтра снова предлагаем себе. Сложно, но прикольно.</div></div>
+  </div>
+</div>
+
+<div class="timeline">
+
+  <div class="block">
+    <div class="time-badge" style="background:#C4704B22;border:2px solid #C4704B">❤️</div>
+    <div class="block-header">
+      <span class="block-time">0:00–3:00</span>
+      <span class="block-mins">3 мин</span>
+    </div>
+    <div class="block-title">Открытие</div>
+    <div class="block-essence">Контейнер. Камеры, контакт, быстрый чек-ин.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Камеры включаем. В чат — одно слово: как неделя?»</div>
+    <div class="block-then"><div class="label">Дальше</div>Читаешь вслух, группируешь. «Много "сложно, но кайфово" — это и есть процесс.» Переходишь к фрейму.</div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#A85A3A22;border:2px solid #A85A3A">🧭</div>
+    <div class="block-header">
+      <span class="block-time">3:00–7:00</span>
+      <span class="block-mins">4 мин</span>
+    </div>
+    <div class="block-title">Фрейм: что мы сегодня практикуем</div>
+    <div class="block-essence">Рамка звонка. Это не пересказ лекции и не разбор проблем. Мы берём инструменты из «Getting Shit Done» и прогоняем их на реальном материале недели. Каждый блок — конкретная практика в действии.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«На лекции мы разобрали набор конкретных инструментов. Сегодня мы их не обсуждаем — мы их практикуем. На материале вашей недели. Быстро напомню, с чем работаем — потому что каждый блок звонка привязан к конкретному навыку.»</div>
+    <div class="block-then"><div class="label">Дальше</div>Проходишь по списку практик — коротко, по одному предложению. Не лекция, а напоминание. Список на экране (см. секцию «Практики»).</div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#C4704B22;border:2px solid #C4704B">🎉</div>
+    <div class="block-header">
+      <span class="block-time">7:00–12:00</span>
+      <span class="block-mins">5 мин</span>
+    </div>
+    <div class="block-title">Празднуем победы</div>
+    <div class="block-essence">Практика: добрый разговор с собой. Не разбираем проблемы — фиксируем действия. Тренируем хвалить себя вместо привычки обесценивать.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Полнедели прошло. За что себя хвалите? Что реально сделали? В чат.»</div>
+    <div class="block-then"><div class="label">Дальше</div>Читаешь вслух. «Это добрый разговор с собой. Вместо "ну подумаешь" — "я это сделал". Навык. Тренируем прямо сейчас.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ За что себя хвалите на этой неделе?</div><div class="q-item">→ Что далось сложнее, чем ожидали — но сделали?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">За что себя хвалите?</div><div class="sl">Что далось сложнее, чем ожидали —</div><div class="sl">но вы всё равно сделали?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#A85A3A22;border:2px solid #A85A3A">⚡</div>
+    <div class="block-header">
+      <span class="block-time">12:00–19:00</span>
+      <span class="block-mins">7 мин</span>
+    </div>
+    <div class="block-title">Импульс → действие</div>
+    <div class="block-essence">Практика: импульс → действие + защита идеи. Мотивация короткая. Надо на ней нахаслить себе пользы. Не додумывать. Откусить от слона. Защитить идею от голосочков.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Мотивация короткая. Надо на ней нахаслить себе пользы. Кто поймал импульс и превратил в действие — не додумывая? У какого слона откусили кусок?»</div>
+    <div class="block-then"><div class="label">Дальше</div>3–4 человека по минуте. «Голосочки говорили "может, не надо" — ты не послушал. Это оно: запрещаю себе думать, пока не сделаю три шага.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ Что сделали сразу, не додумывая?</div><div class="q-item">→ Какие голосочки пытались остановить? Удалось защитить идею?</div><div class="q-item">→ Кто попробовал «начинать понедельник в четверг»?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">Что сделали сразу — не додумывая?</div><div class="sl">У какого слона откусили кусок?</div><div class="sl">Удалось защитить идею от голосочков?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#7A8B6F22;border:2px solid #7A8B6F">🔍</div>
+    <div class="block-header">
+      <span class="block-time">19:00–26:00</span>
+      <span class="block-mins">7 мин</span>
+    </div>
+    <div class="block-title">Паттерны — что заметили</div>
+    <div class="block-essence">Практика: наблюдатель за паттернами. Fixed mindset о себе: «я не смог». О мире: «обстоятельства не те». Обе — дурная привычка. Увидеть — уже shift.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Две колонки. "Я не смог, у меня не получается" — о себе. "Обстоятельства не те, раньше было лучше" — о мире. На каких мыслях поймали себя? Удалось выключить?»</div>
+    <div class="block-then"><div class="label">Дальше</div>3–4 человека. «Вы это увидели — уже shift. Пока бессознательное не станет сознательным, оно управляет жизнью.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ На какой мысли поймали себя — «я не смогу» или «обстоятельства не те»?</div><div class="q-item">→ Удалось выключить — или пока только заметить?</div><div class="q-item">→ Кто попробовал заменить самокритику на другой разговор с собой?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">На какой мысли поймали себя?</div><div class="sl">«Я не смогу» или «обстоятельства не те»?</div><div class="sl">Удалось выключить — или пока только заметить?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#A85A3A22;border:2px solid #A85A3A">👀</div>
+    <div class="block-header">
+      <span class="block-time">26:00–33:00</span>
+      <span class="block-mins">7 мин</span>
+    </div>
+    <div class="block-title">Дофаминовая яма и хитрый взгляд</div>
+    <div class="block-essence">Практика: хитрый взгляд vs сила воли. Дофаминовая яма — у всех, во всём. Сила воли — гвоздь в крышку гроба. Хитрый взгляд — как использовать момент себе на пользу. На драме ничего не можешь, на хитром взгляде — можешь всё.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Было тяжело начинать? Это дофаминовая яма. Как обошлись — силу воли включили или хитрый взгляд?»</div>
+    <div class="block-then"><div class="label">Дальше</div>3–4 человека. «Сила воли — гвоздь в крышку гроба. Хитрый взгляд — нет ощущения перенапряга. Антихрупкость.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ Где встретили дофаминовую яму?</div><div class="q-item">→ Силу воли включили или хитрый взгляд?</div><div class="q-item">→ Как конкретно перевернули момент?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">Где встретили свою дофаминовую яму?</div><div class="sl">Силу воли включили или хитрый взгляд?</div><div class="sl">Как конкретно перевернули момент?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#7A8B6F22;border:2px solid #7A8B6F">🏋️</div>
+    <div class="block-header">
+      <span class="block-time">33:00–39:00</span>
+      <span class="block-mins">6 мин</span>
+    </div>
+    <div class="block-title">Тело</div>
+    <div class="block-essence">Практика: тело как база + философия движения. Тренировка — не ради пресса. В каждом повторе — вселенная. Инертность в тренировке = инертность в жизни. Глубже присесть — чтобы в другой сфере пойти глубже.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Кто начал с тела? Кто использовал backup — 7 минут? Кто нашёл в тренировке инертность — то место, где хочется остановиться?»</div>
+    <div class="block-then"><div class="label">Дальше</div>2–3 человека. «Глубже присесть — не ради рук. Чтобы в другой сфере жизни пойти глубже. Тренируете не тело — тренируете отношение к сопротивлению.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ Какие тренировки делали? Что открыли?</div><div class="q-item">→ Где нашли инертность — точку, где хочется остановиться?</div><div class="q-item">→ Кто пошёл глубже, чем хотелось?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">Где нашли свою инертность?</div><div class="sl">Кто пошёл глубже, чем хотелось?</div><div class="sl">Что открыли в тренировке о себе?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#C4704B22;border:2px solid #C4704B">⭐</div>
+    <div class="block-header">
+      <span class="block-time">39:00–46:00</span>
+      <span class="block-mins">7 мин</span>
+    </div>
+    <div class="block-title">Ваша история</div>
+    <div class="block-essence">Практика: bouncing back from failure. Одна история — что сделали по-новому. Не про достижения, про сдвиг. Группа проживает чужой опыт.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Я просила принести одну историю — момент, когда сделали что-то по-новому. Поймали паттерн, откусили от слона, включили хитрый взгляд вместо драмы. Кто?»</div>
+    <div class="block-then"><div class="label">Дальше</div>2–3 человека по 2–3 минуты. Связываешь: «Это bouncing back from failure — критический навык.» Или: «Это shift от fixed к growth.»</div>
+    <div class="block-questions"><div class="q-label">Вопросы участникам</div><div class="q-item">→ Что сделали по-новому?</div><div class="q-item">→ Что почувствовали в момент сдвига?</div></div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">Что удалось сделать по-новому?</div><div class="sl">Какой инструмент из лекции</div><div class="sl">применили на практике?</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#7A8B6F22;border:2px solid #7A8B6F">🧘</div>
+    <div class="block-header">
+      <span class="block-time">46:00–49:00</span>
+      <span class="block-mins">3 мин</span>
+    </div>
+    <div class="block-title">Микро-практика: сканирование тела</div>
+    <div class="block-essence">Мост к следующей неделе. Вкус работы с тревогой через тело.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«Закройте глаза. Две минуты. Где сейчас напряжение? Это тревога — она в теле, не в голове. Просто заметьте. Не кормите мыслями.»</div>
+    <div class="block-then"><div class="label">Дальше</div>Не обсуждаем. Ощущение → мост к анонсу.</div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#A85A3A22;border:2px solid #A85A3A">🎯</div>
+    <div class="block-header">
+      <span class="block-time">49:00–56:00</span>
+      <span class="block-mins">7 мин</span>
+    </div>
+    <div class="block-title">Анонс: Неделя 2 — Работа с тревогой</div>
+    <div class="block-essence">Тревога влияет на всё. Хочешь тело — тревога мешает. Хочешь карьеру — тревога мешает. «У меня не получится» — тревога жрёт весь ресурс.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«То, что вы сейчас заметили — мы с этим работаем всю следующую неделю. Тревога влияет на всё. "У меня не получится" — это тревога жрёт ресурс. Задание: наблюдайте — где в теле, что триггерит, что делаете в ответ. Записывайте.»</div>
+    <div class="block-then"><div class="label">Дальше</div>2–3 тизер-слайда. Задание: наблюдать за тревогой, определять в теле, не подкармливать мыслями.</div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">Неделя 2: Тревога</div><div class="sl">«У меня не получится» —</div><div class="sl">тревога жрёт весь ресурс</div></div></div>
+  </div>
+
+  <div class="block">
+    <div class="time-badge" style="background:#C4704B22;border:2px solid #C4704B">🔥</div>
+    <div class="block-header">
+      <span class="block-time">56:00–60:00</span>
+      <span class="block-mins">4 мин</span>
+    </div>
+    <div class="block-title">Закрытие</div>
+    <div class="block-essence">Энергия круга. Одна фраза — с чем ухожу.</div>
+    <div class="block-say"><div class="label">Что говоришь</div>«В чат — одна фраза: с чем ухожу.»</div>
+    <div class="block-then"><div class="label">Дальше</div>Читаешь вслух. Напоминание: чат, манифесты, трекер.</div>
+    <div class="mini-slide"><div class="slide-inner"><div class="sl">С чем ухожу?</div></div></div>
+  </div>
+
+</div>
+
+<div class="hw-section">
+  <div class="hw-box">
+    <h2>Что принести на звонок</h2>
+    <div class="hw-sub">Отправить участникам за день до звонка</div>
+    <div class="hw-item"><span class="hw-emoji">⭐</span><span><b>Одна история</b> — момент, когда сделали что-то по-новому. Поймали паттерн, откусили от слона, включили хитрый взгляд вместо драмы.</span></div><div class="hw-item"><span class="hw-emoji">🔥</span><span><b>Одна гордость</b> — за что себя хвалите, даже если кажется мелочью.</span></div><div class="hw-item"><span class="hw-emoji">🔍</span><span><b>Один паттерн</b> — мысль, на которой поймали себя. Fixed mindset о себе или о мире.</span></div><div class="hw-item"><span class="hw-emoji">📝</span><span><b>Открытость</b> — готовность рассказать, где было тяжело и как обошлись.</span></div>
+  </div>
+</div>
+
+<div class="footer">High Performance · Integration Call #1 · Апрель 2026</div>
+
+</body>
+</html>

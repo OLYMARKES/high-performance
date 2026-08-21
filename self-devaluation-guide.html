@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Обесценивание себя: разбор через призму психологии</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --text-muted: #8888a0;
+    --accent1: #c084fc;
+    --accent1-dim: rgba(192,132,252,0.15);
+    --accent2: #f472b6;
+    --accent2-dim: rgba(244,114,182,0.12);
+    --accent3: #60a5fa;
+    --accent3-dim: rgba(96,165,250,0.12);
+    --accent4: #34d399;
+    --accent4-dim: rgba(52,211,153,0.12);
+    --accent5: #fbbf24;
+    --accent5-dim: rgba(251,191,36,0.12);
+    --gradient1: linear-gradient(135deg, #c084fc, #f472b6);
+    --gradient2: linear-gradient(135deg, #60a5fa, #34d399);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(192,132,252,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(244,114,182,0.04) 0%, transparent 50%);
+    z-index: -1;
+    animation: ambientShift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes ambientShift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-3%, 3%) rotate(2deg); }
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: var(--accent1-dim);
+    border: 1px solid rgba(192,132,252,0.2);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent1);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 28px;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+    color: var(--text-muted);
+    max-width: 600px;
+    line-height: 1.8;
+    margin-bottom: 48px;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .scroll-hint .arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(6px); }
+  }
+
+  /* ===== SECTIONS ===== */
+  section {
+    padding: 100px 0;
+    position: relative;
+  }
+
+  .section-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  section h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+
+  .section-author {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    font-style: italic;
+  }
+
+  section p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+
+  section p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Callout cards */
+  .callout {
+    padding: 28px 32px;
+    border-radius: 16px;
+    margin: 32px 0;
+    border: 1px solid;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .callout-purple {
+    background: var(--accent1-dim);
+    border-color: rgba(192,132,252,0.15);
+  }
+  .callout-purple::before { background: var(--gradient1); }
+
+  .callout-pink {
+    background: var(--accent2-dim);
+    border-color: rgba(244,114,182,0.15);
+  }
+  .callout-pink::before { background: linear-gradient(90deg, #f472b6, #fb923c); }
+
+  .callout-blue {
+    background: var(--accent3-dim);
+    border-color: rgba(96,165,250,0.15);
+  }
+  .callout-blue::before { background: var(--gradient2); }
+
+  .callout-green {
+    background: var(--accent4-dim);
+    border-color: rgba(52,211,153,0.15);
+  }
+  .callout-green::before { background: linear-gradient(90deg, #34d399, #60a5fa); }
+
+  .callout-yellow {
+    background: var(--accent5-dim);
+    border-color: rgba(251,191,36,0.15);
+  }
+  .callout-yellow::before { background: linear-gradient(90deg, #fbbf24, #f472b6); }
+
+  .callout-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .callout-purple .callout-label { color: var(--accent1); }
+  .callout-pink .callout-label { color: var(--accent2); }
+  .callout-blue .callout-label { color: var(--accent3); }
+  .callout-green .callout-label { color: var(--accent4); }
+  .callout-yellow .callout-label { color: var(--accent5); }
+
+  .callout-text {
+    font-size: 1.1rem;
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* Quote */
+  .quote-block {
+    padding: 32px 0 32px 32px;
+    border-left: 3px solid;
+    margin: 36px 0;
+  }
+
+  .quote-block.purple { border-color: var(--accent1); }
+  .quote-block.pink { border-color: var(--accent2); }
+  .quote-block.blue { border-color: var(--accent3); }
+  .quote-block.green { border-color: var(--accent4); }
+
+  .quote-text {
+    font-size: 1.2rem;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .quote-author {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  /* Diagram / visual blocks */
+  .cycle-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 40px 0;
+    align-items: center;
+  }
+
+  .cycle-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .cycle-step .num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .cycle-step:nth-child(odd) .num {
+    background: var(--accent1-dim);
+    color: var(--accent1);
+  }
+  .cycle-step:nth-child(even) .num {
+    background: var(--accent2-dim);
+    color: var(--accent2);
+  }
+
+  .cycle-step .label {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .cycle-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+    padding: 6px 0;
+    opacity: 0.5;
+  }
+
+  /* Comparison */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 36px 0;
+  }
+
+  @media (max-width: 600px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .compare-card.bad {
+    background: rgba(239,68,68,0.06);
+    border-color: rgba(239,68,68,0.15);
+  }
+
+  .compare-card.good {
+    background: var(--accent4-dim);
+    border-color: rgba(52,211,153,0.15);
+  }
+
+  .compare-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .compare-card.bad h4 { color: #ef4444; }
+  .compare-card.good h4 { color: var(--accent4); }
+
+  .compare-card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .compare-card li {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .compare-card.bad li::before {
+    content: '✕';
+    position: absolute;
+    left: 0;
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .compare-card.good li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent4);
+    font-weight: 700;
+  }
+
+  /* Separator */
+  .sep {
+    width: 60px;
+    height: 2px;
+    background: var(--gradient1);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* Intro section */
+  .intro-section {
+    padding: 80px 0 40px;
+  }
+
+  .fact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 36px 0;
+  }
+
+  @media (max-width: 600px) {
+    .fact-grid { grid-template-columns: 1fr; }
+  }
+
+  .fact-card {
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: center;
+  }
+
+  .fact-emoji {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .fact-text {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .fact-text strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+
+  /* Final section */
+  .final {
+    text-align: center;
+    padding: 100px 0 120px;
+  }
+
+  .final h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    background: var(--gradient2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 32px;
+  }
+
+  .final p {
+    max-width: 600px;
+    margin: 0 auto 20px;
+  }
+
+  .takeaway-list {
+    max-width: 560px;
+    margin: 40px auto 0;
+    text-align: left;
+  }
+
+  .takeaway-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .takeaway-item:last-child { border-bottom: none; }
+
+  .takeaway-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent1-dim);
+    color: var(--accent1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .takeaway-content {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .takeaway-content strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">Психология + самоанализ</div>
+  <h1>Почему ты обесцениваешь всё, что делаешь</h1>
+  <p class="hero-sub">
+    Ты заметила это недовольство собой — и это уже <strong>огромный шаг</strong>.
+    Потому что эта привычка — одна из самых тихих и токсичных вещей, которые мешают нам жить.
+    Давай посмотрим на неё через несколько углов, чтобы начать с ней работать.
+  </p>
+  <div class="scroll-hint">
+    <span>Листай</span>
+    <div class="arrow"></div>
+  </div>
+</header>
+
+<!-- INTRO: WHAT YOU ACTUALLY DID -->
+<div class="container">
+  <section class="intro-section fade-in">
+    <div class="section-number">Начнём с фактов</div>
+    <h2>Что ты реально сделала за 5 дней</h2>
+    <p>Прежде чем разбирать механизмы — давай зафиксируем реальность. Не интерпретацию, не оценку. Просто факты.</p>
+
+    <div class="fact-grid">
+      <div class="fact-card">
+        <div class="fact-emoji">💪</div>
+        <div class="fact-text"><strong>Хард-тренировки каждый день</strong>Дисциплина, которую большинство людей не способны поддерживать</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-emoji">🫁</div>
+        <div class="fact-text"><strong>Дыхательные практики</strong>Работа с нервной системой — это не «минимум»</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-emoji">⏰</div>
+        <div class="fact-text"><strong>Ранние подъёмы</strong>Перестройка режима — это перестройка всей жизни</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-emoji">🍽️</div>
+        <div class="fact-text"><strong>Питание движется</strong>Системные изменения в привычках</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-emoji">🙌</div>
+        <div class="fact-text"><strong>Массаж</strong>Забота о теле — это не пустяк</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-emoji">🎤</div>
+        <div class="fact-text"><strong>Оффлайн-группа</strong>Та самая, которую ты откладывала год. Проведена.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-pink">
+      <div class="callout-label">Парадокс</div>
+      <div class="callout-text">Всё это сделано за 5 дней. И при этом первая мысль — «я собой недовольна». Как это работает? Откуда берётся этот разрыв между реальностью и ощущением? Именно это мы сейчас разберём.</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 1: BRENÉ BROWN -->
+  <section class="fade-in">
+    <div class="section-number">Угол 01</div>
+    <h2 style="color: var(--accent1)">Внутренний Голод «Никогда Не Достаточно»</h2>
+    <div class="section-author">Брене Браун — исследователь стыда и уязвимости</div>
+
+    <p>Браун описывает <strong>«культуру нехватки» (scarcity culture)</strong> — но это не про внешний мир. Это внутреннее состояние, в котором ты просыпаешься утром с мыслью «я недостаточно выспалась» и засыпаешь с «я недостаточно сделала за день». Это диалог <strong>с собой, внутри себя</strong>.</p>
+
+    <p>Перфекционизм, по Браун, — это <strong>аддиктивная система убеждений</strong>. Не стремление к лучшему, а щит от внутреннего стыда. Ты несёшь внутри образ «настоящей себя» — той версии, которой ты «должна быть» — и каждый раз, когда реальность не совпадает с этим образом, запускается цикл:</p>
+
+    <div class="cycle-diagram">
+      <div class="cycle-step"><div class="num">1</div><div class="label">Внутри живёт образ «идеальной себя»</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">2</div><div class="label">Ты сравниваешь реальность с этим образом</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">3</div><div class="label">Разрыв = стыд: «я не та, кем должна быть»</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">4</div><div class="label">«Значит, я недостаточно старалась»</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">5</div><div class="label">Ещё больше давления на себя → идеал отдаляется</div></div>
+      <div class="cycle-arrow">↻</div>
+    </div>
+
+    <div class="quote-block purple">
+      <div class="quote-text">«Мы живём в культуре, где первая мысль утром — "я не выспалась достаточно", а последняя — "я не сделала достаточно". Нехватка стала линзой, через которую мы смотрим на всю свою жизнь.»</div>
+      <div class="quote-author">— Brené Brown, «Daring Greatly»</div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-label">Ключевой инсайт</div>
+      <div class="callout-text">Это не про чужую оценку. Это про <strong>внутренний идеал, с которым невозможно совпасть</strong>. Он всегда на шаг впереди. Браун говорит: проблема не в том, что ты мало делаешь. Проблема в том, что ты приравняла свою ценность к продуктивности. И пока эта формула внутри — ничего не будет «достаточно».</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 2: KAREN HORNEY -->
+  <section class="fade-in">
+    <div class="section-number">Угол 02</div>
+    <h2 style="color: var(--accent2)">Тирания Долженствования</h2>
+    <div class="section-author">Карен Хорни — психоаналитик, теория невротической личности</div>
+
+    <p>Ещё в середине XX века Хорни описала механизм, который она назвала <strong>«tyranny of the should»</strong> — тирания «я должна». Это когда внутри тебя живёт идеализированный образ — та версия себя, которая уже стройная, запустила все проекты, встаёт в 5 утра и никогда не устаёт.</p>
+
+    <p>И всё, что ты реально делаешь, <strong>измеряется этим невозможным идеалом</strong>. Разрыв между идеалом и реальностью порождает то, что Хорни назвала <strong>«презираемое я» (despised self)</strong>.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card bad">
+        <h4>Тирания «должна»</h4>
+        <ul>
+          <li>Я должна уже иметь плоский живот</li>
+          <li>Я должна была запустить 10 проектов</li>
+          <li>Я должна делать всё на максимум</li>
+          <li>5 дней — это достаточный срок</li>
+        </ul>
+      </div>
+      <div class="compare-card good">
+        <h4>Реальное «я»</h4>
+        <ul>
+          <li>Тренируюсь каждый день уже 5 дней</li>
+          <li>Провела группу, которую откладывала год</li>
+          <li>Меняю питание, режим, привычки</li>
+          <li>Двигаюсь, а не стою на месте</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-block pink">
+      <div class="quote-text">«Невротик ненавидит себя не за то, кто он есть, а за то, что он не совпадает с тем, кем, по его мнению, должен быть.»</div>
+      <div class="quote-author">— Karen Horney, «Neurosis and Human Growth»</div>
+    </div>
+
+    <div class="callout callout-pink">
+      <div class="callout-label">Ключевой инсайт</div>
+      <div class="callout-text">Твой список из 10 проектов и ожидание плоского живота за 5 дней — это не цели. Это «should». Требования, которые ты предъявляешь к себе как <strong>условие собственной ценности</strong>. Пока они не выполнены — ты «не заслуживаешь» быть довольной.</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 3: CBT -->
+  <section class="fade-in">
+    <div class="section-number">Угол 03</div>
+    <h2 style="color: var(--accent3)">Когнитивные Ловушки</h2>
+    <div class="section-author">Когнитивно-поведенческая терапия (КПТ) — Аарон Бек, Дэвид Бёрнс</div>
+
+    <p>КПТ описывает конкретные <strong>искажения мышления</strong>, которые заставляют нас систематически неверно оценивать реальность. В твоём случае работают сразу три:</p>
+
+    <div class="callout callout-blue" style="margin-top: 32px;">
+      <div class="callout-label">Искажение №1 — Обесценивание позитивного</div>
+      <div class="callout-text">«Ну, тренировки — это же минимум. Группу провела? Ну это же очевидно. Ранний подъём? Все нормальные люди так делают.» Каждое достижение мгновенно переводится в категорию «это не считается».</div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-label">Искажение №2 — Чёрно-белое мышление</div>
+      <div class="callout-text">Либо все 10 проектов запущены — либо «я ничего не сделала». Либо плоский живот — либо «тело не меняется». Середины не существует. 90% прогресса = 0%.</div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-label">Искажение №3 — Сдвиг цели (goalpost moving)</div>
+      <div class="callout-text">Как только цель достигнута, планка автоматически поднимается. Достижение перестаёт считаться достижением. Ты не «не делаешь достаточно». Ты <strong>передвигаешь финишную черту раньше, чем до неё добегаешь</strong>.</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 4: SECONDARY GAIN -->
+  <section class="fade-in">
+    <div class="section-number">Угол 04</div>
+    <h2 style="color: var(--accent5)">Вторичная Выгода: Зачем Тебе Это Недовольство</h2>
+    <div class="section-author">Психодинамическая терапия + поведенческая психология</div>
+
+    <p>А теперь самый неудобный вопрос: <strong>а что, если недовольство собой тебе что-то даёт?</strong></p>
+
+    <p>В психологии есть понятие <strong>«вторичная выгода» (secondary gain)</strong> — скрытые бенефиты, которые мы получаем от поведения, которое вроде бы нам мешает. Мы не осознаём эти выгоды, но именно они удерживают паттерн на месте.</p>
+
+    <p>Вот какие системы убеждений могут стоять за привычкой обесценивать себя:</p>
+
+    <div class="callout callout-yellow" style="margin-top: 32px;">
+      <div class="callout-label">Убеждение №1 — «Недовольство = двигатель»</div>
+      <div class="callout-text">«Если я буду довольна собой, я расслаблюсь и перестану расти. Недовольство — это то, что толкает меня вперёд.» Вторичная выгода: ощущение контроля над мотивацией. <strong>Правда:</strong> исследования показывают, что самокритика снижает мотивацию в долгосрочной перспективе и ведёт к прокрастинации.</div>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-label">Убеждение №2 — «Если я себя похвалю, случится что-то плохое»</div>
+      <div class="callout-text">Суеверный страх: признать успех = «сглазить». Где-то глубоко — вера, что удовольствие от результата опасно, что вселенная «накажет» за самодовольство. Вторичная выгода: <strong>иллюзия защиты от разочарования</strong>. Если я заранее обесценю — мне не будет так больно, если что-то пойдёт не так.</div>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-label">Убеждение №3 — «Довольство = посредственность»</div>
+      <div class="callout-text">«Только посредственные люди довольны собой. Великие всегда голодны.» Вторичная выгода: <strong>ощущение принадлежности к "исключительным"</strong>. Недовольство становится доказательством высоких стандартов, частью идентичности.</div>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-label">Убеждение №4 — «Страдание = усилие»</div>
+      <div class="callout-text">«Если мне тяжело и я собой недовольна — значит, я стараюсь по-настоящему. Если бы было легко — значит, я мало делаю.» Вторичная выгода: <strong>внутреннее подтверждение своей трудоспособности</strong>. Боль как валюта заслуженности.</div>
+    </div>
+
+    <div class="quote-block purple">
+      <div class="quote-text">«Мы держимся за страдание не потому, что любим боль, а потому, что боимся: без него мы потеряем себя. Недовольство стало настолько привычным, что мы путаем его с амбициозностью.»</div>
+      <div class="quote-author">— Психодинамический подход к вторичной выгоде</div>
+    </div>
+
+    <div class="callout callout-pink">
+      <div class="callout-label">Честный вопрос к себе</div>
+      <div class="callout-text">Попробуй закончить фразу: <strong>«Если бы я была полностью довольна тем, что сделала за эту неделю, то...»</strong> — и послушай, что всплывёт. Страх расслабиться? Чувство вины? Ощущение, что не заслужила? То, что всплывёт — и есть твоя вторичная выгода.</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 5: KRISTIN NEFF -->
+  <section class="fade-in">
+    <div class="section-number">Угол 05</div>
+    <h2 style="color: var(--accent4)">Самосострадание Как Антидот</h2>
+    <div class="section-author">Кристин Нефф — исследователь самосострадания</div>
+
+    <p>Нефф описывает три компонента самосострадания — и в состоянии обесценивания все три выключены:</p>
+
+    <div class="compare-grid">
+      <div class="compare-card bad">
+        <h4>Что ты делаешь сейчас</h4>
+        <ul>
+          <li>Жёсткая самокритика вместо доброты к себе</li>
+          <li>«Все нормальные люди уже бы справились» вместо осознания общей человечности</li>
+          <li>Полное погружение в «недостаточно» вместо осознанного наблюдения</li>
+        </ul>
+      </div>
+      <div class="compare-card good">
+        <h4>Три компонента Нефф</h4>
+        <ul>
+          <li>Доброта к себе — говорить с собой как с подругой</li>
+          <li>Общая человечность — «я не одна, все через это проходят»</li>
+          <li>Осознанность — заметить боль, не сливаясь с ней</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-block green">
+      <div class="quote-text">«Самосострадание — это не жалость к себе и не лень. Исследования показывают, что самосострадательные люди более мотивированы, быстрее возвращаются к делу после неудач и реже прокрастинируют.»</div>
+      <div class="quote-author">— Kristin Neff, «Self-Compassion»</div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-label">Простой тест Нефф</div>
+      <div class="callout-text">Представь, что твоя близкая подруга рассказала тебе то же самое: «Я за 5 дней начала тренироваться каждый день, поменяла питание, провела группу, которую откладывала год — но я собой недовольна». Что бы ты ей сказала? Вот это — и скажи себе.</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- SECTION 6: WHY THIS MATTERS -->
+  <section class="fade-in">
+    <div class="section-number">Угол 06</div>
+    <h2 style="color: var(--accent2)">Почему Это Не Мелочь</h2>
+    <div class="section-author">Почему важно работать с обесцениванием</div>
+
+    <p>Обесценивание — это не просто «плохая привычка». Это механизм, который <strong>систематически разрушает мотивацию</strong>. Вот как это работает:</p>
+
+    <div class="cycle-diagram">
+      <div class="cycle-step"><div class="num">1</div><div class="label">Ты делаешь что-то реально сложное</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">2</div><div class="label">Мгновенно обесцениваешь: «это минимум»</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">3</div><div class="label">Нет ощущения прогресса, нет дофамина</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">4</div><div class="label">Мотивация падает, нарастает усталость</div></div>
+      <div class="cycle-arrow">↓</div>
+      <div class="cycle-step"><div class="num">5</div><div class="label">Либо выгорание, либо «какой смысл стараться»</div></div>
+      <div class="cycle-arrow">↻</div>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-label">Вот почему это токсично</div>
+      <div class="callout-text">Обесценивание отключает систему вознаграждения мозга. Ты лишаешь себя <strong>нейрохимической награды за усилие</strong>. Со временем мозг буквально перестаёт видеть смысл стараться — потому что старания «не считаются». Это прямой путь к выгоранию, даже если ты делаешь всё «правильно».</div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- FINAL -->
+  <section class="final fade-in">
+    <h2>Что с этим делать</h2>
+    <p>Ты уже сделала первый шаг — заметила паттерн. Вот что говорят все подходы:</p>
+
+    <div class="takeaway-list">
+      <div class="takeaway-item">
+        <div class="takeaway-num">1</div>
+        <div class="takeaway-content">
+          <strong>Замечай «should»</strong>
+          Каждый раз, когда звучит «я должна уже...» — это Хорни-alarm. Это не реальность, это требование идеализированного «я». Задай вопрос: «А кто решил, что должна? И к какому сроку?»
+        </div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">2</div>
+        <div class="takeaway-content">
+          <strong>Спроси: «Что мне даёт это недовольство?»</strong>
+          Закончи фразу: «Если бы я была довольна собой прямо сейчас, то...» То, что всплывёт — это твоя вторичная выгода. Именно она держит паттерн на месте.
+        </div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">3</div>
+        <div class="takeaway-content">
+          <strong>Фиксируй факты до оценки</strong>
+          Прежде чем внутренний критик вынесет вердикт — запиши, что реально сделано. Без прилагательных. Только глаголы. И посмотри на список.
+        </div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">4</div>
+        <div class="takeaway-content">
+          <strong>Тест подруги (Нефф)</strong>
+          Если бы подруга сказала тебе то, что ты говоришь себе, — что бы ты ей ответила? Скажи это себе. Вслух. Серьёзно.
+        </div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">5</div>
+        <div class="takeaway-content">
+          <strong>Раздели ценность и продуктивность</strong>
+          Ты ценна не потому, что запустила 10 проектов. Ты ценна — и при этом запускаешь проекты. Порядок слов имеет значение.
+        </div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">6</div>
+        <div class="takeaway-content">
+          <strong>Не двигай финишную черту</strong>
+          Достигнутая цель остаётся достигнутой минимум 24 часа, прежде чем ты поднимешь планку. Дай себе добежать.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    На основе работ Brené Brown, Karen Horney, Kristin Neff и когнитивно-поведенческой терапии
+  </footer>
+</div>
+
+<script>
+  // Scroll-triggered fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

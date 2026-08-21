@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integration Call №3 — Сценарий часа</title>
+<style>
+  :root {
+    --bg:        #F4EBDD;
+    --card:      #EADFCB;
+    --card-soft: #EFE5D2;
+    --dark:      #2A211B;
+    --text:      #2A211B;
+    --muted:     #6B5D4F;
+    --coral:     #C97D5C;
+    --coral-soft:#E0A483;
+    --line:      #D9C9B3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Helvetica Neue", "Segoe UI", "Calibri", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .top-bar {
+    height: 6px;
+    background: var(--coral);
+    width: 100%;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+  }
+
+  /* HERO */
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 700;
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1.12;
+    color: var(--text);
+    margin: 0 0 18px;
+  }
+  h1 em {
+    color: var(--coral);
+    font-style: italic;
+  }
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 22px 0;
+    margin: 32px 0 56px;
+  }
+  .hero-meta div { padding: 0 4px; }
+  .hero-meta .label {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .hero-meta .value {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  /* SECTION HEADERS */
+  .section-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 700;
+    margin-top: 64px;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.2;
+    color: var(--text);
+    margin: 0 0 28px;
+  }
+  h2 em { color: var(--coral); font-style: italic; }
+
+  /* TIMETABLE */
+  .timetable {
+    border: 1px solid var(--line);
+    background: var(--card-soft);
+    border-radius: 2px;
+  }
+  .timerow {
+    display: grid;
+    grid-template-columns: 110px 220px 1fr 70px;
+    gap: 18px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+  .timerow:last-child { border-bottom: 0; }
+  .timerow .time {
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: var(--coral);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .timerow .block {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .timerow .desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .timerow .slides {
+    font-size: 12px;
+    color: var(--coral);
+    text-align: right;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding-top: 1px;
+  }
+
+  /* NOTE BLOCKS */
+  .notes { display: grid; gap: 18px; }
+  .note {
+    background: var(--card-soft);
+    border-left: 3px solid var(--coral);
+    padding: 18px 22px;
+  }
+  .note .lead {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: var(--text);
+    margin-right: 6px;
+  }
+  .note p {
+    margin: 0;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* SHARING BLOCKS — DARK */
+  .sharing {
+    background: var(--dark);
+    color: #F4EBDD;
+    padding: 30px 30px 26px;
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+  .sharing .eyebrow-on-dark {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .sharing h3 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: #F4EBDD;
+    margin: 0 0 6px;
+  }
+  .sharing h3 em { color: var(--coral); font-style: italic; }
+  .sharing .sub {
+    font-size: 13px;
+    color: #9B8F82;
+    margin-bottom: 22px;
+  }
+  .qrow {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid #3D3128;
+    align-items: start;
+  }
+  .qrow:first-of-type { border-top: 0; padding-top: 4px; }
+  .qrow .num {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    color: var(--coral);
+    font-style: italic;
+    line-height: 1.1;
+  }
+  .qrow .q {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    color: #F4EBDD;
+    line-height: 1.45;
+  }
+  .qrow .q em { color: var(--coral); font-style: italic; }
+  .reglament {
+    font-size: 13px;
+    color: var(--coral-soft);
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #3D3128;
+  }
+
+  /* WHAT NOT TO DO */
+  .dont-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .dont-list li {
+    background: var(--card-soft);
+    padding: 14px 18px;
+    border-left: 3px solid var(--coral);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  /* HOMEWORK */
+  .hw {
+    display: grid;
+    gap: 14px;
+  }
+  .hw-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 18px;
+    background: var(--card-soft);
+    padding: 20px 22px;
+    border-radius: 2px;
+    align-items: start;
+  }
+  .hw-item .num {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    color: var(--coral);
+    font-style: italic;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .hw-item h4 {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0 0 6px;
+    color: var(--text);
+  }
+  .hw-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .hw-tail {
+    margin-top: 20px;
+    font-family: Georgia, serif;
+    color: var(--coral);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* FOOTER */
+  .end {
+    margin-top: 80px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 720px) {
+    .wrap { padding: 40px 20px 64px; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 24px; }
+    .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .timerow {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 16px 18px;
+    }
+    .timerow .slides { text-align: left; }
+    .qrow { grid-template-columns: 36px 1fr; gap: 10px; }
+    .qrow .q { font-size: 15px; }
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: white; }
+    .top-bar { display: none; }
+    .wrap { max-width: none; padding: 24px; }
+    .sharing { color: var(--text); background: white; border: 2px solid var(--coral); }
+    .sharing h3, .sharing .qrow .q { color: var(--text); }
+    .sharing .sub { color: var(--muted); }
+    .reglament { color: var(--coral); border-top-color: var(--line); }
+    .qrow { border-top-color: var(--line); }
+    .timetable, .note, .dont-list li, .hw-item { background: white; border: 1px solid var(--line); }
+    .note { border-left: 3px solid var(--coral); }
+    .dont-list li { border-left: 3px solid var(--coral); }
+    .section-eyebrow { margin-top: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<main class="wrap">
+
+  <div class="eyebrow">High Performance · Integration Call № 3</div>
+  <h1>Сценарий часа: <em>намаливание сфер</em></h1>
+
+  <div class="hero-meta">
+    <div>
+      <div class="label">Неделя</div>
+      <div class="value">Неделя 4</div>
+    </div>
+    <div>
+      <div class="label">Дата</div>
+      <div class="value">22 апреля</div>
+    </div>
+    <div>
+      <div class="label">Длительность</div>
+      <div class="value">60 минут</div>
+    </div>
+    <div>
+      <div class="label">Ведёт</div>
+      <div class="value">Оля</div>
+    </div>
+  </div>
+
+  <!-- TIMETABLE -->
+  <div class="section-eyebrow">Дуга часа</div>
+  <h2>Как разложен <em>час</em></h2>
+
+  <div class="timetable">
+    <div class="timerow">
+      <div class="time">00:00 — 00:03</div>
+      <div class="block">Открытие</div>
+      <div class="desc">Здороваемся, оптическая настройка: где мы в пути четырёх недель.</div>
+      <div class="slides">1, 2, 3</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:03 — 00:10</div>
+      <div class="block">Напоминание о фреймворке</div>
+      <div class="desc">Что вообще такое намаливание и что мы делали в эту неделю.</div>
+      <div class="slides">4, 5</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:10 — 00:24</div>
+      <div class="block">Шеринг №1 — про прошедшую неделю</div>
+      <div class="desc">Каждая отвечает на три вопроса. Около 90 секунд на участницу.</div>
+      <div class="slides">6</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:24 — 00:30</div>
+      <div class="block">Маленький теоретический мост</div>
+      <div class="desc">Что меняется, когда смотришь восхищённо. Ссылка на broaden-and-build.</div>
+      <div class="slides">7</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:30 — 00:36</div>
+      <div class="block">Расширение фреймворка</div>
+      <div class="desc">Как переносить практику со «своей» сферы на все.</div>
+      <div class="slides">8, 9, 10</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:36 — 00:51</div>
+      <div class="block">Шеринг №2 — по сферам</div>
+      <div class="desc">Где включается легче, где звучит как враньё, кого можно восхищаться вслух.</div>
+      <div class="slides">11</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:51 — 00:55</div>
+      <div class="block">Анонс Недели 5</div>
+      <div class="desc">Финальная неделя 27 апреля — 3 мая. Что будет в дизайне месяца.</div>
+      <div class="slides">12, 13, 14</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:55 — 00:57</div>
+      <div class="block">AI как соавтор</div>
+      <div class="desc">Короткий блок: можно собирать черновик с Claude / Cowork, выбор фокусов остаётся твой.</div>
+      <div class="slides">15</div>
+    </div>
+    <div class="timerow">
+      <div class="time">00:57 — 01:00</div>
+      <div class="block">Домашка + закрытие</div>
+      <div class="desc">Три шага до финала, тёплое прощание.</div>
+      <div class="slides">16, 17</div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="section-eyebrow">Что я держу в голове как ведущая</div>
+  <h2>Внутренние <em>опоры</em> на час</h2>
+
+  <div class="notes">
+    <div class="note">
+      <p><span class="lead">Первый шеринг — про прошедшую неделю.</span> Слушаем фактуру: в какие моменты получалось задержать любящий взгляд, в какие сбивались. Слушаем без оценки «правильно/неправильно». Просто собираем материал, на котором становится видно, что эта мышца уже начала работать у каждой.</p>
+    </div>
+    <div class="note">
+      <p><span class="lead">Второй шеринг — про сопротивление.</span> Это самое важное место. Если в какой-то сфере любящий взгляд сейчас звучит как враньё — это ценная диагностика, а не провал практики. Подсветить: восхищение не отменяет того, что в этой сфере что-то болит. Оно про другое — про то, что мы выбираем, куда направить внимание прямо сейчас.</p>
+    </div>
+    <div class="note">
+      <p><span class="lead">Анонс Недели 5.</span> Финальная неделя — это сборка всего, что мы делали в течение месяца. В ней предыдущие три темы наконец складываются друг в друга. Важно показать преемственность: тревога → ценности → намаливание → дизайн. Дизайн опирается на материал, который мы уже накопили внутри.</p>
+    </div>
+  </div>
+
+  <!-- SHARING #1 -->
+  <div class="section-eyebrow">Шеринг №1 · слайд 6</div>
+  <h2>Вопросы первого <em>круга</em></h2>
+
+  <div class="sharing">
+    <div class="eyebrow-on-dark">Круг · про эту неделю</div>
+    <h3>По одному ответу — про эту <em>неделю</em></h3>
+    <div class="sub">Полторы минуты на участницу. Слушаем без комментариев и оценок.</div>
+    <div class="qrow">
+      <div class="num">01</div>
+      <div class="q">В какой сфере у тебя получалось включить <em>любящий взгляд</em> — и что именно ты заметила?</div>
+    </div>
+    <div class="qrow">
+      <div class="num">02</div>
+      <div class="q">Где внимание <em>соскальзывало</em> или практика уходила в формальность — и что было вместо?</div>
+    </div>
+    <div class="qrow">
+      <div class="num">03</div>
+      <div class="q">Какой неожиданный <em>плюс</em> ты в эту неделю увидела в близких рядом?</div>
+    </div>
+    <div class="reglament">Регламент — 90 секунд на участницу. Без комментариев и оценок от группы. Время держу я.</div>
+  </div>
+
+  <!-- SHARING #2 -->
+  <div class="section-eyebrow">Шеринг №2 · слайд 11</div>
+  <h2>Вопросы второго <em>круга</em></h2>
+
+  <div class="sharing">
+    <div class="eyebrow-on-dark">Круг · по сферам</div>
+    <h3>Пройдёмся по <em>сферам</em></h3>
+    <div class="sub">Полторы минуты на участницу. Без советов и сравнений.</div>
+    <div class="qrow">
+      <div class="num">01</div>
+      <div class="q">Какая сфера сейчас самая <em>ресурсная</em> — туда легче всего смотреть с любовью?</div>
+    </div>
+    <div class="qrow">
+      <div class="num">02</div>
+      <div class="q">В какой сфере любящий взгляд звучит как <em>враньё</em> или насилие над собой — и почему?</div>
+    </div>
+    <div class="qrow">
+      <div class="num">03</div>
+      <div class="q">Кого рядом ты могла бы <em>восхитить вслух</em> на следующей неделе — и какой одной фразой?</div>
+    </div>
+    <div class="reglament">Регламент — 90 секунд на участницу. Если кто-то даёт неожиданный поворот — короткий мой ответ (10–15 секунд) и идём дальше.</div>
+  </div>
+
+  <!-- WHAT NOT -->
+  <div class="section-eyebrow">Чего не делаем</div>
+  <h2>Границы <em>сегодняшнего</em> разговора</h2>
+
+  <ul class="dont-list">
+    <li>Не превращаем шеринг в обсуждение и взаимные советы. Только свой опыт от первого лица.</li>
+    <li>Не комментируем сферы друг друга. Любящий взгляд на чужую жизнь сегодня в нашу задачу не входит.</li>
+    <li>Не валидируем чувство «у меня не получилось». Заменяем на «что именно у меня было вместо».</li>
+  </ul>
+
+  <!-- HOMEWORK -->
+  <div class="section-eyebrow">Домашка · слайд 16</div>
+  <h2>Три шага до <em>финального</em> созвона</h2>
+
+  <div class="hw">
+    <div class="hw-item">
+      <div class="num">I</div>
+      <div>
+        <h4>Намаливаешь шире</h4>
+        <p>Каждый день — другая сфера. Не пытаешься «успеть все», просто перебираешь. К концу недели естественно проходишь по большей части своей карты и видишь, в каких сферах тёплый взгляд приходит легко, а где встречает сопротивление.</p>
+      </div>
+    </div>
+    <div class="hw-item">
+      <div class="num">II</div>
+      <div>
+        <h4>Собираешь черновик фокусов на май</h4>
+        <p>Какие три-четыре линии ты хочешь в следующем месяце удерживать в фокусе. На этом этапе пиши не план и не цели — пиши направления. Короткими формулировками, своими словами, на бумаге.</p>
+      </div>
+    </div>
+    <div class="hw-item">
+      <div class="num">III</div>
+      <div>
+        <h4>Одна фраза-восхищение вслух</h4>
+        <p>Каждый день — конкретное восхищение конкретному человеку рядом. Дочери, мужу, коллеге, маме. Произнесённое вслух работает в нервной системе иначе, чем замеченное про себя.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="hw-tail">Финальный созвон — 27 апреля — 3 мая. Приходи с черновиком фокусов на бумаге и со сферами, по которым уже прошлась.</p>
+
+  <div class="end">Integration Call №3 · 22 апреля · Намаливание сфер</div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Неделя 4 — Благодарность · High Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FBF7F2;
+  --warm-white: #FFFDF9;
+  --sand: #F0E8DC;
+  --sand-dark: #E2D5C3;
+  --terracotta: #C4704B;
+  --terracotta-light: #D4896A;
+  --terracotta-pale: #F2DDD2;
+  --olive: #7A8B6F;
+  --olive-light: #A3B396;
+  --olive-pale: #E8EDDF;
+  --charcoal: #3A3632;
+  --warm-gray: #7A746D;
+  --light-gray: #B5AFA7;
+  --accent-gold: #C6A96C;
+  --accent-gold-pale: #F5ECD7;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.container-wide {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section { padding: 80px 0; }
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 16px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--charcoal);
+}
+
+p { margin-bottom: 18px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── Reveal animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 64vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(198, 169, 108, 0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(196, 112, 75, 0.06) 0%, transparent 70%),
+    var(--cream);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -140px;
+  right: -100px;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-dark);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-gold);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.hero-inner {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 80px 28px;
+  max-width: 720px;
+}
+
+.hero-tag {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: clamp(48px, 10vw, 88px);
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  margin-bottom: 18px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+}
+
+.hero-title-sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(22px, 3.2vw, 30px);
+  color: var(--warm-gray);
+  margin-bottom: 28px;
+  line-height: 1.3;
+}
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--warm-gray);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* ── Intro ── */
+.intro-text {
+  font-size: 19px;
+  line-height: 1.85;
+  color: var(--charcoal);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.intro-text + .intro-text {
+  margin-top: 22px;
+}
+
+.intro-text em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+/* ── Theory cards ── */
+.theory-grid {
+  display: grid;
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.theory-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.theory-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(58, 54, 50, 0.06);
+}
+
+.theory-card .card-num {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--warm-white);
+  margin-bottom: 20px;
+}
+
+.card-num.terra { background: var(--terracotta); }
+.card-num.olive { background: var(--olive); }
+.card-num.gold { background: var(--accent-gold); }
+
+.theory-card .card-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.card-tag.terra { color: var(--terracotta); background: var(--terracotta-pale); }
+.card-tag.olive { color: var(--olive); background: var(--olive-pale); }
+.card-tag.gold { color: var(--accent-gold); background: var(--accent-gold-pale); }
+
+.theory-card h3 {
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+
+.theory-card p {
+  font-size: 16px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+
+.theory-card p:last-child {
+  margin-bottom: 0;
+}
+
+.theory-card p strong {
+  color: var(--charcoal);
+  font-weight: 400;
+}
+
+/* ── Research box ── */
+.research-box {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin: 20px 0;
+}
+
+.research-box .research-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 10px;
+}
+
+.research-box p {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.research-box p:last-child { margin-bottom: 0; }
+
+.research-box .source {
+  font-size: 13px;
+  color: var(--light-gray);
+  margin-top: 10px;
+}
+
+/* ── Stories ── */
+.stories-section {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+}
+
+.story-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 44px 40px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.story-card:last-child { margin-bottom: 0; }
+
+.story-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 10px;
+}
+
+.story-card h3 {
+  font-size: 32px;
+  margin-bottom: 22px;
+  letter-spacing: -0.5px;
+}
+
+.story-card h3 em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+
+.story-card p {
+  font-size: 16.5px;
+  color: var(--charcoal);
+  line-height: 1.85;
+  margin-bottom: 18px;
+}
+
+.story-card p strong {
+  color: var(--charcoal);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.story-highlight {
+  background: var(--warm-white);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
+  margin: 22px 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--charcoal);
+}
+
+/* ── Practice steps ── */
+.practice-section {
+  background: linear-gradient(180deg, var(--cream) 0%, var(--sand) 100%);
+}
+
+.practice-intro {
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--warm-gray);
+  max-width: 680px;
+  margin: 24px auto 48px;
+  text-align: center;
+}
+
+.practice-intro em {
+  color: var(--terracotta);
+  font-style: italic;
+}
+
+.steps-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.step-card {
+  display: flex;
+  gap: 24px;
+  background: var(--warm-white);
+  border: 1px solid var(--sand-dark);
+  border-radius: 16px;
+  padding: 28px 32px;
+  align-items: flex-start;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.step-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(58, 54, 50, 0.05);
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--warm-white);
+  background: var(--terracotta);
+}
+
+.step-content h4 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--charcoal);
+}
+
+.step-content p {
+  font-size: 15.5px;
+  color: var(--warm-gray);
+  line-height: 1.75;
+  margin-bottom: 0;
+}
+
+/* ── Reminder block ── */
+.reminder-section {
+  background: var(--warm-white);
+  border-top: 1px solid var(--sand);
+}
+
+.reminder-card {
+  background: var(--olive-pale);
+  border-radius: 20px;
+  padding: 48px 44px;
+  text-align: center;
+}
+
+.reminder-card .small-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--olive);
+  margin-bottom: 18px;
+}
+
+.reminder-card h3 {
+  font-size: clamp(26px, 4vw, 34px);
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.reminder-card p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--charcoal);
+  max-width: 640px;
+  margin: 0 auto 14px;
+}
+
+.reminder-card p:last-child { margin-bottom: 0; }
+
+/* ── Closing quote ── */
+.closing {
+  text-align: center;
+  padding: 96px 28px;
+}
+
+.closing-quote {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 36px);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--terracotta);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+/* ── Sources ── */
+.sources-section {
+  background: var(--cream);
+  border-top: 1px solid var(--sand);
+  padding: 60px 0;
+}
+
+.sources-section h4 {
+  font-size: 22px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.sources-list {
+  list-style: none;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.sources-list li {
+  font-size: 15px;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--sand);
+}
+
+.sources-list li:last-child { border-bottom: none; }
+
+.sources-list li strong {
+  color: var(--charcoal);
+  font-weight: 400;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px 28px;
+  font-size: 13px;
+  color: var(--light-gray);
+  border-top: 1px solid var(--sand);
+  background: var(--warm-white);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .hero { min-height: 54vh; }
+  .hero h1 { font-size: 52px; }
+  .theory-card { padding: 28px 24px; }
+  .theory-card h3 { font-size: 24px; }
+  .story-card { padding: 32px 24px; }
+  .story-card h3 { font-size: 26px; }
+  .step-card { flex-direction: column; gap: 16px; padding: 24px; }
+  .step-number { width: 48px; height: 48px; font-size: 22px; }
+  .reminder-card { padding: 36px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">High Performance · Неделя 4</div>
+    <h1><em>Negativity bias</em> и намаливание</h1>
+    <div class="hero-title-sub">как призма, через которую мы смотрим на себя и наши проекты, может изменить всё</div>
+  </div>
+</section>
+
+<!-- ═══════ INTRO ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="reveal">
+      <p class="intro-text">Лично я давно заметила одну закономерность: мозг имеет свойство скатываться в обесценивание и критицизм, и в этом состоянии он перестаёт видеть всю картину — её великолепие, её сложность, её красоту. Самый близкий каждому пример — когда у тебя есть друг или подруга, которые искренне считают себя некрасивыми или бесполезными, тогда как для всех вокруг очевидно: это прекрасный человек. И ты сидишь напротив него с почти физическим желанием сказать: <em>«Если бы ты только знал или знала, насколько ты прекрасен, прекрасна на самом деле».</em></p>
+      <p class="intro-text">Ровно то же самое происходит у каждого из нас в собственных сферах жизни — с проектами, отношениями, работой, телом. Мы смотрим и не видим. Поэтому на этой неделе у нас будет всего одна практика, единственная ментальная конструкция — <strong style="font-weight:400;color:var(--charcoal);">намаливание</strong>. Так мы с командой много лет называем благодарность: мы намаливаем определённое состояние вокруг наших проектов, культивируем восхищение, празднование, тёплое внимание к тому, что уже есть.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ THEORY ═══════ -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-label reveal">Теория</div>
+    <h2 class="reveal" style="font-size:36px;margin-bottom:12px;">Почему мы вообще обесцениваем</h2>
+    <p class="reveal" style="color:var(--warm-gray);margin-bottom:8px;">Четыре концептуальные опоры этой недели — от когнитивной психологии до науки благодарности.</p>
+
+    <div class="theory-grid">
+
+      <!-- Card 1 — Джулия Смит -->
+      <div class="theory-card reveal">
+        <div class="card-num terra">1</div>
+        <span class="card-tag terra">Когнитивные искажения</span>
+        <h3>Джулия Смит: мозг по умолчанию видит плохое</h3>
+
+        <p>То, что мы прежде всего замечаем «тёмную тучу», — не личный изъян, а особенность психики, доставшаяся нам от эволюции. В когнитивной психологии это называется <strong>negativity bias</strong>: плохое замечается быстрее, запоминается прочнее и анализируется подробнее, чем хорошее. Для древнего человека это было полезно; в современной жизни эта настройка превращается в фильтр, через который мы видим преимущественно изъяны и угрозы, особенно когда речь о самих себе.</p>
+
+        <p>Клинический психолог Джулия Смит описывает это через связку искажений: <strong>ментальный фильтр</strong> (сознание выхватывает подтверждения худшего), <strong>обесценивание положительного</strong> (любое достижение объясняется случайностью), <strong>катастрофизация</strong> (отдельный неуспех превращается в приговор всей жизни).</p>
+
+        <p>Все эти искажения работают незаметно: мы не решаем так думать — мысль появляется уже окрашенная и оценочная.</p>
+
+        <div class="research-box">
+          <div class="research-label">Почему это снимает груз</div>
+          <p>Обесценивание перестаёт казаться правдой о вас: это типичный сбой восприятия, общий для всех людей. У этого сбоя есть конкретные инструменты коррекции — и благодарность среди них одна из самых исследованных.</p>
+        </div>
+      </div>
+
+      <!-- Card 2 — Брюер -->
+      <div class="theory-card reveal">
+        <div class="card-num olive">2</div>
+        <span class="card-tag olive">Петля привычки</span>
+        <h3>Джадсон Брюер: обесценивание как заученный паттерн</h3>
+
+        <p>Мы уже встречались с работой Брюера на второй неделе — в контексте тревоги. Он показывает, что любая повторяющаяся мысленная реакция — это <strong>петля привычки</strong>: триггер → поведение (внутренняя мысль) → вознаграждение (которое часто маскируется под облегчение).</p>
+
+        <p>Когда вы в сотый раз думаете «у меня всё равно ничего не получится», мозг получает парадоксальное вознаграждение: у мысли есть знакомость, предсказуемость, ощущение контроля над разочарованием. Лучше уж заранее обесценить, чем позже разочароваться. Со временем связка нейронных путей становится такой плотной, что мысль приходит автоматически.</p>
+
+        <p>Это и есть тот самый <strong>заученный стальной паттерн</strong>: никакой вашей вины здесь нет, есть проторенная нейронная дорожка.</p>
+
+        <div class="research-box">
+          <div class="research-label">Механизм разучивания</div>
+          <p>Привычка не уходит от борьбы с ней. Она уходит от того, что мы перестаём её подкреплять и параллельно строим альтернативу, которая даёт более чистое и сильное чувство вознаграждения. <strong>Намаливание благодарности — именно такой альтернативный контур.</strong></p>
+          <p class="source">Judson Brewer — «The Craving Mind», «Unwinding Anxiety»</p>
+        </div>
+      </div>
+
+      <!-- Card 3 — Толле -->
+      <div class="theory-card reveal">
+        <div class="card-num olive">3</div>
+        <span class="card-tag olive">Наблюдение ума</span>
+        <h3>Экхарт Толле: внимание как энергия</h3>
+
+        <p>У каждого из нас есть ум — поток мыслей, оценок, сравнений, комментариев, — и есть наблюдатель этого ума. Большую часть времени мы не разделяем эти две вещи и принимаем поток мыслей за самих себя. Когда обесценивающая мысль появляется, мы просто внезапно оказываемся внутри её настроения, как будто в комнате выключили свет.</p>
+
+        <p>Практика Толле начинается с очень простого жеста: <strong>заметить мысль как мысль</strong>. Не бороться с ней, не доказывать ей, что она неправа — просто увидеть, что она есть. В этот момент между вами и мыслью появляется пространство. Маленькое, тонкое — но именно в нём живёт ваша свобода выбирать, на чём задерживать внимание.</p>
+
+        <p>Намаливание из этой перспективы — это сознательное направление внимания. Вы не врёте себе, что трудного нет; вы признаёте, что оно есть, и одновременно решаете, куда вы хотите смотреть прямо сейчас.</p>
+
+        <div class="research-box">
+          <div class="research-label">Из книги</div>
+          <p>«То, на чём вы сосредотачиваете внимание, становится сильнее в вашей жизни. Внимание — это форма энергии. Когда вы направляете её осознанно, вы перестаёте быть пассивным потребителем своих мыслей и становитесь автором своего опыта».</p>
+          <p class="source">Eckhart Tolle — «The Power of Now», «A New Earth»</p>
+        </div>
+      </div>
+
+      <!-- Card 4 — Fredrickson + Emmons -->
+      <div class="theory-card reveal">
+        <div class="card-num gold">4</div>
+        <span class="card-tag gold">Наука благодарности</span>
+        <h3>Фредриксон и Эммонс: измеренный эффект</h3>
+
+        <p>Барбара Фредриксон — психолог из Университета Северной Каролины. В начале двухтысячных она сформулировала <strong>broaden-and-build theory of positive emotions</strong> — теорию расширения и накопления.</p>
+
+        <p>Негативные эмоции эволюционно сужают внимание и поведение: страх схлопывает мир до бегства, гнев — до атаки. Это полезно в момент опасности, но плохо работает на длинной дистанции. Положительные эмоции — благодарность, радость, интерес, спокойствие — действуют иначе: они расширяют поле восприятия, поле возможных действий и качество мышления. В состоянии благодарности человек видит больше связей, больше вариантов, больше путей вперёд.</p>
+
+        <p>Роберт Эммонс, психолог Калифорнийского университета в Дэвисе, — главный мировой исследователь благодарности. Его лонгитюдные эксперименты стали классическими: участники, которые в течение десяти недель регулярно записывали по несколько вещей, за которые благодарны, по сравнению с контрольными группами показали рост субъективного благополучия, лучший сон, меньше жалоб на физические симптомы, больше эмпатии и больше готовности помогать другим.</p>
+
+        <div class="research-box">
+          <div class="research-label">Ключевая находка</div>
+          <p>Эффект благодарности сохраняется и спустя месяцы после окончания практики — это не настроенческий сдвиг, а перестройка устойчивых внутренних паттернов. Положительные эмоции работают накопительно: каждая пережитая благодарность расширяет внутренние ресурсы, и эти ресурсы остаются надолго.</p>
+          <p class="source">Fredrickson, 2001 · Emmons &amp; McCullough, 2003 · «Positivity» (2009) · «Thanks!» (2007)</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ STORIES ═══════ -->
+<section class="section stories-section">
+  <div class="container">
+    <div class="section-label reveal" style="color:var(--olive);">Через призму опыта</div>
+    <h2 class="reveal" style="font-size:36px;margin-bottom:12px;">Три истории из моей жизни</h2>
+    <p class="reveal" style="color:var(--warm-gray);margin-bottom:40px;">Потому что в теории это всегда звучит чуть отвлечённо — а работает именно в деталях.</p>
+
+    <!-- Story 1: Alai Oli -->
+    <div class="story-card reveal">
+      <div class="story-num">История первая</div>
+      <h3><em>Alai Oli</em></h3>
+
+      <p>У меня есть моя группа Alai Oli. Ей очень много лет, и за эти годы было много сложного. Мне пришлось пройти через выгорание, через нереализованные амбиции, через то, что не получилось, через мечты, которые не сбылись, через планку, которую не удалось перепрыгнуть. Были потерянные друзья и важные для меня музыканты, с которыми мы разошлись. Были даже моменты, когда я понимала, что не могу написать песни так хорошо, как хотела бы. В этом проекте накопилось огромное количество фрустрирующих эпизодов, и фрустрироваться по их поводу совершенно справедливо.</p>
+
+      <p>Я заметила за собой, что в какой-то момент начинаю видеть только эту фрустрирующую часть. Мне уже гораздо меньше хочется заниматься группой, потому что стоит мне туда посмотреть — и я вижу одну огромную тёмную тучу. Это и есть тот самый negativity bias в действии.</p>
+
+      <p>Но если я делаю усилие и поворачиваю взгляд, начинаю видеть совсем другое. У меня есть великолепная сыгранная команда — все мои друзья, и я обожаю быть с ними на одной сцене. У нас множество отличных альбомов, и я до сих пор делаю это с моим лучшим другом. У нас невероятная история, нас любят десятки тысяч людей.</p>
+
+      <div class="story-highlight">Когда я направляю взгляд именно сюда и начинаю намаливать эту картину, у меня появляется больше креативной энергии, больше радости, больше желания что-то делать. Дела начинают течь быстрее и радостнее — и я физически чувствую: всё начинает получаться.</div>
+    </div>
+
+    <!-- Story 2: sekta -->
+    <div class="story-card reveal">
+      <div class="story-num">История вторая</div>
+      <h3><em>sekta</em></h3>
+
+      <p>sekta — это образовательный проект, которому тоже много лет. Здесь, как и везде, накопилось огромное количество сложного: были кризисы, были ошибки, были моменты, когда то, чего я хотела, не получалось. Сейчас вести бизнес в России — отдельная история, которая тоже не упрощает картину.</p>
+
+      <p>Если смотреть на sekta через привычный мне фильтр, снова появляется та же тёмная туча. Но как только я начинаю поворачивать взгляд — открывается совершенно другое. Я начинаю думать о наших классных продуктах, об удовольствии от того, как работает команда, о том, как хорошо все знают свои дела, как быстро учатся и адаптируются, как все искренне любят людей, для которых мы это делаем, как круто и узнаваемо мы держим стиль, как мы понимаем друг друга с полуслова.</p>
+
+      <div class="story-highlight">В состоянии благодарности к команде у меня появляются более тонкие, более творческие решения. Я лучше слышу людей, я делаю менее тревожные и более точные выборы. И команда это считывает — потому что эмоции в группах передаются очень быстро.</div>
+
+      <p>Намаливание оказывается не только моей внутренней практикой; оно меняет качество среды, в которой работают другие.</p>
+    </div>
+
+    <!-- Story 3: Family therapy -->
+    <div class="story-card reveal">
+      <div class="story-num">История третья</div>
+      <h3><em>Три благодарности</em> в семейной терапии</h3>
+
+      <p>Наш с партнёром семейный терапевт всегда начинает сессию с одного и того же ритуала: каждый из нас по очереди делится тремя вещами, за которые благодарен другому за последние пару недель. И что бы ни происходило между нами, всегда находится за что поблагодарить — конкретно, по имени, в подробностях.</p>
+
+      <p>Это маленькое действие в начале сессии меняет весь её тон. Мы заходим в разговор уже мягкими, уже видящими друг друга, уже способными слышать. Если бы мы начинали сразу с проблемы, очень быстро скатывались бы в позицию защиты или нападения. А три благодарности возвращают нас в исходную точку.</p>
+
+      <div class="story-highlight">Сначала намоли состояние, в котором ты способен видеть сложное во всей его полноте, — и только потом подходи к самому сложному. Иначе ты будешь решать проблему из той суженной перспективы, в которой никаких хороших решений просто не видно.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ PRACTICE ═══════ -->
+<section class="section practice-section">
+  <div class="container">
+    <div class="section-label reveal" style="text-align:center;">Практика недели</div>
+    <h2 class="reveal" style="font-size:clamp(36px, 6vw, 52px);text-align:center;margin-bottom:0;">Намаливание</h2>
+    <p class="practice-intro reveal">Одна-единственная практика на всю неделю. Я нарочно даю только её, потому что хочу, чтобы вы почувствовали, <em>как многое меняется от одного маленького, но регулярного жеста.</em></p>
+
+    <div class="steps-grid">
+
+      <div class="step-card reveal">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Выберите одну сферу жизни</h4>
+          <p>Проект, отношения, работа, тело, дом, родительство — что угодно, что для вас сейчас важно и где вы замечаете в себе тенденцию к обесцениванию. Лучше начать с чего-то одного и идти вглубь, чем рассеивать внимание.</p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Каждый день уделяйте этому несколько минут</h4>
+          <p>Утром или вечером — как удобнее. Сядьте спокойно, закройте глаза или остановите взгляд на чём-то нейтральном, и начните перечислять — про себя, вслух или письменно — всё хорошее, что есть в этой сфере. Конкретно: имена, эпизоды, детали, ощущения.</p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Напитывайте состояние, не торопитесь</h4>
+          <p>Задача не «отметить пункты в списке», а действительно почувствовать, как меняется внутреннее состояние. Если в теле появилась мягкость, тепло, чуть больше воздуха в груди — значит, вы попали. Если получается более механически, не страдайте: устойчивый эффект приходит от регулярности.</p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4>Возвращайтесь к этому в течение дня</h4>
+          <p>Когда замечаете, что ум снова уходит в тёмную тучу, мягко напомните себе: «Сейчас я смотрю в обесценивание. Я могу повернуть взгляд». И буквально сделайте это — хотя бы на тридцать секунд. Это и есть формирование альтернативного нейронного контура.</p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h4>Создайте якоря</h4>
+          <p>Поставьте напоминание на телефоне, повесьте на видное место короткую фразу — что угодно, что будет физически возвращать вас в эту практику. Привычки укореняются, когда у них есть внешние опоры.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ REMINDER ═══════ -->
+<section class="section reminder-section">
+  <div class="container">
+    <div class="reminder-card reveal">
+      <div class="small-label">Важное напоминание</div>
+      <h3>Если снова смотрите в тёмную тучу — это нормально</h3>
+      <p>Помните, что это всего лишь заученный стальной паттерн, и вы здесь именно для того, чтобы начать менять его.</p>
+      <p>Не вините себя и не расстраивайтесь. Вина и самокритика только подкрепляют старую петлю; мягкость и любопытство — то самое окно, в которое входит новая привычка.</p>
+      <p>Намаливание — это не про то, чтобы притвориться, будто сложного нет. Сложное есть, и фрустрация справедлива. Но восприятие хорошего тоже справедливо, и оно тренируется. На этой неделе мы тренируем именно его.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="closing">
+  <p class="closing-quote reveal">Пусть всё вокруг вам об этом напоминает. Пусть в эту неделю каждый ваш проект будет чуть-чуть напитан вниманием благодарности — и к концу недели вы сами почувствуете разницу.</p>
+</section>
+
+<!-- ═══════ SOURCES ═══════ -->
+<section class="sources-section">
+  <div class="container">
+    <h4>Источники и опоры</h4>
+    <ul class="sources-list">
+      <li><strong>Julie Smith</strong> — «Why Has Nobody Told Me This Before?» · главы о когнитивных искажениях, ментальном фильтре, обесценивании положительного</li>
+      <li><strong>Judson Brewer</strong> — «The Craving Mind», «Unwinding Anxiety» · петли привычек, awareness как механизм перестройки</li>
+      <li><strong>Eckhart Tolle</strong> — «The Power of Now», «A New Earth» · наблюдатель ума, внимание как энергия</li>
+      <li><strong>Barbara Fredrickson</strong> — broaden-and-build theory of positive emotions (Fredrickson, 2001; «Positivity», 2009)</li>
+      <li><strong>Robert Emmons</strong> — исследования благодарности (Emmons &amp; McCullough, 2003; «Thanks!», 2007)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  Оля Маркес · High Performance Challenger · Неделя 4 · Апрель 2026
+</footer>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

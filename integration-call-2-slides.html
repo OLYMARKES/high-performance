@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Integration Call #2 — Неделя 2 → Неделя 3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2A2621;
+  --ink-2:#3C3730;
+  --cream:#FBF6EE;
+  --cream-2:#F5EEE1;
+  --paper:#FFFDF8;
+  --rule:#E6DCCB;
+  --rule-dark:#C9BDA4;
+  --muted:#8A8075;
+  --terracotta:#BF6A43;
+  --terracotta-deep:#9C5131;
+  --olive:#6E7A55;
+  --gold:#B3894A;
+  --display:"Playfair Display", Georgia, "Times New Roman", serif;
+  --body:"Inter", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  font-family:var(--body);
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Layout container */
+.wrap{
+  max-width:780px;
+  margin:0 auto;
+  padding:0 28px;
+}
+.wide{
+  max-width:980px;
+  margin:0 auto;
+  padding:0 28px;
+}
+
+/* Masthead */
+.masthead{
+  border-bottom:1px solid var(--rule);
+  padding:28px 0 26px;
+  margin-bottom:0;
+}
+.masthead .wrap{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+}
+.masthead b{color:var(--ink);font-weight:600;letter-spacing:.22em}
+
+/* Hero */
+.hero{
+  padding:80px 0 70px;
+  border-bottom:1px solid var(--rule);
+  background:var(--cream);
+}
+.hero .eyebrow{
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--terracotta);
+  margin-bottom:26px;
+}
+.hero .eyebrow::before{
+  content:"";display:inline-block;width:32px;height:1px;background:var(--terracotta);
+  vertical-align:middle;margin-right:14px;
+}
+.hero h1{
+  font-family:var(--display);
+  font-weight:500;
+  font-size:clamp(44px, 6.4vw, 84px);
+  line-height:1;
+  letter-spacing:-.025em;
+  color:var(--ink);
+  margin-bottom:36px;
+}
+.hero h1 em{font-style:italic;color:var(--terracotta-deep);font-weight:500}
+.hero .meta{
+  display:flex;gap:48px;flex-wrap:wrap;
+  padding-top:28px;border-top:1px solid var(--rule-dark);
+  margin-top:8px;
+}
+.hero .meta .item{font-size:13px;color:var(--muted)}
+.hero .meta .item b{
+  display:block;font-size:15px;color:var(--ink);font-weight:600;
+  margin-bottom:2px;letter-spacing:0;
+}
+.hero .sig{
+  margin-top:30px;
+  font-family:var(--display);font-style:italic;font-size:22px;color:var(--terracotta);
+}
+
+/* Section scaffolding */
+section{padding:70px 0;border-bottom:1px solid var(--rule);position:relative}
+section.plain{background:var(--paper)}
+section.warm{background:var(--cream)}
+section.warm-2{background:var(--cream-2)}
+section.dark{background:var(--ink);color:var(--cream)}
+section.dark .lbl,
+section.dark .eyebrow{color:var(--gold)}
+section.dark h2,
+section.dark h3{color:var(--cream)}
+section.dark p{color:rgba(251,246,238,.88)}
+section.dark em{color:var(--gold)}
+section.dark hr{background:rgba(251,246,238,.18)}
+
+.eyebrow-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:18px;
+}
+.eyebrow-row .left{color:var(--terracotta)}
+.eyebrow-row .num{font-variant-numeric:tabular-nums}
+
+h2{
+  font-family:var(--display);
+  font-weight:500;
+  font-size:clamp(32px, 4.2vw, 54px);
+  line-height:1.05;
+  color:var(--ink);
+  letter-spacing:-.015em;
+  margin-bottom:22px;
+}
+h2 em{font-style:italic;color:var(--terracotta-deep)}
+
+h3{
+  font-family:var(--display);
+  font-weight:500;
+  font-size:28px;
+  line-height:1.15;
+  color:var(--ink);
+  margin-bottom:10px;
+}
+h3 em{font-style:italic;color:var(--terracotta-deep)}
+
+.lead{
+  font-family:var(--display);
+  font-size:22px;
+  line-height:1.45;
+  color:var(--ink-2);
+  font-weight:400;
+  margin-bottom:26px;
+}
+.lead em{font-style:italic;color:var(--terracotta-deep)}
+
+p{margin-bottom:16px;color:var(--ink-2)}
+p:last-child{margin-bottom:0}
+em{font-style:italic;color:var(--terracotta-deep)}
+b,strong{font-weight:600;color:var(--ink)}
+
+.callout{
+  margin-top:32px;padding:22px 0 0;border-top:1px solid var(--rule);
+  font-family:var(--display);font-style:italic;font-size:20px;
+  color:var(--terracotta-deep);line-height:1.4;
+}
+
+/* Agenda grid */
+.agenda{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px 48px;
+  margin-top:20px;
+}
+.agenda .row{
+  display:grid;grid-template-columns:40px 1fr;gap:16px;align-items:baseline;
+  padding:16px 0;border-top:1px solid var(--rule);
+}
+.agenda .row .n{font-family:var(--display);font-style:italic;font-size:20px;color:var(--terracotta)}
+.agenda .row .t{font-size:16px;color:var(--ink);line-height:1.35;font-weight:500}
+.agenda .row .t span{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:3px}
+
+/* Two column diptych */
+.diptych{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  margin-top:10px;
+}
+.diptych .col .tag{
+  font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.diptych .col.left .tag{color:var(--terracotta)}
+.diptych .col.right .tag{color:var(--olive)}
+.diptych .col .big{
+  font-family:var(--display);font-size:26px;line-height:1.3;
+  color:var(--ink);font-weight:400;
+}
+.diptych .col .big em{font-style:italic}
+.diptych .col .sub{margin-top:12px;font-size:14px;color:var(--muted);line-height:1.55}
+
+/* 60 seconds practice */
+.practice{
+  display:grid;grid-template-columns:260px 1fr;gap:48px;align-items:start;
+}
+.practice .timer .big{
+  font-family:var(--display);font-size:180px;line-height:.85;
+  color:var(--terracotta);font-weight:500;letter-spacing:-.04em;
+}
+.practice .timer .unit{
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin-top:6px;
+}
+.practice .steps{display:grid;gap:22px}
+.practice .step{border-top:1px solid var(--rule);padding-top:14px}
+.practice .step .n{font-family:var(--display);font-style:italic;font-size:18px;color:var(--terracotta);margin-bottom:4px}
+.practice .step h4{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.practice .step p{font-size:14.5px;line-height:1.55;color:var(--ink-2);margin:0}
+
+/* Three moments list */
+.ordered{
+  counter-reset:m;margin-top:10px;list-style:none;
+}
+.ordered li{
+  counter-increment:m;
+  display:grid;grid-template-columns:56px 1fr;gap:22px;
+  padding:20px 0;border-top:1px solid var(--rule);
+}
+.ordered li:last-child{border-bottom:1px solid var(--rule)}
+.ordered li::before{
+  content:counter(m,lower-roman) ".";
+  font-family:var(--display);font-style:italic;font-size:26px;color:var(--terracotta);line-height:1;
+}
+.ordered li h4{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.ordered li p{font-size:14px;color:var(--muted);line-height:1.55;margin:0}
+
+/* Brewer loop */
+.loop{
+  display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr;gap:18px;
+  margin-top:20px;
+}
+.loop .node{
+  background:var(--paper);border:1px solid var(--rule);padding:22px 20px;
+}
+.loop .node .tag{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);margin-bottom:10px}
+.loop .node h4{font-family:var(--display);font-size:22px;color:var(--ink);margin-bottom:8px;font-weight:500}
+.loop .node p{font-size:13px;line-height:1.55;color:var(--ink-2);margin:0}
+.loop .arrow{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:28px;color:var(--terracotta);font-style:italic;
+}
+.attr{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:18px;
+}
+
+/* Chat fields */
+.fields{
+  display:grid;gap:0;margin-top:10px;
+}
+.field{
+  border-top:1px solid var(--rule);padding:18px 0;
+}
+.field:last-child{border-bottom:1px solid var(--rule)}
+.field .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);margin-bottom:8px}
+.field .ex{font-family:var(--display);font-style:italic;font-size:18px;color:var(--ink-2);line-height:1.4}
+
+/* Big pull quote (exit phrase) */
+.pull{
+  font-family:var(--display);
+  font-size:clamp(32px, 5vw, 52px);
+  line-height:1.1;color:var(--ink-2);font-weight:400;
+  margin:20px 0;
+}
+.pull::before{
+  content:"\201C";font-size:110px;color:var(--terracotta);
+  line-height:.5;vertical-align:-.35em;margin-right:6px;font-style:italic;
+}
+.pull em{font-style:italic;color:var(--terracotta-deep)}
+
+/* Three layers cards */
+.layers{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;
+  margin-top:10px;
+}
+.layers .layer{border-top:2px solid var(--ink);padding-top:18px}
+.layers .layer:nth-child(1){border-top-color:var(--terracotta)}
+.layers .layer:nth-child(2){border-top-color:var(--olive)}
+.layers .layer:nth-child(3){border-top-color:var(--gold)}
+.layers .layer .roman{font-family:var(--display);font-style:italic;font-size:16px;color:var(--muted);margin-bottom:8px}
+.layers .layer h3{font-size:24px;margin-bottom:10px}
+.layers .layer .q{font-size:13px;color:var(--terracotta-deep);font-style:italic;margin-bottom:10px;line-height:1.4}
+.layers .layer p{font-size:14px;line-height:1.55;color:var(--ink-2);margin:0}
+
+/* Value block */
+.value{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  margin-top:10px;
+}
+.value .def{padding-top:16px;border-top:2px solid var(--terracotta)}
+.value .def .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px}
+.value .def p{font-family:var(--display);font-size:22px;line-height:1.35;color:var(--ink);font-weight:400;margin:0}
+.value .def p em{font-style:italic}
+.value .how{padding-top:16px;border-top:1px solid var(--rule)}
+.value .how .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.value .how ul{list-style:none}
+.value .how ul li{
+  font-size:15px;line-height:1.55;color:var(--ink-2);
+  padding:12px 0 12px 24px;position:relative;border-bottom:1px solid var(--rule);
+}
+.value .how ul li:last-child{border-bottom:none}
+.value .how ul li::before{
+  content:"";position:absolute;left:0;top:20px;width:14px;height:1px;background:var(--terracotta);
+}
+.value .tag-line{
+  font-family:var(--display);font-style:italic;font-size:18px;
+  color:var(--terracotta);margin-bottom:10px;
+}
+.dots{display:flex;gap:8px}
+.dots span{width:8px;height:8px;border-radius:50%;background:var(--rule);display:inline-block}
+.dots span.on{background:var(--terracotta)}
+
+/* Rosenthal story */
+.story{
+  display:grid;grid-template-columns:1.3fr 1fr;gap:48px;
+  margin-top:10px;
+}
+.story .text p{font-family:var(--display);font-size:18px;line-height:1.55;color:var(--ink-2);margin-bottom:14px}
+.story .text p em{font-style:italic;color:var(--terracotta-deep)}
+.story .meta{padding-top:14px;border-top:1px solid var(--rule);align-self:start}
+.story .meta .row{
+  display:grid;grid-template-columns:110px 1fr;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--rule);
+}
+.story .meta .row .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.story .meta .row .v{color:var(--ink);line-height:1.4;font-family:var(--display);font-size:15px}
+.cliff{
+  margin-top:32px;padding-top:20px;border-top:1px solid var(--ink);
+  font-family:var(--display);font-style:italic;font-size:22px;
+  color:var(--ink);line-height:1.35;
+}
+
+/* Reveal (big +4) */
+.reveal{
+  display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;
+  margin-top:10px;
+}
+.reveal .big-stat .lbl{
+  font-family:var(--display);font-style:italic;font-size:20px;
+  color:var(--gold);margin-bottom:8px;
+}
+.reveal .big-stat .big{
+  font-family:var(--display);font-weight:500;
+  font-size:clamp(160px, 22vw, 260px);
+  line-height:.8;color:var(--cream);letter-spacing:-.05em;
+}
+.reveal .big-stat .unit{
+  font-family:var(--display);font-size:22px;
+  color:rgba(251,246,238,.8);margin-top:6px;font-style:italic;
+}
+.reveal .mech .lbl{
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;padding-bottom:14px;
+  border-bottom:1px solid rgba(251,246,238,.2);
+}
+.reveal .mech p{
+  font-family:var(--display);font-size:19px;line-height:1.5;
+  color:rgba(251,246,238,.88);margin-bottom:14px;
+}
+.reveal .mech p em{font-style:italic;color:var(--gold)}
+.takeaway-gold{
+  margin-top:30px;padding-top:22px;border-top:1px solid rgba(251,246,238,.18);
+  font-family:var(--display);font-style:italic;font-size:22px;
+  color:var(--gold);line-height:1.35;
+}
+
+/* Flip prophecy cards */
+.flip{
+  display:grid;grid-template-columns:1fr 30px 1fr;gap:24px;
+  margin-top:10px;
+}
+.flip .card{border:1px solid var(--rule);padding:28px;background:var(--paper)}
+.flip .card.old{background:var(--cream-2)}
+.flip .card.new{border-color:var(--terracotta)}
+.flip .card .tag{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.flip .card.new .tag{color:var(--terracotta)}
+.flip .card .q{font-family:var(--display);font-size:20px;line-height:1.35;color:var(--ink);font-weight:400;margin-bottom:16px}
+.flip .card .q em{font-style:italic;color:var(--terracotta-deep)}
+.flip .card .hint{font-size:13px;color:var(--muted);line-height:1.55;margin:0}
+.flip .arrow{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-style:italic;font-size:28px;color:var(--terracotta);
+}
+
+/* Circle prompts */
+.prompts{
+  margin-top:10px;padding-top:16px;border-top:1px solid var(--rule);
+}
+.prompts .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);margin-bottom:16px}
+.prompts .q{
+  font-family:var(--display);font-size:22px;line-height:1.4;color:var(--ink);
+  padding:18px 0;border-bottom:1px solid var(--rule);
+}
+.prompts .q:last-child{border-bottom:none}
+.prompts .q em{font-style:italic;color:var(--terracotta-deep)}
+.prompts .q .n{
+  display:inline-block;font-family:var(--body);font-size:10px;
+  color:var(--terracotta);letter-spacing:.14em;vertical-align:super;margin-right:10px;
+}
+
+/* Homework tasks */
+.tasks{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;
+  margin-top:10px;
+}
+.tasks .task{border-top:2px solid var(--terracotta);padding-top:16px;position:relative}
+.tasks .task .dur{
+  position:absolute;top:16px;right:0;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+}
+.tasks .task .n{font-family:var(--display);font-style:italic;font-size:18px;color:var(--terracotta);margin-bottom:6px}
+.tasks .task h3{font-size:22px;margin-bottom:10px}
+.tasks .task p{font-size:14px;line-height:1.55;color:var(--ink-2);margin:0}
+
+/* Closing */
+.closing{padding:100px 0 110px}
+.closing .quote{
+  font-family:var(--display);font-size:clamp(36px, 5.4vw, 60px);
+  line-height:1.05;color:var(--ink);font-weight:500;letter-spacing:-.02em;
+  margin-bottom:40px;
+}
+.closing .quote em{font-style:italic;color:var(--terracotta-deep)}
+.closing .sub{
+  font-family:var(--display);font-style:italic;font-size:22px;
+  color:var(--ink-2);line-height:1.4;margin-bottom:40px;
+}
+.closing .footer-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:24px;border-top:1px solid var(--rule);
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+}
+.closing .footer-row .sig{
+  font-family:var(--display);font-style:italic;font-size:20px;
+  color:var(--terracotta);text-transform:none;letter-spacing:0;
+}
+
+/* Responsive */
+@media (max-width: 820px){
+  .agenda,
+  .diptych,
+  .practice,
+  .layers,
+  .value,
+  .story,
+  .reveal,
+  .tasks{grid-template-columns:1fr;gap:30px}
+  .loop{grid-template-columns:1fr;gap:16px}
+  .loop .arrow{transform:rotate(90deg);padding:4px 0}
+  .flip{grid-template-columns:1fr;gap:16px}
+  .flip .arrow{transform:rotate(90deg)}
+  .practice .timer .big{font-size:130px}
+  .reveal .big-stat .big{font-size:200px}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <span><b>Integration Call #2</b> &middot; Неделя 2 &rarr; Неделя 3</span>
+    <span>High Performance &middot; 12 апреля 2026</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">High Performance · Integration Call №2</div>
+    <h1>Тревога: от сопротивления<br>к <em>ясности</em></h1>
+    <div class="meta">
+      <div class="item"><b>Неделя 2</b>работа с тревогой</div>
+      <div class="item"><b>90 минут</b>встреча группы</div>
+      <div class="item"><b>12 апреля</b>воскресенье</div>
+    </div>
+    <div class="sig">— Оля Маркес</div>
+  </div>
+</section>
+
+<!-- 02. AGENDA -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Что сегодня</span><span class="num">02</span></div>
+    <h2>О чём мы <em>здесь</em> договорились думать</h2>
+    <div class="agenda">
+      <div class="row"><div class="n">01</div><div class="t">Разбор недели<span>ловушка внимания и как из неё выйти</span></div></div>
+      <div class="row"><div class="n">02</div><div class="t">60 секунд в теле<span>короткая практика заземления</span></div></div>
+      <div class="row"><div class="n">03</div><div class="t">Цикл привычки<span>триггер &rarr; реакция &rarr; награда, по Брюеру</span></div></div>
+      <div class="row"><div class="n">04</div><div class="t">Практика в чате<span>разбираем один реальный момент каждой</span></div></div>
+      <div class="row"><div class="n">05</div><div class="t">Переход к неделе 3<span>ценности, идентичность, пророчество</span></div></div>
+      <div class="row"><div class="n">06</div><div class="t">Мои три ценности<span>как пример, не как инструкция</span></div></div>
+      <div class="row"><div class="n">07</div><div class="t">Эксперимент Розенталя<span>почему ожидания становятся реальностью</span></div></div>
+      <div class="row"><div class="n">08</div><div class="t">Домашка на неделю<span>и что мы делаем в круге</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. ЛОВУШКА / ПРАВДА -->
+<section class="plain">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Разбор недели</span><span class="num">03</span></div>
+    <h2>Есть один <em>оптический</em> эффект,<br>о котором мне важно сказать заранее</h2>
+    <div class="diptych">
+      <div class="col left">
+        <div class="tag">Что ощущается</div>
+        <div class="big">Когда ты начинаешь направлять внимание на тревогу, у тебя появляется ощущение, что её стало заметно <em>больше</em>.</div>
+        <div class="sub">Чем точнее и честнее ты смотришь, тем более наполненной и объёмной она кажется изнутри.</div>
+      </div>
+      <div class="col right">
+        <div class="tag">Что происходит на самом деле</div>
+        <div class="big">На самом деле её количество не изменилось — просто то, что раньше работало <em>фоном</em>, оказалось у тебя в фокусе.</div>
+        <div class="sub">Нервная система всегда держит тревогу где-то рядом. Ты сейчас впервые начинаешь её замечать как отдельное явление, а не как общий фон жизни.</div>
+      </div>
+    </div>
+    <div class="callout">Поэтому сегодня мы занимаемся не борьбой с тревогой, а тем, чтобы твоё внутреннее видение постепенно стало точнее — а ты внутри него свободнее.</div>
+  </div>
+</section>
+
+<!-- 04. 60 СЕКУНД -->
+<section class="warm-2">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Практика</span><span class="num">04</span></div>
+    <h2>Шестьдесят секунд, которые мы<br>берём себе перед <em>любым</em> важным разговором</h2>
+    <p class="lead">Прежде чем начинать любую работу с головой — с мыслями, формулировками, интерпретациями — полезно сначала вернуться в тело, потому что именно оно первым поднимает уровень тревоги и именно ему мы собираемся давать новый сигнал. Одна минута, три простых шага, делаем все вместе и молча, я держу время.</p>
+    <div class="practice">
+      <div class="timer">
+        <div class="big">60&Prime;</div>
+        <div class="unit">одна минута</div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">I</div>
+          <h4>Поставь ноги</h4>
+          <p>Поставь обе ступни ровно на пол и дай себе одно-два дыхания на то, чтобы почувствовать вес своего тела — в стуле, в стопах, в тазу. Нам здесь важно не «представить» себе ощущение, а именно заметить то, что уже есть.</p>
+        </div>
+        <div class="step">
+          <div class="n">II</div>
+          <h4>Длинный выдох</h4>
+          <p>Сделай три цикла дыхания, в которых выдох заметно длиннее вдоха. Именно удлинённый выдох активирует парасимпатическую часть нервной системы — ту, которая отвечает за торможение реактивного «аварийного» режима.</p>
+        </div>
+        <div class="step">
+          <div class="n">III</div>
+          <h4>Назови три вещи</h4>
+          <p>Проговори про себя одним коротким предложением то, что ты сейчас видишь, слышишь и чувствуешь телом. Это простой, но очень быстрый способ вернуть внимание из головы в текущий момент через сенсорные каналы.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. ТРИ МОМЕНТА -->
+<section class="plain">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Разбор</span><span class="num">05</span></div>
+    <h2>Найди <em>три момента</em> за неделю,<br>в которых тревога зазвучала сильнее всего</h2>
+    <p class="lead">Нам сейчас важны не обобщения в духе «вся неделя прошла тяжело» и не ощущение общего фона, а именно три конкретные точки, в которых тревога включилась ярче всего. Мы будем разбирать их по очереди в трёх уровнях — телесном, когнитивном и поведенческом.</p>
+    <ol class="ordered">
+      <li><div><h4>Тело</h4><p>Вспомни, где ты почувствовала её самой первой: что именно в теле сжалось, ускорилось, застыло или, наоборот, стало слишком пустым. Нам интересно не общее «было плохо», а телесная география ощущения.</p></div></li>
+      <li><div><h4>Мысль</h4><p>Постарайся вспомнить не пересказ, а дословную фразу, которая прокрутилась в голове в этот момент. Чем точнее формулировка — тем проще потом увидеть, из какой именно внутренней истории ты в этот момент действовала.</p></div></li>
+      <li><div><h4>Действие</h4><p>Зафиксируй, что именно ты сделала после: закрыла ноутбук, открыла холодильник, написала кому-то, замолчала, ушла в телефон. Поведение здесь — не приговор, а ценный диагностический материал.</p></div></li>
+    </ol>
+    <div class="callout">Нам сейчас важны факты, а не интерпретации: простой критерий — факт это то, что зафиксировала бы видеокамера на стене. Всё остальное — уже история, которую ты поверх факта аккуратно себе рассказываешь.</div>
+  </div>
+</section>
+
+<!-- 06. ЦИКЛ ПРИВЫЧКИ -->
+<section class="warm">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Как тревога закрепляется</span><span class="num">06</span></div>
+    <h2>Цикл <em>привычки</em>:<br>триггер &rarr; реакция &rarr; награда</h2>
+    <div class="attr">Judson Brewer · Unwinding Anxiety</div>
+    <div class="loop">
+      <div class="node">
+        <div class="tag">Trigger</div>
+        <h4>Триггер</h4>
+        <p>Увидела в инстаграме, как у кого-то уже получилось — и сравнила с собой. Или вспомнила задачу, которую не успела сделать. Что-то маленькое и мгновенное.</p>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <div class="node">
+        <div class="tag">Behavior</div>
+        <h4>Реакция</h4>
+        <p>Закрыла приложение — и через минуту снова открыла. Ушла в думскроллинг. Любое «лишь бы не чувствовать».</p>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <div class="node">
+        <div class="tag">Reward</div>
+        <h4>Награда</h4>
+        <p>Короткое, почти незаметное облегчение — на уровне нескольких секунд. Но именно эти несколько секунд твой мозг запоминает как «это сработало», и в следующий раз воспроизводит реакцию уже ещё автоматичнее.</p>
+      </div>
+    </div>
+    <div class="callout">С этим циклом не нужно воевать: он не враг, а старый способ, которым нервная система когда-то научилась себя быстро успокаивать. Как только ты начинаешь его видеть и называть, он перестаёт быть автоматическим — и у тебя снова появляется возможность выбирать, что делать дальше.</div>
+  </div>
+</section>
+
+<!-- 07. PRACTICE IN CHAT -->
+<section class="plain">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Практика в чате</span><span class="num">07</span></div>
+    <h2>Возьми <em>один</em> момент недели<br>и разложи его в чат</h2>
+    <p class="lead">Нам сейчас важен один конкретный эпизод, а не собирательный образ всей недели, — именно тот момент, который ты уже хорошо помнишь телом и на который можешь посмотреть с небольшого расстояния. У тебя будет семь минут на запись, и потом мы вместе разберём три–четыре случая вслух.</p>
+    <div class="fields">
+      <div class="field">
+        <div class="lbl">Триггер</div>
+        <div class="ex">«Увидела в инстаграме пост, где у кого-то получилось — и сравнила с собой: у неё уже, а у меня ещё нет»</div>
+      </div>
+      <div class="field">
+        <div class="lbl">Реакция</div>
+        <div class="ex">«Закрыла приложение — и через минуту снова открыла. Ушла в думскроллинг. Вспомнила, что не доделала задачу, и зависла ещё глубже»</div>
+      </div>
+      <div class="field">
+        <div class="lbl">Награда</div>
+        <div class="ex">«На секунду исчезла из своей реальности — и вроде стало не так остро»</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. EXIT PHRASE -->
+<section class="warm-2">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Маркер выхода</span><span class="num">08</span></div>
+    <h2>Короткая языковая опора,<br>через которую ты возвращаешь себе <em>позицию наблюдателя</em></h2>
+    <div class="pull">Я замечаю, что сейчас со мной происходит, — и я <em>остаюсь</em> рядом с собой, а не исчезаю в этом.</div>
+    <p><b>Почему это работает.</b> Когда ты вслух или про себя называешь то, что с тобой прямо сейчас происходит, активируется префронтальная кора — та часть мозга, которая отвечает за наблюдение, различение и выбор. В нейропсихологии это называется <em>affect labeling</em>: сам акт именования чувства снижает его интенсивность за счёт переключения с лимбической реактивности (быстрой, автоматической, «аварийной») на более медленный корковый контроль.</p>
+    <p>Поэтому пока ты замечаешь, ты уже не полностью внутри цикла: ты становишься одновременно и его участницей, и его свидетельницей. Именно из этой двойной позиции и появляется пространство, в котором возможен выбор, — а не только реакция.</p>
+  </div>
+</section>
+
+<!-- 09. TRANSITION -->
+<section class="dark">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left" style="color:var(--gold)">Мост</span><span class="num">09</span></div>
+    <h2>Если вторая неделя была про <em>внимание</em>,<br>третья — про <em>источники</em>, из которых ты живёшь</h2>
+    <p class="lead" style="color:rgba(251,246,238,.72)">Мы довольно много работали с тем, что тебя цепляет и из чего ты привычно реагируешь. Дальше мы начнём смотреть на то, из какого внутреннего материала ты собираешь свой день, когда у тебя появляется хотя бы минимальная возможность выбирать самой.</p>
+  </div>
+</section>
+
+<!-- 10. ТРИ СЛОЯ -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Неделя 3 · карта</span><span class="num">10</span></div>
+    <h2>Три внутренних слоя, из которых<br>незаметно <em>складывается</em> каждый твой день</h2>
+    <div class="layers">
+      <div class="layer">
+        <div class="roman">I</div>
+        <h3>Ценности</h3>
+        <div class="q">«Что для меня настолько важно, что я готова защищать это даже когда неудобно?»</div>
+        <p>Ценности — это не лозунги и не красивые формулировки из тренингов, а конкретные вещи, за которые ты регулярно платишь временем, вниманием и отказом от чего-то другого. Их удобно увидеть, если мысленно убрать из жизни все «надо» и посмотреть, что ты всё равно выбираешь.</p>
+      </div>
+      <div class="layer">
+        <div class="roman">II</div>
+        <h3>Идентичность</h3>
+        <div class="q">«Кем я соглашаюсь быть каждое утро, ещё до того как начну что-то делать?»</div>
+        <p>Идентичность — это та внутренняя история про себя, из которой ты действуешь по умолчанию. «Я та, которая…» — и что бы ты ни подставила дальше, мозг будет тихо саботировать всё, что этой фразе противоречит, даже если у тебя идеально расписан план.</p>
+      </div>
+      <div class="layer">
+        <div class="roman">III</div>
+        <h3>Пророчество</h3>
+        <div class="q">«Что я уже заранее решила про себя — ещё до того, как попробовала?»</div>
+        <p>Это предположение о себе, которое ты подтверждаешь своими же действиями, часто даже не замечая этого. Самые сильные пророчества как раз те, которые остаются невидимыми: ты не воспринимаешь их как гипотезу, ты живёшь с ними как с фактом.</p>
+      </div>
+    </div>
+    <div class="callout">Сегодня мы с тобой аккуратно зайдём только в первый из этих слоёв — в ценности. Я расскажу про свои как пример: не для копирования, а чтобы стало видно, как вообще ценность живёт внутри обычного дня.</div>
+  </div>
+</section>
+
+<!-- 11. МОИ ЦЕННОСТИ — INTRO -->
+<section class="warm">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Заходим в первый слой</span><span class="num">11</span></div>
+    <h2>Я расскажу про <em>свои</em><br>три ценности</h2>
+    <p class="lead">Не для того, чтобы вы их скопировали, а чтобы на живом примере было видно, как ценность вообще живёт внутри обычного дня: что она тихо разрешает, что мягко запрещает, где начинается и где у неё проходит граница с соседними.</p>
+    <p>Ценность удобнее узнавать не по тому, чего ты хочешь в какой-то конкретный момент, а по тому, что ты выбираешь снова и снова на длинной дистанции — особенно тогда, когда это неудобно, когда никто не смотрит, и когда у тебя есть совершенно легитимная возможность не выбирать.</p>
+  </div>
+</section>
+
+<!-- 12. VALUE 1 — PRESENCE -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row">
+      <span class="left">Моя ценность · один из трёх</span>
+      <span class="dots"><span class="on"></span><span></span><span></span></span>
+    </div>
+    <div class="tag-line">Первая ценность</div>
+    <h2>Быть <em>максимально</em><br>в присутствии</h2>
+    <div class="value">
+      <div class="def">
+        <div class="lbl">Что я имею в виду</div>
+        <p>Я вкладываю всё внимание в то, что сейчас делаю. <em>Одно действие — одно я.</em> Без параллельного окна в голове.</p>
+      </div>
+      <div class="how">
+        <div class="lbl">Как это живёт в обычном дне</div>
+        <ul>
+          <li>Если я читаю — я читаю со всем вниманием.</li>
+          <li>Если я разговариваю с кем-то — я там со всем присутствием.</li>
+          <li>Если я работаю — я не отвлекаюсь.</li>
+          <li>Если я с ребёнком — я напитываюсь каждой секундой взаимодействия.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">Для меня присутствие — это не медитативная практика и не духовная дисциплина, а бытовой способ не сбегать из того, что уже происходит, в параллельное окно в голове, где тебя как бы нет, но ты всё равно устаёшь.</div>
+  </div>
+</section>
+
+<!-- 13. VALUE 2 — ТЕЛО И ЗДОРОВЬЕ -->
+<section class="warm-2">
+  <div class="wide">
+    <div class="eyebrow-row">
+      <span class="left">Моя ценность · два из трёх</span>
+      <span class="dots"><span class="on"></span><span class="on"></span><span></span></span>
+    </div>
+    <div class="tag-line">Вторая ценность</div>
+    <h2>Тело и <em>здоровье</em></h2>
+    <div class="value">
+      <div class="def">
+        <div class="lbl">Что я имею в виду</div>
+        <p>Я не ставлю «ебашилу» и супер-вкладывание <em>выше</em> своего здоровья. Тело — не ресурс, который я сжигаю ради результата.</p>
+      </div>
+      <div class="how">
+        <div class="lbl">Как это живёт в обычном дне</div>
+        <ul>
+          <li>Я занимаюсь подходящей мне нагрузкой — не чужой, не модной.</li>
+          <li>Если чувствую, что перегружаю тело — останавливаюсь и меняю нагрузку.</li>
+          <li>Я отдыхаю. Я выбираю те тренировки, которые мне сейчас подходят.</li>
+          <li>Я слежу за белком — это мой коммитмент. Потому что уже возраст.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">Здоровье для меня — это не награда, которую я получаю за успех, и не то, чем удобно пожертвовать ради красивого результата. Это тот ресурс, из которого я вообще способна что-либо делать, — и без которого всё остальное довольно быстро перестаёт иметь смысл.</div>
+  </div>
+</section>
+
+<!-- 14. VALUE 3 — СМОТРЕТЬ ТУДА, КУДА СТРАШНО -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row">
+      <span class="left">Моя ценность · три из трёх</span>
+      <span class="dots"><span class="on"></span><span class="on"></span><span class="on"></span></span>
+    </div>
+    <div class="tag-line">Третья ценность — в работе</div>
+    <h2>Смотреть туда,<br>куда <em>страшно</em></h2>
+    <div class="value">
+      <div class="def">
+        <div class="lbl">Что я имею в виду</div>
+        <p>То, куда страшно смотреть, и то, что страшно делать — <em>это и есть</em> то, что нужно делать. Страх здесь — указатель, а не стоп-сигнал.</p>
+      </div>
+      <div class="how">
+        <div class="lbl">Как это живёт в моей работе</div>
+        <ul>
+          <li>Искать новый формат для своей проявленности.</li>
+          <li>Прибираться в бардаке, который хочется обойти.</li>
+          <li>Честно смотреть на то, что у меня не получается — и улучшать именно эти вещи.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">Если в какой-то момент в работе становится совсем не страшно, я воспринимаю это как честный сигнал: скорее всего, я уже повторяю вчерашнюю версию себя — и мне стоит искать ту точку, в которую я пока не умею идти.</div>
+  </div>
+</section>
+
+<!-- 15. PYGMALION — SETUP -->
+<section class="warm">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Один эксперимент</span><span class="num">15</span></div>
+    <h2>Школа в Сан-Франциско.<br>Учителя получили <em>список</em>.</h2>
+    <div class="story">
+      <div class="text">
+        <p>1964 год. Начальная школа Оак в Сан-Франциско. Психолог Роберт Розенталь и директор школы Ленор Якобсон провели тест на IQ у всех детей в начале года.</p>
+        <p>Потом они сказали учителям: «Вот результаты. Мы выделили около 20% учеников — это ребята, у которых в этом году ожидается <em>резкий интеллектуальный скачок</em>. Присмотритесь к ним».</p>
+        <p>Учителя кивнули и вернулись к работе. Год пошёл своим ходом.</p>
+      </div>
+      <div class="meta">
+        <div class="row"><div class="k">Год</div><div class="v">1964–1965</div></div>
+        <div class="row"><div class="k">Место</div><div class="v">Oak School, San Francisco</div></div>
+        <div class="row"><div class="k">Авторы</div><div class="v">Rosenthal &amp; Jacobson</div></div>
+        <div class="row"><div class="k">Подвох</div><div class="v">список был <b>случайным</b></div></div>
+      </div>
+    </div>
+    <div class="cliff">Через год Розенталь протестировал их заново. И увидел то, ради чего эту историю до сих пор рассказывают.</div>
+  </div>
+</section>
+
+<!-- 16. PYGMALION — REVEAL -->
+<section class="dark">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left" style="color:var(--gold)">Результат</span><span class="num">16</span></div>
+    <div class="reveal">
+      <div class="big-stat">
+        <div class="lbl">В среднем у «отмеченных» детей</div>
+        <div class="big">+4</div>
+        <div class="unit">пункта IQ над сверстниками</div>
+      </div>
+      <div class="mech">
+        <div class="lbl">Что на самом деле происходило в классе</div>
+        <p>Учителя, ничего сознательно не меняя, начали смотреть на этих детей <em>чуть теплее</em>: чуть дольше ждали ответа, чуть чаще вызывали к доске, чуть внимательнее относились к их ошибкам и чуть щедрее реагировали на усилие, даже если оно не привело к правильному ответу.</p>
+        <p>Дети, как и любая нервная система рядом со значимым взрослым, это считывали невербально — по тону, паузе, направлению взгляда — и постепенно начали вести себя как те, от кого ждут роста. А значит, <em>и выросли</em> в ту сторону, в которую их уже мысленно поместили.</p>
+      </div>
+    </div>
+    <div class="takeaway-gold">Ожидание, в которое взрослый рядом с ребёнком — или ты рядом с собой — по-настоящему верит, постепенно превращается в среду: меняется тон, распределение внимания, распределение тепла. И уже сама эта среда незаметно формирует и поведение, и — через него — результат.</div>
+  </div>
+</section>
+
+<!-- 17. FLIP THE PROPHECY -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Перенос на себя</span><span class="num">17</span></div>
+    <h2>А теперь <em>то же самое</em>, но в твою сторону</h2>
+    <div class="flip">
+      <div class="card old">
+        <div class="tag">Старое пророчество</div>
+        <div class="q">«Я та, которая <em>не дотягивает</em>, сливается на середине, откладывает важное и стабильно сгорает к концу недели».</div>
+        <div class="hint">Это не твоя черта характера и не диагноз, а та привычная история про себя, в которую ты поверила когда-то давно и из которой теперь действуешь почти автоматически — даже когда сама уже в неё не очень веришь.</div>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <div class="card new">
+        <div class="tag">Новое пророчество</div>
+        <div class="q">«Я та, которая <em>возвращается</em> к себе, даже когда сбивается, — и делает это чаще, чем вчера».</div>
+        <div class="hint">Важно обратить внимание: это не «я теперь идеальная» и не «я больше никогда не сбиваюсь». Это именно «я возвращаюсь» — и именно этому нужно учить мозг, потому что именно это он способен освоить как устойчивый навык.</div>
+      </div>
+    </div>
+    <div class="callout">Не стоит ставить перед собой задачу «стать другим человеком» — это абстрактная установка, в которой мозг тут же начинает сравнивать тебя с недостижимым идеалом и сдавать позиции. Гораздо полезнее каждый день собирать по одному маленькому доказательству того, что новая версия тебя уже существует — просто пока внутри старых привычек.</div>
+  </div>
+</section>
+
+<!-- 18. SHARING CIRCLE -->
+<section class="warm">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">Круг</span><span class="num">18</span></div>
+    <h2>Три вопроса —<br>по <em>одному</em> ответу на каждый</h2>
+    <p class="lead">Совершенно не обязательно говорить глубоко или красиво — гораздо важнее сказать конкретно и из опыта именно этой прошедшей недели. Мы в кругу слушаем друг друга без комментариев и оценок, по две минуты на участницу, а я держу время.</p>
+    <div class="prompts">
+      <div class="lbl">Вопросы круга</div>
+      <div class="q"><span class="n">01</span>Какой сдвиг уже <em>произошёл</em> в отношениях с тревогой?</div>
+      <div class="q"><span class="n">02</span>Какая ценность, о которой я сегодня говорила, <em>откликнулась</em> тебе — и почему?</div>
+      <div class="q"><span class="n">03</span>Какую новую версию себя ты хочешь <em>собирать</em> на этой неделе — одной фразой?</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19. HOMEWORK -->
+<section class="plain">
+  <div class="wide">
+    <div class="eyebrow-row"><span class="left">Домашка</span><span class="num">19</span></div>
+    <h2>Три шага <em>до следующего</em> созвона</h2>
+    <div class="tasks">
+      <div class="task">
+        <div class="dur">15 мин</div>
+        <div class="n">I</div>
+        <h3>Три свои ценности</h3>
+        <p>Выпиши три своих — не из книги, не из моего списка и не из того, что сегодня звучало красиво. Именно те три вещи, за которые ты уже платишь временем, вниманием и усилием, даже когда никто на тебя не смотрит и это никак тебя не награждает.</p>
+      </div>
+      <div class="task">
+        <div class="dur">5 мин в день</div>
+        <div class="n">II</div>
+        <h3>Одно доказательство</h3>
+        <p>Каждый день находи одно конкретное действие, которое подтверждает твоё новое пророчество о себе, и записывай его в трекер одной короткой строкой. Маленькое, но видимое — именно из таких точек мозг и собирает новую внутреннюю историю.</p>
+      </div>
+      <div class="task">
+        <div class="dur">по ситуации</div>
+        <div class="n">III</div>
+        <h3>Фраза выхода</h3>
+        <p>Как только ты ловишь себя на том, что уже входишь в привычный цикл, — произнеси про себя свою фразу выхода, даже если кажется, что момент давно упущен. На самом деле именно в «уже поздно» этот маленький акт замечания работает сильнее всего.</p>
+      </div>
+    </div>
+    <p style="margin-top:26px;font-family:var(--display);font-style:italic;font-size:17px;color:var(--muted)">Следующий наш созвон — ровно через неделю. Приходите, пожалуйста, с ответами на эти три шага и со своими тремя ценностями, выписанными на бумаге.</p>
+  </div>
+</section>
+
+<!-- 20. CLOSING -->
+<section class="warm-2 closing" style="border-bottom:none">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="left">На выход</span><span class="num">20</span></div>
+    <div class="quote">Новая версия тебя не появляется одним решением<br>и не включается одним утром. Она постепенно<br>складывается из маленьких моментов, в которых ты<br>перестаёшь быть <em>старой</em> версией — и в каждом<br>таком моменте у тебя есть выбор.</div>
+    <div class="sub">Спасибо вам за эту встречу. Я держу вас в поле всю неделю — и буду очень рада увидеть, с чем вы придёте в следующее воскресенье.</div>
+    <div class="footer-row">
+      <span>High Performance · Неделя 3</span>
+      <span class="sig">— Оля</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

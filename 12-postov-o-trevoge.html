@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 постов о тревоге — Unwinding Anxiety</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-hover: #1a1a25;
+    --border: rgba(255,255,255,0.06);
+    --text: #e8e6e3;
+    --text-muted: #8a8a95;
+    --accent: #c9a96e;
+    --accent-dim: rgba(201,169,110,0.15);
+    --accent-glow: rgba(201,169,110,0.3);
+    --gradient-1: #c9a96e;
+    --gradient-2: #e8c88a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.75;
+    font-size: 17px;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 50% 50%, var(--accent-dim) 0%, transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; transform: scale(1); }
+    100% { opacity: 0.7; transform: scale(1.1); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(5rem, 15vw, 12rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+
+  .hero-scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .hero-scroll svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--accent);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+  }
+
+  .nav.visible { transform: translateY(0); }
+
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+
+  .nav-progress {
+    height: 2px;
+    background: var(--accent);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease;
+  }
+
+  .toc {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+  }
+
+  .toc-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .toc-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent-glow);
+    transform: translateY(-2px);
+  }
+
+  .toc-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 2rem;
+    text-align: center;
+  }
+
+  .toc-text {
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .posts-container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+  }
+
+  .post {
+    margin-bottom: 6rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .post.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .post-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .post-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .post-body p {
+    margin-bottom: 1.25rem;
+    color: var(--text);
+  }
+
+  .post-body strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .post-body .highlight {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 10px 10px 0;
+    margin: 2rem 0;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 5rem 0;
+    color: var(--accent);
+    opacity: 0.4;
+  }
+
+  .divider-line {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .divider-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  .footer-book {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    font-style: normal;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .post-number { font-size: 3.5rem; }
+    .toc-grid { grid-template-columns: 1fr; }
+    .posts-container, .toc { padding-left: 1.25rem; padding-right: 1.25rem; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-glow); }
+
+  ::selection {
+    background: var(--accent-glow);
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <span class="nav-brand">Unwinding Anxiety</span>
+  <span class="nav-counter" id="navCounter" style="color:var(--text-muted);font-size:0.85rem;"></span>
+  <div class="nav-progress" id="navProgress"></div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-number">12</div>
+    <h1 class="hero-title">постов о тревоге</h1>
+    <p class="hero-subtitle">По книге Judson Brewer &laquo;Unwinding Anxiety&raquo;</p>
+    <a href="#toc" class="hero-scroll">
+      Читать
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+  </div>
+</section>
+
+<section class="toc" id="toc">
+  <h2 class="toc-header">Содержание</h2>
+  <div class="toc-grid">
+    <a class="toc-item" href="#post-1"><span class="toc-num">1</span><span class="toc-text">Тревога — мастер маскировки</span></a>
+    <a class="toc-item" href="#post-2"><span class="toc-num">2</span><span class="toc-text">Чем богаче страна — тем больше тревоги</span></a>
+    <a class="toc-item" href="#post-3"><span class="toc-num">3</span><span class="toc-text">Формула, которую полезно запомнить</span></a>
+    <a class="toc-item" href="#post-4"><span class="toc-num">4</span><span class="toc-text">Вы зависимы. И это не преувеличение</span></a>
+    <a class="toc-item" href="#post-5"><span class="toc-num">5</span><span class="toc-text">Мозг пещерного человека и ваши привычки</span></a>
+    <a class="toc-item" href="#post-6"><span class="toc-num">6</span><span class="toc-text">Два усилителя зависимости</span></a>
+    <a class="toc-item" href="#post-7"><span class="toc-num">7</span><span class="toc-text">Тревога — это привычка</span></a>
+    <a class="toc-item" href="#post-8"><span class="toc-num">8</span><span class="toc-text">Доктор Джекил и мистер Хайд</span></a>
+    <a class="toc-item" href="#post-9"><span class="toc-num">9</span><span class="toc-text">Самый опасный миф о тревоге</span></a>
+    <a class="toc-item" href="#post-10"><span class="toc-num">10</span><span class="toc-text">Почему сила воли предаёт</span></a>
+    <a class="toc-item" href="#post-11"><span class="toc-num">11</span><span class="toc-text">Подмена и среда не работают</span></a>
+    <a class="toc-item" href="#post-12"><span class="toc-num">12</span><span class="toc-text">Осознанность — другой способ слышать</span></a>
+  </div>
+</section>
+
+<main class="posts-container">
+
+  <article class="post" id="post-1">
+    <div class="post-header">
+      <div class="post-number">01</div>
+      <h2 class="post-title">Тревога — мастер маскировки</h2>
+    </div>
+    <div class="post-body">
+      <p>Тревога — как порнография: её трудно определить, но ты точно узнаёшь, когда видишь. Если, конечно, можешь увидеть.</p>
+      <p>Автор этой книги — психиатр, нейроучёный, профессор Йеля и Брауна — годами не подозревал, что сам тревожится. В колледже в Принстоне у него начались жуткие спазмы в животе, экстренные забеги в туалет. Дошло до того, что он планировал маршруты пробежек по расположению уборных. Когда врач осторожно предположил, что дело в тревоге, — он десять минут яростно доказывал, что это невозможно. Он же занимается спортом, играет на скрипке, правильно питается. Придумал, что подцепил инфекцию в походе. Врач пожал плечами и выписал антибиотик.</p>
+      <p>Симптомы, разумеется, не прошли.</p>
+      <p>Тревога может проявляться как раздражительность, бессонница, мышечные боли, расстройство кишечника, трудности с концентрацией. Но все эти симптомы по отдельности ни на что не указывают. Они не вешают тебе на спину табличку «ЭТОТ ЧЕЛОВЕК ТРЕВОЖИТСЯ».</p>
+      <div class="highlight">Мозг — это не дефектный прибор, а скорее скрипка, у которой слегка расстроилась струна. Мы не наклеиваем на инструмент ярлык «бракованный» и не выбрасываем его. Мы слушаем, что не так, подтягиваем или ослабляем струну — и продолжаем играть.</div>
+      <p>Его жена — успешный профессор, которую студенты обожают, а коллеги считают воплощением спокойствия, — описала свою тревогу так: это фоновое чувство, у которого нет собственного объекта. Оно прилипает к любой ситуации или мысли, к которой может. Как будто мой мозг ищет, к чему бы прицепиться тревогой.</p>
+      <p>А подруга-юрист — совсем другая история. Она вскакивала ночью с колотящимся сердцем, в поту, задыхаясь. Не могла понять, что происходит. Только когда она узнала, что это панические атаки, — появилась точка опоры.</p>
+      <p>У одной тревога — как пожар, который начинается с чиркнувшей на рассвете спички и к вечеру охватывает всё. У другой — как чайник, который медленно нагревается и однажды ночью взрывается свистком. Но для обеих критически важным оказался один и тот же момент: когда они смогли назвать то, что чувствуют. Только тогда началась работа.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-2">
+    <div class="post-header">
+      <div class="post-number">02</div>
+      <h2 class="post-title">Парадокс: чем богаче страна — тем больше в ней тревоги</h2>
+    </div>
+    <div class="post-body">
+      <p>Тревога — не новость. Ещё в 1816 году Томас Джефферсон писал Джону Адамсу о людях с мрачным, ипохондрическим складом ума, которые всегда считают, что случится худшее — только потому, что оно может случиться.</p>
+      <p>Два века спустя, при всём технологическом прогрессе, стабильной еде и глобальной связи — меньше тревожиться мы не стали. В 2018 году почти 80% американцев сообщили, что тревожатся столько же или больше, чем годом ранее. 63% назвали будущее страны главным источником стресса. И это было за три года до пандемии.</p>
+      <div class="highlight">Исследование JAMA Psychiatry: в богатых странах — 5%. В странах со средним доходом — 2.8%. В бедных — 1.6%. Чем выше благосостояние — тем больше тревоги.</div>
+      <p>Почему? Одна из гипотез: когда базовые потребности закрыты, у мозга выживания появляется свободное время — и он начинает искать, чему бы угрожать. Этих людей иронично называют «тревожными благополучными». Но ирония заканчивается, когда читаешь: половина из них сообщила о серьёзных ограничениях в одной или нескольких сферах жизни.</p>
+      <p>Автор пишет о своих пациентах с генерализованным тревожным расстройством: я думаю о них как об олимпийцах — в дисциплине тревоги. Они могут беспокоиться дольше и упорнее, чем кто-либо на планете.</p>
+      <p>А после COVID — рост тяжёлого психологического дистресса на 250%. Тревога ходит не одна: 80% людей с генерализованным расстройством имеют хотя бы ещё одно психическое заболевание, чаще всего — депрессию.</p>
+      <p>Тревога не возникает из ниоткуда. Она рождается.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-3">
+    <div class="post-header">
+      <div class="post-number">03</div>
+      <h2 class="post-title">Как рождается тревога: формула, которую полезно запомнить</h2>
+    </div>
+    <div class="post-body">
+      <p>Страх — не враг. Это самый старый и самый надёжный защитник, который у нас есть. Он срабатывает мгновенно, без участия сознания, и учит избегать опасности.</p>
+      <p>Но страх и тревога — разные вещи. Страх — адаптивный механизм обучения, который помогает выживать. Тревога — его побочный продукт: думающий мозг выходит из-под контроля, когда ему не хватает информации.</p>
+      <p>У нас есть префронтальная кора — ПФК, — которая расположена за лбом и отвечает за планирование и прогнозирование. Она берёт прошлый опыт и строит модель будущего. И работает прекрасно — пока у неё достаточно данных.</p>
+      <p>Но у ПФК нет спящего режима. Она не умеет сказать: данных мало, подожду. Вместо этого она разгоняется. Один сценарий за другим — а что, если так, а что, если вот так. Чем меньше фактов — тем мрачнее картины.</p>
+      <div class="highlight"><strong>Страх + неопределённость = тревога.</strong></div>
+      <p>Автор описывает это метафорой, которую трудно забыть: ПФК берёт всё, что есть под рукой, замешивает на тревоге, разогревает печь адреналина — и выпекает тебе буханку, которую ты не заказывал. А потом откладывает немного теста — как закваску. И в следующий раз достаёт её из кладовки и добавляет автоматически.</p>
+      <p>И тревога заразна. В психологии это называется «социальное заражение»: чужие пугающие слова — как чихание прямо на ваш мозг. Когда в магазине вы видите чью-то тележку, набитую туалетной бумагой, — их паника заражает вас. Рациональная часть мозга отключается. Надо. Достать. Бумагу. ПФК возвращается в строй потом — когда вы на парковке пытаетесь впихнуть всё это в машину.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-4">
+    <div class="post-header">
+      <div class="post-number">04</div>
+      <h2 class="post-title">Вы зависимы. И это не преувеличение</h2>
+    </div>
+    <div class="post-body">
+      <p>Определение зависимости звучит просто: продолжение использования, несмотря на негативные последствия. Первая мысль — наркотики, алкоголь. Что-то, что случается с другими людьми.</p>
+      <p>Но автор просит вчитаться. Продолжение — несмотря на негативные последствия. Это может означать продолжение чего угодно.</p>
+      <div class="highlight">Он начал спрашивать друзей и коллег — и нашёл зависимость повсюду. Продолжение шопинга — несмотря на последствия. Продолжение скроллинга — несмотря на последствия. Продолжение переедания, мечтаний о недостижимом, тревоги. У каждого — своё, но механизм один.</div>
+      <p>Темп изменений за последние двадцать лет превосходит все изменения за предыдущие двести. Наши мозг и тело не успевают — и это буквально нас убивает.</p>
+      <p>Сравните: ещё в позапрошлом веке, чтобы купить пару обуви, нужно было запрячь лошадь, добраться до города, сделать заказ, подождать две недели, снова запрячь лошадь. Сегодня — два клика, и завтра коробка на пороге. Не нужно быть психиатром, чтобы понять: двухминутный фикс формирует привычку несравнимо быстрее, чем двухмесячный опыт.</p>
+      <p>Во имя удобства и эффективности современный мир всё больше проектируется для создания аддиктивного опыта. Пищевая индустрия тратит миллиарды на идеальное сочетание соли, сахара и хруста. Соцсети — тысячи часов на алгоритмы, которые держат вас в ленте.</p>
+      <p>И со временем эти привычки застывают настолько, что перестают ощущаться как зависимости. Они просто ощущаются как то, кто мы есть.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-5">
+    <div class="post-header">
+      <div class="post-number">05</div>
+      <h2 class="post-title">Как мозг пещерного человека формирует все ваши привычки</h2>
+    </div>
+    <div class="post-body">
+      <p>В основе практически всех наших привычек — один и тот же древний механизм: обучение через вознаграждение. Он устроен элегантно: ты хочешь повторять то, что приносит удовольствие, и избегать того, что причиняет боль.</p>
+      <p>Во времена, когда еда была редкостью, это работало безупречно. Предок находил что-то съедобное. Мозг выбрасывал дофамин — нейромедиатор, который действовал как первобытная записная книжка: запомни, что ты ел и где нашёл. Нашёл, съел, выжил, запомнил. Триггер — поведение — награда.</p>
+      <p>Этот механизм прекрасен своей универсальностью. Но именно поэтому он так легко перенастраивается. Перемотаем на вчера. Тяжёлый день. Кто-то сказал обидное. В холодильнике — шоколадка. Современный мозг предлагает: раз уж эта система работает с едой, почему бы не использовать её для эмоций?</p>
+      <p>Вспомните подростковые годы. Крутые ребята курили за школой. Ты хотел быть таким же. Увидел крутых — закурил — почувствовал себя частью компании. Триггер — поведение — награда. Каждое повторение углубляет нейронную дорожку.</p>
+      <div class="highlight">С теми же самыми механизмами мозга, что и у безымянного пещерного предка, мы — современные люди — перешли от обучения выживанию к буквальному саморазрушению через привычки. И за последние двадцать лет ситуация ухудшилась экспоненциально.</div>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-6">
+    <div class="post-header">
+      <div class="post-number">06</div>
+      <h2 class="post-title">Два усилителя зависимости, о которых вы не знали</h2>
+    </div>
+    <div class="post-body">
+      <p>В современном мире есть два фактора, которые делают любую привычку практически неуязвимой. Два «максимизатора зависимости».</p>
+      <p>Первый — <strong>прерывистое подкрепление</strong>. Самый мощный из известных стимулов для мозга. Суть: когда награда приходит не каждый раз, а случайно, непредсказуемо — дофаминовые нейроны активируются значительно сильнее, чем от гарантированного результата. Неожиданная награда записывается в память гораздо ярче ожидаемой.</p>
+      <p>Казино построили на этом целую индустрию. Слот-машины запрограммированы «попадать» ровно столько раз, чтобы человек продолжал дёргать рычаг — хотя в среднем он всегда проигрывает.</p>
+      <div class="highlight">А что такое уведомления в телефоне, если не та же самая слот-машина? Email, мессенджеры, соцсети — всё спроектировано так, чтобы сигналы приходили непредсказуемо. Для максимальной зависимости.</div>
+      <p>Второй — <strong>мгновенная доступность</strong>. Раньше между импульсом и его удовлетворением стояли недели. Время давало возможность протрезветь. Сегодня этого буфера нет. Стресс — кексы за углом. Скука — лента в телефоне. Тревога — видео с щенками.</p>
+      <p>Автор добивает: ваш смартфон — не более чем рекламный билборд у вас в кармане. За который вы ещё и платите.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-7">
+    <div class="post-header">
+      <div class="post-number">07</div>
+      <h2 class="post-title">Тревога — это привычка. И вот как работает её петля</h2>
+    </div>
+    <div class="post-body">
+      <p>Мало кто понимает, что тревога — это не просто эмоция. Это привычка. Она формируется по тем же законам, что зависимость от сладкого, скроллинг ленты или курение.</p>
+      <p>Представьте мозг древнего предка. Он входит на незнакомую территорию — мозг включает бдительность. Почему? Потому что не знает, безопасно ли здесь. Предки, сами того не осознавая, проводили научные эксперименты: чем больше «данных» за безопасность, тем увереннее можно расслабиться.</p>
+      <p>Неопределённость ощущается как ментальный зуд: мне нужна информация, иди добудь. Если угроза велика — зуд усиливается. Это чувство муравьёв в штанах, беспокойная энергия, которая не даёт сидеть на месте.</p>
+      <p>И вот как из этого рождается петля. Неприятная эмоция запускает беспокойство как ментальное поведение. Мозг воспринимает его как «действие» — и это ощущается лучше, чем бездействие перед угрозой. Временное облегчение — петля закрепляется.</p>
+      <div class="highlight">Мозг продолжает дёргать рычаг слот-машины беспокойства, надеясь сорвать джекпот решения. Хотя беспокойство не работает — мозг не может остановиться. Потому что однажды оно связало проблему с беспокойством — и теперь искренне считает, что это лучшая стратегия выживания.</div>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-8">
+    <div class="post-header">
+      <div class="post-number">08</div>
+      <h2 class="post-title">Беспокойство — доктор Джекил и мистер Хайд</h2>
+    </div>
+    <div class="post-body">
+      <p>У беспокойства два лица. С одной стороны, оно обещает решить проблему — кажется полезным, добросовестным, даже ответственным. С другой — быстро оборачивается монстром, когда решение не приходит.</p>
+      <p>Автор сравнивает: как человек, упавший в бурную реку, беспокойство зовёт тебя на помощь с берега. Оно лихорадочно хватается за твою руку — и утягивает тебя в стремнину.</p>
+      <p>Есть два главных подвоха. Первый: если беспокойство не находит решения — оно запускает тревогу, которая запускает ещё больше беспокойства. Замкнутый круг, из которого очень трудно выйти, если не видишь его со стороны.</p>
+      <p>Второй — тоньше. Если беспокойство запускается не конкретным событием, а самой тревогой — ему просто не о чем беспокоиться. И тогда оно начинает хвататься за что угодно.</p>
+      <div class="highlight">Я обманула себя, что тревога продуктивна — даже награда. Чувствовать тревогу, каким бы ужасным это ни было, стало казаться «правильным» способом чувствовать. Уместной реакцией на незавершённые дела.</div>
+      <p>А ранняя тестировщица программы описала то, что знакомо многим, но что редко кто формулирует вслух: тревога, которая идёт не от событий, а от того, кем я себя воспринимаю. Завёрнутая в непроницаемое одеяло ощущения собственной недостаточности. Тревога, вырезанная глубоко в костях.</p>
+      <p>Мы можем настолько отождествиться с привычными петлями мыслей, что они становятся нашей идентичностью. Не «у меня бывает тревога», а «я — тревожный человек». И менять привычку, которая стала частью тебя, — совсем другая задача.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-9">
+    <div class="post-header">
+      <div class="post-number">09</div>
+      <h2 class="post-title">«Без тревоги я бы ничего не достиг» — самый опасный миф</h2>
+    </div>
+    <div class="post-body">
+      <p>Люди романтизируют свою тревогу. Носят как знак отличия. Редактор этой книги сформулировала точно: если ты в стрессе — ты вносишь вклад. Если не в стрессе — ты неудачник.</p>
+      <p>Участники программы описывали это так: я начал приписывать свои успехи тревоге. Хорошо учился — и думал, что именно тревога заставляет меня стараться. В глубине души боялся — даже не хотел — её отпустить.</p>
+      <p>Откуда растут ноги у этого убеждения? У автора был PhD-наставник, который научил его фразе: <strong>«true, true, and unrelated»</strong> — правда, правда и не связано. Два факта могут быть верными одновременно, но это не значит, что один вызвал другой. Ты тревожился. Ты добился результата. Но, возможно, одно с другим не связано.</p>
+      <div class="highlight">Научная родословная этого мифа уходит в 1908 год — «танцующие мыши» и электрошок. Из этого родилась «кривая Йеркса-Додсона». Статью процитировали десять раз за полвека — но назвали «законом». Обзор литературы показал: только 4% исследований подтверждают эту кривую. 46% обнаружили линейную негативную связь — любой уровень стресса снижает продуктивность.</div>
+      <p>Проверьте на себе: когда олимпийцы выступают на пике — они выглядят нервными? Посмотрите на язык Майкла Джордана в его лучших играх, на улыбку Усейна Болта на стометровке. Это не лица тревожных людей.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-10">
+    <div class="post-header">
+      <div class="post-number">10</div>
+      <h2 class="post-title">Почему сила воли предаёт вас в самый нужный момент</h2>
+    </div>
+    <div class="post-body">
+      <p>Сила воли — первое, что все советуют. Просто возьми себя в руки. Просто успокойся. Просто перестань тревожиться.</p>
+      <p>ПФК — не только планировщик, но и контролёр импульсов. Когда древний мозг видит пончик и кричит «Калории! Выживание!» — именно ПФК говорит: подожди, ты только что пообедал. Звучит надёжно.</p>
+      <div class="highlight">Но ПФК — самая молодая часть мозга. Самая недавняя эволюционная разработка. А значит — самая хрупкая. Мы вкладываем всю нашу веру в самую слабую часть черепной коробки, рассчитывая, что она удержит нас от искушения.</div>
+      <p>И вот главная проблема: когда вы в стрессе — неважно от чего: ночное письмо от начальника, ссора, усталость, голод — древний мозг перехватывает управление. ПФК отключается. Именно в тот момент, когда вам больше всего нужна рациональность — её нет. А древний мозг тем временем делает единственное, что умеет: ест кексы, пока не полегчает. ПФК возвращается потом. Вместе с виной.</p>
+      <p>Исследования подтверждают: люди, которые прилагали больше усилий для самоконтроля, не были успешнее. Чем больше старались — тем более вымотанными себя ощущали.</p>
+      <p>А что реально работает? Программа на основе осознанности показала снижение тревоги на 63% у людей с генерализованным расстройством. Для сравнения: чтобы один человек получил эффект от стандартных антидепрессантов, нужно пролечить пятерых. В программе автора — менее двух.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-11">
+    <div class="post-header">
+      <div class="post-number">11</div>
+      <h2 class="post-title">Почему не работает ни подмена, ни «правильная среда»</h2>
+    </div>
+    <div class="post-body">
+      <p>Есть стратегии, которые кажутся разумными — но раз за разом проигрывают тревоге.</p>
+      <p>Подмена: хочешь курить — съешь конфету. Тревожишься — смотри на щенков в интернете. Один участник программы даже запрограммировал бота, который автоматически ретвитил фотографии щенков — бесконечная лента утешения в один клик. Но тревога никуда не делась. Петля привычки остаётся нетронутой — меняется лишь поведение.</p>
+      <p>Организация среды: если мороженое искушает — не держи его в морозилке. Для еды это иногда работает. Но как применить это к тревоге? Вы не можете не держать тревогу в морозилке. Не можете обойти стороной магазин тревоги с его тридцатью одним вкусом.</p>
+      <div class="highlight">Ловушка понимания — самая коварная. Человек узнаёт, как устроена петля привычки, — и немедленно пытается её «починить». Как визит к механику: вам объяснили поломку, вы поехали домой и полезли под капот сами. В результате — две проблемы вместо одной.</div>
+      <p>Он вспоминает «Каратэ-кид»: Дэниел хотел учить карате — а мистер Мияги заставлял его красить забор и полировать машины. Потому что нельзя прочитать книгу Брюса Ли и выйти на улицу Брюсом Ли. Концепции не превращаются в мудрость по щелчку. Нужно делать работу — чтобы знание стало частью твоего собственного опыта.</p>
+    </div>
+  </article>
+
+  <div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+  <article class="post" id="post-12">
+    <div class="post-header">
+      <div class="post-number">12</div>
+      <h2 class="post-title">Осознанность — не тишина в голове, а другой способ слышать</h2>
+    </div>
+    <div class="post-body">
+      <p>Самое частое заблуждение: «Как мне избавиться от мыслей?» — как будто цель медитации — создать вакуум в голове. Автор сам пытался это сделать десять лет — на молчаливых ретритах, потея сквозь футболки посреди зимы. Не получилось. И потом подумал: а зачем опустошать голову, если он всю медицинскую школу старательно наполнял её знаниями?</p>
+      <div class="highlight">Осознанность — не про то, чтобы остановить мысли, опустошить ум или от чего-то избавиться. Мысли, эмоции, телесные ощущения — это то, что делает нас людьми. Осознанность — про то, чтобы изменить отношение к ним. Не содержание — а позицию, с которой вы смотрите.</div>
+      <p>Два компонента: внимание и любопытство.</p>
+      <p>Внимание помогает заметить петлю привычки в момент, когда она разворачивается — а не после того, как вы «проснулись» с пустой коробкой печенья или в три часа ночи посреди спирали тревоги.</p>
+      <p>А любопытство — неожиданный ключ. Когда вы не осуждаете привычку, а искренне интересуетесь ею — что сейчас происходит? что я чувствую? чем мне это платит? — само любопытство становится наградой. Оно ощущается приятнее, чем быстрый сахарный кайф с последующей волной вины. И древний мозг это замечает: он всегда выбирает то, что приносит больше удовольствия.</p>
+      <p>Лаборатория автора показала: у опытных медитаторов сеть пассивного режима — та самая, что отвечает за навязчивые мысли и блуждание ума — работает значительно тише. Механизм оказался красивым: депрессивные люди застревают в навязчивых мыслях о прошлом, тревожные — о будущем. Осознанность разбирает сам процесс застревания — вне зависимости от того, о чём именно вы думаете.</p>
+      <p>И один парадокс, который изменил практику автора: «Не делай ничего — просто сиди». Когда пациент тревожится на приёме, первый инстинкт врача — броситься чинить. Но иногда лучшее действие — присутствие. Глубокое слушание. Наблюдение — единственное необходимое «действие» и, по иронии судьбы, самое эффективное.</p>
+    </div>
+  </article>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-book">Judson Brewer &laquo;Unwinding Anxiety&raquo; (2021)</div>
+  <p>Теоретическая часть: Introduction, Part 0 (главы 1–4), Part 1 (главы 5–8)</p>
+</footer>
+
+<script>
+  const posts = document.querySelectorAll('.post');
+  const nav = document.getElementById('nav');
+  const navProgress = document.getElementById('navProgress');
+  const navCounter = document.getElementById('navCounter');
+  const hero = document.getElementById('hero');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  posts.forEach(post => observer.observe(post));
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroH = hero.offsetHeight;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = Math.min((scrollY / docH) * 100, 100);
+
+    if (scrollY > heroH * 0.7) {
+      nav.classList.add('visible');
+    } else {
+      nav.classList.remove('visible');
+    }
+
+    navProgress.style.width = progress + '%';
+
+    let currentPost = 0;
+    posts.forEach((post, i) => {
+      const rect = post.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.5) currentPost = i + 1;
+    });
+
+    if (currentPost > 0) {
+      navCounter.textContent = currentPost + ' / 12';
+    }
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
